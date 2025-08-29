@@ -1,6 +1,54 @@
 {
   "sortedMiddleware": [],
   "middleware": {},
-  "functions": {},
+  "functions": {
+    "/api/og/route": {
+      "env": [
+        "__NEXT_TEST_MAX_ISR_CACHE",
+        "NEXT_PRIVATE_DEBUG_CACHE",
+        "NEXT_OTEL_VERBOSE",
+        "JEST_WORKER_ID"
+      ],
+      "files": [
+        "server/middleware-build-manifest.js",
+        "server/middleware-react-loadable-manifest.js",
+        "server/next-font-manifest.js",
+        "server/edge-runtime-webpack.js",
+        "server/app/api/og/route.js"
+      ],
+      "name": "app/api/og/route",
+      "page": "/api/og/route",
+      "matchers": [
+        {
+          "regexp": "^/api/og$",
+          "originalSource": "/api/og"
+        }
+      ],
+      "wasm": [
+        {
+          "name": "wasm_53adb396180a95eb122a0218c93e3d6474b1a27e",
+          "filePath": "server/edge-chunks/wasm_53adb396180a95eb122a0218c93e3d6474b1a27e.wasm"
+        },
+        {
+          "name": "wasm_5b50c798761dc0131e9ebe945031077e8a02633b",
+          "filePath": "server/edge-chunks/wasm_5b50c798761dc0131e9ebe945031077e8a02633b.wasm"
+        }
+      ],
+      "assets": [
+        {
+          "name": "Inter-Regular.8c0fe73bdbebb91d.ttf",
+          "filePath": "server/edge-chunks/asset_Inter-Regular.8c0fe73bdbebb91d.ttf"
+        },
+        {
+          "name": "CalSans-SemiBold.162bf645eb375add.ttf",
+          "filePath": "server/edge-chunks/asset_CalSans-SemiBold.162bf645eb375add.ttf"
+        },
+        {
+          "name": "noto-sans-v27-latin-regular.5dda3fca77107598.ttf",
+          "filePath": "server/edge-chunks/asset_noto-sans-v27-latin-regular.5dda3fca77107598.ttf"
+        }
+      ]
+    }
+  },
   "version": 2
 }
