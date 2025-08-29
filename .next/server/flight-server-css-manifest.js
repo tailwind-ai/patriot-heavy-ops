@@ -11,6 +11,11 @@ self.__RSC_CSS_MANIFEST={
       "/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/styles/globals.css",
       "/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/next/font/google/target.css?{\"path\":\"app/layout.tsx\",\"import\":\"Inter\",\"arguments\":[{\"subsets\":[\"latin\"],\"variable\":\"--font-sans\"}],\"variableName\":\"fontSans\"}",
       "/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/next/font/local/target.css?{\"path\":\"app/layout.tsx\",\"import\":\"\",\"arguments\":[{\"src\":\"../assets/fonts/CalSans-SemiBold.woff2\",\"variable\":\"--font-heading\"}],\"variableName\":\"fontHeading\"}"
+    ],
+    "/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/app/page": [
+      "/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/styles/globals.css",
+      "/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/next/font/google/target.css?{\"path\":\"app/layout.tsx\",\"import\":\"Inter\",\"arguments\":[{\"subsets\":[\"latin\"],\"variable\":\"--font-sans\"}],\"variableName\":\"fontSans\"}",
+      "/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/next/font/local/target.css?{\"path\":\"app/layout.tsx\",\"import\":\"\",\"arguments\":[{\"src\":\"../assets/fonts/CalSans-SemiBold.woff2\",\"variable\":\"--font-heading\"}],\"variableName\":\"fontHeading\"}"
     ]
   }
 }
