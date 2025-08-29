@@ -718,6 +718,32 @@ self.__RSC_MANIFEST={
         "async": false
       }
     },
+    "(app-client)/./node_modules/next/dist/client/link.js": {
+      "*": {
+        "id": "(sc_client)/./node_modules/next/dist/client/link.js",
+        "name": "*",
+        "chunks": [
+          "app/(marketing)/layout:static/chunks/app/(marketing)/layout.js"
+        ],
+        "async": false
+      },
+      "": {
+        "id": "(sc_client)/./node_modules/next/dist/client/link.js",
+        "name": "",
+        "chunks": [
+          "app/(marketing)/layout:static/chunks/app/(marketing)/layout.js"
+        ],
+        "async": false
+      },
+      "default": {
+        "id": "(sc_client)/./node_modules/next/dist/client/link.js",
+        "name": "default",
+        "chunks": [
+          "app/(marketing)/layout:static/chunks/app/(marketing)/layout.js"
+        ],
+        "async": false
+      }
+    },
     "(app-client)/./components/main-nav.tsx": {
       "*": {
         "id": "(sc_client)/./components/main-nav.tsx",
@@ -904,32 +930,6 @@ self.__RSC_MANIFEST={
         "name": "DropdownMenuTrigger",
         "chunks": [
           "app/(marketing)/layout:static/chunks/app/(marketing)/layout.js"
-        ],
-        "async": false
-      }
-    },
-    "(app-client)/./node_modules/next/dist/client/link.js": {
-      "*": {
-        "id": "(sc_client)/./node_modules/next/dist/client/link.js",
-        "name": "*",
-        "chunks": [
-          "app/(marketing)/page:static/chunks/app/(marketing)/page.js"
-        ],
-        "async": false
-      },
-      "": {
-        "id": "(sc_client)/./node_modules/next/dist/client/link.js",
-        "name": "",
-        "chunks": [
-          "app/(marketing)/page:static/chunks/app/(marketing)/page.js"
-        ],
-        "async": false
-      },
-      "default": {
-        "id": "(sc_client)/./node_modules/next/dist/client/link.js",
-        "name": "default",
-        "chunks": [
-          "app/(marketing)/page:static/chunks/app/(marketing)/page.js"
         ],
         "async": false
       }
@@ -2700,6 +2700,54 @@ self.__RSC_MANIFEST={
       ],
       "async": false
     },
+    "/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/next/dist/client/link.js": {
+      "id": "(app-client)/./node_modules/next/dist/client/link.js",
+      "name": "*",
+      "chunks": [
+        "app/(marketing)/layout:static/chunks/app/(marketing)/layout.js"
+      ],
+      "async": false
+    },
+    "/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/next/dist/esm/client/link.js": {
+      "id": "(app-client)/./node_modules/next/dist/client/link.js",
+      "name": "*",
+      "chunks": [
+        "app/(marketing)/layout:static/chunks/app/(marketing)/layout.js"
+      ],
+      "async": false
+    },
+    "/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/next/dist/client/link.js#": {
+      "id": "(app-client)/./node_modules/next/dist/client/link.js",
+      "name": "",
+      "chunks": [
+        "app/(marketing)/layout:static/chunks/app/(marketing)/layout.js"
+      ],
+      "async": false
+    },
+    "/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/next/dist/esm/client/link.js#": {
+      "id": "(app-client)/./node_modules/next/dist/client/link.js",
+      "name": "",
+      "chunks": [
+        "app/(marketing)/layout:static/chunks/app/(marketing)/layout.js"
+      ],
+      "async": false
+    },
+    "/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/next/dist/client/link.js#default": {
+      "id": "(app-client)/./node_modules/next/dist/client/link.js",
+      "name": "default",
+      "chunks": [
+        "app/(marketing)/layout:static/chunks/app/(marketing)/layout.js"
+      ],
+      "async": false
+    },
+    "/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/next/dist/esm/client/link.js#default": {
+      "id": "(app-client)/./node_modules/next/dist/client/link.js",
+      "name": "default",
+      "chunks": [
+        "app/(marketing)/layout:static/chunks/app/(marketing)/layout.js"
+      ],
+      "async": false
+    },
     "/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/components/main-nav.tsx": {
       "id": "(app-client)/./components/main-nav.tsx",
       "name": "*",
@@ -2881,54 +2929,6 @@ self.__RSC_MANIFEST={
       "name": "DropdownMenuTrigger",
       "chunks": [
         "app/(marketing)/layout:static/chunks/app/(marketing)/layout.js"
-      ],
-      "async": false
-    },
-    "/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/next/dist/client/link.js": {
-      "id": "(app-client)/./node_modules/next/dist/client/link.js",
-      "name": "*",
-      "chunks": [
-        "app/(marketing)/page:static/chunks/app/(marketing)/page.js"
-      ],
-      "async": false
-    },
-    "/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/next/dist/esm/client/link.js": {
-      "id": "(app-client)/./node_modules/next/dist/client/link.js",
-      "name": "*",
-      "chunks": [
-        "app/(marketing)/page:static/chunks/app/(marketing)/page.js"
-      ],
-      "async": false
-    },
-    "/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/next/dist/client/link.js#": {
-      "id": "(app-client)/./node_modules/next/dist/client/link.js",
-      "name": "",
-      "chunks": [
-        "app/(marketing)/page:static/chunks/app/(marketing)/page.js"
-      ],
-      "async": false
-    },
-    "/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/next/dist/esm/client/link.js#": {
-      "id": "(app-client)/./node_modules/next/dist/client/link.js",
-      "name": "",
-      "chunks": [
-        "app/(marketing)/page:static/chunks/app/(marketing)/page.js"
-      ],
-      "async": false
-    },
-    "/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/next/dist/client/link.js#default": {
-      "id": "(app-client)/./node_modules/next/dist/client/link.js",
-      "name": "default",
-      "chunks": [
-        "app/(marketing)/page:static/chunks/app/(marketing)/page.js"
-      ],
-      "async": false
-    },
-    "/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/next/dist/esm/client/link.js#default": {
-      "id": "(app-client)/./node_modules/next/dist/client/link.js",
-      "name": "default",
-      "chunks": [
-        "app/(marketing)/page:static/chunks/app/(marketing)/page.js"
       ],
       "async": false
     },

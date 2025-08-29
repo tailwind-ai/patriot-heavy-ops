@@ -18,4 +18,7 @@ self.__RSC_CSS_MANIFEST={
       "/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/next/font/local/target.css?{\"path\":\"app/layout.tsx\",\"import\":\"\",\"arguments\":[{\"src\":\"../assets/fonts/CalSans-SemiBold.woff2\",\"variable\":\"--font-heading\"}],\"variableName\":\"fontHeading\"}"
     ]
   }
+}amhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/next/font/local/target.css?{\"path\":\"app/layout.tsx\",\"import\":\"\",\"arguments\":[{\"src\":\"../assets/fonts/CalSans-SemiBold.woff2\",\"variable\":\"--font-heading\"}],\"variableName\":\"fontHeading\"}"
+    ]
+  }
 }
