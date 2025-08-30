@@ -12,6 +12,9 @@ export async function POST(req: Request) {
   let event: Stripe.Event
 
   try {
+    if (!env.STRIPE_WEBHOOK_SECRET) {
+      throw new Error("STRIPE_WEBHOOK_SECRET is not configured")
+    }
     event = stripe.webhooks.constructEvent(
       body,
       signature,

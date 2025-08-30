@@ -6,8 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("PRISMA_DATABASE_URL")
 }
 
 model Account {
@@ -84,4 +84,89 @@ model Post {
   author User @relation(fields: [authorId], references: [id])
 
   @@map(name: "posts")
+}
+
+// Patriot Heavy Ops Models
+
+model Contractor {
+  id          String   @id @default(cuid())
+  companyName String   @map(name: "company_name")
+  contactName String   @map(name: "contact_name")
+  email       String   @unique
+  phone       String?
+  location    String?
+  createdAt   DateTime @default(now()) @map(name: "created_at")
+  updatedAt   DateTime @default(now()) @map(name: "updated_at")
+
+  projects Project[]
+
+  @@map(name: "contractors")
+}
+
+model Operator {
+  id                String   @id @default(cuid())
+  fullName          String   @map(name: "full_name")
+  email             String   @unique
+  phone             String?
+  militaryBranch    String   @map(name: "military_branch")
+  yearsOfService    Int      @map(name: "years_of_service")
+  certifications    String[]
+  preferredLocations String[] @map(name: "preferred_locations")
+  isAvailable       Boolean  @default(true) @map(name: "is_available")
+  createdAt         DateTime @default(now()) @map(name: "created_at")
+  updatedAt         DateTime @default(now()) @map(name: "updated_at")
+
+  assignments Assignment[]
+
+  @@map(name: "operators")
+}
+
+model Project {
+  id              String   @id @default(cuid())
+  title           String
+  description     String?
+  location        String
+  startDate       DateTime @map(name: "start_date")
+  endDate         DateTime? @map(name: "end_date")
+  budget          Decimal?
+  equipmentTypes  String[] @map(name: "equipment_types")
+  status          String   @default("pending") // pending, active, completed, cancelled
+  contractorId    String
+  createdAt       DateTime @default(now()) @map(name: "created_at")
+  updatedAt       DateTime @default(now()) @map(name: "updated_at")
+
+  contractor  Contractor    @relation(fields: [contractorId], references: [id])
+  assignments Assignment[]
+
+  @@map(name: "projects")
+}
+
+model Assignment {
+  id         String   @id @default(cuid())
+  projectId  String   @map(name: "project_id")
+  operatorId String   @map(name: "operator_id")
+  status     String   @default("pending") // pending, accepted, declined, completed
+  startDate  DateTime @map(name: "start_date")
+  endDate    DateTime? @map(name: "end_date")
+  rate       Decimal?
+  createdAt  DateTime @default(now()) @map(name: "created_at")
+  updatedAt  DateTime @default(now()) @map(name: "updated_at")
+
+  project  Project  @relation(fields: [projectId], references: [id])
+  operator Operator @relation(fields: [operatorId], references: [id])
+
+  @@unique([projectId, operatorId])
+  @@map(name: "assignments")
+}
+
+model Conversation {
+  id        String   @id @default(cuid())
+  userId    String?  @map(name: "user_id")
+  type      String   // "contractor" or "operator"
+  messages  Json     // Array of message objects
+  metadata  Json?    // Additional conversation data
+  createdAt DateTime @default(now()) @map(name: "created_at")
+  updatedAt DateTime @default(now()) @map(name: "updated_at")
+
+  @@map(name: "conversations")
 }
