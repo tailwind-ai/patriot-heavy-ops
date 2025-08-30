@@ -1,18 +1,1 @@
-{
-  "/api/og/route": "/api/og",
-  "/page": "/",
-  "/robots.txt/route": "/robots.txt",
-  "/opengraph-image.jpg/route": "/opengraph-image.jpg",
-  "/api/posts/route": "/api/posts",
-  "/(marketing)/page": "/",
-  "/(dashboard)/dashboard/page": "/dashboard",
-  "/(auth)/login/page": "/login",
-  "/(marketing)/pricing/page": "/pricing",
-  "/api/webhooks/stripe/route": "/api/webhooks/stripe",
-  "/api/users/stripe/route": "/api/users/stripe",
-  "/(auth)/register/page": "/register",
-  "/api/users/[userId]/route": "/api/users/[userId]",
-  "/api/posts/[postId]/route": "/api/posts/[postId]",
-  "/(dashboard)/dashboard/settings/page": "/dashboard/settings",
-  "/(dashboard)/dashboard/billing/page": "/dashboard/billing"
-}
+{"/_not-found":"/_not-found","/api/posts/[postId]/route":"/api/posts/[postId]","/api/posts/route":"/api/posts","/api/users/stripe/route":"/api/users/stripe","/api/webhooks/stripe/route":"/api/webhooks/stripe","/opengraph-image.jpg/route":"/opengraph-image.jpg","/robots.txt/route":"/robots.txt","/api/users/[userId]/route":"/api/users/[userId]","/page":"/","/(marketing)/page":"/","/(auth)/login/page":"/login","/(dashboard)/dashboard/billing/page":"/dashboard/billing","/(auth)/register/page":"/register","/(dashboard)/dashboard/settings/page":"/dashboard/settings","/(marketing)/pricing/page":"/pricing","/(dashboard)/dashboard/page":"/dashboard","/api/og/route":"/api/og"}

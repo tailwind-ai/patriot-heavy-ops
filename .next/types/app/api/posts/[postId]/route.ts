@@ -2,7 +2,7 @@
 import * as entry from '../../../../../../app/api/posts/[postId]/route.js'
 import type { NextRequest } from 'next/server.js'
 
-type TEntry = typeof entry
+type TEntry = typeof import('../../../../../../app/api/posts/[postId]/route.js')
 
 // Check that the entry is a valid entry
 checkFields<Diff<{
@@ -19,8 +19,9 @@ checkFields<Diff<{
   dynamic?: 'auto' | 'force-dynamic' | 'error' | 'force-static'
   dynamicParams?: boolean
   fetchCache?: 'auto' | 'force-no-store' | 'only-no-store' | 'default-no-store' | 'default-cache' | 'only-cache' | 'force-cache'
-  preferredRegion?: 'auto' | 'home' | 'edge'
+  preferredRegion?: 'auto' | 'global' | 'home' | string | string[]
   runtime?: 'nodejs' | 'experimental-edge' | 'edge'
+  maxDuration?: number
   
 }, TEntry, ''>>()
 
@@ -44,6 +45,20 @@ if ('GET' in entry) {
         __tag__: 'GET'
         __param_position__: 'second'
         __param_type__: SecondArg<MaybeField<TEntry, 'GET'>>
+      },
+      'GET'
+    >
+  >()
+  
+  checkFields<
+    Diff<
+      {
+        __tag__: 'GET',
+        __return_type__: Response | void | never | Promise<Response | void | never>
+      },
+      {
+        __tag__: 'GET',
+        __return_type__: ReturnType<MaybeField<TEntry, 'GET'>>
       },
       'GET'
     >
@@ -73,6 +88,20 @@ if ('HEAD' in entry) {
       'HEAD'
     >
   >()
+  
+  checkFields<
+    Diff<
+      {
+        __tag__: 'HEAD',
+        __return_type__: Response | void | never | Promise<Response | void | never>
+      },
+      {
+        __tag__: 'HEAD',
+        __return_type__: ReturnType<MaybeField<TEntry, 'HEAD'>>
+      },
+      'HEAD'
+    >
+  >()
 }
 // Check the prop type of the entry function
 if ('OPTIONS' in entry) {
@@ -94,6 +123,20 @@ if ('OPTIONS' in entry) {
         __tag__: 'OPTIONS'
         __param_position__: 'second'
         __param_type__: SecondArg<MaybeField<TEntry, 'OPTIONS'>>
+      },
+      'OPTIONS'
+    >
+  >()
+  
+  checkFields<
+    Diff<
+      {
+        __tag__: 'OPTIONS',
+        __return_type__: Response | void | never | Promise<Response | void | never>
+      },
+      {
+        __tag__: 'OPTIONS',
+        __return_type__: ReturnType<MaybeField<TEntry, 'OPTIONS'>>
       },
       'OPTIONS'
     >
@@ -123,6 +166,20 @@ if ('POST' in entry) {
       'POST'
     >
   >()
+  
+  checkFields<
+    Diff<
+      {
+        __tag__: 'POST',
+        __return_type__: Response | void | never | Promise<Response | void | never>
+      },
+      {
+        __tag__: 'POST',
+        __return_type__: ReturnType<MaybeField<TEntry, 'POST'>>
+      },
+      'POST'
+    >
+  >()
 }
 // Check the prop type of the entry function
 if ('PUT' in entry) {
@@ -144,6 +201,20 @@ if ('PUT' in entry) {
         __tag__: 'PUT'
         __param_position__: 'second'
         __param_type__: SecondArg<MaybeField<TEntry, 'PUT'>>
+      },
+      'PUT'
+    >
+  >()
+  
+  checkFields<
+    Diff<
+      {
+        __tag__: 'PUT',
+        __return_type__: Response | void | never | Promise<Response | void | never>
+      },
+      {
+        __tag__: 'PUT',
+        __return_type__: ReturnType<MaybeField<TEntry, 'PUT'>>
       },
       'PUT'
     >
@@ -173,6 +244,20 @@ if ('DELETE' in entry) {
       'DELETE'
     >
   >()
+  
+  checkFields<
+    Diff<
+      {
+        __tag__: 'DELETE',
+        __return_type__: Response | void | never | Promise<Response | void | never>
+      },
+      {
+        __tag__: 'DELETE',
+        __return_type__: ReturnType<MaybeField<TEntry, 'DELETE'>>
+      },
+      'DELETE'
+    >
+  >()
 }
 // Check the prop type of the entry function
 if ('PATCH' in entry) {
@@ -194,6 +279,20 @@ if ('PATCH' in entry) {
         __tag__: 'PATCH'
         __param_position__: 'second'
         __param_type__: SecondArg<MaybeField<TEntry, 'PATCH'>>
+      },
+      'PATCH'
+    >
+  >()
+  
+  checkFields<
+    Diff<
+      {
+        __tag__: 'PATCH',
+        __return_type__: Response | void | never | Promise<Response | void | never>
+      },
+      {
+        __tag__: 'PATCH',
+        __return_type__: ReturnType<MaybeField<TEntry, 'PATCH'>>
       },
       'PATCH'
     >
