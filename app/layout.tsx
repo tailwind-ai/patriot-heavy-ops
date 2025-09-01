@@ -6,7 +6,6 @@ import { siteConfig } from "@/config/site"
 import { absoluteUrl, cn } from "@/lib/utils"
 import { Toaster } from "@/components/ui/toaster"
 import { Analytics } from "@/components/analytics"
-import { TailwindIndicator } from "@/components/tailwind-indicator"
 import { ThemeProvider } from "@/components/theme-provider"
 
 const fontSans = FontSans({
@@ -86,7 +85,6 @@ export default function RootLayout({ children }: RootLayoutProps) {
           {children}
           <Analytics />
           <Toaster />
-          <TailwindIndicator />
         </ThemeProvider>
       </body>
     </html>
