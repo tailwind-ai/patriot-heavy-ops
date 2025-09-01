@@ -13,6 +13,7 @@ import {
   Laptop,
   Loader2,
   LucideProps,
+  Menu,
   Moon,
   MoreVertical,
   Pizza,
@@ -31,6 +32,7 @@ export type Icon = LucideIcon
 export const Icons = {
   logo: Command,
   close: X,
+  menu: Menu,
   spinner: Loader2,
   chevronLeft: ChevronLeft,
   chevronRight: ChevronRight,
