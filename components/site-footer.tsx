@@ -52,7 +52,7 @@ export function SiteFooter({ className }: React.HTMLAttributes<HTMLElement>) {
               <div>
                 <h3 className="font-semibold text-white mb-4">Company</h3>
                 <ul className="space-y-2">
-                  <li><Link href="/about" className="text-white/80 hover:text-white transition-colors text-sm">About Us</Link></li>
+                  <li><Link href="/about-us" className="text-white/80 hover:text-white transition-colors text-sm">Company</Link></li>
                   <li><Link href="/contact" className="text-white/80 hover:text-white transition-colors text-sm">Contact</Link></li>
                 </ul>
               </div>
