@@ -1,5 +1,5 @@
-import { redirect } from "next/navigation"
+import IndexPage from "./(marketing)/page"
 
 export default function HomePage() {
-  redirect("/")
-}
+  return <IndexPage />
+} 

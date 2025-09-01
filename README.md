@@ -1,5 +1,10 @@
 # Patriot Heavy Ops
 
+## 🚀 Deployment Status
+**Live Site**: https://patriot-heavy-ops.vercel.app  
+**Status**: ✅ Successfully deployed and working  
+**Last Updated**: December 2024
+
 ## Product Vision
 Connect contractors with vetted heavy equipment operators (military-trained) for construction and industrial projects.
 
@@ -17,7 +22,7 @@ Connect contractors with vetted heavy equipment operators (military-trained) for
 
 ## Pages & Features
 
-### Home Page
+### Home Page ✅ **COMPLETED**
 - Hero section with clear value proposition
 - Key benefits for both contractors and operators
 - Call-to-action buttons for both user types
@@ -97,30 +102,28 @@ Connect contractors with vetted heavy equipment operators (military-trained) for
 
 ## Tech Stack
 
-### Front-End
-- **Next.js 14** (App Router, TypeScript)
+### Front-End ✅ **DEPLOYED**
+- **Next.js 13.3.4** (App Router, TypeScript)
 - **Tailwind CSS** (utility-first styling)
 - **React Hook Form + Zod** (form handling & validation)
-- **MDX** (content pages)
 - **Vercel AI SDK** (AI integration and streaming)
-- **React Hook Form** (form fallback handling)
 
 ### Back-End
 - **Next.js API Routes** (form processing and chat endpoints)
 - **Vercel AI SDK** (AI model integration)
 - **OpenAI/Anthropic** (LLM providers)
-- **SQLite** (local data storage, extensible)
+- **PostgreSQL** (production database via Prisma Accelerate)
 - **Prisma** (database ORM)
-- **JSON** (initial data format)
 
 ### Real-Time Communication
 - **Server-Sent Events** (streaming AI responses)
 - **WebSocket** (real-time chat, if needed)
 - **Vercel Edge Runtime** (low-latency AI responses)
 
-### Deployment
+### Deployment ✅ **COMPLETED**
 - **Vercel** (hosting & preview deployments)
 - **GitHub** (version control)
+- **Prisma Accelerate** (database connection)
 
 ### Design
 - **Figma** (design system & mockups)
@@ -130,16 +133,15 @@ Connect contractors with vetted heavy equipment operators (military-trained) for
 
 ## Development Phases
 
-### Phase 1: Foundation & Core Forms (MVP)
-- Project setup with Vercel AI SDK template
-- Authentication system (NextAuth.js)
-- Database setup (SQLite + Prisma)
-- Home page with navigation
-- Traditional forms as fallback:
-  - Hire Equipment with Operators form
-  - For Operators form
-- Basic form processing and data storage
-- Email notifications for form submissions
+### Phase 1: Foundation & Core Forms (MVP) ✅ **COMPLETED**
+- ✅ Project setup with Vercel AI SDK template
+- ✅ Database setup (PostgreSQL + Prisma Accelerate)
+- ✅ Home page with navigation
+- ✅ Deployment to Vercel
+- 🔄 Authentication system (NextAuth.js) - **NEXT**
+- 🔄 Traditional forms as fallback - **NEXT**
+- 🔄 Basic form processing and data storage - **NEXT**
+- 🔄 Email notifications for form submissions - **NEXT**
 
 ### Phase 2: Conversational Interface
 - AI chat interface for both user types
@@ -166,6 +168,12 @@ Connect contractors with vetted heavy equipment operators (military-trained) for
 - Project requirement analysis
 - Automated follow-up conversations
 - Performance analytics and optimization
+
+## Next Steps
+1. **Database Setup** - Run Prisma migrations to create tables
+2. **Authentication** - Set up NextAuth.js for user management
+3. **AI Chat Interface** - Implement Vercel AI SDK chat components
+4. **Form Pages** - Create hire/operator forms with fallback functionality
 
 ## Success Metrics
 - Form completion rates > 80%

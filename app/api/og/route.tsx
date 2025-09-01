@@ -12,7 +12,7 @@ const interBold = fetch(
   new URL("../../../assets/fonts/CalSans-SemiBold.ttf", import.meta.url)
 ).then((res) => res.arrayBuffer())
 
-export async function GET(req: Request) {
+export async function GET(req: Request): Promise<Response> {
   try {
     const fontRegular = await interRegular
     const fontBold = await interBold
@@ -139,7 +139,7 @@ export async function GET(req: Request) {
           },
         ],
       }
-    )
+    ) as Response
   } catch (error) {
     return new Response(`Failed to generate image`, {
       status: 500,
