@@ -20,66 +20,95 @@ export function MobileNav({ items, children, onClose }: MobileNavProps) {
   return (
     <div
       className={cn(
-        "fixed inset-0 top-20 z-50 grid h-[calc(100vh-5rem)] grid-flow-row auto-rows-max overflow-auto p-6 pb-32 shadow-md animate-in slide-in-from-bottom-80"
+        "fixed inset-0 top-0 z-50 flex justify-end"
       )}
     >
-      <div className="relative z-20 grid gap-6 rounded-md bg-white/95 backdrop-blur-sm p-4 text-black shadow-md max-w-sm ml-auto">
+      {/* Backdrop */}
+      <div 
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        onClick={onClose}
+      />
+      
+      {/* Menu Panel - Slides in from right */}
+      <div className="relative z-20 h-full w-full max-w-sm bg-white shadow-2xl animate-in slide-in-from-right duration-300">
         {/* Logo and Close Button */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <Link href="/" className="flex items-center space-x-2" onClick={onClose}>
             <div className="h-6 w-6 bg-black rounded"></div>
             <span className="font-bold text-black">{siteConfig.name}</span>
           </Link>
-          <button onClick={onClose} className="p-2">
+          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-md transition-colors">
             <Icons.close className="h-5 w-5" />
           </button>
         </div>
         
-        {/* Navigation Items */}
-        <nav className="grid grid-flow-row auto-rows-max text-sm">
-          {items.map((item, index) => (
-            <Link
-              key={index}
-              href={item.disabled ? "#" : item.href}
-              className={cn(
-                "flex w-full items-center rounded-md p-3 text-sm font-medium text-black hover:bg-gray-100 transition-colors",
-                item.disabled && "cursor-not-allowed opacity-60"
-              )}
-              onClick={onClose}
-            >
-              {item.title}
-            </Link>
-          ))}
-        </nav>
-        
-        {/* Separator */}
-        <div className="border-t border-gray-200" />
-        
-        {/* Login and Sign Up Buttons */}
-        <div className="flex flex-col space-y-3">
-          <Link
-            href="/login"
-            className={cn(
-              buttonVariants({ variant: "outline", size: "sm" }),
-              "w-full justify-center"
-            )}
-            onClick={onClose}
-          >
-            Login
-          </Link>
-          <Link
-            href="/register"
-            className={cn(
-              buttonVariants({ size: "sm" }),
-              "w-full justify-center"
-            )}
-            onClick={onClose}
-          >
-            Sign Up
-          </Link>
+        {/* Navigation Content - Full height with scroll */}
+        <div className="flex flex-col h-[calc(100vh-80px)] overflow-y-auto">
+          {/* Navigation Items */}
+          <nav className="flex-1 p-6">
+            <div className="grid grid-flow-row auto-rows-max text-sm space-y-2">
+              {items.slice(0, 3).map((item, index) => (
+                <Link
+                  key={index}
+                  href={item.disabled ? "#" : item.href}
+                  className={cn(
+                    "flex w-full items-center rounded-md p-3 text-sm font-medium text-black hover:bg-gray-100 transition-colors",
+                    item.disabled && "cursor-not-allowed opacity-60"
+                  )}
+                  onClick={onClose}
+                >
+                  {item.title}
+                </Link>
+              ))}
+              
+              {/* Separator with equal spacing */}
+              <div className="mt-8 mb-8">
+                <div className="border-t border-gray-200"></div>
+              </div>
+              
+              {/* About Us and Contact Us */}
+              {items.slice(3, 5).map((item, index) => (
+                <Link
+                  key={index + 3}
+                  href={item.disabled ? "#" : item.href}
+                  className={cn(
+                    "flex w-full items-center rounded-md p-3 text-sm font-medium text-black hover:bg-gray-100 transition-colors",
+                    item.disabled && "cursor-not-allowed opacity-60"
+                  )}
+                  onClick={onClose}
+                >
+                  {item.title}
+                </Link>
+              ))}
+              
+              {/* Login and Sign Up Buttons */}
+              <div className="space-y-3">
+                <Link
+                  href="/login"
+                  className={cn(
+                    buttonVariants({ variant: "outline", size: "sm" }),
+                    "w-full justify-center"
+                  )}
+                  onClick={onClose}
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/register"
+                  className={cn(
+                    buttonVariants({ size: "sm" }),
+                    "w-full justify-center"
+                  )}
+                  onClick={onClose}
+                >
+                  Sign Up
+                </Link>
+              </div>
+            </div>
+          </nav>
+          
+          {children}
         </div>
-        
-        {children}
       </div>
     </div>
   )
