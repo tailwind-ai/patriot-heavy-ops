@@ -61,28 +61,6 @@ export default function IndexPage() {
         </div>
       </section>
       
-      <section className="container space-y-6 py-8 md:py-12 lg:py-24">
-        <div className="mx-auto flex max-w-[58rem] flex-col items-center space-y-4 text-center">
-          <h2 className="font-heading text-3xl leading-[1.1] sm:text-3xl md:text-6xl">
-            Ready to Get Started?
-          </h2>
-          <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">
-            Connect with skilled operators or find your next project opportunity.
-          </p>
-          <div className="space-x-4">
-            <Link href="/hire" className={cn(buttonVariants({ size: "lg" }))}>
-              Hire Equipment & Operators
-            </Link>
-            <Link
-              href="/operators"
-              className={cn(buttonVariants({ variant: "outline", size: "lg" }))}
-            >
-              Join as Operator
-            </Link>
-          </div>
-        </div>
-      </section>
-
       <section className="container space-y-6 bg-slate-50 py-8 dark:bg-transparent md:py-12 lg:py-24">
         <div className="mx-auto flex max-w-[58rem] flex-col items-center space-y-4 text-center">
           <h2 className="font-heading text-3xl leading-[1.1] sm:text-3xl md:text-6xl">
@@ -241,20 +219,14 @@ export default function IndexPage() {
       <section className="container space-y-6 py-8 md:py-12 lg:py-24">
         <div className="mx-auto flex max-w-[58rem] flex-col items-center space-y-4 text-center">
           <h2 className="font-heading text-3xl leading-[1.1] sm:text-3xl md:text-6xl">
-            Ready to Find Equipment?
+            Join the Mission
           </h2>
           <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">
-            Get in touch to discuss your equipment needs and find the perfect solution.
+            Are you a military service member with a Civil Engineering specialty?
           </p>
           <div className="space-x-4">
-            <Link href="/quote" className={cn(buttonVariants({ size: "lg" }))}>
-              Get a Quote
-            </Link>
-            <Link
-              href="/contact"
-              className={cn(buttonVariants({ variant: "outline", size: "lg" }))}
-            >
-              Contact Us
+            <Link href="/hire" className={cn(buttonVariants({ size: "lg" }))}>
+              Apply Today
             </Link>
           </div>
         </div>
