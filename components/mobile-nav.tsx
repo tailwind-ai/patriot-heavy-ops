@@ -1,5 +1,6 @@
 import * as React from "react"
 import Link from "next/link"
+import Image from "next/image"
 
 import { MainNavItem } from "types"
 import { siteConfig } from "@/config/site"
@@ -34,8 +35,13 @@ export function MobileNav({ items, children, onClose }: MobileNavProps) {
         {/* Logo and Close Button */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <Link href="/" className="flex items-center space-x-2" onClick={onClose}>
-            <div className="h-6 w-6 bg-black rounded"></div>
-            <span className="font-bold text-black">{siteConfig.name}</span>
+            <Image
+              src="/images/logo-color-h.webp"
+              alt="Patriot Heavy Ops"
+              width={150}
+              height={30}
+              className="w-[150px] h-auto object-contain"
+            />
           </Link>
           <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-md transition-colors">
             <Icons.close className="h-5 w-5" />

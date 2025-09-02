@@ -1,5 +1,6 @@
 import * as React from "react"
 import Link from "next/link"
+import Image from "next/image"
 
 import { siteConfig } from "@/config/site"
 import { cn } from "@/lib/utils"
@@ -15,8 +16,13 @@ export function SiteFooter({ className }: React.HTMLAttributes<HTMLElement>) {
           <div className="md:col-span-1 space-y-4">
             {/* Logo */}
             <div className="flex items-center space-x-2">
-              <div className="h-8 w-8 bg-white rounded"></div>
-              <span className="font-bold text-white">Patriot Heavy Ops</span>
+              <Image
+                src="/images/logo-white-horizontal.webp"
+                alt="Patriot Heavy Ops"
+                width={125}
+                height={25}
+                className="w-auto object-contain"
+              />
             </div>
             
             {/* Description */}

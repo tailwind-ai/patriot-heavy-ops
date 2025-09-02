@@ -1,4 +1,5 @@
 import Link from "next/link"
+import Image from "next/image"
 
 import { marketingConfig } from "@/config/marketing"
 import { cn } from "@/lib/utils"
@@ -15,20 +16,25 @@ export default async function AboutLayout({
 }: AboutLayoutProps) {
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="absolute top-0 left-0 right-0 z-50" style={{ backgroundColor: '#0A0C26' }}>
-        <div className="container h-20 flex items-center">
-          <div className="flex h-10 items-center justify-between w-full">
+      <header className="absolute inset-x-0 top-0 z-50" style={{ backgroundColor: '#0A0C26' }}>
+        <div className="container flex h-20 items-center">
+          <div className="flex h-10 w-full items-center justify-between">
             {/* Left-aligned logo */}
             <Link href="/" className="flex items-center space-x-2">
-              <div className="h-6 w-6 bg-black rounded"></div>
-              <span className="font-bold text-white text-lg">Patriot Heavy Ops</span>
+              <Image
+                src="/images/logo-white-horizontal.webp"
+                alt="Patriot Heavy Ops"
+                width={125}
+                height={25}
+                className="w-auto object-contain"
+              />
             </Link>
             
             {/* Right-aligned elements */}
             <div className="flex items-center space-x-4">
               <Link
                 href="/quote"
-                className="px-3 py-1 text-white hover:bg-white/20 transition-colors rounded-md text-base"
+                className="rounded-md px-3 py-1 text-base text-white transition-colors hover:bg-white/20"
               >
                 Get a Fast Quote
               </Link>
@@ -39,11 +45,11 @@ export default async function AboutLayout({
       </header>
       
       {/* Thin gray separator line */}
-      <div className="absolute top-20 left-0 right-0 z-40">
-        <div className="border-t border-gray-300 w-full"></div>
+      <div className="absolute inset-x-0 top-20 z-40">
+        <div className="w-full border-t border-gray-300"></div>
       </div>
       
-      <main className="flex-1 pt-20 bg-white">{children}</main>
+      <main className="flex-1 bg-white pt-20">{children}</main>
       <SiteFooter />
     </div>
   )
