@@ -86,7 +86,7 @@ export default function IndexPage() {
       <section className="container space-y-6 bg-slate-50 py-8 dark:bg-transparent md:py-12 lg:py-24">
         <div className="mx-auto flex max-w-[58rem] flex-col items-center space-y-4 text-center">
           <h2 className="font-heading text-3xl leading-[1.1] sm:text-3xl md:text-6xl">
-            Available Equipment
+            Equipment We Run
           </h2>
           <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">
             Browse our comprehensive selection of heavy construction equipment.
@@ -95,40 +95,143 @@ export default function IndexPage() {
         <div className="mx-auto grid justify-center gap-4 sm:grid-cols-2 md:max-w-[64rem] md:grid-cols-3">
           <div className="relative overflow-hidden rounded-lg border bg-background p-2">
             <div className="flex h-[180px] flex-col justify-between rounded-md p-6">
-              <svg viewBox="0 0 24 24" className="h-12 w-12 fill-current">
-                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-              </svg>
+              <Image
+                src="/images/track-loader.webp"
+                alt="Track Loader"
+                width={160}
+                height={96}
+                className="h-24 w-40 object-cover"
+              />
               <div className="space-y-2">
-                <h3 className="font-bold">Excavators</h3>
-                <p className="text-sm text-muted-foreground">
-                  Various sizes and types of excavators for different project needs.
-                </p>
+                <h3 className="font-bold">Skid Steers & Track Loaders</h3>
               </div>
             </div>
           </div>
           <div className="relative overflow-hidden rounded-lg border bg-background p-2">
             <div className="flex h-[180px] flex-col justify-between rounded-md p-6">
-              <svg viewBox="0 0 24 24" className="h-12 w-12 fill-current">
-                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+              <div className="flex items-center justify-center h-24 w-40 bg-white rounded">
+                <Image
+                  src="/images/front-end-loader.webp"
+                  alt="Front End Loader"
+                  width={160}
+                  height={96}
+                  className="h-24 w-40 object-cover"
+                />
+              </div>
+              <div className="space-y-2">
+                <h3 className="font-bold">Front End Loaders</h3>
+              </div>
+            </div>
+          </div>
+          <div className="relative overflow-hidden rounded-lg border bg-background p-2">
+            <div className="flex h-[180px] flex-col justify-between rounded-md p-6">
+              <div className="flex items-center justify-center h-24 w-40 bg-white rounded">
+                <Image
+                  src="/images/backhoe.webp"
+                  alt="Backhoe"
+                  width={160}
+                  height={96}
+                  className="h-24 w-40 object-cover"
+                />
+              </div>
+              <div className="space-y-2">
+                <h3 className="font-bold">Backhoes & Excavators</h3>
+              </div>
+            </div>
+          </div>
+          <div className="relative overflow-hidden rounded-lg border bg-background p-2">
+            <div className="flex h-[180px] flex-col justify-between rounded-md p-6">
+              <div className="flex items-center justify-center h-24 w-40 bg-white rounded">
+                <Image
+                  src="/images/bulldozer.webp"
+                  alt="Bulldozer"
+                  width={160}
+                  height={96}
+                  className="h-24 w-40 object-cover"
+                />
+              </div>
               <div className="space-y-2">
                 <h3 className="font-bold">Bulldozers</h3>
-                <p className="text-sm text-muted-foreground">
-                  Heavy-duty bulldozers for earthmoving and site preparation.
-                </p>
               </div>
             </div>
           </div>
           <div className="relative overflow-hidden rounded-lg border bg-background p-2">
             <div className="flex h-[180px] flex-col justify-between rounded-md p-6">
-              <svg viewBox="0 0 24 24" className="h-12 w-12 fill-current">
-                <path d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
+              <div className="flex items-center justify-center h-24 w-40 bg-white rounded">
+                <Image
+                  src="/images/grader.png"
+                  alt="Grader"
+                  width={160}
+                  height={96}
+                  className="h-24 w-40 object-cover"
+                />
+              </div>
               <div className="space-y-2">
-                <h3 className="font-bold">Cranes</h3>
-                <p className="text-sm text-muted-foreground">
-                  Mobile and tower cranes for lifting and material handling.
-                </p>
+                <h3 className="font-bold">Graders</h3>
+              </div>
+            </div>
+          </div>
+          <div className="relative overflow-hidden rounded-lg border bg-background p-2">
+            <div className="flex h-[180px] flex-col justify-between rounded-md p-6">
+              <div className="flex items-center justify-center h-24 w-40 bg-white rounded">
+                <Image
+                  src="/images/dump-truck.webp"
+                  alt="Dump Truck"
+                  width={160}
+                  height={96}
+                  className="h-24 w-40 object-cover"
+                />
+              </div>
+              <div className="space-y-2">
+                <h3 className="font-bold">Dump Trucks</h3>
+              </div>
+            </div>
+          </div>
+          <div className="relative overflow-hidden rounded-lg border bg-background p-2">
+            <div className="flex h-[180px] flex-col justify-between rounded-md p-6">
+              <div className="flex items-center justify-center h-24 w-40 bg-white rounded">
+                <Image
+                  src="/images/water-truck.webp"
+                  alt="Water Truck"
+                  width={160}
+                  height={96}
+                  className="h-24 w-40 object-cover"
+                />
+              </div>
+              <div className="space-y-2">
+                <h3 className="font-bold">Water Trucks</h3>
+              </div>
+            </div>
+          </div>
+          <div className="relative overflow-hidden rounded-lg border bg-background p-2">
+            <div className="flex h-[180px] flex-col justify-between rounded-md p-6">
+              <div className="flex items-center justify-center h-24 w-28 bg-white rounded">
+                <Image
+                  src="/images/sweepr.png"
+                  alt="Sweeper"
+                  width={112}
+                  height={96}
+                  className="h-24 w-28 object-cover"
+                />
+              </div>
+              <div className="space-y-2">
+                <h3 className="font-bold">Sweepers</h3>
+              </div>
+            </div>
+          </div>
+          <div className="relative overflow-hidden rounded-lg border bg-background p-2">
+            <div className="flex h-[180px] flex-col justify-between rounded-md p-6">
+              <div className="flex items-center justify-center h-24 w-40 bg-white rounded">
+                <Image
+                  src="/images/trencher.webp"
+                  alt="Trencher"
+                  width={160}
+                  height={96}
+                  className="h-24 w-40 object-cover"
+                />
+              </div>
+              <div className="space-y-2">
+                <h3 className="font-bold">Trenchers</h3>
               </div>
             </div>
           </div>

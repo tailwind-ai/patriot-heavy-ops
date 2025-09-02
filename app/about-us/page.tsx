@@ -75,8 +75,8 @@ export default function AboutUsPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Sam Henry</h3>
-              <p className="text-gray-600 mb-4">Board Member</p>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Ally</h3>
+              <p className="text-gray-600 mb-4">AI Chief Operations Officer</p>
               <div className="flex justify-center space-x-4">
                 <a href="#" className="text-gray-400 hover:text-gray-600 transition-colors">
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -93,8 +93,8 @@ export default function AboutUsPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Ally</h3>
-              <p className="text-gray-600 mb-4">AI Chief Operations Officer</p>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Sam Henry</h3>
+              <p className="text-gray-600 mb-4">Board Member</p>
               <div className="flex justify-center space-x-4">
                 <a href="#" className="text-gray-400 hover:text-gray-600 transition-colors">
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
