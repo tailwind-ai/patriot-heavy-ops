@@ -9,7 +9,7 @@ on:
 permissions:
   issues: write
   contents: read
-  projects: write  # Add this line!
+  repository-projects: write  # Add this line!
 
 jobs:
   create-issues:
