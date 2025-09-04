@@ -11,9 +11,11 @@ repo_name = os.environ["GITHUB_REPOSITORY"]
 PROJECT_NUMBER = 1  # From your URL: /users/samuelhenry/projects/1
 PROJECT_OWNER = "samuelhenry"
 
-# Load current-release.yml (FIXED: was release.yml)
+# Load current-release.yml - handle multiple documents
 with open("current-release.yml", "r") as f:
-    data = yaml.safe_load(f)
+    documents = list(yaml.safe_load_all(f))
+    # Get the first document which contains release info
+    data = documents[0]
 
 # Connect to GitHub
 g = Github(token)
@@ -65,22 +67,27 @@ def add_issue_to_project(issue_id, project_id):
 project_id = get_project_id()
 print(f"Project ID: {project_id}")
 
-# Create issues and add to project
-for feature in data["release"]["features"]:
-    title = feature["name"]
-    body = feature["description"]
-    body += f"\n\n**Complexity:** {feature.get('complexity', 'N/A')}\n**Suggested assignee:** {feature.get('assignee', 'N/A')}"
+# Create issues from workback_schedule deliverables
+for schedule_item in data["workback_schedule"]:
+    dates = schedule_item["dates"]
     
-    # Create the issue
-    issue = repo.create_issue(
-        title=title,
-        body=body,
-        labels=["auto-generated", "needs-review"]
-    )
-    
-    # Add issue to project
-    add_issue_to_project(issue.node_id, project_id)
-    
-    print(f"Issue created and added to project: {issue.html_url}")
+    for deliverable in schedule_item["deliverables"]:
+        title = f"{dates}: {deliverable}"
+        body = f"**Release:** {data['release']['name']}\n\n"
+        body += f"**Description:** {deliverable}\n\n"
+        body += f"**Due Date:** {dates}\n\n"
+        body += f"**Release Description:** {data['release']['description']}"
+        
+        # Create the issue
+        issue = repo.create_issue(
+            title=title,
+            body=body,
+            labels=["auto-generated", "needs-review", "release-1"]
+        )
+        
+        # Add issue to project
+        add_issue_to_project(issue.node_id, project_id)
+        
+        print(f"Issue created and added to project: {issue.html_url}")
 
-print("All features processed and added to project.")
+print("All deliverables processed and added to project.")
