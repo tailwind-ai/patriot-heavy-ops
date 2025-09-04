@@ -1,6 +1,11 @@
 name: Create Release Issues
 
 on:
+    permissions:
+      issues: write
+      contents: read
+      projects: write  # Add this line!
+
   workflow_dispatch:
   push:
     paths:
@@ -9,11 +14,7 @@ on:
 jobs:
   create-issues:
     runs-on: ubuntu-latest
-    permissions:
-      issues: write
-      contents: read
-      projects: write  # Add this line!
-      
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
