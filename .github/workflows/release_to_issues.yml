@@ -1,0 +1,24 @@
+name: Release to Issues
+
+on:
+  workflow_dispatch:  # Allows you to run the workflow manually from the Actions tab
+
+jobs:
+  release_to_issues:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip install PyGithub pyyaml
+
+      - name: Run release_to_issues script
+        run: python scripts/release_to_issues.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
