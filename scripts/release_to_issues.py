@@ -27,6 +27,36 @@ auth = Auth.Token(token)
 g = Github(auth=auth)
 repo_obj = g.get_repo(repo_name)  # Keep repo_obj as the PyGithub object
 
+def classify_deliverable_type(deliverable):
+    """
+    Classify a deliverable as either 'Feature' or 'Task' based on its content.
+    """
+    deliverable_lower = deliverable.lower()
+    
+    # Keywords that typically indicate a Feature
+    feature_keywords = [
+        'add', 'implement', 'create', 'build', 'design', 'develop',
+        'feature', 'functionality', 'user', 'interface', 'api',
+        'endpoint', 'component', 'page', 'screen', 'integration'
+    ]
+    
+    # Keywords that typically indicate a Task
+    task_keywords = [
+        'setup', 'configure', 'install', 'deploy', 'test', 'fix',
+        'update', 'migrate', 'refactor', 'optimize', 'document',
+        'schema', 'database', 'infrastructure', 'ci/cd', 'pipeline'
+    ]
+    
+    # Count matches for each type
+    feature_score = sum(1 for keyword in feature_keywords if keyword in deliverable_lower)
+    task_score = sum(1 for keyword in task_keywords if keyword in deliverable_lower)
+    
+    # Classify based on highest score, defaulting to Task if tied
+    if feature_score > task_score:
+        return "Feature"
+    else:
+        return "Task"
+
 # GraphQL query to get project ID - try user project
 def get_project_id():
     query = """
@@ -188,22 +218,25 @@ if "workback_schedule" in data:
         dates = schedule_item["dates"]
 
         for deliverable in schedule_item["deliverables"]:
+            # NEW: Classify the deliverable type
+            deliverable_type = classify_deliverable_type(deliverable)
+            
             title = f"{dates}: {deliverable}"
             body = f"**Release:** {data['release']['name']}\n\n"
             body += f"**Description:** {deliverable}\n\n"
             body += f"**Due Date:** {dates}\n\n"
             body += f"**Release Description:** {data['release']['description']}"
 
-            # Create the issue
-            print(f"Creating issue: {title}")
+            # Create the issue with type classification
+            print(f"Creating issue: {title} [Type: {deliverable_type}]")
             issue = repo_obj.create_issue(
                 title=title,
                 body=body,
-                labels=["auto-generated", "needs-review", "release-1"]
+                labels=["auto-generated", "needs-review", "release-1", f"type:{deliverable_type.lower()}"]
             )
 
             print(f"✅ Issue created: {issue.html_url}")
-            print(f"Issue number: {issue.number}")
+            print(f"Issue number: {issue.number} | Type: {deliverable_type}")
 
             # Get issue node ID for ProjectV2
             issue_node_id = get_issue_node_id(owner, repo_name_only, issue.number)
