@@ -12,9 +12,8 @@ repo_name = os.environ["GITHUB_REPOSITORY"]
 PROJECT_NUMBER = 1  # From your URL: /users/samuelhenry/projects/1
 PROJECT_OWNER = "samuelhenry"
 
-# Load current-release.yml - handle multiple documents
+# Load current-release.yml
 with open("current-release.yml", "r") as f:
-    # Check if there are multiple documents, if not just load normally
     content = f.read()
     f.seek(0)
     if '---' in content:
@@ -28,20 +27,73 @@ auth = Auth.Token(token)
 g = Github(auth=auth)
 repo = g.get_repo(repo_name)
 
-# GraphQL query to get project ID
+# GraphQL query to get project ID - try both user and organization
 def get_project_id():
+    # First try as user project
     query = """
     query($owner: String!, $number: Int!) {
         user(login: $owner) {
             projectV2(number: $number) {
                 id
+                title
             }
         }
     }
     """
     variables = {"owner": PROJECT_OWNER, "number": PROJECT_NUMBER}
     
-    headers = {"Authorization": f"Bearer {token}"}
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json"
+    }
+    
+    response = requests.post(
+        "https://api.github.com/graphql",
+        json={"query": query, "variables": variables},
+        headers=headers
+    )
+    
+    print(f"Response status: {response.status_code}")
+    result = response.json()
+    print(f"GraphQL Response: {result}")
+    
+    if "errors" in result:
+        print(f"GraphQL Errors: {result['errors']}")
+        return None
+    
+    if (result.get("data") and 
+        result["data"].get("user") and 
+        result["data"]["user"].get("projectV2")):
+        project_info = result["data"]["user"]["projectV2"]
+        print(f"Found project: {project_info['title']} (ID: {project_info['id']})")
+        return project_info["id"]
+    
+    print("Project not found as user project")
+    return None
+
+# Alternative: Get all projects for debugging
+def list_user_projects():
+    query = """
+    query($owner: String!) {
+        user(login: $owner) {
+            projectsV2(first: 10) {
+                nodes {
+                    id
+                    number
+                    title
+                    url
+                }
+            }
+        }
+    }
+    """
+    variables = {"owner": PROJECT_OWNER}
+    
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json"
+    }
+    
     response = requests.post(
         "https://api.github.com/graphql",
         json={"query": query, "variables": variables},
@@ -49,17 +101,17 @@ def get_project_id():
     )
     
     result = response.json()
-    print(f"GraphQL Response: {result}")  # Debug output
+    print(f"All user projects: {result}")
     
-    if "errors" in result:
-        print(f"GraphQL Errors: {result['errors']}")
-        return None
-    
-    if result.get("data") and result["data"].get("user") and result["data"]["user"].get("projectV2"):
-        return result["data"]["user"]["projectV2"]["id"]
-    else:
-        print("Project not found. Let's try without adding to project.")
-        return None
+    if (result.get("data") and 
+        result["data"].get("user") and 
+        result["data"]["user"].get("projectsV2")):
+        projects = result["data"]["user"]["projectsV2"]["nodes"]
+        print("Available projects:")
+        for project in projects:
+            print(f"  - {project['title']} (Number: {project['number']}, ID: {project['id']})")
+        return projects
+    return []
 
 # Add issue to project
 def add_issue_to_project(issue_id, project_id):
@@ -78,23 +130,44 @@ def add_issue_to_project(issue_id, project_id):
     """
     variables = {"projectId": project_id, "contentId": issue_id}
     
-    headers = {"Authorization": f"Bearer {token}"}
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json"
+    }
+    
     response = requests.post(
         "https://api.github.com/graphql",
         json={"query": mutation, "variables": variables},
         headers=headers
     )
-    return response.json()
+    
+    result = response.json()
+    print(f"Add to project response: {result}")
+    
+    if "errors" in result:
+        print(f"Error adding to project: {result['errors']}")
+        return None
+    
+    return result
 
-# Get project ID (but don't fail if it doesn't work)
+# Debug: List all projects first
+print("=== Debugging: Listing all user projects ===")
+all_projects = list_user_projects()
+
+# Get project ID
+print(f"\n=== Looking for project number {PROJECT_NUMBER} ===")
 project_id = get_project_id()
-if project_id:
-    print(f"Project ID: {project_id}")
-else:
-    print("Continuing without project integration...")
+
+if not project_id:
+    print("Could not find project. Exiting...")
+    exit(1)
+
+print(f"✅ Found project ID: {project_id}")
 
 # Create issues from workback_schedule deliverables
 if "workback_schedule" in data:
+    print(f"\n=== Creating issues from workback_schedule ===")
+    
     for schedule_item in data["workback_schedule"]:
         dates = schedule_item["dates"]
         
@@ -106,19 +179,26 @@ if "workback_schedule" in data:
             body += f"**Release Description:** {data['release']['description']}"
             
             # Create the issue
+            print(f"Creating issue: {title}")
             issue = repo.create_issue(
                 title=title,
                 body=body,
                 labels=["auto-generated", "needs-review", "release-1"]
             )
             
-            # Add issue to project (if project_id exists)
-            if project_id:
-                add_issue_to_project(issue.node_id, project_id)
+            print(f"✅ Issue created: {issue.html_url}")
+            print(f"Issue node_id: {issue.node_id}")
             
-            print(f"Issue created: {issue.html_url}")
+            # Add issue to project
+            print(f"Adding issue {issue.number} to project...")
+            result = add_issue_to_project(issue.node_id, project_id)
+            
+            if result and not result.get("errors"):
+                print(f"✅ Issue {issue.number} added to project!")
+            else:
+                print(f"❌ Failed to add issue {issue.number} to project")
 
-    print("All deliverables processed!")
+    print("\n🎉 All deliverables processed!")
 else:
     print("No workback_schedule found in YAML data")
     print(f"Available keys: {list(data.keys())}")
