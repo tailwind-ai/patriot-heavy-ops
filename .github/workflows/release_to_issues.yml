@@ -1,15 +1,15 @@
 name: Create Release Issues
 
 on:
-    permissions:
-      issues: write
-      contents: read
-      projects: write  # Add this line!
-
   workflow_dispatch:
   push:
     paths:
       - 'current-release.yml'
+
+permissions:
+  issues: write
+  contents: read
+  projects: write  # Add this line!
 
 jobs:
   create-issues:
