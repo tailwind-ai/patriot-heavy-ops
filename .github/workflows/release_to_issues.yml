@@ -9,7 +9,7 @@ jobs:
     permissions:
       issues: write
       contents: read
-      projects: write  # Added for project access
+      # Removed 'projects: write' - not a valid permission
     
     steps:
       - name: Checkout repository
