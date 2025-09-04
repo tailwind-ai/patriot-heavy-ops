@@ -294,7 +294,6 @@ def is_copilot_implementable_with_context(deliverable, repo_context):
     
     return has_implementation
 
-# [Keep all the existing functions: classify_deliverable_type, get_project_info, etc.]
 def classify_deliverable_type(deliverable):
     """
     Classify a deliverable as either 'Feature' or 'Task' based on its content.
@@ -325,10 +324,98 @@ def classify_deliverable_type(deliverable):
     else:
         return "Task"
 
-# [Include all your existing functions here: get_project_info, list_user_projects, etc.]
-# ... (keeping them the same for now)
+def get_project_info():
+    """
+    Get project info using GraphQL API to find project by number.
+    """
+    query = f"""
+    query {{
+        user(login: "{PROJECT_OWNER}") {{
+            projectV2(number: {PROJECT_NUMBER}) {{
+                id
+                title
+                fields(first: 20) {{
+                    nodes {{
+                        ... on ProjectV2Field {{
+                            id
+                            name
+                        }}
+                        ... on ProjectV2SingleSelectField {{
+                            id
+                            name
+                            options {{
+                                id
+                                name
+                            }}
+                        }}
+                    }}
+                }}
+            }}
+        }}
+    }}
+    """
+    
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json"
+    }
+    
+    response = requests.post("https://api.github.com/graphql", 
+                           json={"query": query}, 
+                           headers=headers)
+    
+    if response.status_code == 200:
+        data = response.json()
+        if "errors" in data:
+            print(f"GraphQL errors: {data['errors']}")
+            return None
+        return data["data"]["user"]["projectV2"]
+    else:
+        print(f"Failed to get project info: {response.status_code}")
+        print(response.text)
+        return None
 
-# MAIN EXECUTION with Repository Context
+def add_issue_to_project(issue_number, project_id):
+    """
+    Add an issue to a project using GraphQL mutation.
+    """
+    # First, get the issue node ID
+    issue = repo_obj.get_issue(issue_number)
+    issue_node_id = issue.node_id
+    
+    mutation = f"""
+    mutation {{
+        addProjectV2ItemById(input: {{
+            projectId: "{project_id}"
+            contentId: "{issue_node_id}"
+        }}) {{
+            item {{
+                id
+            }}
+        }}
+    }}
+    """
+    
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json"
+    }
+    
+    response = requests.post("https://api.github.com/graphql", 
+                           json={"query": mutation}, 
+                           headers=headers)
+    
+    if response.status_code == 200:
+        data = response.json()
+        if "errors" in data:
+            print(f"GraphQL errors: {data['errors']}")
+            return False
+        return True
+    else:
+        print(f"Failed to add issue to project: {response.status_code}")
+        return False
+
+# MAIN EXECUTION with Repository Context Integration
 print("=== Analyzing Repository Context ===")
 repo_context = analyze_repository_context()
 
@@ -339,4 +426,107 @@ print(f"  Databases: {repo_context['databases']}")
 print(f"  Authentication: {repo_context['authentication']}")
 print(f"  Existing Models: {repo_context['existing_schemas']}")
 
-# [Rest of your existing main execution code...]
+# Get project information
+print("\n=== Getting Project Information ===")
+project_info = get_project_info()
+if not project_info:
+    print("❌ Failed to get project information. Issues will be created without project assignment.")
+    project_id = None
+else:
+    project_id = project_info["id"]
+    print(f"✅ Found project: {project_info['title']} (ID: {project_id})")
+
+# Release context for analysis
+release_context = {
+    'name': data['release']['name'],
+    'description': data['release']['description']
+}
+
+print(f"\n=== Creating Enhanced Issues for Release: {data['release']['name']} ===")
+
+# Process each schedule item
+for schedule_item in data['release']['schedule']:
+    date_range = schedule_item["date"]
+    print(f"\n📅 Processing {date_range}")
+    
+    for deliverable in schedule_item["deliverables"]:
+        # Enhanced analysis with repository context
+        analysis = assess_task_with_context(deliverable, release_context, repo_context)
+        deliverable_type = classify_deliverable_type(deliverable)
+        
+        # Create enhanced issue title
+        title = f"{date_range}: {deliverable}"
+        
+        # Create enhanced issue body with context analysis
+        body = f"**Release:** {data['release']['name']}\n\n"
+        body += f"**Schedule:** {date_range}\n\n"
+        body += f"**Task:** {deliverable}\n\n"
+        body += f"---\n\n"
+        body += f"## 🤖 AI Assignment Analysis\n\n"
+        body += f"**Recommended Assignment:** `{analysis['assignment']}`\n"
+        body += f"**Confidence Level:** {analysis['confidence']}%\n"
+        body += f"**Reasoning:** {analysis['reasoning']}\n\n"
+        
+        if analysis['available_context']:
+            body += f"## ✅ Available Context\n"
+            for context_item in analysis['available_context']:
+                body += f"- {context_item}\n"
+            body += f"\n"
+        
+        if analysis['missing_details']:
+            body += f"## ❓ Missing Details Required\n"
+            body += f"The following information is needed before this task can be implemented:\n\n"
+            for detail in analysis['missing_details']:
+                body += f"- **{detail.replace('_', ' ').title()}**\n"
+            body += f"\n**Next Steps:** Please provide the missing details above before implementation can begin.\n\n"
+        
+        # Add repository context summary
+        body += f"## 🏗️ Repository Context\n"
+        body += f"- **Tech Stack:** {', '.join(repo_context['tech_stack']) if repo_context['tech_stack'] else 'Not detected'}\n"
+        body += f"- **Frameworks:** {', '.join(repo_context['frameworks']) if repo_context['frameworks'] else 'Not detected'}\n"
+        body += f"- **Database:** {', '.join(repo_context['databases']) if repo_context['databases'] else 'Not configured'}\n"
+        body += f"- **Authentication:** {', '.join(repo_context['authentication']) if repo_context['authentication'] else 'Not configured'}\n"
+        
+        if repo_context['existing_schemas']:
+            body += f"- **Existing Models:** {', '.join(repo_context['existing_schemas'])}\n"
+        
+        # Determine labels based on analysis
+        labels = ["auto-generated", "release-1", f"type:{deliverable_type.lower()}"]
+        
+        # Add assignment-specific labels
+        if analysis['assignment'] == 'copilot':
+            labels.extend(["copilot-ready", "auto-implementable"])
+            assignees = []  # No direct assignee for Copilot tasks
+        elif analysis['assignment'] == 'needs-clarification':
+            labels.extend(["needs-clarification", "missing-requirements"])
+            assignees = ["samuelhenry"]
+        else:  # human
+            labels.extend(["human-required", "needs-design"])
+            assignees = ["samuelhenry"]
+        
+        # Create the issue
+        try:
+            issue = repo_obj.create_issue(
+                title=title,
+                body=body,
+                labels=labels,
+                assignees=assignees
+            )
+            
+            print(f"  ✅ Created issue #{issue.number}: {title}")
+            print(f"     Assignment: {analysis['assignment']} ({analysis['confidence']}% confidence)")
+            
+            # Add to project if available
+            if project_id:
+                if add_issue_to_project(issue.number, project_id):
+                    print(f"     📌 Added to project")
+                else:
+                    print(f"     ⚠️ Failed to add to project")
+            
+        except Exception as e:
+            print(f"  ❌ Failed to create issue for '{deliverable}': {e}")
+
+print(f"\n🎉 Issue creation complete! Check your project board and repository issues.")
+print(f"   - Issues with enhanced context analysis")
+print(f"   - Smart assignment recommendations")
+print(f"   - Repository-aware missing details detection")
