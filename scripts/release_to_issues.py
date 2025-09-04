@@ -5,7 +5,7 @@ from github import Github
 from github import Auth
 
 # Load GitHub token and repo info from environment
-token = os.environ["GH_PAT"]
+token = os.environ["GITHUB_TOKEN"]
 repo_name = os.environ["GITHUB_REPOSITORY"]
 
 # Your project details
