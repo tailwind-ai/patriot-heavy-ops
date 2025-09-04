@@ -1,29 +1,34 @@
-name: Release to Issues
+name: Create Release Issues
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - 'current-release.yml'
 
 jobs:
-  release_to_issues:
+  create-issues:
     runs-on: ubuntu-latest
     permissions:
       issues: write
       contents: read
-      # Removed 'projects: write' - not a valid permission
-    
+      projects: write  # Add this line!
+      
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
-
+          
       - name: Install dependencies
-        run: pip install PyGithub pyyaml requests
-
-      - name: Run release_to_issues script
-        run: python scripts/release_to_issues.py
+        run: |
+          pip install PyGithub pyyaml requests
+          
+      - name: Run script
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: python scripts/release_to_issues.py
