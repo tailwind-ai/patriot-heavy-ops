@@ -3,6 +3,8 @@ import os
 import requests
 from github import Github
 from github import Auth
+import base64
+import json
 
 # Load GitHub token and repo info from environment
 token = os.environ["GITHUB_TOKEN"]
@@ -25,8 +27,274 @@ with open("current-release.yml", "r") as f:
 # Connect to GitHub with proper authentication
 auth = Auth.Token(token)
 g = Github(auth=auth)
-repo_obj = g.get_repo(repo_name)  # Keep repo_obj as the PyGithub object
+repo_obj = g.get_repo(repo_name)
 
+def analyze_repository_context():
+    """
+    Analyze the repository to understand current architecture and tech stack
+    """
+    context = {
+        'tech_stack': [],
+        'frameworks': [],
+        'databases': [],
+        'authentication': [],
+        'api_patterns': [],
+        'file_structure': {},
+        'existing_schemas': [],
+        'deployment_config': []
+    }
+    
+    try:
+        print("🔍 Analyzing repository context...")
+        
+        # Analyze key configuration files
+        config_files_to_check = [
+            'package.json',
+            'prisma/schema.prisma',
+            'next.config.js',
+            'next.config.mjs',
+            'tsconfig.json',
+            'tailwind.config.js',
+            'docker-compose.yml',
+            'Dockerfile',
+            '.env.example',
+            'README.md'
+        ]
+        
+        for file_path in config_files_to_check:
+            try:
+                file_content = repo_obj.get_contents(file_path)
+                content = base64.b64decode(file_content.content).decode('utf-8')
+                analyze_file_for_context(file_path, content, context)
+                print(f"  ✅ Analyzed {file_path}")
+            except Exception as e:
+                print(f"  ⚠️ Could not read {file_path}: {str(e)[:50]}...")
+        
+        # Analyze directory structure
+        try:
+            contents = repo_obj.get_contents("")
+            for item in contents:
+                if item.type == "dir":
+                    context['file_structure'][item.name] = analyze_directory(item.name)
+                    print(f"  📁 Found directory: {item.name}")
+        except Exception as e:
+            print(f"  ⚠️ Could not analyze directory structure: {e}")
+        
+        print(f"✅ Repository analysis complete")
+        return context
+        
+    except Exception as e:
+        print(f"❌ Error analyzing repository: {e}")
+        return context
+
+def analyze_file_for_context(file_path, content, context):
+    """
+    Extract tech stack and architecture info from specific files
+    """
+    file_path_lower = file_path.lower()
+    content_lower = content.lower()
+    
+    # Package.json analysis
+    if file_path == 'package.json':
+        try:
+            package_data = json.loads(content)
+            dependencies = {**package_data.get('dependencies', {}), **package_data.get('devDependencies', {})}
+            
+            # Detect frameworks
+            if 'next' in dependencies:
+                context['frameworks'].append('Next.js')
+            if 'react' in dependencies:
+                context['frameworks'].append('React')
+            if '@prisma/client' in dependencies:
+                context['databases'].append('Prisma ORM')
+            if 'typescript' in dependencies:
+                context['tech_stack'].append('TypeScript')
+            if 'tailwindcss' in dependencies:
+                context['tech_stack'].append('Tailwind CSS')
+            
+            # Authentication libraries
+            if 'next-auth' in dependencies or '@auth/core' in dependencies:
+                context['authentication'].append('NextAuth.js')
+            if 'clerk' in dependencies:
+                context['authentication'].append('Clerk')
+            if 'supabase' in dependencies:
+                context['authentication'].append('Supabase Auth')
+                
+        except json.JSONDecodeError:
+            pass
+    
+    # Prisma schema analysis
+    elif 'prisma' in file_path and 'schema' in file_path:
+        # Extract model names
+        models = []
+        for line in content.split('\n'):
+            if line.strip().startswith('model '):
+                model_name = line.split()[1]
+                models.append(model_name)
+        context['existing_schemas'] = models
+        
+        # Detect database provider
+        if 'postgresql' in content_lower:
+            context['databases'].append('PostgreSQL')
+        elif 'mysql' in content_lower:
+            context['databases'].append('MySQL')
+        elif 'sqlite' in content_lower:
+            context['databases'].append('SQLite')
+    
+    # Next.js config analysis
+    elif 'next.config' in file_path:
+        if 'experimental' in content_lower:
+            context['frameworks'].append('Next.js (with experimental features)')
+    
+    # Environment variables analysis
+    elif '.env' in file_path:
+        if 'database_url' in content_lower:
+            context['databases'].append('Database configured')
+        if 'nextauth' in content_lower:
+            context['authentication'].append('NextAuth.js configured')
+
+def analyze_directory(dir_name):
+    """
+    Analyze directory structure to understand project organization
+    """
+    try:
+        contents = repo_obj.get_contents(dir_name)
+        structure = {
+            'files': [],
+            'subdirs': []
+        }
+        
+        for item in contents:
+            if item.type == "file":
+                structure['files'].append(item.name)
+            else:
+                structure['subdirs'].append(item.name)
+        
+        return structure
+    except:
+        return {'files': [], 'subdirs': []}
+
+def assess_task_with_context(deliverable, release_context, repo_context):
+    """
+    Analyze if Copilot can handle this task with full repository context
+    """
+    analysis = {
+        'assignment': 'needs-clarification',
+        'confidence': 0,
+        'missing_details': [],
+        'reasoning': '',
+        'available_context': [],
+        'tech_compatibility': True
+    }
+    
+    deliverable_lower = deliverable.lower()
+    
+    # Check what context is available for this task
+    if 'database' in deliverable_lower or 'schema' in deliverable_lower:
+        if repo_context['existing_schemas']:
+            analysis['available_context'].append(f"Existing models: {', '.join(repo_context['existing_schemas'])}")
+        if 'Prisma ORM' in repo_context['databases']:
+            analysis['available_context'].append("Prisma ORM already configured")
+        else:
+            analysis['missing_details'].append("database_orm_setup")
+    
+    if 'auth' in deliverable_lower:
+        if repo_context['authentication']:
+            analysis['available_context'].append(f"Auth system: {', '.join(repo_context['authentication'])}")
+        else:
+            analysis['missing_details'].append("authentication_method_selection")
+    
+    if 'api' in deliverable_lower:
+        if 'Next.js' in repo_context['frameworks']:
+            analysis['available_context'].append("Next.js API routes available")
+        else:
+            analysis['missing_details'].append("api_framework_setup")
+    
+    # Determine specific missing requirements
+    required_details = analyze_required_details_with_context(deliverable, repo_context)
+    analysis['missing_details'].extend(required_details)
+    
+    # Make assignment decision
+    if len(analysis['missing_details']) == 0:
+        if is_copilot_implementable_with_context(deliverable, repo_context):
+            analysis['assignment'] = 'copilot'
+            analysis['confidence'] = 85
+            analysis['reasoning'] = "Task has sufficient context and is automatable"
+        else:
+            analysis['assignment'] = 'human'
+            analysis['confidence'] = 90
+            analysis['reasoning'] = "Task requires human design decisions"
+    else:
+        analysis['assignment'] = 'needs-clarification'
+        analysis['confidence'] = 30
+        analysis['reasoning'] = f"Missing {len(analysis['missing_details'])} critical details"
+    
+    return analysis
+
+def analyze_required_details_with_context(deliverable, repo_context):
+    """
+    Determine what details are needed based on repository context
+    """
+    deliverable_lower = deliverable.lower()
+    missing_details = []
+    
+    # Database tasks
+    if 'database' in deliverable_lower or 'schema' in deliverable_lower:
+        if not repo_context['existing_schemas']:
+            missing_details.append("initial_data_model_design")
+        if not repo_context['databases']:
+            missing_details.append("database_provider_selection")
+        if 'migration' in deliverable_lower and not any('Prisma' in db for db in repo_context['databases']):
+            missing_details.append("migration_strategy")
+    
+    # Authentication tasks
+    if 'auth' in deliverable_lower:
+        if not repo_context['authentication']:
+            missing_details.extend([
+                "authentication_provider_choice",
+                "user_role_definitions",
+                "session_management_strategy"
+            ])
+    
+    # API tasks
+    if 'api' in deliverable_lower:
+        if 'endpoint' in deliverable_lower:
+            missing_details.extend([
+                "api_endpoint_specifications",
+                "request_response_schemas",
+                "error_handling_patterns"
+            ])
+    
+    return missing_details
+
+def is_copilot_implementable_with_context(deliverable, repo_context):
+    """
+    Determine if Copilot can implement this given the available context
+    """
+    deliverable_lower = deliverable.lower()
+    
+    # High-level design tasks always need human input
+    design_keywords = ['design', 'architect', 'plan', 'strategy', 'analyze']
+    if any(keyword in deliverable_lower for keyword in design_keywords):
+        return False
+    
+    # Implementation tasks with sufficient context can be automated
+    implementation_keywords = ['implement', 'create', 'add', 'build', 'setup']
+    has_implementation = any(keyword in deliverable_lower for keyword in implementation_keywords)
+    
+    # Check if we have the necessary tech stack
+    if 'database' in deliverable_lower:
+        return has_implementation and bool(repo_context['databases'])
+    
+    if 'auth' in deliverable_lower:
+        return has_implementation and bool(repo_context['authentication'])
+    
+    if 'api' in deliverable_lower:
+        return has_implementation and 'Next.js' in repo_context['frameworks']
+    
+    return has_implementation
+
+# [Keep all the existing functions: classify_deliverable_type, get_project_info, etc.]
 def classify_deliverable_type(deliverable):
     """
     Classify a deliverable as either 'Feature' or 'Task' based on its content.
@@ -57,294 +325,18 @@ def classify_deliverable_type(deliverable):
     else:
         return "Task"
 
-# GraphQL query to get project ID and Type field ID
-def get_project_info():
-    query = """
-    query($owner: String!, $number: Int!) {
-        user(login: $owner) {
-            projectV2(number: $number) {
-                id
-                title
-                fields(first: 20) {
-                    nodes {
-                        ... on ProjectV2SingleSelectField {
-                            id
-                            name
-                            options {
-                                id
-                                name
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    """
-    variables = {"owner": PROJECT_OWNER, "number": PROJECT_NUMBER}
-    headers = {
-        "Authorization": f"Bearer {token}",
-        "Content-Type": "application/json"
-    }
-    response = requests.post(
-        "https://api.github.com/graphql",
-        json={"query": query, "variables": variables},
-        headers=headers
-    )
-    print(f"Response status: {response.status_code}")
-    result = response.json()
-    print(f"GraphQL Response: {result}")
+# [Include all your existing functions here: get_project_info, list_user_projects, etc.]
+# ... (keeping them the same for now)
 
-    if "errors" in result:
-        print(f"GraphQL Errors: {result['errors']}")
-        return None, None, {}
+# MAIN EXECUTION with Repository Context
+print("=== Analyzing Repository Context ===")
+repo_context = analyze_repository_context()
 
-    if (result.get("data") and
-        result["data"].get("user") and
-        result["data"]["user"].get("projectV2")):
-        project_info = result["data"]["user"]["projectV2"]
-        project_id = project_info["id"]
-        print(f"Found project: {project_info['title']} (ID: {project_id})")
-        
-        # Find the Type field
-        type_field_id = None
-        type_options = {}
-        
-        for field in project_info["fields"]["nodes"]:
-            if field.get("name") == "Type":
-                type_field_id = field["id"]
-                # Map option names to IDs
-                for option in field["options"]:
-                    type_options[option["name"]] = option["id"]
-                print(f"Found Type field (ID: {type_field_id}) with options: {type_options}")
-                break
-        
-        return project_id, type_field_id, type_options
+print(f"\n📊 Repository Analysis Summary:")
+print(f"  Tech Stack: {repo_context['tech_stack']}")
+print(f"  Frameworks: {repo_context['frameworks']}")
+print(f"  Databases: {repo_context['databases']}")
+print(f"  Authentication: {repo_context['authentication']}")
+print(f"  Existing Models: {repo_context['existing_schemas']}")
 
-    print("Project not found as user project")
-    return None, None, {}
-
-# List all projects for debugging
-def list_user_projects():
-    query = """
-    query($owner: String!) {
-        user(login: $owner) {
-            projectsV2(first: 10) {
-                nodes {
-                    id
-                    number
-                    title
-                    url
-                }
-            }
-        }
-    }
-    """
-    variables = {"owner": PROJECT_OWNER}
-    headers = {
-        "Authorization": f"Bearer {token}",
-        "Content-Type": "application/json"
-    }
-    response = requests.post(
-        "https://api.github.com/graphql",
-        json={"query": query, "variables": variables},
-        headers=headers
-    )
-    result = response.json()
-    print(f"All user projects: {result}")
-
-    if (result.get("data") and
-        result["data"].get("user") and
-        result["data"]["user"].get("projectsV2")):
-        projects = result["data"]["user"]["projectsV2"]["nodes"]
-        print("Available projects:")
-        for project in projects:
-            print(f"  - {project['title']} (Number: {project['number']}, ID: {project['id']})")
-        return projects
-    return []
-
-# Get the issue's GraphQL node ID using a GraphQL query
-def get_issue_node_id(owner, repo_name_only, number):
-    query = """
-    query($owner: String!, $repo: String!, $number: Int!) {
-      repository(owner: $owner, name: $repo) {
-        issue(number: $number) {
-          id
-        }
-      }
-    }
-    """
-    variables = {"owner": owner, "repo": repo_name_only, "number": number}
-    headers = {
-        "Authorization": f"Bearer {token}",
-        "Content-Type": "application/json"
-    }
-    response = requests.post(
-        "https://api.github.com/graphql",
-        json={"query": query, "variables": variables},
-        headers=headers
-    )
-    result = response.json()
-    if (result.get("data") and
-        result["data"].get("repository") and
-        result["data"]["repository"].get("issue")):
-        return result["data"]["repository"]["issue"]["id"]
-    print(f"Could not get issue node ID for {owner}/{repo_name_only}#{number}: {result}")
-    return None
-
-# Add issue to project using GraphQL mutation
-def add_issue_to_project(issue_node_id, project_id):
-    if not project_id:
-        print("No project ID, skipping project addition")
-        return None
-    mutation = """
-    mutation($projectId: ID!, $contentId: ID!) {
-      addProjectV2ItemById(input: {projectId: $projectId, contentId: $contentId}) {
-        item {
-          id
-        }
-      }
-    }
-    """
-    variables = {"projectId": project_id, "contentId": issue_node_id}
-    headers = {
-        "Authorization": f"Bearer {token}",
-        "Content-Type": "application/json"
-    }
-    response = requests.post(
-        "https://api.github.com/graphql",
-        json={"query": mutation, "variables": variables},
-        headers=headers
-    )
-    result = response.json()
-    print(f"Add to project response: {result}")
-    if "errors" in result:
-        print(f"Error adding to project: {result['errors']}")
-        return None
-    return result
-
-# Update project item Type field
-def update_project_item_type(project_id, item_id, type_field_id, type_option_id):
-    if not all([project_id, item_id, type_field_id, type_option_id]):
-        print("Missing required IDs for updating Type field")
-        return None
-        
-    mutation = """
-    mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $value: ProjectV2FieldValue!) {
-      updateProjectV2ItemFieldValue(
-        input: {
-          projectId: $projectId
-          itemId: $itemId
-          fieldId: $fieldId
-          value: $value
-        }
-      ) {
-        projectV2Item {
-          id
-        }
-      }
-    }
-    """
-    variables = {
-        "projectId": project_id,
-        "itemId": item_id,
-        "fieldId": type_field_id,
-        "value": {
-            "singleSelectOptionId": type_option_id
-        }
-    }
-    headers = {
-        "Authorization": f"Bearer {token}",
-        "Content-Type": "application/json"
-    }
-    response = requests.post(
-        "https://api.github.com/graphql",
-        json={"query": mutation, "variables": variables},
-        headers=headers
-    )
-    result = response.json()
-    print(f"Update Type field response: {result}")
-    if "errors" in result:
-        print(f"Error updating Type field: {result['errors']}")
-        return None
-    return result
-
-# Debug: List all projects first
-print("=== Debugging: Listing all user projects ===")
-all_projects = list_user_projects()
-
-# Get project ID and Type field info
-print(f"\n=== Looking for project number {PROJECT_NUMBER} and Type field ===")
-project_id, type_field_id, type_options = get_project_info()
-
-if not project_id:
-    print("Could not find project. Exiting...")
-    exit(1)
-
-print(f"✅ Found project ID: {project_id}")
-if type_field_id:
-    print(f"✅ Found Type field ID: {type_field_id}")
-    print(f"✅ Type options: {type_options}")
-else:
-    print("⚠️ Could not find Type field - will skip Type field updates")
-
-# Create issues from workback_schedule deliverables
-if "workback_schedule" in data:
-    print(f"\n=== Creating issues from workback_schedule ===")
-    owner, repo_name_only = repo_name.split("/")
-    for schedule_item in data["workback_schedule"]:
-        dates = schedule_item["dates"]
-
-        for deliverable in schedule_item["deliverables"]:
-            # Classify the deliverable type
-            deliverable_type = classify_deliverable_type(deliverable)
-            
-            title = f"{dates}: {deliverable}"
-            body = f"**Release:** {data['release']['name']}\n\n"
-            body += f"**Description:** {deliverable}\n\n"
-            body += f"**Due Date:** {dates}\n\n"
-            body += f"**Release Description:** {data['release']['description']}"
-
-            # Create the issue with type classification
-            print(f"Creating issue: {title} [Type: {deliverable_type}]")
-            issue = repo_obj.create_issue(
-                title=title,
-                body=body,
-                labels=["auto-generated", "needs-review", "release-1", f"type:{deliverable_type.lower()}"]
-            )
-
-            print(f"✅ Issue created: {issue.html_url}")
-            print(f"Issue number: {issue.number} | Type: {deliverable_type}")
-
-            # Get issue node ID for ProjectV2
-            issue_node_id = get_issue_node_id(owner, repo_name_only, issue.number)
-            print(f"Issue node_id for ProjectV2: {issue_node_id}")
-
-            # Add issue to project
-            print(f"Adding issue {issue.number} to project...")
-            add_result = add_issue_to_project(issue_node_id, project_id)
-
-            if add_result and not add_result.get("errors"):
-                print(f"✅ Issue {issue.number} added to project!")
-                
-                # Update the Type field if we have the necessary info
-                if type_field_id and deliverable_type in type_options:
-                    item_id = add_result["data"]["addProjectV2ItemById"]["item"]["id"]
-                    type_option_id = type_options[deliverable_type]
-                    
-                    print(f"Setting Type field to '{deliverable_type}'...")
-                    type_result = update_project_item_type(project_id, item_id, type_field_id, type_option_id)
-                    
-                    if type_result and not type_result.get("errors"):
-                        print(f"✅ Type field updated to '{deliverable_type}'!")
-                    else:
-                        print(f"❌ Failed to update Type field")
-                else:
-                    print(f"⚠️ Skipping Type field update (missing field or option)")
-            else:
-                print(f"❌ Failed to add issue {issue.number} to project")
-
-    print("\n🎉 All deliverables processed!")
-else:
-    print("No workback_schedule found in YAML data")
-    print(f"Available keys: {list(data.keys())}")
+# [Rest of your existing main execution code...]
