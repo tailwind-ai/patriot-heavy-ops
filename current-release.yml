@@ -1,0 +1,103 @@
+release:
+  name: "Release 1"
+  description: >
+    Release 1 delivers the MVP of Patriot Heavy Ops: a live site connecting
+    contractors with vetted heavy equipment operators (military-trained). 
+    Scope includes Home page, contractor hire flow, operator onboarding,
+    fallback forms with validation, and initial AI chat integration.
+
+---
+
+goals:
+  business:
+    - "Launch MVP by September 16, 2025"
+    - "Establish Patriot Heavy Ops as a trusted marketplace (contractors ↔ operators)"
+    - "Differentiate via AI-powered matching and chat-first experience"
+    - "Demonstrate traction for fundraising and early design partners"
+  technical:
+    - "Finalize and deploy database schema with Prisma"
+    - "Implement fallback forms with validation and notifications"
+    - "Introduce AI chat interface for contractors and operators"
+    - "Deploy to Vercel with performance, accessibility, and security targets"
+    - "Meet Core Web Vitals thresholds (LCP < 2.5s, FID < 100ms, CLS < 0.1)"
+    - "Protect PII and ensure compliance (GDPR, AI prompt injection defense)"
+
+workback_schedule:
+  - dates: "Sep 4 – Sep 6"
+    deliverables:
+      - "Finalize database schema and run Prisma migrations"
+      - "Deploy updated Home page with navigation"
+      - "Set up initial operator and contractor models"
+  - dates: "Sep 7 – Sep 10"
+    deliverables:
+      - "Implement fallback forms (contractor hire, operator onboarding)"
+      - "Add client + server-side validation"
+      - "Enable email notifications on submissions"
+      - "Basic conversation storage"
+  - dates: "Sep 11 – Sep 13"
+    deliverables:
+      - "Integrate AI chat interface (Vercel AI SDK)"
+      - "Implement contractor and operator conversation flows"
+      - "Optimize for mobile responsiveness and accessibility"
+  - dates: "Sep 14 – Sep 15"
+    deliverables:
+      - "Cross-browser testing (Chrome, Safari, Firefox, Edge)"
+      - "Performance checks (Core Web Vitals)"
+      - "Security validation (CSRF, XSS, PII handling)"
+  - dates: "Sep 16"
+    deliverables:
+      - "MVP Launch on Vercel"
+      - "Post-launch smoke testing"
+      - "Begin operator and contractor onboarding"
+
+---
+
+system_architecture:
+  description: "Two-sided marketplace with AI chat as the primary interface."
+  key_features_core:
+    - "Contractor hire flow with AI chat + fallback form"
+    - "Operator onboarding with AI chat + fallback form"
+    - "Real-time messaging, history, and quick actions"
+    - "File uploads for certifications"
+    - "Voice input (mobile)"
+    - "About and Contact pages"
+  key_features_billing_and_payments:
+    - "Future phase: Stripe integration for operator payout and contractor payments"
+    - "Support tiered plans and usage-based billing"
+
+---
+
+technical_architecture:
+  teams:
+    - "Contractors: create hire requests, matched with operators"
+    - "Operators: showcase certifications and availability"
+  users:
+    contractors:
+      - "Browse equipment types and packages"
+      - "Specify project requirements"
+      - "Hire operators for projects"
+    operators:
+      - "Onboard via AI chat or fallback form"
+      - "Submit military and certification details"
+      - "Set location preferences and availability"
+  database_schema:
+    - "ContractorRequest - project requirements, budget, location"
+    - "OperatorProfile - military service, certifications, equipment experience"
+    - "ConversationHistory - store chat logs and context"
+    - "FormSubmission - fallback form data"
+  user_interfaces:
+    contractor_interface:
+      - "AI chat interface for hire flow"
+      - "Fallback form with validation"
+      - "Confirmation and notification flows"
+    operator_interface:
+      - "AI chat interface for onboarding"
+      - "Fallback form with service verification"
+      - "Application confirmation and vetting"
+    shared_chat_features:
+      - "Typing indicators, quick action buttons"
+      - "Conversation export and file uploads"
+    admin_tools (future):
+      - "Conversation monitoring dashboard"
+      - "Operator-contractor matching management"
+      - "Reporting on conversion metrics"
