@@ -213,7 +213,7 @@ def add_issue_to_project(issue_node_id, project_id):
     }
     response = requests.post(
         "https://api.github.com/graphql",
-        json={"query": query, "variables": variables},
+        json={"query": mutation, "variables": variables},
         headers=headers
     )
     result = response.json()
