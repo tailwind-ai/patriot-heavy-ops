@@ -6,8 +6,6 @@ release:
     Scope includes Home page, contractor hire flow, operator onboarding,
     fallback forms with validation, and initial AI chat integration.
 
----
-
 goals:
   business:
     - "Launch MVP by September 16, 2025"
@@ -50,8 +48,6 @@ workback_schedule:
       - "Post-launch smoke testing"
       - "Begin operator and contractor onboarding"
 
----
-
 system_architecture:
   description: "Two-sided marketplace with AI chat as the primary interface."
   key_features_core:
@@ -64,8 +60,6 @@ system_architecture:
   key_features_billing_and_payments:
     - "Future phase: Stripe integration for operator payout and contractor payments"
     - "Support tiered plans and usage-based billing"
-
----
 
 technical_architecture:
   teams:
