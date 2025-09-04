@@ -444,9 +444,9 @@ release_context = {
 
 print(f"\n=== Creating Enhanced Issues for Release: {data['release']['name']} ===")
 
-# Process each schedule item
-for schedule_item in data['release']['schedule']:
-    date_range = schedule_item["date"]
+# Process each schedule item - FIXED: Use 'workback_schedule' and 'dates'
+for schedule_item in data['workback_schedule']:
+    date_range = schedule_item["dates"]  # FIXED: Use 'dates' instead of 'date'
     print(f"\n📅 Processing {date_range}")
     
     for deliverable in schedule_item["deliverables"]:
