@@ -11,8 +11,8 @@ repo_name = os.environ["GITHUB_REPOSITORY"]
 PROJECT_NUMBER = 1  # From your URL: /users/samuelhenry/projects/1
 PROJECT_OWNER = "samuelhenry"
 
-# Load release.yml
-with open("release.yml", "r") as f:
+# Load current-release.yml (FIXED: was release.yml)
+with open("current-release.yml", "r") as f:
     data = yaml.safe_load(f)
 
 # Connect to GitHub
