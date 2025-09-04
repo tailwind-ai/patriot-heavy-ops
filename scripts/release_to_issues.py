@@ -57,14 +57,26 @@ def classify_deliverable_type(deliverable):
     else:
         return "Task"
 
-# GraphQL query to get project ID - try user project
-def get_project_id():
+# GraphQL query to get project ID and Type field ID
+def get_project_info():
     query = """
     query($owner: String!, $number: Int!) {
         user(login: $owner) {
             projectV2(number: $number) {
                 id
                 title
+                fields(first: 20) {
+                    nodes {
+                        ... on ProjectV2SingleSelectField {
+                            id
+                            name
+                            options {
+                                id
+                                name
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -85,17 +97,32 @@ def get_project_id():
 
     if "errors" in result:
         print(f"GraphQL Errors: {result['errors']}")
-        return None
+        return None, None, {}
 
     if (result.get("data") and
         result["data"].get("user") and
         result["data"]["user"].get("projectV2")):
         project_info = result["data"]["user"]["projectV2"]
-        print(f"Found project: {project_info['title']} (ID: {project_info['id']})")
-        return project_info["id"]
+        project_id = project_info["id"]
+        print(f"Found project: {project_info['title']} (ID: {project_id})")
+        
+        # Find the Type field
+        type_field_id = None
+        type_options = {}
+        
+        for field in project_info["fields"]["nodes"]:
+            if field.get("name") == "Type":
+                type_field_id = field["id"]
+                # Map option names to IDs
+                for option in field["options"]:
+                    type_options[option["name"]] = option["id"]
+                print(f"Found Type field (ID: {type_field_id}) with options: {type_options}")
+                break
+        
+        return project_id, type_field_id, type_options
 
     print("Project not found as user project")
-    return None
+    return None, None, {}
 
 # List all projects for debugging
 def list_user_projects():
@@ -186,7 +213,7 @@ def add_issue_to_project(issue_node_id, project_id):
     }
     response = requests.post(
         "https://api.github.com/graphql",
-        json={"query": mutation, "variables": variables},
+        json={"query": query, "variables": variables},
         headers=headers
     )
     result = response.json()
@@ -196,19 +223,70 @@ def add_issue_to_project(issue_node_id, project_id):
         return None
     return result
 
+# Update project item Type field
+def update_project_item_type(project_id, item_id, type_field_id, type_option_id):
+    if not all([project_id, item_id, type_field_id, type_option_id]):
+        print("Missing required IDs for updating Type field")
+        return None
+        
+    mutation = """
+    mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $value: ProjectV2FieldValue!) {
+      updateProjectV2ItemFieldValue(
+        input: {
+          projectId: $projectId
+          itemId: $itemId
+          fieldId: $fieldId
+          value: $value
+        }
+      ) {
+        projectV2Item {
+          id
+        }
+      }
+    }
+    """
+    variables = {
+        "projectId": project_id,
+        "itemId": item_id,
+        "fieldId": type_field_id,
+        "value": {
+            "singleSelectOptionId": type_option_id
+        }
+    }
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json"
+    }
+    response = requests.post(
+        "https://api.github.com/graphql",
+        json={"query": mutation, "variables": variables},
+        headers=headers
+    )
+    result = response.json()
+    print(f"Update Type field response: {result}")
+    if "errors" in result:
+        print(f"Error updating Type field: {result['errors']}")
+        return None
+    return result
+
 # Debug: List all projects first
 print("=== Debugging: Listing all user projects ===")
 all_projects = list_user_projects()
 
-# Get project ID
-print(f"\n=== Looking for project number {PROJECT_NUMBER} ===")
-project_id = get_project_id()
+# Get project ID and Type field info
+print(f"\n=== Looking for project number {PROJECT_NUMBER} and Type field ===")
+project_id, type_field_id, type_options = get_project_info()
 
 if not project_id:
     print("Could not find project. Exiting...")
     exit(1)
 
 print(f"✅ Found project ID: {project_id}")
+if type_field_id:
+    print(f"✅ Found Type field ID: {type_field_id}")
+    print(f"✅ Type options: {type_options}")
+else:
+    print("⚠️ Could not find Type field - will skip Type field updates")
 
 # Create issues from workback_schedule deliverables
 if "workback_schedule" in data:
@@ -218,7 +296,7 @@ if "workback_schedule" in data:
         dates = schedule_item["dates"]
 
         for deliverable in schedule_item["deliverables"]:
-            # NEW: Classify the deliverable type
+            # Classify the deliverable type
             deliverable_type = classify_deliverable_type(deliverable)
             
             title = f"{dates}: {deliverable}"
@@ -244,10 +322,25 @@ if "workback_schedule" in data:
 
             # Add issue to project
             print(f"Adding issue {issue.number} to project...")
-            result = add_issue_to_project(issue_node_id, project_id)
+            add_result = add_issue_to_project(issue_node_id, project_id)
 
-            if result and not result.get("errors"):
+            if add_result and not add_result.get("errors"):
                 print(f"✅ Issue {issue.number} added to project!")
+                
+                # Update the Type field if we have the necessary info
+                if type_field_id and deliverable_type in type_options:
+                    item_id = add_result["data"]["addProjectV2ItemById"]["item"]["id"]
+                    type_option_id = type_options[deliverable_type]
+                    
+                    print(f"Setting Type field to '{deliverable_type}'...")
+                    type_result = update_project_item_type(project_id, item_id, type_field_id, type_option_id)
+                    
+                    if type_result and not type_result.get("errors"):
+                        print(f"✅ Type field updated to '{deliverable_type}'!")
+                    else:
+                        print(f"❌ Failed to update Type field")
+                else:
+                    print(f"⚠️ Skipping Type field update (missing field or option)")
             else:
                 print(f"❌ Failed to add issue {issue.number} to project")
 
