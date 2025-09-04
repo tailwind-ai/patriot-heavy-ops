@@ -444,9 +444,9 @@ release_context = {
 
 print(f"\n=== Creating Enhanced Issues for Release: {data['release']['name']} ===")
 
-# Process each schedule item - FIXED: Use 'workback_schedule' and 'dates'
+# Process each schedule item - use 'workback_schedule' and 'dates'
 for schedule_item in data['workback_schedule']:
-    date_range = schedule_item["dates"]  # FIXED: Use 'dates' instead of 'date'
+    date_range = schedule_item["dates"]
     print(f"\n📅 Processing {date_range}")
     
     for deliverable in schedule_item["deliverables"]:
@@ -490,13 +490,15 @@ for schedule_item in data['workback_schedule']:
         if repo_context['existing_schemas']:
             body += f"- **Existing Models:** {', '.join(repo_context['existing_schemas'])}\n"
         
-        # Determine labels based on analysis
-        labels = ["auto-generated", "release-1", f"type:{deliverable_type.lower()}"]
-        
-        # Add assignment-specific labels
+        # Assignment settings and labels
+        labels = [
+            "auto-generated",
+            "release-1",
+            f"type:{deliverable_type.lower()}"
+        ]
         if analysis['assignment'] == 'copilot':
             labels.extend(["copilot-ready", "auto-implementable"])
-            assignees = []  # No direct assignee for Copilot tasks
+            assignees = []  # Leave unassigned
         elif analysis['assignment'] == 'needs-clarification':
             labels.extend(["needs-clarification", "missing-requirements"])
             assignees = ["samuelhenry"]
