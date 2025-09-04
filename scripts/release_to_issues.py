@@ -25,7 +25,7 @@ with open("current-release.yml", "r") as f:
 # Connect to GitHub with proper authentication
 auth = Auth.Token(token)
 g = Github(auth=auth)
-repo = g.get_repo(repo_name)
+repo_obj = g.get_repo(repo_name)  # Keep repo_obj as the PyGithub object
 
 # GraphQL query to get project ID - try user project
 def get_project_id():
@@ -107,7 +107,7 @@ def list_user_projects():
     return []
 
 # Get the issue's GraphQL node ID using a GraphQL query
-def get_issue_node_id(owner, repo, number):
+def get_issue_node_id(owner, repo_name_only, number):
     query = """
     query($owner: String!, $repo: String!, $number: Int!) {
       repository(owner: $owner, name: $repo) {
@@ -117,7 +117,7 @@ def get_issue_node_id(owner, repo, number):
       }
     }
     """
-    variables = {"owner": owner, "repo": repo, "number": number}
+    variables = {"owner": owner, "repo": repo_name_only, "number": number}
     headers = {
         "Authorization": f"Bearer {token}",
         "Content-Type": "application/json"
@@ -132,7 +132,7 @@ def get_issue_node_id(owner, repo, number):
         result["data"].get("repository") and
         result["data"]["repository"].get("issue")):
         return result["data"]["repository"]["issue"]["id"]
-    print(f"Could not get issue node ID for {owner}/{repo}#{number}: {result}")
+    print(f"Could not get issue node ID for {owner}/{repo_name_only}#{number}: {result}")
     return None
 
 # Add issue to project using GraphQL mutation
@@ -183,7 +183,7 @@ print(f"✅ Found project ID: {project_id}")
 # Create issues from workback_schedule deliverables
 if "workback_schedule" in data:
     print(f"\n=== Creating issues from workback_schedule ===")
-    owner, repo = repo_name.split("/")
+    owner, repo_name_only = repo_name.split("/")
     for schedule_item in data["workback_schedule"]:
         dates = schedule_item["dates"]
 
@@ -196,7 +196,7 @@ if "workback_schedule" in data:
 
             # Create the issue
             print(f"Creating issue: {title}")
-            issue = repo.create_issue(
+            issue = repo_obj.create_issue(
                 title=title,
                 body=body,
                 labels=["auto-generated", "needs-review", "release-1"]
@@ -206,7 +206,7 @@ if "workback_schedule" in data:
             print(f"Issue number: {issue.number}")
 
             # Get issue node ID for ProjectV2
-            issue_node_id = get_issue_node_id(owner, repo, issue.number)
+            issue_node_id = get_issue_node_id(owner, repo_name_only, issue.number)
             print(f"Issue node_id for ProjectV2: {issue_node_id}")
 
             # Add issue to project
