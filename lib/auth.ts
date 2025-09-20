@@ -16,7 +16,9 @@ export const authOptions: NextAuthOptions = {
   // huh any! I know.
   // This is a temporary fix for prisma client.
   // @see https://github.com/prisma/prisma/issues/16117
-  // adapter: PrismaAdapter(db as any), // Disabled for credentials provider
+  // adapter: PrismaAdapter(db as any),
+  // Note: keep adapter disabled while only the Credentials provider is active.
+  // Re-enable when adding OAuth/email providers that require persistence.
   session: {
     strategy: "jwt",
   },

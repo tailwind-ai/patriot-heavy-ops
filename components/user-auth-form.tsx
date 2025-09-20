@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { signIn } from "next-auth/react"
 import { useForm } from "react-hook-form"
+import type { FieldErrors } from "react-hook-form"
 import * as z from "zod"
 
 import { cn } from "@/lib/utils"
@@ -106,9 +107,9 @@ export function UserAuthForm({ className, mode = "login", ...props }: UserAuthFo
                 disabled={isLoading || isGitHubLoading}
                 {...register("name")}
               />
-              {isRegisterMode && errors?.name && (
+              {isRegisterMode && (errors as FieldErrors<RegisterFormData>)?.name && (
                 <p className="px-1 text-xs text-red-600">
-                  {(errors as any).name.message}
+                  {(errors as FieldErrors<RegisterFormData>).name?.message as string}
                 </p>
               )}
             </div>
@@ -164,9 +165,9 @@ export function UserAuthForm({ className, mode = "login", ...props }: UserAuthFo
                 disabled={isLoading || isGitHubLoading}
                 {...register("confirmPassword")}
               />
-              {isRegisterMode && errors?.confirmPassword && (
+              {isRegisterMode && (errors as FieldErrors<RegisterFormData>)?.confirmPassword && (
                 <p className="px-1 text-xs text-red-600">
-                  {(errors as any).confirmPassword.message}
+                  {(errors as FieldErrors<RegisterFormData>).confirmPassword?.message as string}
                 </p>
               )}
             </div>
