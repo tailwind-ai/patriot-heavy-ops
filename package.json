@@ -9,7 +9,7 @@
   "description": "Connect contractors with vetted heavy equipment operators (military-trained) for construction and industrial projects.",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma migrate deploy && next build",
     "start": "next start",
     "lint": "next lint",
     "preview": "next build && next start",
