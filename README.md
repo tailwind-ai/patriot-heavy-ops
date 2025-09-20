@@ -112,8 +112,8 @@ Connect contractors with vetted heavy equipment operators (military-trained) for
 - **Next.js API Routes** (form processing and chat endpoints)
 - **Vercel AI SDK** (AI model integration)
 - **OpenAI/Anthropic** (LLM providers)
-- **PostgreSQL** (production database via Prisma Accelerate)
-- **Prisma** (database ORM)
+ - **PostgreSQL** (production database)
+ - **Prisma** (database ORM)
 
 ### Real-Time Communication
 - **Server-Sent Events** (streaming AI responses)
@@ -123,7 +123,21 @@ Connect contractors with vetted heavy equipment operators (military-trained) for
 ### Deployment ✅ **COMPLETED**
 - **Vercel** (hosting & preview deployments)
 - **GitHub** (version control)
-- **Prisma Accelerate** (database connection)
+ - **Prisma migrate deploy** runs during build to keep schema in sync
+
+### Environment
+
+Create a `.env.local` with at least:
+
+```
+DATABASE_URL=postgres://...
+PRISMA_DATABASE_URL=postgres://...
+NEXTAUTH_SECRET=...
+NEXTAUTH_URL=http://localhost:3000
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
+
+Optional providers: `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, `SMTP_FROM`, `POSTMARK_API_TOKEN`, `POSTMARK_SIGN_IN_TEMPLATE`, `POSTMARK_ACTIVATION_TEMPLATE`, `STRIPE_API_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRO_MONTHLY_PLAN_ID`.
 
 ### Design
 - **Figma** (design system & mockups)
