@@ -13,10 +13,6 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  // Temporarily ignore ESLint errors to allow deployment
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
 }
 
 export default nextConfig

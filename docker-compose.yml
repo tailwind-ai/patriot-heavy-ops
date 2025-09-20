@@ -1,0 +1,56 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: patriot-postgres
+    environment:
+      POSTGRES_DB: patriot_heavy_ops
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    container_name: patriot-app
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://postgres:password@postgres:5432/patriot_heavy_ops?schema=public
+      PRISMA_DATABASE_URL: postgresql://postgres:password@postgres:5432/patriot_heavy_ops?schema=public
+      NEXTAUTH_SECRET: your-secret-key-here
+      NEXTAUTH_URL: http://localhost:3000
+      NEXT_PUBLIC_APP_URL: http://localhost:3000
+      # Stripe configuration
+      STRIPE_SECRET_KEY: sk_test_your_stripe_secret_key_here
+      STRIPE_PUBLISHABLE_KEY: pk_test_your_stripe_publishable_key_here
+      STRIPE_WEBHOOK_SECRET: whsec_your_webhook_secret_here
+      # Email configuration
+      POSTMARK_API_TOKEN: your_postmark_token_here
+      EMAIL_FROM: noreply@patriotheavyops.com
+      SMTP_FROM: noreply@patriotheavyops.com
+      POSTMARK_SIGN_IN_TEMPLATE: 123456
+      POSTMARK_ACTIVATION_TEMPLATE: 123456
+      # GitHub OAuth (optional)
+      GITHUB_CLIENT_ID: your_github_client_id
+      GITHUB_CLIENT_SECRET: your_github_client_secret
+      # App configuration
+      NODE_ENV: development
+      # Fix Prisma OpenSSL detection
+      PRISMA_QUERY_ENGINE_LIBRARY: /app/node_modules/.prisma/client/libquery_engine-linux-musl-arm64-openssl-3.0.x.so.node
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+
+volumes:
+  postgres_data:

@@ -8,58 +8,111 @@ import { useForm } from "react-hook-form"
 import * as z from "zod"
 
 import { cn } from "@/lib/utils"
-import { userAuthSchema } from "@/lib/validations/auth"
+import { userAuthSchema, userLoginSchema, userRegisterSchema } from "@/lib/validations/auth"
 import { buttonVariants } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { toast } from "@/components/ui/use-toast"
 import { Icons } from "@/components/icons"
 
-interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
+interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {
+  mode?: "login" | "register"
+}
 
-type FormData = z.infer<typeof userAuthSchema>
+type LoginFormData = z.infer<typeof userLoginSchema>
+type RegisterFormData = z.infer<typeof userRegisterSchema>
 
-export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
+export function UserAuthForm({ className, mode = "login", ...props }: UserAuthFormProps) {
+  const isRegisterMode = mode === "register"
+  const schema = isRegisterMode ? userRegisterSchema : userLoginSchema
+  
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormData>({
-    resolver: zodResolver(userAuthSchema),
+  } = useForm<LoginFormData | RegisterFormData>({
+    resolver: zodResolver(schema),
   })
   const [isLoading, setIsLoading] = React.useState<boolean>(false)
   const [isGitHubLoading, setIsGitHubLoading] = React.useState<boolean>(false)
   const searchParams = useSearchParams()
 
-  async function onSubmit(data: FormData) {
+  async function onSubmit(data: LoginFormData | RegisterFormData) {
     setIsLoading(true)
 
-    const signInResult = await signIn("email", {
-      email: data.email.toLowerCase(),
-      redirect: false,
-      callbackUrl: searchParams?.get("from") || "/dashboard",
-    })
+    try {
+      if (isRegisterMode) {
+        // Handle registration
+        const registerData = data as RegisterFormData
+        const response = await fetch("/api/auth/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: registerData.name,
+            email: registerData.email,
+            password: registerData.password,
+            confirmPassword: registerData.confirmPassword,
+          }),
+        })
 
-    setIsLoading(false)
+        if (!response.ok) {
+          const error = await response.json()
+          throw new Error(error.message || "Registration failed")
+        }
 
-    if (!signInResult?.ok) {
-      return toast({
+        toast({
+          title: "Account created",
+          description: "You can now sign in with your email and password.",
+        })
+      } else {
+        // Handle login
+        const loginData = data as LoginFormData
+        const signInResult = await signIn("credentials", {
+          email: loginData.email.toLowerCase(),
+          password: loginData.password,
+          redirect: true,
+          callbackUrl: searchParams?.get("from") || "/dashboard",
+        })
+
+        if (signInResult?.error) {
+          throw new Error("Invalid email or password")
+        }
+      }
+    } catch (error) {
+      toast({
         title: "Something went wrong.",
-        description: "Your sign in request failed. Please try again.",
+        description: error instanceof Error ? error.message : "Please try again.",
         variant: "destructive",
       })
     }
 
-    return toast({
-      title: "Check your email",
-      description: "We sent you a login link. Be sure to check your spam too.",
-    })
+    setIsLoading(false)
   }
 
   return (
     <div className={cn("grid gap-6", className)} {...props}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="grid gap-2">
+          {isRegisterMode && (
+            <div className="grid gap-1">
+              <Label className="sr-only" htmlFor="name">
+                Name
+              </Label>
+              <Input
+                id="name"
+                placeholder="Full name"
+                type="text"
+                autoComplete="name"
+                disabled={isLoading || isGitHubLoading}
+                {...register("name")}
+              />
+              {isRegisterMode && errors?.name && (
+                <p className="px-1 text-xs text-red-600">
+                  {(errors as any).name.message}
+                </p>
+              )}
+            </div>
+          )}
           <div className="grid gap-1">
             <Label className="sr-only" htmlFor="email">
               Email
@@ -80,11 +133,49 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
               </p>
             )}
           </div>
+          <div className="grid gap-1">
+            <Label className="sr-only" htmlFor="password">
+              Password
+            </Label>
+            <Input
+              id="password"
+              placeholder="Password"
+              type="password"
+              autoComplete={isRegisterMode ? "new-password" : "current-password"}
+              disabled={isLoading || isGitHubLoading}
+              {...register("password")}
+            />
+            {errors?.password && (
+              <p className="px-1 text-xs text-red-600">
+                {errors.password.message}
+              </p>
+            )}
+          </div>
+          {isRegisterMode && (
+            <div className="grid gap-1">
+              <Label className="sr-only" htmlFor="confirmPassword">
+                Confirm Password
+              </Label>
+              <Input
+                id="confirmPassword"
+                placeholder="Confirm password"
+                type="password"
+                autoComplete="new-password"
+                disabled={isLoading || isGitHubLoading}
+                {...register("confirmPassword")}
+              />
+              {isRegisterMode && errors?.confirmPassword && (
+                <p className="px-1 text-xs text-red-600">
+                  {(errors as any).confirmPassword.message}
+                </p>
+              )}
+            </div>
+          )}
           <button className={cn(buttonVariants())} disabled={isLoading}>
             {isLoading && (
               <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
             )}
-            Sign In with Email
+            {isRegisterMode ? "Create Account" : "Sign In"}
           </button>
         </div>
       </form>
