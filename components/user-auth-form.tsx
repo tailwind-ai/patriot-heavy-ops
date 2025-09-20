@@ -70,16 +70,13 @@ export function UserAuthForm({ className, mode = "login", ...props }: UserAuthFo
         const signInResult = await signIn("credentials", {
           email: loginData.email.toLowerCase(),
           password: loginData.password,
-          redirect: false,
+          redirect: true,
           callbackUrl: searchParams?.get("from") || "/dashboard",
         })
 
-        if (!signInResult?.ok) {
+        if (signInResult?.error) {
           throw new Error("Invalid email or password")
         }
-
-        // Redirect on successful login
-        window.location.href = searchParams?.get("from") || "/dashboard"
       }
     } catch (error) {
       toast({

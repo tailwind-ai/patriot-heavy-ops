@@ -8,6 +8,7 @@ import { userRegisterSchema } from "@/lib/validations/auth"
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
+    console.log("Registration request body:", body)
     const { name, email, password } = userRegisterSchema.parse(body)
 
     // Check if user already exists
