@@ -1,0 +1,34 @@
+name: Create Release Issues
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'current-release.yml'
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  create-issues:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install PyGithub pyyaml requests
+
+      - name: Run script
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: python scripts/release_to_issues.py
