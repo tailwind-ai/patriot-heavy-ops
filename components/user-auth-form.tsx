@@ -61,10 +61,21 @@ export function UserAuthForm({ className, mode = "login", ...props }: UserAuthFo
           throw new Error(error.message || "Registration failed")
         }
 
-        toast({
-          title: "Account created",
-          description: "You can now sign in with your email and password.",
+        // Automatically sign in the user after successful registration
+        const signInResult = await signIn("credentials", {
+          email: registerData.email.toLowerCase(),
+          password: registerData.password,
+          redirect: true,
+          callbackUrl: searchParams?.get("from") || "/dashboard",
         })
+
+        if (signInResult?.error) {
+          // If auto-login fails, show success message and let user manually login
+          toast({
+            title: "Account created",
+            description: "You can now sign in with your email and password.",
+          })
+        }
       } else {
         // Handle login
         const loginData = data as LoginFormData
