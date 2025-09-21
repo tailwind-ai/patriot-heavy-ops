@@ -20,7 +20,7 @@ export default function AboutUsPage() {
           <div className="relative">
             <div className="aspect-square overflow-hidden bg-gradient-to-br from-blue-50 to-purple-50 lg:aspect-[4/3]">
               {/* Placeholder for image - you can replace this with an actual image */}
-              <div className="flex h-full w-full items-center justify-center">
+              <div className="flex size-full items-center justify-center">
                 <div className="space-y-4 text-center">
                   <div className="mx-auto flex size-32 items-center justify-center bg-purple-200">
                     <svg className="size-16 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -108,32 +108,32 @@ export default function AboutUsPage() {
       </section>
 
       {/* Find a Location Section */}
-      <section className="py-16 bg-white">
+      <section className="bg-white py-16">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+          <div className="mb-16 text-center">
+            <h2 className="mb-4 text-4xl font-bold text-gray-900 lg:text-5xl">
               Find a Location
             </h2>
-            <p className="text-xl text-gray-700 max-w-2xl mx-auto">
+            <p className="mx-auto max-w-2xl text-xl text-gray-700">
               We operate in all 50 US states and territories.
             </p>
           </div>
           
-          <div className="grid grid-cols-5 gap-4 max-w-6xl mx-auto">
+          <div className="mx-auto grid max-w-6xl grid-cols-5 gap-4">
             {/* States will be populated here */}
-            <div className="text-center p-4 bg-gray-50 rounded-lg">
+            <div className="rounded-lg bg-gray-50 p-4 text-center">
               <h3 className="font-semibold text-gray-900">Alabama</h3>
             </div>
-            <div className="text-center p-4 bg-gray-50 rounded-lg">
+            <div className="rounded-lg bg-gray-50 p-4 text-center">
               <h3 className="font-semibold text-gray-900">Alaska</h3>
             </div>
-            <div className="text-center p-4 bg-gray-50 rounded-lg">
+            <div className="rounded-lg bg-gray-50 p-4 text-center">
               <h3 className="font-semibold text-gray-900">Arizona</h3>
             </div>
-            <div className="text-center p-4 bg-gray-50 rounded-lg">
+            <div className="rounded-lg bg-gray-50 p-4 text-center">
               <h3 className="font-semibold text-gray-900">Arkansas</h3>
             </div>
-            <div className="text-center p-4 bg-gray-50 rounded-lg">
+            <div className="rounded-lg bg-gray-50 p-4 text-center">
               <h3 className="font-semibold text-gray-900">California</h3>
             </div>
             {/* Continue with remaining states... */}

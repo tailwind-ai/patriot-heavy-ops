@@ -8,9 +8,9 @@ import { buttonVariants } from "@/components/ui/button"
 export default function IndexPage() {
   return (
     <>
-      <section className="-mt-5 relative flex min-h-screen flex-col justify-center">
+      <section className="relative -mt-5 flex min-h-screen flex-col justify-center">
         {/* Background Images */}
-        <div className="absolute -z-10 inset-0">
+        <div className="absolute inset-0 -z-10">
           {/* Mobile Background */}
           <div className="block md:hidden">
             <Image
@@ -87,7 +87,7 @@ export default function IndexPage() {
           </div>
           <div className="relative overflow-hidden rounded-lg border bg-background p-2">
             <div className="flex h-[180px] flex-col justify-between rounded-md p-6">
-              <div className="flex items-center justify-center h-24 w-40 bg-white rounded">
+              <div className="flex h-24 w-40 items-center justify-center rounded bg-white">
                 <Image
                   src="/images/front-end-loader.webp"
                   alt="Front End Loader"
@@ -103,7 +103,7 @@ export default function IndexPage() {
           </div>
           <div className="relative overflow-hidden rounded-lg border bg-background p-2">
             <div className="flex h-[180px] flex-col justify-between rounded-md p-6">
-              <div className="flex items-center justify-center h-24 w-40 bg-white rounded">
+              <div className="flex h-24 w-40 items-center justify-center rounded bg-white">
                 <Image
                   src="/images/backhoe.webp"
                   alt="Backhoe"
@@ -119,7 +119,7 @@ export default function IndexPage() {
           </div>
           <div className="relative overflow-hidden rounded-lg border bg-background p-2">
             <div className="flex h-[180px] flex-col justify-between rounded-md p-6">
-              <div className="flex items-center justify-center h-24 w-40 bg-white rounded">
+              <div className="flex h-24 w-40 items-center justify-center rounded bg-white">
                 <Image
                   src="/images/bulldozer.webp"
                   alt="Bulldozer"
@@ -135,7 +135,7 @@ export default function IndexPage() {
           </div>
           <div className="relative overflow-hidden rounded-lg border bg-background p-2">
             <div className="flex h-[180px] flex-col justify-between rounded-md p-6">
-              <div className="flex items-center justify-center h-24 w-40 bg-white rounded">
+              <div className="flex h-24 w-40 items-center justify-center rounded bg-white">
                 <Image
                   src="/images/grader.png"
                   alt="Grader"
@@ -151,7 +151,7 @@ export default function IndexPage() {
           </div>
           <div className="relative overflow-hidden rounded-lg border bg-background p-2">
             <div className="flex h-[180px] flex-col justify-between rounded-md p-6">
-              <div className="flex items-center justify-center h-24 w-40 bg-white rounded">
+              <div className="flex h-24 w-40 items-center justify-center rounded bg-white">
                 <Image
                   src="/images/dump-truck.webp"
                   alt="Dump Truck"
@@ -167,7 +167,7 @@ export default function IndexPage() {
           </div>
           <div className="relative overflow-hidden rounded-lg border bg-background p-2">
             <div className="flex h-[180px] flex-col justify-between rounded-md p-6">
-              <div className="flex items-center justify-center h-24 w-40 bg-white rounded">
+              <div className="flex h-24 w-40 items-center justify-center rounded bg-white">
                 <Image
                   src="/images/water-truck.webp"
                   alt="Water Truck"
@@ -183,7 +183,7 @@ export default function IndexPage() {
           </div>
           <div className="relative overflow-hidden rounded-lg border bg-background p-2">
             <div className="flex h-[180px] flex-col justify-between rounded-md p-6">
-              <div className="flex items-center justify-center h-24 w-28 bg-white rounded">
+              <div className="flex h-24 w-28 items-center justify-center rounded bg-white">
                 <Image
                   src="/images/sweepr.png"
                   alt="Sweeper"
@@ -199,7 +199,7 @@ export default function IndexPage() {
           </div>
           <div className="relative overflow-hidden rounded-lg border bg-background p-2">
             <div className="flex h-[180px] flex-col justify-between rounded-md p-6">
-              <div className="flex items-center justify-center h-24 w-40 bg-white rounded">
+              <div className="flex h-24 w-40 items-center justify-center rounded bg-white">
                 <Image
                   src="/images/trencher.webp"
                   alt="Trencher"
