@@ -1,4 +1,10 @@
--- Create UserRole enum
+-- Drop the existing role column first (it was added in previous migration with old enum)
+ALTER TABLE "users" DROP COLUMN IF EXISTS "role";
+
+-- Drop the old UserRole enum and recreate with new values
+DROP TYPE IF EXISTS "UserRole" CASCADE;
+
+-- Create new UserRole enum with correct values
 CREATE TYPE "UserRole" AS ENUM ('USER', 'OPERATOR', 'MANAGER', 'ADMIN');
 
 -- Add role column to users table with default USER
