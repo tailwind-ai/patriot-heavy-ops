@@ -225,7 +225,7 @@ export default function IndexPage() {
             Are you a military service member with a Civil Engineering specialty?
           </p>
           <div className="space-x-4">
-            <Link href="/hire" className={cn(buttonVariants({ size: "lg" }))}>
+            <Link href="/register" className={cn(buttonVariants({ size: "lg" }))}>
               Apply Today
             </Link>
           </div>
