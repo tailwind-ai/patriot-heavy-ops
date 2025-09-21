@@ -10,7 +10,7 @@ const COMMON_WORDS = [
 ]
 
 const KEYBOARD_PATTERNS = [
-  'qwerty', 'asdf', 'zxcv', '123456', '654321', 'abcdef', 'fedcba'
+  'qwerty', 'asdf', 'zxcv', '654321', 'abcdef', 'fedcba'
 ]
 
 export const userAuthSchema = z.object({
@@ -25,7 +25,7 @@ export const userRegisterSchema = z.object({
     .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
     .regex(/[a-z]/, "Password must contain at least one lowercase letter") 
     .regex(/[0-9]/, "Password must contain at least one number")
-    .regex(/[!@#$%^&*()_+\-=\[\]{}|;:,.<>?]/, "Password must contain at least one special character")
+    .regex(/[!@#$%\^&*()_+=\[\]{}|;:,.<>?-]/, "Password must contain at least one special character")
     .refine((password) => {
       const lowerPassword = password.toLowerCase()
       return !COMMON_WORDS.some(word => lowerPassword.includes(word))
