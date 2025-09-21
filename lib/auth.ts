@@ -28,7 +28,7 @@ export const authOptions: NextAuthOptions = {
     error: "/api/auth/error",
   },
   debug: process.env.NODE_ENV === "development",
-  useSecureCookies: false,
+  useSecureCookies: process.env.NODE_ENV === "production",
   trustHost: true,
   providers: [
     CredentialsProvider({
