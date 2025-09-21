@@ -21,7 +21,7 @@ export function MobileNav({ items, children, onClose }: MobileNavProps) {
   return (
     <div
       className={cn(
-        "fixed inset-0 top-0 z-50 flex justify-end"
+        "fixed inset-0 z-50 flex justify-end"
       )}
     >
       {/* Backdrop */}
@@ -31,34 +31,34 @@ export function MobileNav({ items, children, onClose }: MobileNavProps) {
       />
       
       {/* Menu Panel - Slides in from right */}
-      <div className="relative z-20 h-full w-full max-w-sm bg-white shadow-2xl animate-in slide-in-from-right duration-300">
+      <div className="relative z-20 size-full max-w-sm bg-white shadow-2xl duration-300 animate-in slide-in-from-right">
         {/* Logo and Close Button */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+        <div className="flex items-center justify-between border-b border-gray-200 p-6">
           <Link href="/" className="flex items-center space-x-2" onClick={onClose}>
             <Image
               src="/images/logo-color-h.webp"
               alt="Patriot Heavy Ops"
               width={150}
               height={30}
-              className="w-[150px] h-auto object-contain"
+              className="h-auto w-[150px] object-contain"
             />
           </Link>
-          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-md transition-colors">
-            <Icons.close className="h-5 w-5" />
+          <button onClick={onClose} className="rounded-md p-2 transition-colors hover:bg-gray-100">
+            <Icons.close className="size-5" />
           </button>
         </div>
         
         {/* Navigation Content - Full height with scroll */}
-        <div className="flex flex-col h-[calc(100vh-80px)] overflow-y-auto">
+        <div className="flex h-[calc(100vh-80px)] flex-col overflow-y-auto">
           {/* Navigation Items */}
           <nav className="flex-1 p-6">
-            <div className="grid grid-flow-row auto-rows-max text-sm space-y-2">
+            <div className="grid grid-flow-row auto-rows-max space-y-2 text-sm">
               {items.slice(0, 3).map((item, index) => (
                 <Link
                   key={index}
                   href={item.disabled ? "#" : item.href}
                   className={cn(
-                    "flex w-full items-center rounded-md p-3 text-sm font-medium text-black hover:bg-gray-100 transition-colors",
+                    "flex w-full items-center rounded-md p-3 text-sm font-medium text-black transition-colors hover:bg-gray-100",
                     item.disabled && "cursor-not-allowed opacity-60"
                   )}
                   onClick={onClose}
@@ -68,7 +68,7 @@ export function MobileNav({ items, children, onClose }: MobileNavProps) {
               ))}
               
               {/* Separator with equal spacing */}
-              <div className="mt-8 mb-8">
+              <div className="my-8">
                 <div className="border-t border-gray-200"></div>
               </div>
               
@@ -78,7 +78,7 @@ export function MobileNav({ items, children, onClose }: MobileNavProps) {
                   key={index + 3}
                   href={item.disabled ? "#" : item.href}
                   className={cn(
-                    "flex w-full items-center rounded-md p-3 text-sm font-medium text-black hover:bg-gray-100 transition-colors",
+                    "flex w-full items-center rounded-md p-3 text-sm font-medium text-black transition-colors hover:bg-gray-100",
                     item.disabled && "cursor-not-allowed opacity-60"
                   )}
                   onClick={onClose}
