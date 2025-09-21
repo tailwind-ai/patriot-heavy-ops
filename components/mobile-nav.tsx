@@ -93,7 +93,7 @@ export function MobileNav({ items, children, onClose }: MobileNavProps) {
                   href="/login"
                   className={cn(
                     buttonVariants({ variant: "outline", size: "sm" }),
-                    "w-full justify-center"
+                    "w-full justify-center text-black hover:text-black"
                   )}
                   onClick={onClose}
                 >
