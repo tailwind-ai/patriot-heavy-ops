@@ -191,7 +191,7 @@ export function UserAuthForm({ className, mode = "login", ...props }: UserAuthFo
           </button>
         </div>
       </form>
-      <div className="relative">
+      <div className="relative hidden">
         <div className="absolute inset-0 flex items-center">
           <span className="w-full border-t" />
         </div>
@@ -203,7 +203,7 @@ export function UserAuthForm({ className, mode = "login", ...props }: UserAuthFo
       </div>
       <button
         type="button"
-        className={cn(buttonVariants({ variant: "outline" }))}
+        className={cn(buttonVariants({ variant: "outline" }), "hidden")}
         onClick={() => {
           setIsGitHubLoading(true)
           signIn("github")
