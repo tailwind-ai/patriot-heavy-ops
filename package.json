@@ -9,7 +9,7 @@
   "description": "Connect contractors with vetted heavy equipment operators (military-trained) for construction and industrial projects.",
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && sh -c 'if [ \"$VERCEL\" = \"1\" ]; then prisma migrate deploy; fi' && next build",
+    "build": "prisma generate && sh -c 'if [ \"$VERCEL\" = \"1\" ]; then prisma migrate resolve --applied 20250921153500_improve_user_roles_and_service_requests && prisma migrate resolve --applied 20250921160000_simplify_roles_to_enum && prisma migrate resolve --applied 20250921161000_remove_project_and_contractor_tables && prisma migrate resolve --applied 20250921162000_consolidate_user_operator_tables && prisma migrate resolve --applied 20250921163000_simplify_assignments_to_user_assignments && prisma migrate resolve --applied 20250921164000_add_service_request_duration_pricing && prisma migrate deploy; fi' && next build",
     "start": "next start",
     "lint": "next lint",
     "preview": "next build && next start",
