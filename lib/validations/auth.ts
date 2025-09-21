@@ -34,7 +34,6 @@ export const userRegisterSchema = z.object({
       const lowerPassword = password.toLowerCase()
       return !KEYBOARD_PATTERNS.some(pattern => lowerPassword.includes(pattern))
     }, "Password cannot contain keyboard patterns")
-    .refine((password) => !/(\d)\1{2,}/.test(password), "Password cannot contain 3+ consecutive identical numbers")
     .refine((password) => !/(.)\1{2,}/.test(password), "Password cannot have 3+ repeated characters in a row"),
   confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
