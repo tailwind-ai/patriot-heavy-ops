@@ -194,4 +194,4 @@ Optional providers: `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, `SMTP_FROM`, `PO
 - Mobile conversion rates
 - Page load times < 2s
 - Accessibility score > 95%
-- Cross-browser compatibility 100%
+- Cross-browser compatibility 100%# Trigger fresh Vercel deployment

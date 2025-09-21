@@ -23,6 +23,7 @@ services:
     container_name: patriot-app
     ports:
       - "3000:3000"
+      - "5555:5555"
     environment:
       DATABASE_URL: postgresql://postgres:password@postgres:5432/patriot_heavy_ops?schema=public
       PRISMA_DATABASE_URL: postgresql://postgres:password@postgres:5432/patriot_heavy_ops?schema=public

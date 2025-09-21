@@ -4,15 +4,14 @@ import { authOptions } from "@/lib/auth"
 import { getCurrentUser } from "@/lib/session"
 import { DashboardHeader } from "@/components/header"
 import { DashboardShell } from "@/components/shell"
-import { UserNameForm } from "@/components/user-name-form"
-import { OperatorApplicationForm } from "@/components/operator-application-form"
+import { ServiceRequestForm } from "@/components/service-request-form"
 
 export const metadata = {
-  title: "Settings",
-  description: "Manage account and website settings.",
+  title: "Create Service Request",
+  description: "Create a new equipment service request.",
 }
 
-export default async function SettingsPage() {
+export default async function NewServiceRequestPage() {
   const user = await getCurrentUser()
 
   if (!user) {
@@ -22,12 +21,11 @@ export default async function SettingsPage() {
   return (
     <DashboardShell>
       <DashboardHeader
-        heading="Settings"
-        text="Manage account and website settings."
+        heading="Create Service Request"
+        text="Fill out the form below to request heavy equipment with an operator."
       />
       <div className="grid gap-10">
-        <UserNameForm user={{ id: user.id, name: user.name || "" }} />
-        <OperatorApplicationForm user={{ id: user.id, name: user.name || "" }} />
+        <ServiceRequestForm user={{ id: user.id, name: user.name, email: user.email }} />
       </div>
     </DashboardShell>
   )

@@ -5,8 +5,8 @@ import { db } from "@/lib/db"
 import { getCurrentUser } from "@/lib/session"
 import { EmptyPlaceholder } from "@/components/empty-placeholder"
 import { DashboardHeader } from "@/components/header"
-import { PostCreateButton } from "@/components/post-create-button"
-import { PostItem } from "@/components/post-item"
+import { ServiceRequestCreateButton } from "@/components/service-request-create-button"
+import { ServiceRequestItem } from "@/components/service-request-item"
 import { DashboardShell } from "@/components/shell"
 
 export const metadata = {
@@ -20,41 +20,44 @@ export default async function DashboardPage() {
     redirect(authOptions?.pages?.signIn || "/login")
   }
 
-  const posts = await db.post.findMany({
+  const serviceRequests = await db.serviceRequest.findMany({
     where: {
-      authorId: user.id,
+      requesterId: user.id,
     },
     select: {
       id: true,
       title: true,
-      published: true,
+      status: true,
+      equipmentCategory: true,
+      jobSite: true,
+      startDate: true,
       createdAt: true,
     },
     orderBy: {
-      updatedAt: "desc",
+      createdAt: "desc",
     },
   })
 
   return (
     <DashboardShell>
-      <DashboardHeader heading="Posts" text="Create and manage posts.">
-        <PostCreateButton />
+      <DashboardHeader heading="Service Requests" text="Create and manage your equipment service requests.">
+        <ServiceRequestCreateButton />
       </DashboardHeader>
       <div>
-        {posts?.length ? (
+        {serviceRequests?.length ? (
           <div className="divide-y divide-border rounded-md border">
-            {posts.map((post) => (
-              <PostItem key={post.id} post={post} />
+            {serviceRequests.map((serviceRequest) => (
+              <ServiceRequestItem key={serviceRequest.id} serviceRequest={serviceRequest} />
             ))}
           </div>
         ) : (
           <EmptyPlaceholder>
             <EmptyPlaceholder.Icon name="post" />
-            <EmptyPlaceholder.Title>No posts created</EmptyPlaceholder.Title>
+            <EmptyPlaceholder.Title>No service requests created</EmptyPlaceholder.Title>
             <EmptyPlaceholder.Description>
-              You don&apos;t have any posts yet. Start creating content.
+              You don&apos;t have any service requests yet. Start by creating your first request.
             </EmptyPlaceholder.Description>
-            <PostCreateButton variant="outline" />
+            <ServiceRequestCreateButton variant="outline" />
           </EmptyPlaceholder>
         )}
       </div>
