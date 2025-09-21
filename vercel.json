@@ -1,6 +1,4 @@
 {
-  "buildCommand": "prisma generate && npm run build",
-  "installCommand": "npm ci && prisma generate",
   "functions": {
     "app/api/**/*.ts": {
       "runtime": "nodejs18.x"
