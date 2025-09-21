@@ -4,54 +4,128 @@ import * as z from "zod"
 import { authOptions } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { serviceRequestSchema, calculateTotalHours } from "@/lib/validations/service-request"
+import { getCurrentUserWithRole } from "@/lib/session"
+import { hasPermission } from "@/lib/permissions"
 
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions)
+    const user = await getCurrentUserWithRole()
 
-    if (!session) {
-      return new Response("Unauthorized", { status: 403 })
+    if (!user) {
+      return new Response("Unauthorized", { status: 401 })
     }
 
-    const { user } = session
-    const serviceRequests = await db.serviceRequest.findMany({
-      select: {
-        id: true,
-        title: true,
-        status: true,
-        equipmentCategory: true,
-        jobSite: true,
-        startDate: true,
-        endDate: true,
-        requestedDurationType: true,
-        requestedDurationValue: true,
-        estimatedCost: true,
-        createdAt: true,
-        updatedAt: true,
-      },
-      where: {
-        requesterId: user.id,
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-    })
+    // Check permissions based on user role
+    let serviceRequests
+    
+    if (hasPermission(user.role, 'view_all_requests')) {
+      // Managers and Admins can see all requests
+      serviceRequests = await db.serviceRequest.findMany({
+        select: {
+          id: true,
+          title: true,
+          status: true,
+          equipmentCategory: true,
+          jobSite: true,
+          startDate: true,
+          endDate: true,
+          requestedDurationType: true,
+          requestedDurationValue: true,
+          estimatedCost: true,
+          createdAt: true,
+          updatedAt: true,
+          requester: {
+            select: {
+              name: true,
+              email: true,
+              company: true,
+            },
+          },
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      })
+    } else if (hasPermission(user.role, 'view_assignments')) {
+      // Operators can see requests they're assigned to + their own requests
+      serviceRequests = await db.serviceRequest.findMany({
+        select: {
+          id: true,
+          title: true,
+          status: true,
+          equipmentCategory: true,
+          jobSite: true,
+          startDate: true,
+          endDate: true,
+          requestedDurationType: true,
+          requestedDurationValue: true,
+          estimatedCost: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+        where: {
+          OR: [
+            { requesterId: user.id }, // Their own requests
+            { 
+              userAssignments: {
+                some: {
+                  operatorId: user.id
+                }
+              }
+            } // Requests they're assigned to
+          ]
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      })
+    } else if (hasPermission(user.role, 'view_own_requests')) {
+      // Regular users can only see their own requests
+      serviceRequests = await db.serviceRequest.findMany({
+        select: {
+          id: true,
+          title: true,
+          status: true,
+          equipmentCategory: true,
+          jobSite: true,
+          startDate: true,
+          endDate: true,
+          requestedDurationType: true,
+          requestedDurationValue: true,
+          estimatedCost: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+        where: {
+          requesterId: user.id,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      })
+    } else {
+      return new Response("Forbidden", { status: 403 })
+    }
 
     return new Response(JSON.stringify(serviceRequests))
   } catch (error) {
+    console.error("Error fetching service requests:", error)
     return new Response(null, { status: 500 })
   }
 }
 
 export async function POST(req: Request) {
   try {
-    const session = await getServerSession(authOptions)
+    const user = await getCurrentUserWithRole()
 
-    if (!session) {
-      return new Response("Unauthorized", { status: 403 })
+    if (!user) {
+      return new Response("Unauthorized", { status: 401 })
     }
 
-    const { user } = session
+    // Check if user has permission to submit requests
+    if (!hasPermission(user.role, 'submit_requests')) {
+      return new Response("Forbidden: You don't have permission to submit service requests", { status: 403 })
+    }
     const json = await req.json()
     const body = serviceRequestSchema.parse(json)
 

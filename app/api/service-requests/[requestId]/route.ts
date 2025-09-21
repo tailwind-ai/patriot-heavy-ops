@@ -4,6 +4,8 @@ import * as z from "zod"
 import { authOptions } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { serviceRequestUpdateSchema } from "@/lib/validations/service-request"
+import { getCurrentUserWithRole } from "@/lib/session"
+import { hasPermission, canManageUser } from "@/lib/permissions"
 
 const routeContextSchema = z.object({
   params: z.object({
