@@ -22,7 +22,7 @@ export default async function DashboardPage() {
 
   const serviceRequests = await db.serviceRequest.findMany({
     where: {
-      requesterId: user.id,
+      userId: user.id,
     },
     select: {
       id: true,
