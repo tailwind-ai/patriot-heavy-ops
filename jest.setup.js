@@ -19,18 +19,6 @@ jest.mock('./env.mjs', () => ({
   },
 }))
 
-// Mock the database
-jest.mock('./lib/db', () => ({
-  db: {
-    user: {
-      findUnique: jest.fn(),
-      findFirst: jest.fn(),
-      create: jest.fn(),
-      update: jest.fn(),
-      delete: jest.fn(),
-    },
-  },
-}))
 
 // Mock Next.js router
 jest.mock('next/navigation', () => ({
