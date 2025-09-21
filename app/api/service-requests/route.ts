@@ -3,7 +3,7 @@ import * as z from "zod"
 
 import { authOptions } from "@/lib/auth"
 import { db } from "@/lib/db"
-import { serviceRequestSchema } from "@/lib/validations/service-request"
+import { serviceRequestSchema, calculateTotalHours } from "@/lib/validations/service-request"
 
 export async function GET() {
   try {
@@ -54,22 +54,6 @@ export async function POST(req: Request) {
     const { user } = session
     const json = await req.json()
     const body = serviceRequestSchema.parse(json)
-
-    // Calculate total hours based on duration type and value
-    const calculateTotalHours = (durationType: string, durationValue: number): number => {
-      switch (durationType) {
-        case "HALF_DAY":
-          return 4 * durationValue
-        case "FULL_DAY":
-          return 8 * durationValue
-        case "MULTI_DAY":
-          return 8 * durationValue
-        case "WEEKLY":
-          return 40 * durationValue
-        default:
-          return 8
-      }
-    }
 
     const totalHours = calculateTotalHours(body.requestedDurationType, body.requestedDurationValue)
 

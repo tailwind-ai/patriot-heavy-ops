@@ -21,10 +21,20 @@ export function ServiceRequestCreateButton({
   async function onClick() {
     setIsLoading(true)
 
-    // Navigate to the create service request page
-    router.push("/dashboard/requests/new")
-    
-    setIsLoading(false)
+    try {
+      // Navigate to the create service request page
+      await router.push("/dashboard/requests/new")
+    } catch (error) {
+      console.error("Navigation error:", error)
+      toast({
+        title: "Navigation failed",
+        description: "Unable to navigate to the create request page. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      // Keep loading state until component unmounts (navigation completes)
+      // Don't set loading to false here as the component will unmount
+    }
   }
 
   return (

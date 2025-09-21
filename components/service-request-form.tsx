@@ -87,7 +87,7 @@ export function ServiceRequestForm({ user, className, ...props }: ServiceRequest
     setValue("requestedTotalHours", totalHours)
   }, [watchedDurationType, watchedDurationValue, setValue])
 
-  // Debounced address search
+  // Debounced address search using server-side proxy
   const searchAddresses = React.useCallback(async (query: string) => {
     if (query.length < 3) {
       setJobSiteSuggestions([])
@@ -96,15 +96,23 @@ export function ServiceRequestForm({ user, className, ...props }: ServiceRequest
 
     setIsLoadingAddresses(true)
     try {
-      const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&addressdetails=1&limit=5&countrycodes=us`
+      const url = `/api/geocoding?q=${encodeURIComponent(query)}`
       
       const response = await fetch(url)
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
       const data = await response.json()
       
       setJobSiteSuggestions(data || [])
     } catch (error) {
       console.error("Address search error:", error)
       setJobSiteSuggestions([])
+      toast({
+        title: "Address search unavailable",
+        description: "Unable to search for addresses at the moment. Please enter the address manually.",
+        variant: "destructive",
+      })
     } finally {
       setIsLoadingAddresses(false)
     }
@@ -135,30 +143,66 @@ export function ServiceRequestForm({ user, className, ...props }: ServiceRequest
   async function onSubmit(data: FormData) {
     setIsSaving(true)
 
-    const response = await fetch("/api/service-requests", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
+    try {
+      const response = await fetch("/api/service-requests", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      })
 
-    setIsSaving(false)
+      if (!response.ok) {
+        let errorMessage = "Your service request was not created. Please try again."
+        
+        try {
+          const errorData = await response.json()
+          if (response.status === 422) {
+            // Validation errors
+            errorMessage = "Please check your form data and try again."
+            if (Array.isArray(errorData) && errorData.length > 0) {
+              errorMessage = `Validation error: ${errorData[0].message}`
+            }
+          } else if (response.status === 403) {
+            errorMessage = "You are not authorized to create service requests. Please log in and try again."
+          } else if (response.status === 500) {
+            errorMessage = "A server error occurred. Please try again later."
+          } else if (errorData?.message) {
+            errorMessage = errorData.message
+          }
+        } catch {
+          // If we can't parse the error response, use status-based messages
+          if (response.status === 403) {
+            errorMessage = "You are not authorized to create service requests. Please log in and try again."
+          } else if (response.status >= 500) {
+            errorMessage = "A server error occurred. Please try again later."
+          }
+        }
 
-    if (!response?.ok) {
-      return toast({
-        title: "Something went wrong.",
-        description: "Your service request was not created. Please try again.",
+        return toast({
+          title: "Failed to create service request",
+          description: errorMessage,
+          variant: "destructive",
+        })
+      }
+
+      toast({
+        description: "Your service request has been created successfully.",
+      })
+
+      // Navigate and refresh after successful creation
+      router.push("/dashboard")
+      router.refresh()
+    } catch (error) {
+      console.error("Service request creation error:", error)
+      toast({
+        title: "Network error",
+        description: "Unable to connect to the server. Please check your internet connection and try again.",
         variant: "destructive",
       })
+    } finally {
+      setIsSaving(false)
     }
-
-    toast({
-      description: "Your service request has been created successfully.",
-    })
-
-    router.push("/dashboard")
-    router.refresh()
   }
 
   return (

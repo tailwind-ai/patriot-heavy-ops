@@ -36,20 +36,40 @@ export function ServiceRequestOperations({
   const [isDeleteLoading, setIsDeleteLoading] = React.useState<boolean>(false)
 
   async function deleteServiceRequest() {
-    const response = await fetch(`/api/service-requests/${serviceRequest.id}`, {
-      method: "DELETE",
-    })
+    try {
+      const response = await fetch(`/api/service-requests/${serviceRequest.id}`, {
+        method: "DELETE",
+      })
 
-    if (!response?.ok) {
+      if (!response.ok) {
+        let errorMessage = "Your service request was not deleted. Please try again."
+        
+        if (response.status === 403) {
+          errorMessage = "You are not authorized to delete this service request."
+        } else if (response.status === 404) {
+          errorMessage = "Service request not found. It may have already been deleted."
+        } else if (response.status >= 500) {
+          errorMessage = "A server error occurred. Please try again later."
+        }
+
+        toast({
+          title: "Failed to delete service request",
+          description: errorMessage,
+          variant: "destructive",
+        })
+        return false
+      }
+
+      return true
+    } catch (error) {
+      console.error("Delete service request error:", error)
       toast({
-        title: "Something went wrong.",
-        description: "Your service request was not deleted. Please try again.",
+        title: "Network error",
+        description: "Unable to connect to the server. Please check your internet connection and try again.",
         variant: "destructive",
       })
       return false
     }
-
-    return true
   }
 
   return (
