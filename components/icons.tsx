@@ -26,6 +26,7 @@ import {
   X,
   type Icon as LucideIcon,
 } from "lucide-react"
+import NextImage from "next/image"
 
 export type Icon = LucideIcon
 
@@ -70,9 +71,11 @@ export const Icons = {
     </svg>
   ),
   linkedin: ({ ...props }: LucideProps) => (
-    <img
+    <NextImage
       src="/images/linkedin-icon.png"
       alt="LinkedIn"
+      width={20}
+      height={20}
       className="h-5 w-5"
       {...props}
     />
