@@ -185,7 +185,7 @@ export function UserAuthForm({ className, mode = "login", ...props }: UserAuthFo
           )}
           <button className={cn(buttonVariants())} disabled={isLoading}>
             {isLoading && (
-              <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+              <Icons.spinner className="mr-2 size-4 animate-spin" />
             )}
             {isRegisterMode ? "Create Account" : "Sign In"}
           </button>
@@ -211,9 +211,9 @@ export function UserAuthForm({ className, mode = "login", ...props }: UserAuthFo
         disabled={isLoading || isGitHubLoading}
       >
         {isGitHubLoading ? (
-          <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+          <Icons.spinner className="mr-2 size-4 animate-spin" />
         ) : (
-          <Icons.gitHub className="mr-2 h-4 w-4" />
+          <Icons.gitHub className="mr-2 size-4" />
         )}{" "}
         Github
       </button>
