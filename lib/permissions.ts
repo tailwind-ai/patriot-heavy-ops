@@ -62,7 +62,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     'manage_operator_profile',
     'update_availability',
     'view_operator_dashboard',
-    // Operators can also submit requests as contractors
+    // Operators can also submit requests as regular users
     'submit_requests',
     'view_own_requests',
     'edit_own_requests',
@@ -89,7 +89,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     'manage_operator_profile',
     'update_availability',
     'view_operator_dashboard',
-    // Managers can also submit requests
+    // Managers can also submit requests as regular users
     'submit_requests',
     'view_own_requests',
     'edit_own_requests',

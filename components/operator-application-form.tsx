@@ -66,8 +66,8 @@ export function OperatorApplicationForm({ user, className, ...props }: OperatorA
 
     setIsLoading(true)
     try {
-      const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&addressdetails=1&limit=5&countrycodes=us`
-      
+      const url = `/api/geocoding?q=${encodeURIComponent(query)}`
+
       const response = await fetch(url)
       const data = await response.json()
       

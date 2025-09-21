@@ -22,7 +22,7 @@ async function verifyCurrentUserHasAccessToRequest(requestId: string) {
   const count = await db.serviceRequest.count({
     where: {
       id: requestId,
-      requesterId: session.user.id,
+      userId: session.user.id,
     },
   })
 
@@ -45,7 +45,7 @@ export async function GET(
         id: params.requestId,
       },
       include: {
-        requester: {
+        user: {
           select: {
             id: true,
             name: true,

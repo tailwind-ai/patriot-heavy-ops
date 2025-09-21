@@ -9,7 +9,7 @@
   "description": "Connect contractors with vetted heavy equipment operators (military-trained) for construction and industrial projects.",
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && sh -c 'if [ \"$VERCEL\" = \"1\" ]; then prisma migrate reset --force --skip-seed && prisma migrate deploy; fi' && next build",
+    "build": "prisma generate && sh -c 'if [ \"$VERCEL\" = \"1\" ]; then prisma migrate deploy; fi' && next build",
     "start": "next start",
     "lint": "next lint",
     "preview": "next build && next start",

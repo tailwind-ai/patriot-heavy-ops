@@ -34,7 +34,7 @@ export async function GET() {
           estimatedCost: true,
           createdAt: true,
           updatedAt: true,
-          requester: {
+          user: {
             select: {
               name: true,
               email: true,
@@ -65,7 +65,7 @@ export async function GET() {
         },
         where: {
           OR: [
-            { requesterId: user.id }, // Their own requests
+            { userId: user.id }, // Their own requests
             { 
               userAssignments: {
                 some: {
@@ -97,7 +97,7 @@ export async function GET() {
           updatedAt: true,
         },
         where: {
-          requesterId: user.id,
+          userId: user.id,
         },
         orderBy: {
           createdAt: "desc",
@@ -151,7 +151,7 @@ export async function POST(req: Request) {
         rateType: body.rateType,
         baseRate: body.baseRate,
         status: "SUBMITTED",
-        requesterId: user.id,
+        userId: user.id,
       },
       select: {
         id: true,
