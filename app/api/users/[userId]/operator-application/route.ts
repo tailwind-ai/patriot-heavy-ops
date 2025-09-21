@@ -29,25 +29,52 @@ export async function POST(
     const body = await req.json()
     const payload = operatorApplicationSchema.parse(body)
 
-    // For now, we'll just log the application since we don't have the full operator model yet
-    // In Phase 2, this will create an operator application record
-    console.log(`Operator application submitted for user ${session.user.id}:`, payload)
+    // Update user record with operator application data
+    // Since we consolidated User and Operator tables, we store the location in preferredLocations
+    const updatedUser = await db.user.update({
+      where: {
+        id: session.user.id,
+      },
+      data: {
+        preferredLocations: [payload.location], // Store the service area
+        // Note: Role change to OPERATOR should be handled by admin approval workflow
+        // For now, we keep the user as USER until admin approves the application
+      },
+    })
 
-    // TODO: In Phase 2, create operator application record in database
-    // await db.operatorApplication.create({
-    //   data: {
-    //     userId: session.user.id,
-    //     location: payload.location,
-    //     status: "pending",
-    //   },
-    // })
+    console.log(`Operator application submitted and saved for user ${session.user.id}:`, {
+      location: payload.location,
+      userId: session.user.id,
+    })
 
-    return new Response(JSON.stringify({ success: true }), { status: 200 })
+    return new Response(JSON.stringify({ 
+      success: true, 
+      message: "Operator application submitted successfully",
+      data: {
+        userId: updatedUser.id,
+        preferredLocations: updatedUser.preferredLocations,
+        role: updatedUser.role,
+      }
+    }), { 
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
   } catch (error) {
     if (error instanceof z.ZodError) {
       return new Response(JSON.stringify(error.issues), { status: 422 })
     }
 
-    return new Response(null, { status: 500 })
+    console.error("Error processing operator application:", error)
+    return new Response(JSON.stringify({ 
+      error: "Failed to process operator application",
+      message: "An error occurred while saving your application. Please try again."
+    }), { 
+      status: 500,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
   }
 }
