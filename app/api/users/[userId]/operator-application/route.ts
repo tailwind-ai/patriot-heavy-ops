@@ -29,14 +29,28 @@ export async function POST(
     const body = await req.json()
     const payload = operatorApplicationSchema.parse(body)
 
+    // First, get the current user to preserve existing data
+    const existingUser = await db.user.findUnique({
+      where: { id: session.user.id },
+      select: { preferredLocations: true }
+    })
+
     // Update user record with operator application data
-    // Since we consolidated User and Operator tables, we store the location in preferredLocations
+    // Preserve existing preferred locations and add the new service area
+    // 
+    // TODO: Consider adding a dedicated field like 'pendingOperatorApplication' or separate table
+    // to distinguish between user location preferences and operator service area applications.
+    // For now, we use preferredLocations as it serves the immediate need and can be filtered
+    // by admin approval workflow based on user role.
     const updatedUser = await db.user.update({
       where: {
         id: session.user.id,
       },
       data: {
-        preferredLocations: [payload.location], // Store the service area
+        // Preserve existing preferred locations and add new service area if not already present
+        preferredLocations: existingUser?.preferredLocations?.includes(payload.location) 
+          ? existingUser.preferredLocations 
+          : [...(existingUser?.preferredLocations || []), payload.location],
         // Note: Role change to OPERATOR should be handled by admin approval workflow
         // For now, we keep the user as USER until admin approves the application
       },
