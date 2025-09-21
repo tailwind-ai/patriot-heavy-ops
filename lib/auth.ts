@@ -46,23 +46,40 @@ export const authOptions: NextAuthOptions = {
 
           console.log("Attempting to authenticate:", credentials.email)
 
-          const user = await db.user.findUnique({
+          // First check if user exists without loading password
+          const userExists = await db.user.findUnique({
             where: {
               email: credentials.email.toLowerCase(),
             },
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              image: true,
+            },
           })
 
-          if (!user) {
+          if (!userExists) {
             console.log("User not found:", credentials.email)
             return null
           }
 
-          if (!user.password) {
+          // Get password hash separately for verification
+          const passwordData = await db.user.findUnique({
+            where: {
+              email: credentials.email.toLowerCase(),
+            },
+            select: {
+              password: true,
+            },
+          })
+
+          if (!passwordData?.password) {
             console.log("User has no password set")
             return null
           }
 
-          const isValid = await verifyPassword(credentials.password, user.password)
+          const isValid = await verifyPassword(credentials.password, passwordData.password)
 
           if (!isValid) {
             console.log("Invalid password for:", credentials.email)
@@ -71,10 +88,10 @@ export const authOptions: NextAuthOptions = {
 
           console.log("Authentication successful for:", credentials.email)
           return {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            image: user.image,
+            id: userExists.id,
+            email: userExists.email,
+            name: userExists.name,
+            image: userExists.image,
           }
         } catch (error) {
           console.error("Auth error:", error)
