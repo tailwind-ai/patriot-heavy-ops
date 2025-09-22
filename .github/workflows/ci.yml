@@ -42,6 +42,7 @@ jobs:
           echo "DATABASE_URL=postgresql://postgres:postgres@localhost:5432/test" > .env.local
           echo "NEXTAUTH_SECRET=ci-test-secret" >> .env.local
           echo "NEXTAUTH_URL=http://localhost:3000" >> .env.local
+          echo "NEXT_PUBLIC_APP_URL=http://localhost:3000" >> .env.local
 
       - name: Run database migrations
         run: npx prisma migrate deploy
@@ -50,9 +51,13 @@ jobs:
 
       - name: Run TypeScript check
         run: npx tsc --noEmit
+        env:
+          NEXT_PUBLIC_APP_URL: http://localhost:3000
 
       - name: Run ESLint
         run: npm run lint
+        env:
+          NEXT_PUBLIC_APP_URL: http://localhost:3000
 
       - name: Run tests with coverage
         run: npm run test:ci
@@ -60,6 +65,7 @@ jobs:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test
           NEXTAUTH_SECRET: ci-test-secret
           NEXTAUTH_URL: http://localhost:3000
+          NEXT_PUBLIC_APP_URL: http://localhost:3000
 
       - name: Upload coverage reports
         uses: actions/upload-artifact@v4
@@ -79,6 +85,7 @@ jobs:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test
           NEXTAUTH_SECRET: ci-test-secret
           NEXTAUTH_URL: http://localhost:3000
+          NEXT_PUBLIC_APP_URL: http://localhost:3000
 
   integration:
     runs-on: ubuntu-latest
