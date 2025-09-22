@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
 
     // Hash password and create user
     const hashedPassword = await hashPassword(password)
-    
+
     const user = await db.user.create({
       data: {
         name,
@@ -37,7 +37,9 @@ export async function POST(request: NextRequest) {
     })
 
     // Remove password from response
-    const { password: _password, ...userWithoutPassword } = user
+    const { password, ...userWithoutPassword } = user
+    // Explicitly ignore password variable
+    void password
 
     return NextResponse.json({
       message: "User created successfully",

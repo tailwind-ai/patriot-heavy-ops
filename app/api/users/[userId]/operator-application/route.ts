@@ -42,10 +42,7 @@ export async function POST(
       },
     })
 
-    console.log(`Operator application submitted and saved for user ${session.user.id}:`, {
-      location: payload.location,
-      userId: session.user.id,
-    })
+    // Operator application submitted and saved
 
     return new Response(JSON.stringify({ 
       success: true, 
@@ -66,7 +63,7 @@ export async function POST(
       return new Response(JSON.stringify(error.issues), { status: 422 })
     }
 
-    console.error("Error processing operator application:", error)
+    // Error processing operator application
     return new Response(JSON.stringify({ 
       error: "Failed to process operator application",
       message: "An error occurred while saving your application. Please try again."

@@ -8,7 +8,7 @@ import { ButtonProps, buttonVariants } from "@/components/ui/button"
 import { toast } from "@/components/ui/use-toast"
 import { Icons } from "@/components/icons"
 
-interface PostCreateButtonProps extends ButtonProps {}
+type PostCreateButtonProps = ButtonProps
 
 export function PostCreateButton({
   className,

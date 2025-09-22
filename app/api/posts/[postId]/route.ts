@@ -27,7 +27,7 @@ export async function DELETE(
     // Delete the post.
     await db.post.delete({
       where: {
-        id: params.postId as string,
+        id: params.postId,
       },
     })
 

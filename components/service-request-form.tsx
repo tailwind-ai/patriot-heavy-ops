@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form"
 import * as z from "zod"
 
 import { cn } from "@/lib/utils"
-import { serviceRequestSchema, equipmentCategories, transportOptions, durationTypes, rateTypes, calculateTotalHours } from "@/lib/validations/service-request"
+import { serviceRequestSchema, calculateTotalHours } from "@/lib/validations/service-request"
 import { buttonVariants } from "@/components/ui/button"
 import {
   Card,

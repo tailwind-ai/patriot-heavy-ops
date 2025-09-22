@@ -3,7 +3,7 @@ import Link from "next/link"
 import Image from "next/image"
 
 import { MainNavItem } from "types"
-import { siteConfig } from "@/config/site"
+// Removed unused siteConfig import
 import { cn } from "@/lib/utils"
 import { useLockBody } from "@/hooks/use-lock-body"
 import { Icons } from "@/components/icons"
@@ -28,6 +28,9 @@ export function MobileNav({ items, children, onClose }: MobileNavProps) {
       <div 
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
         onClick={onClose}
+        onKeyDown={(e) => e.key === 'Enter' && onClose()}
+        role="button"
+        tabIndex={0}
       />
       
       {/* Menu Panel - Slides in from right */}
