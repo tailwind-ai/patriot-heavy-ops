@@ -4,8 +4,7 @@ import * as z from "zod"
 import { authOptions } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { serviceRequestUpdateSchema } from "@/lib/validations/service-request"
-import { getCurrentUserWithRole } from "@/lib/session"
-import { hasPermission, canManageUser } from "@/lib/permissions"
+// Removed unused permission imports
 
 const routeContextSchema = z.object({
   params: z.object({
@@ -78,7 +77,7 @@ export async function GET(
     }
 
     return new Response(JSON.stringify(serviceRequest))
-  } catch (error) {
+  } catch {
     return new Response(null, { status: 500 })
   }
 }
@@ -104,13 +103,23 @@ export async function PATCH(
       data: {
         ...(body.status !== undefined && { status: body.status }),
         ...(body.title !== undefined && { title: body.title }),
-        ...(body.description !== undefined && { description: body.description }),
+        ...(body.description !== undefined && {
+          description: body.description,
+        }),
         ...(body.transport !== undefined && { transport: body.transport }),
-        ...(body.startDate !== undefined && { startDate: new Date(body.startDate) }),
+        ...(body.startDate !== undefined && {
+          startDate: new Date(body.startDate),
+        }),
         ...(body.endDate !== undefined && { endDate: new Date(body.endDate) }),
-        ...(body.equipmentCategory !== undefined && { equipmentCategory: body.equipmentCategory }),
-        ...(body.equipmentDetail !== undefined && { equipmentDetail: body.equipmentDetail }),
-        ...(body.internalNotes !== undefined && { internalNotes: body.internalNotes }),
+        ...(body.equipmentCategory !== undefined && {
+          equipmentCategory: body.equipmentCategory,
+        }),
+        ...(body.equipmentDetail !== undefined && {
+          equipmentDetail: body.equipmentDetail,
+        }),
+        ...(body.internalNotes !== undefined && {
+          internalNotes: body.internalNotes,
+        }),
         updatedAt: new Date(),
       },
       select: {

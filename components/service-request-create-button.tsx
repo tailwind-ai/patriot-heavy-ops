@@ -24,7 +24,7 @@ export function ServiceRequestCreateButton({
     try {
       // Navigate to the create service request page
       await router.push("/dashboard/requests/new")
-    } catch (error) {
+    } catch {
       // Navigation error
       toast({
         title: "Navigation failed",

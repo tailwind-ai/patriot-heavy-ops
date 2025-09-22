@@ -1,5 +1,8 @@
 import { getServerSession } from "next-auth/next"
+import { getServerSession } from "next-auth/next"
 import * as z from "zod"
+
+import { authOptions } from "@/lib/auth"
 
 import { authOptions } from "@/lib/auth"
 import { db } from "@/lib/db"
