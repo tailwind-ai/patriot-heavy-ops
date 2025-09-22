@@ -2,6 +2,9 @@ import { NextRequest } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { UserRole } from '@/lib/permissions'
 
+// Extract getServerSession mock to avoid duplication
+const mockGetServerSession = getServerSession as jest.MockedFunction<typeof getServerSession>
+
 /**
  * Create a mock NextRequest for testing API routes
  */
@@ -44,8 +47,6 @@ export function mockSession(user: {
   email?: string | null
   role?: UserRole
 }) {
-  const mockGetServerSession = getServerSession as jest.MockedFunction<typeof getServerSession>
-  
   mockGetServerSession.mockResolvedValue({
     user: {
       id: user.id,
@@ -61,7 +62,6 @@ export function mockSession(user: {
  * Mock no session (unauthenticated user)
  */
 export function mockNoSession() {
-  const mockGetServerSession = getServerSession as jest.MockedFunction<typeof getServerSession>
   mockGetServerSession.mockResolvedValue(null)
 }
 

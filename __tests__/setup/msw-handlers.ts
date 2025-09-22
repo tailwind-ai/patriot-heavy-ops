@@ -1,4 +1,5 @@
 import { rest } from 'msw'
+import crypto from 'crypto'
 import { MOCK_GEOCODING_RESPONSE, MOCK_STRIPE_EVENTS } from '../helpers/mock-data'
 
 /**
@@ -128,7 +129,6 @@ export const errorHandlers = [
  * Helper to create Stripe webhook signature for testing
  */
 export function createStripeWebhookSignature(payload: string, secret: string = 'whsec_test123'): string {
-  const crypto = require('crypto')
   const timestamp = Math.floor(Date.now() / 1000)
   const signedPayload = `${timestamp}.${payload}`
   const signature = crypto.createHmac('sha256', secret).update(signedPayload, 'utf8').digest('hex')
