@@ -25,8 +25,8 @@ describe('NextAuth configuration', () => {
       }
     })
 
-    it('should have trustHost enabled', () => {
-      expect(authOptions.trustHost).toBe(true)
+    it('should have secure cookies in production', () => {
+      expect(authOptions.useSecureCookies).toBe(process.env.NODE_ENV === 'production')
     })
 
     it('should have debug enabled in development', () => {

@@ -134,11 +134,11 @@ export async function POST(req: Request) {
     const serviceRequest = await db.serviceRequest.create({
       data: {
         title: body.title,
-        description: body.description,
+        description: body.description ?? null,
         contactName: body.contactName,
         contactEmail: body.contactEmail,
         contactPhone: body.contactPhone,
-        company: body.company,
+        company: body.company ?? null,
         jobSite: body.jobSite,
         transport: body.transport,
         startDate: new Date(body.startDate),
