@@ -55,6 +55,7 @@ export function PostCreateButton({
     router.refresh()
 
     router.push(`/editor/${post.id}`)
+    return
   }
 
   return (

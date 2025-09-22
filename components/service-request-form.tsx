@@ -193,6 +193,7 @@ export function ServiceRequestForm({ user, className, ...props }: ServiceRequest
       // Navigate and refresh after successful creation
       router.push("/dashboard")
       router.refresh()
+      return
     } catch (error) {
       console.error("Service request creation error:", error)
       toast({
@@ -200,6 +201,7 @@ export function ServiceRequestForm({ user, className, ...props }: ServiceRequest
         description: "Unable to connect to the server. Please check your internet connection and try again.",
         variant: "destructive",
       })
+      return
     } finally {
       setIsSaving(false)
     }

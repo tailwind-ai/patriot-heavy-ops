@@ -71,6 +71,7 @@ export function UserNameForm({ user, className, ...props }: UserNameFormProps) {
     })
 
     router.refresh()
+    return
   }
 
   return (

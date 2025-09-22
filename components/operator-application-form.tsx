@@ -23,7 +23,8 @@ import { Label } from "@/components/ui/label"
 import { toast } from "@/components/ui/use-toast"
 import { Icons } from "@/components/icons"
 
-interface OperatorApplicationFormProps extends React.HTMLAttributes<HTMLFormElement> {
+interface OperatorApplicationFormProps
+  extends React.HTMLAttributes<HTMLFormElement> {
   user: Pick<User, "id" | "name">
 }
 
@@ -36,12 +37,15 @@ interface AddressSuggestion {
   place_id: string
 }
 
-export function OperatorApplicationForm({ user, className, ...props }: OperatorApplicationFormProps) {
+export function OperatorApplicationForm({
+  user,
+  className,
+  ...props
+}: OperatorApplicationFormProps) {
   const router = useRouter()
   const {
     handleSubmit,
     setValue,
-    watch,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(operatorApplicationSchema),
@@ -55,7 +59,7 @@ export function OperatorApplicationForm({ user, className, ...props }: OperatorA
   const [isLoading, setIsLoading] = React.useState(false)
   const debounceRef = React.useRef<NodeJS.Timeout>()
 
-  const selectedLocation = watch("location" as keyof OperatorApplicationFormData)
+  // const selectedLocation = watch("location")
 
   // Debounced address search
   const searchAddresses = React.useCallback(async (query: string) => {
@@ -70,10 +74,9 @@ export function OperatorApplicationForm({ user, className, ...props }: OperatorA
 
       const response = await fetch(url)
       const data = await response.json()
-      
+
       setSuggestions(data || [])
-    } catch (error) {
-      console.error("Address search error:", error)
+    } catch {
       setSuggestions([])
     } finally {
       setIsLoading(false)
@@ -83,11 +86,11 @@ export function OperatorApplicationForm({ user, className, ...props }: OperatorA
   // Handle input change with debouncing
   const handleInputChange = (value: string) => {
     setInputValue(value)
-    
+
     if (debounceRef.current) {
       clearTimeout(debounceRef.current)
     }
-    
+
     debounceRef.current = setTimeout(() => {
       searchAddresses(value)
     }, 300)
@@ -129,6 +132,7 @@ export function OperatorApplicationForm({ user, className, ...props }: OperatorA
     })
 
     router.refresh()
+    return
   }
 
   return (
@@ -141,14 +145,13 @@ export function OperatorApplicationForm({ user, className, ...props }: OperatorA
         <CardHeader>
           <CardTitle>Apply to Become an Operator</CardTitle>
           <CardDescription>
-            Are you a heavy equipment operator? Enter your service area so we can show job requests near you.
+            Are you a heavy equipment operator? Enter your service area so we
+            can show job requests near you.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid gap-1">
-            <Label htmlFor="location">
-              Service Area
-            </Label>
+            <Label htmlFor="location">Service Area</Label>
             <div className="relative">
               <Input
                 value={inputValue}
@@ -164,17 +167,25 @@ export function OperatorApplicationForm({ user, className, ...props }: OperatorA
                 <Icons.spinner className="absolute right-3 top-3 size-4 animate-spin" />
               )}
               {suggestions.length > 0 && (
-                <div className="absolute z-50 w-[400px] mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-auto">
+                <div className="absolute z-50 mt-1 max-h-60 w-[400px] overflow-auto rounded-md border border-gray-200 bg-white shadow-lg">
                   {suggestions.map((suggestion) => (
                     <div
                       key={suggestion.place_id}
+                      role="button"
+                      tabIndex={0}
                       onClick={() => handleAddressSelect(suggestion)}
-                      className="px-3 py-2 cursor-pointer hover:bg-gray-100 border-b border-gray-100 last:border-b-0"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault()
+                          handleAddressSelect(suggestion)
+                        }
+                      }}
+                      className="cursor-pointer border-b border-gray-100 px-3 py-2 last:border-b-0 hover:bg-gray-100"
                     >
-                      <div className="font-medium text-sm">
+                      <div className="text-sm font-medium">
                         {suggestion.display_name.split(",")[0]}
                       </div>
-                      <div className="text-xs text-gray-500 truncate">
+                      <div className="truncate text-xs text-gray-500">
                         {suggestion.display_name}
                       </div>
                     </div>
@@ -183,7 +194,9 @@ export function OperatorApplicationForm({ user, className, ...props }: OperatorA
               )}
             </div>
             {errors?.location && (
-              <p className="px-1 text-xs text-red-600">{errors.location.message}</p>
+              <p className="px-1 text-xs text-red-600">
+                {errors.location.message}
+              </p>
             )}
           </div>
         </CardContent>
@@ -193,9 +206,7 @@ export function OperatorApplicationForm({ user, className, ...props }: OperatorA
             className={cn(buttonVariants(), className)}
             disabled={isSaving}
           >
-            {isSaving && (
-              <Icons.spinner className="mr-2 size-4 animate-spin" />
-            )}
+            {isSaving && <Icons.spinner className="mr-2 size-4 animate-spin" />}
             <span>Apply Now</span>
           </button>
         </CardFooter>
