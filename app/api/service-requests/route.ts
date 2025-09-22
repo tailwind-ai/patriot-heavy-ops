@@ -4,7 +4,8 @@ import * as z from "zod"
 import { authOptions } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { serviceRequestSchema, calculateTotalHours } from "@/lib/validations/service-request"
-// Removed unused permission imports
+import { getCurrentUserWithRole } from "@/lib/session"
+import { hasPermission } from "@/lib/permissions"
 
 export async function GET() {
   try {

@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
     const data = await response.json()
 
     // Filter and sanitize the response data
-    const sanitizedData = data.map((item: unknown) => ({
+    const sanitizedData = data.map((item: any) => ({
       display_name: item.display_name,
       lat: item.lat,
       lon: item.lon,
