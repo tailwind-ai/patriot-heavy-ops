@@ -1,7 +1,7 @@
 import { PATCH } from '@/app/api/users/[userId]/route'
 import { 
   createMockRequest, 
-  createMockRouteContext,
+  createMockUserContext,
   getResponseJson, 
   assertResponse
 } from '@/__tests__/helpers/api-test-helpers'
@@ -19,12 +19,12 @@ jest.mock('next-auth/next')
 
 import { db } from '@/lib/db'
 
-const mockDb = db as jest.Mocked<typeof db>
+const mockDb = db as any
 const mockGetServerSession = getServerSession as jest.MockedFunction<typeof getServerSession>
 
 describe('/api/users/[userId]', () => {
   const mockUserId = 'test-user-id'
-  const mockContext = createMockRouteContext({ userId: mockUserId })
+  const mockContext = createMockUserContext(mockUserId)
 
   beforeEach(() => {
     jest.clearAllMocks()
