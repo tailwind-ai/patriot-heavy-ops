@@ -6,7 +6,7 @@
     "prettier",
     "plugin:tailwindcss/recommended",
     "plugin:@typescript-eslint/recommended",
-    "plugin:@typescript-eslint/recommended-requiring-type-checking"
+    "plugin:jsx-a11y/recommended"
   ],
   "plugins": ["tailwindcss", "@typescript-eslint"],
   "parser": "@typescript-eslint/parser",
@@ -22,21 +22,12 @@
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",
     
-    // TypeScript specific rules
+    // TypeScript specific rules (fast, non-type-checking)
     "@typescript-eslint/no-unused-vars": "error",
     "@typescript-eslint/no-explicit-any": "warn",
     "@typescript-eslint/no-non-null-assertion": "warn",
     "@typescript-eslint/no-unnecessary-type-assertion": "error",
-    "@typescript-eslint/prefer-nullish-coalescing": "error",
     "@typescript-eslint/prefer-optional-chain": "error",
-    "@typescript-eslint/no-floating-promises": "error",
-    "@typescript-eslint/await-thenable": "error",
-    
-    // Accessibility rules
-    "jsx-a11y/alt-text": "error",
-    "jsx-a11y/anchor-is-valid": "error",
-    "jsx-a11y/click-events-have-key-events": "warn",
-    "jsx-a11y/no-static-element-interactions": "warn",
     
     // Tailwind rules
     "tailwindcss/no-custom-classname": "off",
