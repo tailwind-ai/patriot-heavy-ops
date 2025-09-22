@@ -65,8 +65,8 @@ export async function PATCH(
         id: params.postId,
       },
       data: {
-        title: body.title,
-        content: body.content,
+        ...(body.title !== undefined && { title: body.title }),
+        ...(body.content !== undefined && { content: body.content }),
       },
     })
 
@@ -85,7 +85,7 @@ async function verifyCurrentUserHasAccessToPost(postId: string) {
   const count = await db.post.count({
     where: {
       id: postId,
-      authorId: session?.user.id,
+      ...(session?.user.id && { authorId: session.user.id }),
     },
   })
 

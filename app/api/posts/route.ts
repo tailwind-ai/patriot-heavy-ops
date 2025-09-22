@@ -69,7 +69,7 @@ export async function POST(req: Request) {
     const post = await db.post.create({
       data: {
         title: body.title,
-        content: body.content ?? null,
+        ...(body.content !== undefined && { content: body.content }),
         authorId: session.user.id,
       },
       select: {

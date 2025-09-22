@@ -21,7 +21,7 @@ export async function POST(req: Request) {
       env.STRIPE_WEBHOOK_SECRET
     )
   } catch (error) {
-    return new Response(`Webhook Error: ${error.message}`, { status: 400 })
+    return new Response(`Webhook Error: ${error instanceof Error ? error.message : 'Unknown error'}`, { status: 400 })
   }
 
   const session = event.data.object as Stripe.Checkout.Session
@@ -35,19 +35,21 @@ export async function POST(req: Request) {
     // Update the user stripe into in our database.
     // Since this is the initial subscription, we need to update
     // the subscription id and customer id.
-    await db.user.update({
-      where: {
-        id: session?.metadata?.userId,
-      },
+    if (session?.metadata?.userId) {
+      await db.user.update({
+        where: {
+          id: session.metadata.userId,
+        },
       data: {
         stripeSubscriptionId: subscription.id,
         stripeCustomerId: subscription.customer as string,
-        stripePriceId: subscription.items.data[0].price.id,
+        ...(subscription.items.data[0]?.price.id && { stripePriceId: subscription.items.data[0].price.id }),
         stripeCurrentPeriodEnd: new Date(
           subscription.current_period_end * 1000
         ),
       },
     })
+    }
   }
 
   if (event.type === "invoice.payment_succeeded") {
@@ -62,7 +64,7 @@ export async function POST(req: Request) {
         stripeSubscriptionId: subscription.id,
       },
       data: {
-        stripePriceId: subscription.items.data[0].price.id,
+        ...(subscription.items.data[0]?.price.id && { stripePriceId: subscription.items.data[0].price.id }),
         stripeCurrentPeriodEnd: new Date(
           subscription.current_period_end * 1000
         ),

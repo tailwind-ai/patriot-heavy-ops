@@ -102,9 +102,15 @@ export async function PATCH(
         id: params.requestId,
       },
       data: {
-        ...body,
-        startDate: body.startDate ? new Date(body.startDate) : undefined,
-        endDate: body.endDate ? new Date(body.endDate) : undefined,
+        ...(body.status !== undefined && { status: body.status }),
+        ...(body.title !== undefined && { title: body.title }),
+        ...(body.description !== undefined && { description: body.description }),
+        ...(body.transport !== undefined && { transport: body.transport }),
+        ...(body.startDate !== undefined && { startDate: new Date(body.startDate) }),
+        ...(body.endDate !== undefined && { endDate: new Date(body.endDate) }),
+        ...(body.equipmentCategory !== undefined && { equipmentCategory: body.equipmentCategory }),
+        ...(body.equipmentDetail !== undefined && { equipmentDetail: body.equipmentDetail }),
+        ...(body.internalNotes !== undefined && { internalNotes: body.internalNotes }),
         updatedAt: new Date(),
       },
       select: {
