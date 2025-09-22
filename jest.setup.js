@@ -56,39 +56,11 @@ jest.mock('next-auth/next', () => ({
 }))
 
 
+// Import whatwg-fetch for proper Response/Request polyfill
+import 'whatwg-fetch'
+
 // Global test utilities
 global.fetch = jest.fn()
-
-// Mock Next.js Response and Request
-global.Response = class Response {
-  constructor(body, init) {
-    this.body = body
-    this.status = init?.status || 200
-    this.statusText = init?.statusText || 'OK'
-    this.headers = new Map(Object.entries(init?.headers || {}))
-  }
-  
-  json() {
-    return Promise.resolve(JSON.parse(this.body))
-  }
-  
-  text() {
-    return Promise.resolve(this.body)
-  }
-}
-
-global.Request = class Request {
-  constructor(url, init) {
-    this.url = url
-    this.method = init?.method || 'GET'
-    this.headers = new Map(Object.entries(init?.headers || {}))
-    this.body = init?.body
-  }
-  
-  json() {
-    return Promise.resolve(JSON.parse(this.body))
-  }
-}
 
 // Setup for each test
 beforeEach(() => {

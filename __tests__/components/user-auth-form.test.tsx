@@ -396,7 +396,7 @@ describe('UserAuthForm', () => {
       })
     })
 
-    it('should normalize email to lowercase in registration', async () => {
+    it('should send email as entered in registration (normalization happens server-side)', async () => {
       const user = userEvent.setup()
       
       mockFetch.mockResolvedValue({
@@ -418,7 +418,7 @@ describe('UserAuthForm', () => {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             name: 'John Doe',
-            email: 'TEST@EXAMPLE.COM',
+            email: 'TEST@EXAMPLE.COM', // Email normalization happens server-side, not client-side
             password: 'MyStr0ng!P@ssw0rd',
             confirmPassword: 'MyStr0ng!P@ssw0rd',
           }),
