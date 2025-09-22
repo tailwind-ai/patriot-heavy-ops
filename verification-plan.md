@@ -85,6 +85,9 @@ npm run build && npm run lint && npm test && npx tsc --noEmit
 
 ### **Development Workflow Test**
 ```bash
+# Start Docker services (database)
+docker-compose up -d
+
 # Start development server
 npm run dev
 # Navigate to http://localhost:3000
@@ -96,9 +99,15 @@ npm run dev
 
 ### **Database Integration Test**
 ```bash
+# Start Docker database if not running
+docker-compose up -d
+
 # Ensure Prisma integration still works
 npx prisma generate
 npx prisma db push --preview-feature
+
+# Test database connection
+npx prisma db seed --preview-feature
 ```
 
 ---
