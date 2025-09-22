@@ -12,6 +12,7 @@
     "build": "prisma generate && sh -c 'if [ \"$VERCEL\" = \"1\" ]; then prisma migrate deploy; fi' && next build",
     "start": "next start",
     "lint": "next lint",
+    "lint:ci": "next lint --config .eslintrc.ci.json",
     "preview": "next build && next start",
     "postinstall": "prisma generate",
     "test": "jest",
