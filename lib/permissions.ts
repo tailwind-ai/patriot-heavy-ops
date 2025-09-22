@@ -224,8 +224,8 @@ export function hasEqualOrHigherRole(userRole: UserRole, targetRole: UserRole): 
 export function getLowerRoles(userRole: UserRole): UserRole[] {
   const currentLevel = ROLE_HIERARCHY[userRole]
   return Object.entries(ROLE_HIERARCHY)
-    .filter(([_, level]) => level < currentLevel)
-    .map(([role, _]) => role as UserRole)
+    .filter(([, level]) => level < currentLevel)
+    .map(([role]) => role as UserRole)
 }
 
 /**

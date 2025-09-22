@@ -108,8 +108,8 @@ export async function GET() {
     }
 
     return new Response(JSON.stringify(serviceRequests))
-  } catch (error) {
-    console.error("Error fetching service requests:", error)
+  } catch {
+    // Error fetching service requests
     return new Response(null, { status: 500 })
   }
 }

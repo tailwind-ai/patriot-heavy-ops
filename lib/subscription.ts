@@ -1,4 +1,4 @@
-// @ts-nocheck
+// TypeScript checking disabled for legacy Stripe integration
 // TODO: Fix this when we turn strict mode on.
 import { UserSubscriptionPlan } from "types"
 import { freePlan, proPlan } from "@/config/subscriptions"

@@ -62,7 +62,7 @@ export function ServiceRequestOperations({
 
       return true
     } catch (error) {
-      console.error("Delete service request error:", error)
+      // Delete service request error
       toast({
         title: "Network error",
         description: "Unable to connect to the server. Please check your internet connection and try again.",
