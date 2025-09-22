@@ -83,6 +83,8 @@ describe('/api/users/stripe', () => {
         const mockSubscriptionPlan = {
           isPro: true,
           stripeCustomerId: 'cus_123',
+          stripeSubscriptionId: 'sub_123',
+          stripeCurrentPeriodEnd: Date.now() + 86400000,
           name: 'PRO',
           description: 'Pro plan',
           stripePriceId: 'price_123',
@@ -92,7 +94,7 @@ describe('/api/users/stripe', () => {
         const mockPortalSession = {
           url: 'https://billing.stripe.com/session/123',
         }
-        mockStripe.billingPortal.sessions.create.mockResolvedValue(mockPortalSession as any)
+        ;(mockStripe.billingPortal.sessions.create as any).mockResolvedValue(mockPortalSession)
 
         const request = createMockRequest('GET', 'http://localhost:3000/api/users/stripe')
         const response = await GET(request)
@@ -112,13 +114,15 @@ describe('/api/users/stripe', () => {
         const mockSubscriptionPlan = {
           isPro: true,
           stripeCustomerId: 'cus_123',
+          stripeSubscriptionId: 'sub_123',
+          stripeCurrentPeriodEnd: Date.now() + 86400000,
           name: 'PRO',
           description: 'Pro plan',
           stripePriceId: 'price_123',
         }
         mockGetUserSubscriptionPlan.mockResolvedValue(mockSubscriptionPlan)
 
-        mockStripe.billingPortal.sessions.create.mockRejectedValue(new Error('Stripe API error'))
+        ;(mockStripe.billingPortal.sessions.create as any).mockRejectedValue(new Error('Stripe API error'))
 
         const request = createMockRequest('GET', 'http://localhost:3000/api/users/stripe')
         const response = await GET(request)
@@ -139,6 +143,8 @@ describe('/api/users/stripe', () => {
         const mockSubscriptionPlan = {
           isPro: false,
           stripeCustomerId: null,
+          stripeSubscriptionId: null,
+          stripeCurrentPeriodEnd: 0,
           name: 'Free',
           description: 'Free plan',
           stripePriceId: '',
@@ -148,7 +154,7 @@ describe('/api/users/stripe', () => {
         const mockCheckoutSession = {
           url: 'https://checkout.stripe.com/session/123',
         }
-        mockStripe.checkout.sessions.create.mockResolvedValue(mockCheckoutSession as any)
+        ;(mockStripe.checkout.sessions.create as any).mockResolvedValue(mockCheckoutSession)
 
         const request = createMockRequest('GET', 'http://localhost:3000/api/users/stripe')
         const response = await GET(request)
@@ -181,6 +187,8 @@ describe('/api/users/stripe', () => {
         const mockSubscriptionPlan = {
           isPro: true,
           stripeCustomerId: null, // No customer ID
+          stripeSubscriptionId: null,
+          stripeCurrentPeriodEnd: Date.now() + 86400000,
           name: 'PRO',
           description: 'Pro plan',
           stripePriceId: 'price_123',
@@ -190,7 +198,7 @@ describe('/api/users/stripe', () => {
         const mockCheckoutSession = {
           url: 'https://checkout.stripe.com/session/456',
         }
-        mockStripe.checkout.sessions.create.mockResolvedValue(mockCheckoutSession as any)
+        ;(mockStripe.checkout.sessions.create as any).mockResolvedValue(mockCheckoutSession)
 
         const request = createMockRequest('GET', 'http://localhost:3000/api/users/stripe')
         const response = await GET(request)
@@ -209,13 +217,15 @@ describe('/api/users/stripe', () => {
         const mockSubscriptionPlan = {
           isPro: false,
           stripeCustomerId: null,
+          stripeSubscriptionId: null,
+          stripeCurrentPeriodEnd: 0,
           name: 'Free',
           description: 'Free plan',
           stripePriceId: '',
         }
         mockGetUserSubscriptionPlan.mockResolvedValue(mockSubscriptionPlan)
 
-        mockStripe.checkout.sessions.create.mockRejectedValue(new Error('Stripe checkout error'))
+        ;(mockStripe.checkout.sessions.create as any).mockRejectedValue(new Error('Stripe checkout error'))
 
         const request = createMockRequest('GET', 'http://localhost:3000/api/users/stripe')
         const response = await GET(request)
@@ -280,6 +290,8 @@ describe('/api/users/stripe', () => {
         const mockSubscriptionPlan = {
           isPro: true,
           stripeCustomerId: '', // Empty string
+          stripeSubscriptionId: null,
+          stripeCurrentPeriodEnd: Date.now() + 86400000,
           name: 'PRO',
           description: 'Pro plan',
           stripePriceId: 'price_123',
@@ -289,7 +301,7 @@ describe('/api/users/stripe', () => {
         const mockCheckoutSession = {
           url: 'https://checkout.stripe.com/session/789',
         }
-        mockStripe.checkout.sessions.create.mockResolvedValue(mockCheckoutSession as any)
+        ;(mockStripe.checkout.sessions.create as any).mockResolvedValue(mockCheckoutSession)
 
         const request = createMockRequest('GET', 'http://localhost:3000/api/users/stripe')
         const response = await GET(request)
@@ -310,6 +322,8 @@ describe('/api/users/stripe', () => {
         const mockSubscriptionPlan = {
           isPro: false,
           stripeCustomerId: null,
+          stripeSubscriptionId: null,
+          stripeCurrentPeriodEnd: 0,
           name: 'Free',
           description: 'Free plan',
           stripePriceId: '',
@@ -319,7 +333,7 @@ describe('/api/users/stripe', () => {
         const mockCheckoutSession = {
           url: 'https://checkout.stripe.com/session/special',
         }
-        mockStripe.checkout.sessions.create.mockResolvedValue(mockCheckoutSession as any)
+        ;(mockStripe.checkout.sessions.create as any).mockResolvedValue(mockCheckoutSession)
 
         const request = createMockRequest('GET', 'http://localhost:3000/api/users/stripe')
         const response = await GET(request)

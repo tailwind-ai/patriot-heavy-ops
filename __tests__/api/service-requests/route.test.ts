@@ -70,9 +70,9 @@ describe("/api/service-requests", () => {
         expect(data).toEqual(
           expect.arrayContaining([
             expect.objectContaining({
-              id: mockRequests[0].id,
-              title: mockRequests[0].title,
-              userId: mockRequests[0].userId,
+              id: mockRequests[0]!.id,
+              title: mockRequests[0]!.title,
+              userId: mockRequests[0]!.userId,
             }),
           ])
         )
