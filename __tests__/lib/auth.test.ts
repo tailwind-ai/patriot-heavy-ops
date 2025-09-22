@@ -75,14 +75,14 @@ describe('NextAuth configuration', () => {
         name: 'John Doe',
         email: 'john@example.com',
         picture: null,
-        role: 'ADMIN',
-      }
+        role: 'ADMIN' as any,
+      } as any
       const session = {
-        user: {},
+        user: {} as any,
         expires: '2024-12-31',
-      }
+      } as any
       
-      const result = await sessionCallback!({ token, session })
+      const result = await sessionCallback!({ token, session, user: {} as any, newSession: {}, trigger: 'update' } as any)
       
       expect(result).toEqual({
         user: {
@@ -97,13 +97,13 @@ describe('NextAuth configuration', () => {
     })
 
     it('should handle missing token data gracefully', async () => {
-      const token = {}
+      const token = {} as any
       const session = {
-        user: { existingData: 'test' },
+        user: { existingData: 'test' } as any,
         expires: '2024-12-31',
-      }
+      } as any
       
-      const result = await sessionCallback!({ token, session })
+      const result = await sessionCallback!({ token, session, user: {} as any, newSession: {}, trigger: 'update' } as any)
       
       expect(result).toEqual({
         user: {
@@ -124,19 +124,19 @@ describe('NextAuth configuration', () => {
         name: 'John Doe',
         email: 'john@example.com',
         picture: 'avatar.jpg',
-        role: 'USER',
-      }
+        role: 'USER' as any,
+      } as any
       const session = {
-        user: {},
+        user: {} as any,
         expires: '2024-12-31',
         customField: 'preserved',
-      }
+      } as any
       
-      const result = await sessionCallback!({ token, session })
+      const result = await sessionCallback!({ token, session, user: {} as any, newSession: {}, trigger: 'update' } as any)
       
       expect(result.expires).toBe('2024-12-31')
-      expect(result.customField).toBe('preserved')
-      expect(result.user.image).toBe('avatar.jpg')
+      expect((result as any).customField).toBe('preserved')
+      expect(result.user?.image).toBe('avatar.jpg')
     })
   })
 
