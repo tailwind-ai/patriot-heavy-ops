@@ -64,7 +64,7 @@ describe('Service Request Validation Schemas', () => {
         
         expect(result.success).toBe(false)
         if (!result.success) {
-          expect(result.error.issues[0].message).toBe('Title is required')
+          expect(result.error.issues[0]?.message).toBe('Title is required')
         }
       })
 
@@ -115,7 +115,7 @@ describe('Service Request Validation Schemas', () => {
         const result = serviceRequestSchema.safeParse(data)
         expect(result.success).toBe(false)
         if (!result.success) {
-          expect(result.error.issues[0].message).toBe('Contact name is required')
+          expect(result.error.issues[0]?.message).toBe('Contact name is required')
         }
       })
 
@@ -139,7 +139,7 @@ describe('Service Request Validation Schemas', () => {
           const result = serviceRequestSchema.safeParse(data)
           expect(result.success).toBe(false)
           if (!result.success) {
-            expect(result.error.issues[0].message).toBe('Valid email is required')
+            expect(result.error.issues[0]?.message).toBe('Valid email is required')
           }
         })
       })
@@ -160,7 +160,7 @@ describe('Service Request Validation Schemas', () => {
           const result = serviceRequestSchema.safeParse(data)
           expect(result.success).toBe(false)
           if (!result.success) {
-            expect(result.error.issues[0].message).toBe('Valid phone number is required')
+            expect(result.error.issues[0]?.message).toBe('Valid phone number is required')
           }
         })
       })
@@ -196,7 +196,7 @@ describe('Service Request Validation Schemas', () => {
         const result = serviceRequestSchema.safeParse(data)
         expect(result.success).toBe(false)
         if (!result.success) {
-          expect(result.error.issues[0].message).toBe('Job site address is required')
+          expect(result.error.issues[0]?.message).toBe('Job site address is required')
         }
       })
 
@@ -213,8 +213,8 @@ describe('Service Request Validation Schemas', () => {
         expect(result.success).toBe(false)
         if (!result.success) {
           // Zod generates default enum error message when invalid value provided
-          expect(result.error.issues[0].message).toContain('Invalid enum value')
-          expect(result.error.issues[0].path).toEqual(['transport'])
+          expect(result.error.issues[0]?.message).toContain('Invalid enum value')
+          expect(result.error.issues[0]?.path).toEqual(['transport'])
         }
       })
 
@@ -234,7 +234,7 @@ describe('Service Request Validation Schemas', () => {
           const result = serviceRequestSchema.safeParse(data)
           expect(result.success).toBe(false)
           if (!result.success) {
-            expect(result.error.issues[0].message).toBe('Valid start date is required')
+            expect(result.error.issues[0]?.message).toBe('Valid start date is required')
           }
         })
       })
@@ -253,7 +253,7 @@ describe('Service Request Validation Schemas', () => {
         const result = serviceRequestSchema.safeParse(data)
         expect(result.success).toBe(false)
         if (!result.success) {
-          expect(result.error.issues[0].message).toBe('Valid end date required')
+          expect(result.error.issues[0]?.message).toBe('Valid end date required')
         }
       })
     })
@@ -271,8 +271,8 @@ describe('Service Request Validation Schemas', () => {
         const result = serviceRequestSchema.safeParse(data)
         expect(result.success).toBe(false)
         if (!result.success) {
-          expect(result.error.issues[0].message).toContain('Invalid enum value')
-          expect(result.error.issues[0].path).toEqual(['equipmentCategory'])
+          expect(result.error.issues[0]?.message).toContain('Invalid enum value')
+          expect(result.error.issues[0]?.path).toEqual(['equipmentCategory'])
         }
       })
 
@@ -290,7 +290,7 @@ describe('Service Request Validation Schemas', () => {
         const result = serviceRequestSchema.safeParse(data)
         expect(result.success).toBe(false)
         if (!result.success) {
-          expect(result.error.issues[0].message).toBe('Equipment details are required')
+          expect(result.error.issues[0]?.message).toBe('Equipment details are required')
         }
       })
     })
@@ -308,8 +308,8 @@ describe('Service Request Validation Schemas', () => {
         const result = serviceRequestSchema.safeParse(data)
         expect(result.success).toBe(false)
         if (!result.success) {
-          expect(result.error.issues[0].message).toContain('Invalid enum value')
-          expect(result.error.issues[0].path).toEqual(['requestedDurationType'])
+          expect(result.error.issues[0]?.message).toContain('Invalid enum value')
+          expect(result.error.issues[0]?.path).toEqual(['requestedDurationType'])
         }
       })
 
@@ -333,7 +333,7 @@ describe('Service Request Validation Schemas', () => {
           const result = serviceRequestSchema.safeParse(data)
           expect(result.success).toBe(false)
           if (!result.success) {
-            expect(result.error.issues[0].message).toBe(expectedMessage)
+            expect(result.error.issues[0]?.message).toBe(expectedMessage)
           }
         })
       })
@@ -354,7 +354,7 @@ describe('Service Request Validation Schemas', () => {
           const result = serviceRequestSchema.safeParse(data)
           expect(result.success).toBe(false)
           if (!result.success) {
-            expect(result.error.issues[0].message).toBe('Total hours must be positive')
+            expect(result.error.issues[0]?.message).toBe('Total hours must be positive')
           }
         })
       })
@@ -371,8 +371,8 @@ describe('Service Request Validation Schemas', () => {
         const result = serviceRequestSchema.safeParse(data)
         expect(result.success).toBe(false)
         if (!result.success) {
-          expect(result.error.issues[0].message).toContain('Invalid enum value')
-          expect(result.error.issues[0].path).toEqual(['rateType'])
+          expect(result.error.issues[0]?.message).toContain('Invalid enum value')
+          expect(result.error.issues[0]?.path).toEqual(['rateType'])
         }
       })
 
@@ -392,7 +392,7 @@ describe('Service Request Validation Schemas', () => {
           const result = serviceRequestSchema.safeParse(data)
           expect(result.success).toBe(false)
           if (!result.success) {
-            expect(result.error.issues[0].message).toBe('Base rate must be positive')
+            expect(result.error.issues[0]?.message).toBe('Base rate must be positive')
           }
         })
       })
