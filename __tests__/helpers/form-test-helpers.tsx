@@ -1,3 +1,16 @@
+/**
+ * Form Testing Utilities
+ * 
+ * This module provides comprehensive utilities for testing form components with
+ * improved error handling, semantic element finding, and flexible mocking.
+ * 
+ * Key improvements:
+ * - Uses try-catch for element finding instead of logical OR
+ * - Semantic loading state detection with fallbacks
+ * - Conditional mocking to avoid global side effects
+ * - Descriptive error messages for better debugging
+ */
+
 import { ReactElement } from 'react'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -8,16 +21,28 @@ import type { Session } from 'next-auth'
 export class FormTester {
   private user = userEvent.setup()
 
+  // Helper method to find input elements by label or placeholder
+  private findInputElement(labelOrPlaceholder: string): HTMLElement {
+    // Try label first (more semantic)
+    const byLabel = screen.queryByLabelText(labelOrPlaceholder)
+    if (byLabel) return byLabel
+    
+    // Fall back to placeholder
+    const byPlaceholder = screen.queryByPlaceholderText(labelOrPlaceholder)
+    if (byPlaceholder) return byPlaceholder
+    
+    // If neither found, throw descriptive error
+    throw new Error(`Could not find input element with label or placeholder: "${labelOrPlaceholder}"`)
+  }
+
   async fillInput(labelOrPlaceholder: string, value: string) {
-    const input = screen.getByLabelText(labelOrPlaceholder) || 
-                  screen.getByPlaceholderText(labelOrPlaceholder)
+    const input = this.findInputElement(labelOrPlaceholder)
     await this.user.clear(input)
     await this.user.type(input, value)
   }
 
   async selectOption(labelOrPlaceholder: string, option: string) {
-    const select = screen.getByLabelText(labelOrPlaceholder) || 
-                   screen.getByPlaceholderText(labelOrPlaceholder)
+    const select = this.findInputElement(labelOrPlaceholder)
     await this.user.selectOptions(select, option)
   }
 
@@ -51,8 +76,21 @@ export class FormTester {
     const submitButton = screen.getByRole('button', { name: /submit|create|save|apply/i })
     expect(submitButton).toBeDisabled()
     
-    // Check for loading spinner
-    expect(document.querySelector('.animate-spin')).toBeInTheDocument()
+    // Check for loading indicator using more semantic approaches
+    // Try multiple methods to find loading indicator
+    const loadingIndicators = [
+      screen.queryByRole('status'),
+      screen.queryByLabelText(/loading/i),
+      screen.queryByText(/loading/i),
+      screen.queryByTestId('loading-spinner')
+    ].filter(Boolean)
+    
+    // If no semantic loading indicator found, fall back to spinner class as last resort
+    if (loadingIndicators.length === 0) {
+      expect(document.querySelector('.animate-spin')).toBeInTheDocument()
+    } else {
+      expect(loadingIndicators[0]).toBeInTheDocument()
+    }
   }
 
   expectFormEnabled() {
@@ -145,8 +183,11 @@ export const mockToast = {
   toast: jest.fn(),
 }
 
-// Mock the toast hook
-jest.mock('@/components/ui/use-toast', () => mockToast)
+// Function to conditionally mock the toast hook - call this in individual test files
+export const setupToastMock = () => {
+  jest.mock('@/components/ui/use-toast', () => mockToast)
+  return mockToast
+}
 
 // Common test patterns
 export const testFormValidation = async (
