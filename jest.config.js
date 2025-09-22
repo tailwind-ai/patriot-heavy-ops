@@ -20,6 +20,9 @@ const customJestConfig = {
     '^@/(.*)$': '<rootDir>/$1',
   },
   testEnvironment: 'jest-environment-jsdom',
+  testEnvironmentOptions: {
+    customExportConditions: [''],
+  },
   collectCoverageFrom: [
     'lib/**/*.{js,jsx,ts,tsx}',
     'components/**/*.{js,jsx,ts,tsx}',
