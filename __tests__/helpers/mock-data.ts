@@ -144,6 +144,35 @@ export const MOCK_USER_SUBSCRIPTION = {
  * Mock Stripe webhook event data
  */
 export const MOCK_STRIPE_EVENTS = {
+  CHECKOUT_SESSION_COMPLETED: {
+    id: 'evt_checkout_test123',
+    type: 'checkout.session.completed',
+    data: {
+      object: {
+        id: 'cs_test_session123',
+        customer: 'cus_test123',
+        subscription: 'sub_test123',
+        metadata: {
+          userId: 'user_test_123',
+        },
+        payment_status: 'paid',
+        mode: 'subscription',
+      },
+    },
+  },
+  INVOICE_PAYMENT_SUCCEEDED: {
+    id: 'evt_invoice_test125',
+    type: 'invoice.payment_succeeded',
+    data: {
+      object: {
+        id: 'in_test_invoice123',
+        customer: 'cus_test123',
+        subscription: 'sub_test123',
+        billing_reason: 'subscription_cycle',
+        payment_intent: 'pi_test123',
+      },
+    },
+  },
   CUSTOMER_SUBSCRIPTION_CREATED: {
     id: 'evt_test123',
     type: 'customer.subscription.created',
@@ -171,17 +200,6 @@ export const MOCK_STRIPE_EVENTS = {
       object: {
         id: 'sub_test123',
         customer: 'cus_test123',
-      },
-    },
-  },
-  INVOICE_PAYMENT_SUCCEEDED: {
-    id: 'evt_test125',
-    type: 'invoice.payment_succeeded',
-    data: {
-      object: {
-        customer: 'cus_test123',
-        subscription: 'sub_test123',
-        billing_reason: 'subscription_cycle',
       },
     },
   },
