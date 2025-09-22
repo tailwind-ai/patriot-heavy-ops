@@ -37,11 +37,12 @@ export function BillingForm({
     const response = await fetch("/api/users/stripe")
 
     if (!response?.ok) {
-      return toast({
+      toast({
         title: "Something went wrong.",
         description: "Please refresh the page and try again.",
         variant: "destructive",
       })
+      return
     }
 
     // Redirect to the Stripe session.
@@ -51,8 +52,6 @@ export function BillingForm({
     if (session) {
       window.location.href = session.url
     }
-    
-    return
   }
 
   return (
