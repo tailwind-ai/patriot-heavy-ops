@@ -74,8 +74,9 @@ export const Icons = {
     <NextImage
       src="/images/linkedin-icon.png"
       alt="LinkedIn"
-      width={width !== undefined ? Number(width) : 20}
-      height={height !== undefined ? Number(height) : 20}
+      width={Number(width)}
+      height={Number(height)}
+      {...otherProps}
     />
   ),
   gitHub: ({ ...props }: LucideProps) => (
