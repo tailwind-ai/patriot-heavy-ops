@@ -17,5 +17,12 @@ export function formatDate(input: string | number): string {
 }
 
 export function absoluteUrl(path: string) {
-  return `${env.NEXT_PUBLIC_APP_URL}${path}`
+  // Handle empty string case
+  if (path === '') {
+    return env.NEXT_PUBLIC_APP_URL
+  }
+  
+  // Ensure path starts with a slash for proper URL construction
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`
+  return `${env.NEXT_PUBLIC_APP_URL}${normalizedPath}`
 }
