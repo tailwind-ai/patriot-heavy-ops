@@ -48,7 +48,6 @@ describe('/api/service-requests', () => {
       it('should return 401 when no session exists', async () => {
         mockGetCurrentUserWithRole.mockResolvedValue(null)
 
-        const request = createMockRequest('GET')
         const response = await GET()
 
         assertResponse(response, 401)
@@ -65,7 +64,6 @@ describe('/api/service-requests', () => {
         ]
         mockDb.serviceRequest.findMany.mockResolvedValue(mockRequests)
 
-        const request = createMockRequest('GET')
         const response = await GET()
 
         assertResponse(response, 200)
@@ -104,7 +102,6 @@ describe('/api/service-requests', () => {
         ]
         mockDb.serviceRequest.findMany.mockResolvedValue(mockRequests)
 
-        const request = createMockRequest('GET')
         const response = await GET()
 
         assertResponse(response, 200)
@@ -141,7 +138,6 @@ describe('/api/service-requests', () => {
         const mockRequests = [MOCK_SERVICE_REQUEST]
         mockDb.serviceRequest.findMany.mockResolvedValue(mockRequests)
 
-        const request = createMockRequest('GET')
         const response = await GET()
 
         assertResponse(response, 200)
@@ -173,7 +169,6 @@ describe('/api/service-requests', () => {
         const mockRequests = [MOCK_SERVICE_REQUEST]
         mockDb.serviceRequest.findMany.mockResolvedValue(mockRequests)
 
-        const request = createMockRequest('GET')
         const response = await GET()
 
         assertResponse(response, 200)
@@ -206,7 +201,6 @@ describe('/api/service-requests', () => {
         
         mockDb.serviceRequest.findMany.mockRejectedValue(new Error('Database error'))
 
-        const request = createMockRequest('GET')
         const response = await GET()
 
         assertResponse(response, 500)
@@ -424,14 +418,16 @@ describe('/api/service-requests', () => {
         const user = { ...TEST_USERS.USER }
         mockGetCurrentUserWithRole.mockResolvedValue(user)
 
-        // Create request with invalid JSON
-        const request = new Request('http://localhost:3000/api/service-requests', {
-          method: 'POST',
+        // Create request with invalid JSON - using helper for consistency
+        const request = createMockRequest('POST', 'http://localhost:3000/api/service-requests')
+        // Override the body with invalid JSON by creating a new request
+        const invalidRequest = new Request(request.url, {
+          method: request.method,
           body: 'invalid json',
-          headers: { 'Content-Type': 'application/json' }
-        }) as any
+          headers: request.headers
+        })
 
-        const response = await POST(request)
+        const response = await POST(invalidRequest)
 
         assertResponse(response, 500)
       })

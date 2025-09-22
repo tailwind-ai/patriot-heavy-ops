@@ -48,8 +48,7 @@ describe('/api/service-requests/[requestId]', () => {
         
         mockDb.serviceRequest.count.mockResolvedValue(0)
 
-        const request = createMockRequest('GET')
-        const response = await GET(request, mockContext)
+        const response = await GET(createMockRequest('GET'), mockContext)
 
         assertResponse(response, 403)
       })
@@ -57,8 +56,7 @@ describe('/api/service-requests/[requestId]', () => {
       it('should return 403 when no session exists', async () => {
         mockGetServerSession.mockResolvedValue(null)
 
-        const request = createMockRequest('GET')
-        const response = await GET(request, mockContext)
+        const response = await GET(createMockRequest('GET'), mockContext)
 
         assertResponse(response, 403)
       })
@@ -72,8 +70,7 @@ describe('/api/service-requests/[requestId]', () => {
         mockDb.serviceRequest.count.mockResolvedValue(1)
         mockDb.serviceRequest.findUnique.mockResolvedValue(MOCK_SERVICE_REQUEST_WITH_RELATIONS)
 
-        const request = createMockRequest('GET')
-        const response = await GET(request, mockContext)
+        const response = await GET(createMockRequest('GET'), mockContext)
 
         assertResponse(response, 200)
         
@@ -97,8 +94,7 @@ describe('/api/service-requests/[requestId]', () => {
       it('should return service request with relations', async () => {
         mockDb.serviceRequest.findUnique.mockResolvedValue(MOCK_SERVICE_REQUEST_WITH_RELATIONS)
 
-        const request = createMockRequest('GET')
-        const response = await GET(request, mockContext)
+        const response = await GET(createMockRequest('GET'), mockContext)
 
         assertResponse(response, 200)
         
@@ -138,8 +134,7 @@ describe('/api/service-requests/[requestId]', () => {
       it('should return 404 when request does not exist', async () => {
         mockDb.serviceRequest.findUnique.mockResolvedValue(null)
 
-        const request = createMockRequest('GET')
-        const response = await GET(request, mockContext)
+        const response = await GET(createMockRequest('GET'), mockContext)
 
         assertResponse(response, 404)
       })
@@ -154,8 +149,7 @@ describe('/api/service-requests/[requestId]', () => {
         
         mockDb.serviceRequest.count.mockRejectedValue(new Error('Database error'))
 
-        const request = createMockRequest('GET')
-        const response = await GET(request, mockContext)
+        const response = await GET(createMockRequest('GET'), mockContext)
 
         assertResponse(response, 500)
       })
@@ -294,14 +288,16 @@ describe('/api/service-requests/[requestId]', () => {
         
         mockDb.serviceRequest.count.mockResolvedValue(1)
 
-        // Create request with invalid JSON
-        const request = new Request('http://localhost:3000/api/service-requests/test', {
-          method: 'PATCH',
+        // Create request with invalid JSON - using helper for consistency
+        const request = createMockRequest('PATCH', 'http://localhost:3000/api/service-requests/test')
+        // Override the body with invalid JSON by creating a new request
+        const invalidRequest = new Request(request.url, {
+          method: request.method,
           body: 'invalid json',
-          headers: { 'Content-Type': 'application/json' }
-        }) as any
+          headers: request.headers
+        })
 
-        const response = await PATCH(request, mockContext)
+        const response = await PATCH(invalidRequest, mockContext)
 
         assertResponse(response, 500)
       })
@@ -318,8 +314,7 @@ describe('/api/service-requests/[requestId]', () => {
         
         mockDb.serviceRequest.count.mockResolvedValue(0)
 
-        const request = createMockRequest('DELETE')
-        const response = await DELETE(request, mockContext)
+        const response = await DELETE(createMockRequest('DELETE'), mockContext)
 
         assertResponse(response, 403)
       })
@@ -333,8 +328,7 @@ describe('/api/service-requests/[requestId]', () => {
         mockDb.serviceRequest.count.mockResolvedValue(1)
         mockDb.serviceRequest.delete.mockResolvedValue(MOCK_SERVICE_REQUEST)
 
-        const request = createMockRequest('DELETE')
-        const response = await DELETE(request, mockContext)
+        const response = await DELETE(createMockRequest('DELETE'), mockContext)
 
         assertResponse(response, 204)
         
@@ -355,8 +349,7 @@ describe('/api/service-requests/[requestId]', () => {
         mockDb.serviceRequest.count.mockResolvedValue(1)
         mockDb.serviceRequest.delete.mockRejectedValue(new Error('Database error'))
 
-        const request = createMockRequest('DELETE')
-        const response = await DELETE(request, mockContext)
+        const response = await DELETE(createMockRequest('DELETE'), mockContext)
 
         assertResponse(response, 500)
       })
@@ -364,8 +357,7 @@ describe('/api/service-requests/[requestId]', () => {
       it('should handle invalid context parameters', async () => {
         const invalidContext = { params: {} } // Missing requestId
 
-        const request = createMockRequest('DELETE')
-        const response = await DELETE(request, invalidContext as any)
+        const response = await DELETE(createMockRequest('DELETE'), invalidContext as any)
 
         // This triggers a Zod validation error for missing requestId
         assertResponse(response, 422)
