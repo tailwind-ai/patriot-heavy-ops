@@ -5,7 +5,7 @@ import {
 } from "@/app/api/service-requests/[requestId]/route"
 import {
   createMockRequest,
-  createMockRouteContext,
+  createMockServiceRequestContext,
   getResponseJson,
   assertResponse,
   TEST_USERS,
@@ -40,7 +40,7 @@ const mockGetServerSession = getServerSession as jest.MockedFunction<
 
 describe("/api/service-requests/[requestId]", () => {
   const mockRequestId = "test-request-id"
-  const mockContext = createMockRouteContext({ requestId: mockRequestId })
+  const mockContext = createMockServiceRequestContext(mockRequestId)
 
   beforeEach(() => {
     jest.clearAllMocks()
