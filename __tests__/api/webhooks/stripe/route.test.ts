@@ -357,11 +357,8 @@ describe("/api/webhooks/stripe", () => {
 
         assertResponse(response, 200)
 
-        // Should still attempt to update user with undefined userId
-        expect(mockDb.user.update).toHaveBeenCalledWith({
-          where: { id: undefined },
-          data: expect.any(Object),
-        })
+        // Should not attempt to update user when userId is undefined
+        expect(mockDb.user.update).not.toHaveBeenCalled()
       })
 
       it("should handle missing subscription ID", async () => {

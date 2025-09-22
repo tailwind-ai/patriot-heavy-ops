@@ -109,9 +109,9 @@ describe('NextAuth configuration', () => {
         user: {
           existingData: 'test',
           id: undefined,
-          name: undefined,
-          email: undefined,
-          image: undefined,
+          name: null,
+          email: null,
+          image: null,
           role: undefined,
         },
         expires: '2024-12-31',

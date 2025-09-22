@@ -86,6 +86,7 @@ export function OperatorApplicationForm({
   // Handle input change with debouncing
   const handleInputChange = (value: string) => {
     setInputValue(value)
+    setValue("location", value) // Update form value as user types
 
     if (debounceRef.current) {
       clearTimeout(debounceRef.current)
