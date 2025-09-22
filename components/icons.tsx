@@ -70,12 +70,12 @@ export const Icons = {
       />
     </svg>
   ),
-  linkedin: ({ ...props }: LucideProps) => (
+  linkedin: ({ width = 20, height = 20, ...props }: LucideProps) => (
     <NextImage
       src="/images/linkedin-icon.png"
       alt="LinkedIn"
-      width={20}
-      height={20}
+      width={typeof width === 'string' ? parseInt(width) : width}
+      height={typeof height === 'string' ? parseInt(height) : height}
       {...props}
     />
   ),

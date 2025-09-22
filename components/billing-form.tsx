@@ -29,7 +29,7 @@ export function BillingForm({
 }: BillingFormProps) {
   const [isLoading, setIsLoading] = React.useState<boolean>(false)
 
-  async function onSubmit(event) {
+  async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setIsLoading(!isLoading)
 
@@ -51,6 +51,8 @@ export function BillingForm({
     if (session) {
       window.location.href = session.url
     }
+    
+    return
   }
 
   return (
