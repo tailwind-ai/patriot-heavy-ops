@@ -3,8 +3,7 @@ import {
   createMockRequest, 
   createMockRouteContext,
   getResponseJson, 
-  assertResponse,
-  TEST_USERS 
+  assertResponse
 } from '@/__tests__/helpers/api-test-helpers'
 import { getServerSession } from 'next-auth/next'
 
@@ -37,7 +36,7 @@ describe('/api/users/[userId]', () => {
         mockGetServerSession.mockResolvedValue(null)
 
         const updateData = { name: 'New Name' }
-        const request = createMockRequest('PATCH', 'http://localhost:3000/api/users/test', updateData)
+        const request = createMockRequest('PATCH', `http://localhost:3000/api/users/${mockUserId}`, updateData)
         const response = await PATCH(request, mockContext)
 
         assertResponse(response, 403)
@@ -50,7 +49,7 @@ describe('/api/users/[userId]', () => {
         })
 
         const updateData = { name: 'New Name' }
-        const request = createMockRequest('PATCH', 'http://localhost:3000/api/users/test', updateData)
+        const request = createMockRequest('PATCH', `http://localhost:3000/api/users/${mockUserId}`, updateData)
         const response = await PATCH(request, mockContext)
 
         assertResponse(response, 403)
@@ -69,7 +68,7 @@ describe('/api/users/[userId]', () => {
         })
 
         const updateData = { name: 'Updated Name' }
-        const request = createMockRequest('PATCH', 'http://localhost:3000/api/users/test', updateData)
+        const request = createMockRequest('PATCH', `http://localhost:3000/api/users/${mockUserId}`, updateData)
         const response = await PATCH(request, mockContext)
 
         assertResponse(response, 200)
@@ -149,7 +148,7 @@ describe('/api/users/[userId]', () => {
         const invalidContext = { params: {} } // Missing userId
 
         const updateData = { name: 'Valid Name' }
-        const request = createMockRequest('PATCH', 'http://localhost:3000/api/users/test', updateData)
+        const request = createMockRequest('PATCH', `http://localhost:3000/api/users/${mockUserId}`, updateData)
         const response = await PATCH(request, invalidContext as any)
 
         assertResponse(response, 422)
@@ -165,7 +164,7 @@ describe('/api/users/[userId]', () => {
         const invalidContext = { params: { userId: '' } } // Empty userId
 
         const updateData = { name: 'Valid Name' }
-        const request = createMockRequest('PATCH', 'http://localhost:3000/api/users/test', updateData)
+        const request = createMockRequest('PATCH', `http://localhost:3000/api/users/${mockUserId}`, updateData)
         const response = await PATCH(request, invalidContext as any)
 
         // Returns 403 because empty userId doesn't match session user ID
@@ -185,7 +184,7 @@ describe('/api/users/[userId]', () => {
         mockDb.user.update.mockRejectedValue(new Error('Database connection error'))
 
         const updateData = { name: 'Valid Name' }
-        const request = createMockRequest('PATCH', 'http://localhost:3000/api/users/test', updateData)
+        const request = createMockRequest('PATCH', `http://localhost:3000/api/users/${mockUserId}`, updateData)
         const response = await PATCH(request, mockContext)
 
         assertResponse(response, 500)
@@ -193,7 +192,7 @@ describe('/api/users/[userId]', () => {
 
       it('should handle malformed JSON gracefully', async () => {
         // Create request with invalid JSON - using helper for consistency
-        const request = createMockRequest('PATCH', 'http://localhost:3000/api/users/test')
+        const request = createMockRequest('PATCH', `http://localhost:3000/api/users/${mockUserId}`)
         // Override the body with invalid JSON by creating a new request
         const invalidRequest = new Request(request.url, {
           method: request.method,
@@ -210,7 +209,7 @@ describe('/api/users/[userId]', () => {
         mockGetServerSession.mockRejectedValue(new Error('Session error'))
 
         const updateData = { name: 'Valid Name' }
-        const request = createMockRequest('PATCH', 'http://localhost:3000/api/users/test', updateData)
+        const request = createMockRequest('PATCH', `http://localhost:3000/api/users/${mockUserId}`, updateData)
         const response = await PATCH(request, mockContext)
 
         assertResponse(response, 500)
@@ -233,7 +232,7 @@ describe('/api/users/[userId]', () => {
         })
 
         const updateData = { name: "O'Connor-Smith" }
-        const request = createMockRequest('PATCH', 'http://localhost:3000/api/users/test', updateData)
+        const request = createMockRequest('PATCH', `http://localhost:3000/api/users/${mockUserId}`, updateData)
         const response = await PATCH(request, mockContext)
 
         assertResponse(response, 200)
@@ -251,7 +250,7 @@ describe('/api/users/[userId]', () => {
         })
 
         const updateData = { name: 'José María' }
-        const request = createMockRequest('PATCH', 'http://localhost:3000/api/users/test', updateData)
+        const request = createMockRequest('PATCH', `http://localhost:3000/api/users/${mockUserId}`, updateData)
         const response = await PATCH(request, mockContext)
 
         assertResponse(response, 200)
@@ -269,7 +268,7 @@ describe('/api/users/[userId]', () => {
         })
 
         const updateData = { name: '  Trimmed Name  ' }
-        const request = createMockRequest('PATCH', 'http://localhost:3000/api/users/test', updateData)
+        const request = createMockRequest('PATCH', `http://localhost:3000/api/users/${mockUserId}`, updateData)
         const response = await PATCH(request, mockContext)
 
         assertResponse(response, 200)

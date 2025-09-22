@@ -3,10 +3,8 @@ import {
   createMockRequest, 
   createMockRouteContext,
   getResponseJson, 
-  assertResponse,
-  TEST_USERS 
+  assertResponse
 } from '@/__tests__/helpers/api-test-helpers'
-import { MOCK_OPERATOR_APPLICATION } from '@/__tests__/helpers/mock-data'
 import { getServerSession } from 'next-auth/next'
 
 // Mock dependencies
@@ -38,7 +36,7 @@ describe('/api/users/[userId]/operator-application', () => {
         mockGetServerSession.mockResolvedValue(null)
 
         const applicationData = { location: 'Austin, TX' }
-        const request = createMockRequest('POST', 'http://localhost:3000/api/users/test/operator-application', applicationData)
+        const request = createMockRequest('POST', `http://localhost:3000/api/users/${mockUserId}/operator-application`, applicationData)
         const response = await POST(request, mockContext)
 
         assertResponse(response, 403)
@@ -51,7 +49,7 @@ describe('/api/users/[userId]/operator-application', () => {
         })
 
         const applicationData = { location: 'Austin, TX' }
-        const request = createMockRequest('POST', 'http://localhost:3000/api/users/test/operator-application', applicationData)
+        const request = createMockRequest('POST', `http://localhost:3000/api/users/${mockUserId}/operator-application`, applicationData)
         const response = await POST(request, mockContext)
 
         assertResponse(response, 403)
@@ -73,7 +71,7 @@ describe('/api/users/[userId]/operator-application', () => {
         mockDb.user.update.mockResolvedValue(updatedUser)
 
         const applicationData = { location: 'Austin, TX' }
-        const request = createMockRequest('POST', 'http://localhost:3000/api/users/test/operator-application', applicationData)
+        const request = createMockRequest('POST', `http://localhost:3000/api/users/${mockUserId}/operator-application`, applicationData)
         const response = await POST(request, mockContext)
 
         assertResponse(response, 200, 'application/json')
@@ -164,7 +162,7 @@ describe('/api/users/[userId]/operator-application', () => {
         mockDb.user.update.mockResolvedValue(updatedUser)
 
         const applicationData = { location: 'Houston, TX' }
-        const request = createMockRequest('POST', 'http://localhost:3000/api/users/test/operator-application', applicationData)
+        const request = createMockRequest('POST', `http://localhost:3000/api/users/${mockUserId}/operator-application`, applicationData)
         const response = await POST(request, mockContext)
 
         assertResponse(response, 200)
@@ -184,7 +182,7 @@ describe('/api/users/[userId]/operator-application', () => {
         mockDb.user.update.mockResolvedValue(updatedUser)
 
         const applicationData = { location: 'San Antonio, TX' }
-        const request = createMockRequest('POST', 'http://localhost:3000/api/users/test/operator-application', applicationData)
+        const request = createMockRequest('POST', `http://localhost:3000/api/users/${mockUserId}/operator-application`, applicationData)
         const response = await POST(request, mockContext)
 
         assertResponse(response, 200)
@@ -202,7 +200,7 @@ describe('/api/users/[userId]/operator-application', () => {
         mockDb.user.update.mockResolvedValue(updatedUser)
 
         const applicationData = { location: 'Fort Worth, TX' }
-        const request = createMockRequest('POST', 'http://localhost:3000/api/users/test/operator-application', applicationData)
+        const request = createMockRequest('POST', `http://localhost:3000/api/users/${mockUserId}/operator-application`, applicationData)
         const response = await POST(request, mockContext)
 
         assertResponse(response, 200)
@@ -225,7 +223,7 @@ describe('/api/users/[userId]/operator-application', () => {
         const invalidContext = { params: {} } // Missing userId
 
         const applicationData = { location: 'Austin, TX' }
-        const request = createMockRequest('POST', 'http://localhost:3000/api/users/test/operator-application', applicationData)
+        const request = createMockRequest('POST', `http://localhost:3000/api/users/${mockUserId}/operator-application`, applicationData)
         const response = await POST(request, invalidContext as any)
 
         assertResponse(response, 422)
@@ -241,7 +239,7 @@ describe('/api/users/[userId]/operator-application', () => {
         const invalidContext = { params: { userId: '' } } // Empty userId
 
         const applicationData = { location: 'Austin, TX' }
-        const request = createMockRequest('POST', 'http://localhost:3000/api/users/test/operator-application', applicationData)
+        const request = createMockRequest('POST', `http://localhost:3000/api/users/${mockUserId}/operator-application`, applicationData)
         const response = await POST(request, invalidContext as any)
 
         // Returns 403 because empty userId doesn't match session user ID
@@ -261,7 +259,7 @@ describe('/api/users/[userId]/operator-application', () => {
         mockDb.user.update.mockRejectedValue(new Error('Database connection error'))
 
         const applicationData = { location: 'Austin, TX' }
-        const request = createMockRequest('POST', 'http://localhost:3000/api/users/test/operator-application', applicationData)
+        const request = createMockRequest('POST', `http://localhost:3000/api/users/${mockUserId}/operator-application`, applicationData)
         const response = await POST(request, mockContext)
 
         assertResponse(response, 500, 'application/json')
@@ -275,7 +273,7 @@ describe('/api/users/[userId]/operator-application', () => {
 
       it('should handle malformed JSON gracefully', async () => {
         // Create request with invalid JSON - using helper for consistency
-        const request = createMockRequest('POST', 'http://localhost:3000/api/users/test/operator-application')
+        const request = createMockRequest('POST', `http://localhost:3000/api/users/${mockUserId}/operator-application`)
         // Override the body with invalid JSON by creating a new request
         const invalidRequest = new Request(request.url, {
           method: request.method,
@@ -292,7 +290,7 @@ describe('/api/users/[userId]/operator-application', () => {
         mockGetServerSession.mockRejectedValue(new Error('Session error'))
 
         const applicationData = { location: 'Austin, TX' }
-        const request = createMockRequest('POST', 'http://localhost:3000/api/users/test/operator-application', applicationData)
+        const request = createMockRequest('POST', `http://localhost:3000/api/users/${mockUserId}/operator-application`, applicationData)
         const response = await POST(request, mockContext)
 
         assertResponse(response, 500)
@@ -316,7 +314,7 @@ describe('/api/users/[userId]/operator-application', () => {
         mockDb.user.update.mockResolvedValue(updatedUser)
 
         const applicationData = { location: 'São Paulo, Brazil' }
-        const request = createMockRequest('POST', 'http://localhost:3000/api/users/test/operator-application', applicationData)
+        const request = createMockRequest('POST', `http://localhost:3000/api/users/${mockUserId}/operator-application`, applicationData)
         const response = await POST(request, mockContext)
 
         assertResponse(response, 200)
@@ -336,7 +334,7 @@ describe('/api/users/[userId]/operator-application', () => {
         mockDb.user.update.mockResolvedValue(updatedUser)
 
         const applicationData = { location: longLocation }
-        const request = createMockRequest('POST', 'http://localhost:3000/api/users/test/operator-application', applicationData)
+        const request = createMockRequest('POST', `http://localhost:3000/api/users/${mockUserId}/operator-application`, applicationData)
         const response = await POST(request, mockContext)
 
         assertResponse(response, 200)
@@ -356,7 +354,7 @@ describe('/api/users/[userId]/operator-application', () => {
         mockDb.user.update.mockResolvedValue(updatedUser)
 
         const applicationData = { location: complexLocation }
-        const request = createMockRequest('POST', 'http://localhost:3000/api/users/test/operator-application', applicationData)
+        const request = createMockRequest('POST', `http://localhost:3000/api/users/${mockUserId}/operator-application`, applicationData)
         const response = await POST(request, mockContext)
 
         assertResponse(response, 200)
