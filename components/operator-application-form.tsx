@@ -55,7 +55,7 @@ export function OperatorApplicationForm({ user, className, ...props }: OperatorA
   const [isLoading, setIsLoading] = React.useState(false)
   const debounceRef = React.useRef<NodeJS.Timeout>()
 
-  const selectedLocation = watch("location")
+  const selectedLocation = watch("location" as keyof OperatorApplicationFormData)
 
   // Debounced address search
   const searchAddresses = React.useCallback(async (query: string) => {

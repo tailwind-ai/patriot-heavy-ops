@@ -25,7 +25,7 @@ export default async function NewServiceRequestPage() {
         text="Fill out the form below to request heavy equipment with an operator."
       />
       <div className="grid gap-10">
-        <ServiceRequestForm user={{ id: user.id, name: user.name, email: user.email }} />
+        <ServiceRequestForm user={{ id: user.id, name: user.name ?? null, email: user.email ?? null }} />
       </div>
     </DashboardShell>
   )
