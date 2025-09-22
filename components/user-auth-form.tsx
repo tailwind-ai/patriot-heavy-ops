@@ -9,7 +9,7 @@ import type { FieldErrors } from "react-hook-form"
 import * as z from "zod"
 
 import { cn } from "@/lib/utils"
-import { userAuthSchema, userLoginSchema, userRegisterSchema } from "@/lib/validations/auth"
+import { userLoginSchema, userRegisterSchema } from "@/lib/validations/auth"
 import { buttonVariants } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
