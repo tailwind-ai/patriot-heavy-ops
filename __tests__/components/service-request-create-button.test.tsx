@@ -354,7 +354,7 @@ describe("ServiceRequestCreateButton", () => {
       await waitFor(() => {
         const spinner = button.querySelector(".animate-spin")
         expect(spinner).toBeInTheDocument()
-        expect(spinner).toHaveClass("mr-2", "h-4", "w-4")
+        expect(spinner).toHaveClass("mr-2", "size-4")
       })
     })
   })
