@@ -36,6 +36,16 @@ import userEvent from '@testing-library/user-event'
 import { SessionProvider } from 'next-auth/react'
 import type { Session } from 'next-auth'
 
+// Type-safe mock Response interface
+interface MockResponse {
+  ok: boolean
+  status?: number
+  json: () => Promise<any>
+}
+
+// Type-safe mock fetch function type
+type MockFetch = jest.MockedFunction<typeof fetch>
+
 // Form testing utilities
 export class FormTester {
   private user = userEvent.setup()
@@ -142,13 +152,14 @@ export const mockAddressSuggestions = [
 ]
 
 export const setupAddressAutocomplete = () => {
-  const mockFetch = global.fetch as jest.MockedFunction<typeof fetch>
+  const mockFetch = global.fetch as MockFetch
   mockFetch.mockImplementation((url) => {
     if (typeof url === 'string' && url.includes('/api/geocoding')) {
-      return Promise.resolve({
+      const mockResponse: MockResponse = {
         ok: true,
         json: () => Promise.resolve(mockAddressSuggestions)
-      } as any)
+      }
+      return Promise.resolve(mockResponse as Response)
     }
     return Promise.reject(new Error('Unhandled fetch'))
   })

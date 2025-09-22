@@ -3,6 +3,20 @@ import { render, RenderOptions } from '@testing-library/react'
 import { SessionProvider } from 'next-auth/react'
 import type { Session } from 'next-auth'
 
+// Type-safe mock interfaces
+interface MockResponse {
+  ok: boolean
+  status?: number
+  json: () => Promise<any>
+}
+
+interface MockRequest {
+  json: () => Promise<any>
+  method: string
+}
+
+type MockFetch = jest.MockedFunction<typeof fetch>
+
 // Mock session data for testing
 export const mockSession: Session = {
   user: {
@@ -50,22 +64,22 @@ export * from '@testing-library/react'
 export { customRender as render }
 
 // Test helpers
-export const createMockRequest = (body: any = {}, method: string = 'POST') => {
+export const createMockRequest = (body: any = {}, method: string = 'POST'): MockRequest => {
   return {
     json: jest.fn().mockResolvedValue(body),
     method,
-  } as any
+  }
 }
 
 export const createMockResponse = () => {
   const json = jest.fn()
   const status = jest.fn(() => ({ json }))
-  
+
   return {
     json,
     status,
     ok: true,
-  } as any
+  }
 }
 
 // Mock user with different roles for testing
@@ -85,21 +99,23 @@ export const createMockSession = (role: 'USER' | 'OPERATOR' | 'MANAGER' | 'ADMIN
 
 // Mock fetch for successful responses
 export const mockFetchSuccess = (data: any = {}) => {
-  const mockFetch = global.fetch as jest.MockedFunction<typeof fetch>
-  mockFetch.mockResolvedValueOnce({
+  const mockFetch = global.fetch as MockFetch
+  const mockResponse: MockResponse = {
     ok: true,
     json: () => Promise.resolve(data),
-  } as any)
+  }
+  mockFetch.mockResolvedValueOnce(mockResponse as Response)
 }
 
 // Mock fetch for error responses
 export const mockFetchError = (message: string = 'Error', status: number = 400) => {
-  const mockFetch = global.fetch as jest.MockedFunction<typeof fetch>
-  mockFetch.mockResolvedValueOnce({
+  const mockFetch = global.fetch as MockFetch
+  const mockResponse: MockResponse = {
     ok: false,
     status,
     json: () => Promise.resolve({ message }),
-  } as any)
+  }
+  mockFetch.mockResolvedValueOnce(mockResponse as Response)
 }
 
 // Mock geocoding API responses for address autocomplete testing

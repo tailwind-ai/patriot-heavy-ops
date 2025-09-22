@@ -186,9 +186,9 @@ describe('Utility Functions', () => {
       expect(absoluteUrl('/auth/login')).toBe('https://example.com/auth/login')
     })
 
-    it('should handle paths without leading slash', () => {
-      expect(absoluteUrl('dashboard')).toBe('https://example.comdashboard')
-      expect(absoluteUrl('api/users')).toBe('https://example.comapi/users')
+    it('should handle paths without leading slash by adding one', () => {
+      expect(absoluteUrl('dashboard')).toBe('https://example.com/dashboard')
+      expect(absoluteUrl('api/users')).toBe('https://example.com/api/users')
     })
 
     it('should handle empty and root paths', () => {
