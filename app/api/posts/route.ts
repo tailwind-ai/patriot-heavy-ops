@@ -33,7 +33,7 @@ export async function GET() {
     })
 
     return new Response(JSON.stringify(posts))
-  } catch (error) {
+  } catch {
     return new Response(null, { status: 500 })
   }
 }

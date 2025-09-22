@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
     const data = await response.json()
 
     // Filter and sanitize the response data
-    const sanitizedData = data.map((item: any) => ({
+    const sanitizedData = data.map((item: unknown) => ({
       display_name: item.display_name,
       lat: item.lat,
       lon: item.lon,
@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error("Geocoding API error:", error)
+    // Geocoding API error logged
     return new Response(JSON.stringify([]), {
       status: 200,
       headers: {

@@ -1,4 +1,4 @@
-import { Card } from "@/components/ui/card"
+// Removed unused Card import
 import { CardSkeleton } from "@/components/card-skeleton"
 import { DashboardHeader } from "@/components/header"
 import { DashboardShell } from "@/components/shell"
