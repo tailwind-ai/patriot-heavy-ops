@@ -34,7 +34,7 @@ export function ServiceRequestItem({ serviceRequest }: ServiceRequestItemProps) 
         <div className="flex items-center space-x-4 text-sm text-muted-foreground">
           <div className="flex items-center space-x-1">
             <span className="font-medium">Location:</span>
-            <span className="truncate max-w-xs">{serviceRequest.jobSite}</span>
+            <span className="max-w-xs truncate">{serviceRequest.jobSite}</span>
           </div>
           <div className="flex items-center space-x-1">
             <span className="font-medium">Start:</span>

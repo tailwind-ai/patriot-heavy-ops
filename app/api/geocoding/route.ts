@@ -41,12 +41,19 @@ export async function GET(request: NextRequest) {
     const data = await response.json()
 
     // Filter and sanitize the response data
-    const sanitizedData = data.map((item: any) => ({
-      display_name: item.display_name,
-      lat: item.lat,
-      lon: item.lon,
-      place_id: item.place_id,
-    }))
+    const sanitizedData = data.map(
+      (item: {
+        display_name: string
+        lat: string
+        lon: string
+        place_id: string
+      }) => ({
+        display_name: item.display_name,
+        lat: item.lat,
+        lon: item.lon,
+        place_id: item.place_id,
+      })
+    )
 
     return new Response(JSON.stringify(sanitizedData), {
       status: 200,
