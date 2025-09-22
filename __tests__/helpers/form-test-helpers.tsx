@@ -7,8 +7,27 @@
  * Key improvements:
  * - Uses try-catch for element finding instead of logical OR
  * - Semantic loading state detection with fallbacks
- * - Conditional mocking to avoid global side effects
+ * - Proper Jest mocking patterns (mocks must be at module top level)
+ * - Null-safe DOM queries with proper error handling
  * - Descriptive error messages for better debugging
+ * 
+ * @example Toast Mocking Pattern
+ * ```typescript
+ * // At the top of your test file (before imports):
+ * jest.mock('@/components/ui/use-toast', () => ({
+ *   toast: jest.fn(),
+ * }))
+ * 
+ * // In your test:
+ * import { toast } from '@/components/ui/use-toast'
+ * const mockToast = toast as jest.MockedFunction<typeof toast>
+ * 
+ * // Then use mockToast in your assertions
+ * expect(mockToast).toHaveBeenCalledWith({
+ *   title: 'Success',
+ *   description: 'Form submitted successfully'
+ * })
+ * ```
  */
 
 import { ReactElement } from 'react'
@@ -87,7 +106,8 @@ export class FormTester {
     
     // If no semantic loading indicator found, fall back to spinner class as last resort
     if (loadingIndicators.length === 0) {
-      expect(document.querySelector('.animate-spin')).toBeInTheDocument()
+      const spinner = document.querySelector('.animate-spin')
+      expect(spinner).toBeInTheDocument()
     } else {
       expect(loadingIndicators[0]).toBeInTheDocument()
     }
@@ -183,11 +203,11 @@ export const mockToast = {
   toast: jest.fn(),
 }
 
-// Function to conditionally mock the toast hook - call this in individual test files
-export const setupToastMock = () => {
-  jest.mock('@/components/ui/use-toast', () => mockToast)
-  return mockToast
-}
+// Note: To mock the toast hook, add this to the top of your test files:
+// jest.mock('@/components/ui/use-toast', () => ({
+//   toast: jest.fn(),
+// }))
+// Then import { toast } from '@/components/ui/use-toast' and cast as jest.MockedFunction
 
 // Common test patterns
 export const testFormValidation = async (
