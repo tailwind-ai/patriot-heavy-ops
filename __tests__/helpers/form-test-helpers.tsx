@@ -198,6 +198,35 @@ export const renderWithRole = (
   )
 }
 
+// Mock fetch for successful responses
+export const mockFetchSuccess = (data: any = {}) => {
+  const mockFetch = global.fetch as jest.MockedFunction<typeof fetch>
+  mockFetch.mockResolvedValueOnce({
+    ok: true,
+    json: () => Promise.resolve(data),
+  } as any)
+}
+
+// Mock fetch for error responses
+export const mockFetchError = (message: string = 'Error', status: number = 400) => {
+  const mockFetch = global.fetch as jest.MockedFunction<typeof fetch>
+  mockFetch.mockResolvedValueOnce({
+    ok: false,
+    status,
+    json: () => Promise.resolve({ message }),
+  } as any)
+}
+
+// Mock geocoding API responses for address autocomplete testing
+export const mockGeocodingResponse = (suggestions: Array<{
+  display_name: string
+  lat: string
+  lon: string
+  place_id: string
+}> = []) => {
+  mockFetchSuccess(suggestions)
+}
+
 // Toast testing helpers
 export const mockToast = {
   toast: jest.fn(),
