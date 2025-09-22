@@ -151,7 +151,7 @@ export const MOCK_STRIPE_EVENTS = {
       object: {
         id: 'cs_test_session123',
         customer: 'cus_test123',
-        subscription: 'sub_test_subscription',
+        subscription: 'sub_test123',
         metadata: {
           userId: 'user_test_123',
         },
@@ -167,7 +167,7 @@ export const MOCK_STRIPE_EVENTS = {
       object: {
         id: 'in_test_invoice123',
         customer: 'cus_test123',
-        subscription: 'sub_test_renewal',
+        subscription: 'sub_test123',
         billing_reason: 'subscription_cycle',
         payment_intent: 'pi_test123',
       },

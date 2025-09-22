@@ -150,7 +150,7 @@ describe('/api/webhooks/stripe', () => {
 
         assertResponse(response, 200)
 
-        expect(mockStripe.subscriptions.retrieve).toHaveBeenCalledWith('sub_test_subscription')
+        expect(mockStripe.subscriptions.retrieve).toHaveBeenCalledWith('sub_test123')
         expect(mockDb.user.update).toHaveBeenCalledWith({
           where: { id: 'user_test_123' },
           data: {
@@ -222,7 +222,7 @@ describe('/api/webhooks/stripe', () => {
 
         assertResponse(response, 200)
 
-        expect(mockStripe.subscriptions.retrieve).toHaveBeenCalledWith('sub_test_renewal')
+        expect(mockStripe.subscriptions.retrieve).toHaveBeenCalledWith('sub_test123')
         expect(mockDb.user.update).toHaveBeenCalledWith({
           where: { stripeSubscriptionId: 'sub_456' },
           data: {
