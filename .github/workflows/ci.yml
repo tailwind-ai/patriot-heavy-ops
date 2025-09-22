@@ -39,8 +39,9 @@ jobs:
 
       - name: Setup test environment
         run: |
-          cp .env.example .env.local
-          echo "DATABASE_URL=postgresql://postgres:postgres@localhost:5432/test" >> .env.local
+          echo "DATABASE_URL=postgresql://postgres:postgres@localhost:5432/test" > .env.local
+          echo "NEXTAUTH_SECRET=ci-test-secret" >> .env.local
+          echo "NEXTAUTH_URL=http://localhost:3000" >> .env.local
 
       - name: Run database migrations
         run: npx prisma migrate deploy
