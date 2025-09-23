@@ -207,6 +207,16 @@ describe("ServiceRequestOperations", () => {
           }
         )
       })
+
+      await waitFor(() => {
+        expect(mockToast).toHaveBeenCalledWith({
+          description: "Service request deleted successfully.",
+        })
+      })
+
+      await waitFor(() => {
+        expect(mockRouter.refresh).toHaveBeenCalled()
+      })
     })
 
     it("should show loading state during deletion", async () => {
