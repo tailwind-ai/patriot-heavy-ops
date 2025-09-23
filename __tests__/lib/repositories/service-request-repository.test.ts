@@ -11,7 +11,7 @@ import { ServiceRequestStatus, UserRole } from "@prisma/client"
 const mockPrismaClient = {
   serviceRequest: {
     findUnique: jest.fn(),
-    findMany: jest.fn(),
+    findManyWithRoleAccess: jest.fn(),
     create: jest.fn(),
     update: jest.fn(),
     delete: jest.fn(),
@@ -119,7 +119,7 @@ describe("ServiceRequestRepository", () => {
     ]
 
     it("should find requests for ADMIN role", async () => {
-      mockPrismaClient.serviceRequest.findMany.mockResolvedValue(mockServiceRequests)
+      mockPrismaClient.serviceRequest.findManyWithRoleAccess.mockResolvedValue(mockServiceRequests)
 
       const result = await repository.findManyWithRoleAccess({
         userId: "user123",
@@ -136,7 +136,7 @@ describe("ServiceRequestRepository", () => {
     })
 
     it("should find requests for MANAGER role", async () => {
-      mockPrismaClient.serviceRequest.findMany.mockResolvedValue(mockServiceRequests)
+      mockPrismaClient.serviceRequest.findManyWithRoleAccess.mockResolvedValue(mockServiceRequests)
 
       const result = await repository.findManyWithRoleAccess({
         userId: "manager123",
@@ -152,7 +152,7 @@ describe("ServiceRequestRepository", () => {
     })
 
     it("should find requests for OPERATOR role", async () => {
-      mockPrismaClient.serviceRequest.findMany.mockResolvedValue(mockServiceRequests)
+      mockPrismaClient.serviceRequest.findManyWithRoleAccess.mockResolvedValue(mockServiceRequests)
 
       const result = await repository.findManyWithRoleAccess({
         userId: "operator123",
@@ -179,7 +179,7 @@ describe("ServiceRequestRepository", () => {
     })
 
     it("should find requests for USER role", async () => {
-      mockPrismaClient.serviceRequest.findMany.mockResolvedValue(mockServiceRequests)
+      mockPrismaClient.serviceRequest.findManyWithRoleAccess.mockResolvedValue(mockServiceRequests)
 
       const result = await repository.findManyWithRoleAccess({
         userId: "user123",
@@ -197,7 +197,7 @@ describe("ServiceRequestRepository", () => {
     })
 
     it("should apply additional filters", async () => {
-      mockPrismaClient.serviceRequest.findMany.mockResolvedValue(mockServiceRequests)
+      mockPrismaClient.serviceRequest.findManyWithRoleAccess.mockResolvedValue(mockServiceRequests)
 
       const result = await repository.findManyWithRoleAccess(
         {

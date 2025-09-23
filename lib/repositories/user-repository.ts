@@ -244,7 +244,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
    * Create new user
    */
   async create(data: UserCreateInput): Promise<RepositoryResult<any>> {
-    const validation = this.validateRequired(data as any, ["email"]);
+    const validation = this.validateRequired(data, ["email"]);
     if (!validation.success) {
       return {
         success: false,
@@ -361,7 +361,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
     applicationData: OperatorApplicationInput
   ): Promise<RepositoryResult<any>> {
     const validation = this.validateRequired(
-      { userId, ...applicationData } as any, 
+      { userId, ...applicationData }, 
       ["userId", "militaryBranch", "yearsOfService"]
     );
     if (!validation.success) {

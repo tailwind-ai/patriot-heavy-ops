@@ -142,8 +142,8 @@ export class ServiceRequestRepository extends BaseRepository implements CrudRepo
     accessOptions: RoleBasedAccessOptions,
     filters?: ServiceRequestFilters,
     pagination?: PaginationOptions
-  ): Promise<RepositoryResult<ServiceRequestWithUser[]>> {
-    const validation = this.validateRequired(accessOptions as any, ["userId", "userRole"]);
+  ): Promise<RepositoryResult<any[]>> {
+    const validation = this.validateRequired(accessOptions, ["userId", "userRole"]);
     if (!validation.success) {
       return {
         success: false,
@@ -191,12 +191,12 @@ export class ServiceRequestRepository extends BaseRepository implements CrudRepo
           );
         }
 
-        return this.db.serviceRequest.findMany(query) as any;
+        return this.db.serviceRequest.findMany(query);
       },
       "SERVICE_REQUEST_FIND_MANY_ERROR",
       "Failed to find service requests",
       `findManyWithRoleAccess(${accessOptions.userRole})`
-    ) as any;
+    );
   }
 
   /**
@@ -243,7 +243,7 @@ export class ServiceRequestRepository extends BaseRepository implements CrudRepo
    * Create new service request
    */
   async create(data: ServiceRequestCreateInput): Promise<RepositoryResult<any>> {
-    const validation = this.validateRequired(data as any, [
+    const validation = this.validateRequired(data, [
       "title", "contactName", "contactEmail", "contactPhone", 
       "jobSite", "equipmentCategory", "equipmentDetail", "userId"
     ]);
