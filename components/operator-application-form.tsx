@@ -138,7 +138,6 @@ export function OperatorApplicationForm({
 
   return (
     <form
-      role="form"
       className={cn(className)}
       onSubmit={handleSubmit(onSubmit)}
       {...props}

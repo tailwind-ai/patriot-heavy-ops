@@ -70,7 +70,7 @@ describe("OperatorApplicationForm", () => {
     it("should have proper form structure and accessibility", () => {
       render(<OperatorApplicationForm user={mockUser} />)
 
-      const form = screen.getByRole("form") || document.querySelector("form")
+      const form = document.querySelector("form")
       expect(form).toBeInTheDocument()
 
       const locationInput = screen.getByPlaceholderText(
