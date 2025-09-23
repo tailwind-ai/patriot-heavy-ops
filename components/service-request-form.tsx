@@ -8,6 +8,7 @@ import * as z from "zod"
 
 import { cn } from "@/lib/utils"
 import { serviceRequestSchema, calculateTotalHours } from "@/lib/validations/service-request"
+import { ServiceFactory, type GeocodingAddress } from "@/lib/services"
 import { buttonVariants } from "@/components/ui/button"
 import {
   Card,
@@ -34,12 +35,7 @@ interface ServiceRequestFormProps extends React.HTMLAttributes<HTMLFormElement> 
 
 type FormData = z.infer<typeof serviceRequestSchema>
 
-interface AddressSuggestion {
-  display_name: string
-  lat: string
-  lon: string
-  place_id: string
-}
+// Using GeocodingAddress from service layer instead of local interface
 
 export function ServiceRequestForm({ user, className, ...props }: ServiceRequestFormProps) {
   const router = useRouter()
@@ -74,9 +70,10 @@ export function ServiceRequestForm({ user, className, ...props }: ServiceRequest
 
   const [isSaving, setIsSaving] = React.useState<boolean>(false)
   const [jobSiteInput, setJobSiteInput] = React.useState("")
-  const [jobSiteSuggestions, setJobSiteSuggestions] = React.useState<AddressSuggestion[]>([])
+  const [jobSiteSuggestions, setJobSiteSuggestions] = React.useState<GeocodingAddress[]>([])
   const [isLoadingAddresses, setIsLoadingAddresses] = React.useState(false)
   const debounceRef = React.useRef<NodeJS.Timeout | null>(null)
+  const geocodingService = ServiceFactory.getGeocodingService()
 
   const watchedDurationType = watch("requestedDurationType")
   const watchedDurationValue = watch("requestedDurationValue")
@@ -87,7 +84,7 @@ export function ServiceRequestForm({ user, className, ...props }: ServiceRequest
     setValue("requestedTotalHours", totalHours)
   }, [watchedDurationType, watchedDurationValue, setValue])
 
-  // Debounced address search using server-side proxy
+  // Debounced address search using geocoding service
   const searchAddresses = React.useCallback(async (query: string) => {
     if (query.length < 3) {
       setJobSiteSuggestions([])
@@ -96,17 +93,24 @@ export function ServiceRequestForm({ user, className, ...props }: ServiceRequest
 
     setIsLoadingAddresses(true)
     try {
-      const url = `/api/geocoding?q=${encodeURIComponent(query)}`
+      const result = await geocodingService.searchAddresses(query, {
+        limit: 5,
+        countryCode: "us",
+      })
       
-      const response = await fetch(url)
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
+      if (result.success) {
+        setJobSiteSuggestions(result.data || [])
+      } else {
+        // Service returned an error
+        setJobSiteSuggestions([])
+        toast({
+          title: "Address search unavailable",
+          description: result.error?.message || "Unable to search for addresses at the moment. Please enter the address manually.",
+          variant: "destructive",
+        })
       }
-      const data = await response.json()
-      
-      setJobSiteSuggestions(data || [])
     } catch {
-      // Address search error - fallback to manual entry
+      // Unexpected error - fallback to manual entry
       setJobSiteSuggestions([])
       toast({
         title: "Address search unavailable",
@@ -116,7 +120,7 @@ export function ServiceRequestForm({ user, className, ...props }: ServiceRequest
     } finally {
       setIsLoadingAddresses(false)
     }
-  }, [])
+  }, [geocodingService])
 
   // Handle job site input change with debouncing
   const handleJobSiteInputChange = (value: string) => {
@@ -133,8 +137,8 @@ export function ServiceRequestForm({ user, className, ...props }: ServiceRequest
   }
 
   // Handle address selection
-  const handleAddressSelect = (suggestion: AddressSuggestion) => {
-    const formattedAddress = suggestion.display_name
+  const handleAddressSelect = (suggestion: GeocodingAddress) => {
+    const formattedAddress = suggestion.displayName
     setJobSiteInput(formattedAddress)
     setValue("jobSite", formattedAddress)
     setJobSiteSuggestions([])
@@ -336,7 +340,7 @@ export function ServiceRequestForm({ user, className, ...props }: ServiceRequest
                   <div className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md border border-gray-200 bg-white shadow-lg">
                     {jobSiteSuggestions.map((suggestion) => (
                       <div
-                        key={suggestion.place_id}
+                        key={suggestion.placeId}
                         onClick={() => handleAddressSelect(suggestion)}
                         onKeyDown={(e) => {
                           if (e.key === 'Enter' || e.key === ' ') {
@@ -349,10 +353,10 @@ export function ServiceRequestForm({ user, className, ...props }: ServiceRequest
                         className="cursor-pointer border-b border-gray-100 px-3 py-2 last:border-b-0 hover:bg-gray-100"
                       >
                         <div className="text-sm font-medium">
-                          {suggestion.display_name.split(",")[0]}
+                          {suggestion.displayName.split(",")[0]}
                         </div>
                         <div className="truncate text-xs text-gray-500">
-                          {suggestion.display_name}
+                          {suggestion.displayName}
                         </div>
                       </div>
                     ))}
