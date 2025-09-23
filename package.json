@@ -75,7 +75,7 @@
     "postmark": "^3.0.15",
     "prop-types": "^15.8.1",
     "react": "^19.1.1",
-    "react-day-picker": "^8.7.1",
+    "react-day-picker": "^9.11.0",
     "react-dom": "^19.1.1",
     "react-hook-form": "^7.43.9",
     "react-textarea-autosize": "^8.4.1",
