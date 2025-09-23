@@ -142,7 +142,7 @@ export class ServiceRequestRepository extends BaseRepository implements CrudRepo
     accessOptions: RoleBasedAccessOptions,
     filters?: ServiceRequestFilters,
     pagination?: PaginationOptions
-  ): Promise<RepositoryResult<any[]>> {
+  ): Promise<RepositoryResult<ServiceRequestWithUser[]>> {
     const validation = this.validateRequired(accessOptions, ["userId", "userRole"]);
     if (!validation.success) {
       return {
@@ -196,7 +196,7 @@ export class ServiceRequestRepository extends BaseRepository implements CrudRepo
       "SERVICE_REQUEST_FIND_MANY_ERROR",
       "Failed to find service requests",
       `findManyWithRoleAccess(${accessOptions.userRole})`
-    );
+    ) as Promise<RepositoryResult<ServiceRequestWithUser[]>>;
   }
 
   /**

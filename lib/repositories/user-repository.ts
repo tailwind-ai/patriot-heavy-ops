@@ -143,7 +143,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
   async findMany(
     filters?: FilterOptions,
     pagination?: PaginationOptions
-  ): Promise<RepositoryResult<any[]>> {
+  ): Promise<RepositoryResult<User[]>> {
     return this.handleAsync(
       () => {
         let query: any = {
@@ -187,7 +187,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
   async findAvailableOperators(
     filters?: { preferredLocations?: string[]; certifications?: string[] },
     pagination?: PaginationOptions
-  ): Promise<RepositoryResult<any[]>> {
+  ): Promise<RepositoryResult<User[]>> {
     return this.handleAsync(
       () => {
         let whereClause: any = {
@@ -500,7 +500,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
   /**
    * Find users by role
    */
-  async findByRole(role: UserRole, pagination?: PaginationOptions): Promise<RepositoryResult<any[]>> {
+  async findByRole(role: UserRole, pagination?: PaginationOptions): Promise<RepositoryResult<User[]>> {
     const validation = this.validateRequired({ role }, ["role"]);
     if (!validation.success) {
       return {

@@ -1,47 +1,70 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="21" failures="0" errors="0" time="0.608">
-  <testsuite name="BaseRepository" errors="0" failures="0" skipped="0" timestamp="2025-09-23T21:37:02" time="0.203" tests="21">
-    <testcase classname="BaseRepository constructor should initialize with default options" name="BaseRepository constructor should initialize with default options" time="0.001">
+<testsuites name="jest tests" tests="22" failures="0" errors="0" time="0.75">
+  <testsuite name="UserRepository" errors="0" failures="0" skipped="21" timestamp="2025-09-23T21:54:17" time="0.291" tests="22">
+    <testcase classname="UserRepository findById should find user by ID successfully" name="UserRepository findById should find user by ID successfully" time="0">
+      <skipped/>
     </testcase>
-    <testcase classname="BaseRepository constructor should initialize with custom options" name="BaseRepository constructor should initialize with custom options" time="0.003">
+    <testcase classname="UserRepository findById should handle validation error for missing ID" name="UserRepository findById should handle validation error for missing ID" time="0">
+      <skipped/>
     </testcase>
-    <testcase classname="BaseRepository error handling should create standardized error result" name="BaseRepository error handling should create standardized error result" time="0.001">
+    <testcase classname="UserRepository findById should handle database errors" name="UserRepository findById should handle database errors" time="0">
+      <skipped/>
     </testcase>
-    <testcase classname="BaseRepository error handling should create success result" name="BaseRepository error handling should create success result" time="0.001">
+    <testcase classname="UserRepository findByEmail should find user by email successfully" name="UserRepository findByEmail should find user by email successfully" time="0">
+      <skipped/>
     </testcase>
-    <testcase classname="BaseRepository error handling should create success result with pagination" name="BaseRepository error handling should create success result with pagination" time="0">
+    <testcase classname="UserRepository findByEmail should return null for non-existent email" name="UserRepository findByEmail should return null for non-existent email" time="0">
+      <skipped/>
     </testcase>
-    <testcase classname="BaseRepository async operation handling should handle successful async operations" name="BaseRepository async operation handling should handle successful async operations" time="0">
+    <testcase classname="UserRepository findAvailableOperators should find available operators without filters" name="UserRepository findAvailableOperators should find available operators without filters" time="0">
+      <skipped/>
     </testcase>
-    <testcase classname="BaseRepository async operation handling should handle failed async operations" name="BaseRepository async operation handling should handle failed async operations" time="0.006">
+    <testcase classname="UserRepository findAvailableOperators should find operators with location filter" name="UserRepository findAvailableOperators should find operators with location filter" time="0">
+      <skipped/>
     </testcase>
-    <testcase classname="BaseRepository async operation handling should handle Prisma client errors" name="BaseRepository async operation handling should handle Prisma client errors" time="0">
+    <testcase classname="UserRepository findAvailableOperators should find operators with certification filter" name="UserRepository findAvailableOperators should find operators with certification filter" time="0">
+      <skipped/>
     </testcase>
-    <testcase classname="BaseRepository validation should validate required parameters successfully" name="BaseRepository validation should validate required parameters successfully" time="0">
+    <testcase classname="UserRepository create should create user successfully" name="UserRepository create should create user successfully" time="0">
+      <skipped/>
     </testcase>
-    <testcase classname="BaseRepository validation should fail validation for missing parameters" name="BaseRepository validation should fail validation for missing parameters" time="0">
+    <testcase classname="UserRepository create should create user with custom role" name="UserRepository create should create user with custom role" time="0">
+      <skipped/>
     </testcase>
-    <testcase classname="BaseRepository validation should fail validation for null/undefined parameters" name="BaseRepository validation should fail validation for null/undefined parameters" time="0.001">
+    <testcase classname="UserRepository create should handle validation errors" name="UserRepository create should handle validation errors" time="0">
+      <skipped/>
     </testcase>
-    <testcase classname="BaseRepository pagination should build pagination metadata correctly" name="BaseRepository pagination should build pagination metadata correctly" time="0">
+    <testcase classname="UserRepository update should update user successfully" name="UserRepository update should update user successfully" time="0">
+      <skipped/>
     </testcase>
-    <testcase classname="BaseRepository pagination should handle first page pagination" name="BaseRepository pagination should handle first page pagination" time="0">
+    <testcase classname="UserRepository submitOperatorApplication should submit operator application successfully" name="UserRepository submitOperatorApplication should submit operator application successfully" time="0">
+      <skipped/>
     </testcase>
-    <testcase classname="BaseRepository pagination should handle last page pagination" name="BaseRepository pagination should handle last page pagination" time="0">
+    <testcase classname="UserRepository submitOperatorApplication should handle validation errors" name="UserRepository submitOperatorApplication should handle validation errors" time="0">
+      <skipped/>
     </testcase>
-    <testcase classname="BaseRepository query building should apply filters to base query" name="BaseRepository query building should apply filters to base query" time="0">
+    <testcase classname="UserRepository setOperatorAvailability should set operator availability successfully" name="UserRepository setOperatorAvailability should set operator availability successfully" time="0">
+      <skipped/>
     </testcase>
-    <testcase classname="BaseRepository query building should apply pagination to base query" name="BaseRepository query building should apply pagination to base query" time="0">
+    <testcase classname="UserRepository setOperatorAvailability should handle user not found" name="UserRepository setOperatorAvailability should handle user not found" time="0">
+      <skipped/>
     </testcase>
-    <testcase classname="BaseRepository query building should apply cursor-based pagination" name="BaseRepository query building should apply cursor-based pagination" time="0">
+    <testcase classname="UserRepository setOperatorAvailability should handle user not being an operator" name="UserRepository setOperatorAvailability should handle user not being an operator" time="0">
+      <skipped/>
     </testcase>
-    <testcase classname="BaseRepository configuration methods should get repository name" name="BaseRepository configuration methods should get repository name" time="0">
+    <testcase classname="UserRepository updateStripeInfo should update Stripe information successfully" name="UserRepository updateStripeInfo should update Stripe information successfully" time="0">
+      <skipped/>
     </testcase>
-    <testcase classname="BaseRepository configuration methods should manage caching setting" name="BaseRepository configuration methods should manage caching setting" time="0">
+    <testcase classname="UserRepository findByRole should find users by role successfully" name="UserRepository findByRole should find users by role successfully" time="0.024">
     </testcase>
-    <testcase classname="BaseRepository configuration methods should manage offline mode" name="BaseRepository configuration methods should manage offline mode" time="0">
+    <testcase classname="UserRepository verifyEmail should verify user email successfully" name="UserRepository verifyEmail should verify user email successfully" time="0">
+      <skipped/>
     </testcase>
-    <testcase classname="BaseRepository logging should log operations" name="BaseRepository logging should log operations" time="0.001">
+    <testcase classname="UserRepository delete should delete user successfully" name="UserRepository delete should delete user successfully" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="UserRepository count should count users successfully" name="UserRepository count should count users successfully" time="0">
+      <skipped/>
     </testcase>
   </testsuite>
 </testsuites>
