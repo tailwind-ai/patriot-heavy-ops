@@ -24,11 +24,10 @@ import {
   Twitter,
   User,
   X,
-  type Icon as LucideIcon,
 } from "lucide-react"
 import NextImage from "next/image"
 
-export type Icon = LucideIcon
+export type Icon = React.ComponentType<LucideProps>
 
 export const Icons = {
   logo: Command,

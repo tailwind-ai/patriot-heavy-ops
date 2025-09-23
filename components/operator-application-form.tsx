@@ -57,7 +57,7 @@ export function OperatorApplicationForm({
   const [inputValue, setInputValue] = React.useState("")
   const [suggestions, setSuggestions] = React.useState<AddressSuggestion[]>([])
   const [isLoading, setIsLoading] = React.useState(false)
-  const debounceRef = React.useRef<NodeJS.Timeout>()
+  const debounceRef = React.useRef<NodeJS.Timeout | null>(null)
 
   // const selectedLocation = watch("location")
 

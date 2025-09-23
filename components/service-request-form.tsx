@@ -76,7 +76,7 @@ export function ServiceRequestForm({ user, className, ...props }: ServiceRequest
   const [jobSiteInput, setJobSiteInput] = React.useState("")
   const [jobSiteSuggestions, setJobSiteSuggestions] = React.useState<AddressSuggestion[]>([])
   const [isLoadingAddresses, setIsLoadingAddresses] = React.useState(false)
-  const debounceRef = React.useRef<NodeJS.Timeout>()
+  const debounceRef = React.useRef<NodeJS.Timeout | null>(null)
 
   const watchedDurationType = watch("requestedDurationType")
   const watchedDurationValue = watch("requestedDurationValue")
