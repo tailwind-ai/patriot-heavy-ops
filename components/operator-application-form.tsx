@@ -121,11 +121,12 @@ export function OperatorApplicationForm({
     setIsSaving(false)
 
     if (!response?.ok) {
-      return toast({
+      toast({
         title: "Something went wrong.",
         description: "Your application was not submitted. Please try again.",
         variant: "destructive",
       })
+      return
     }
 
     toast({

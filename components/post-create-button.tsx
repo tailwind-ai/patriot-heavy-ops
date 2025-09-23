@@ -35,18 +35,20 @@ export function PostCreateButton({
 
     if (!response?.ok) {
       if (response.status === 402) {
-        return toast({
+        toast({
           title: "Limit of 3 posts reached.",
           description: "Please upgrade to the PRO plan.",
           variant: "destructive",
         })
+        return
       }
 
-      return toast({
+      toast({
         title: "Something went wrong.",
         description: "Your post was not created. Please try again.",
         variant: "destructive",
       })
+      return
     }
 
     const post = await response.json()

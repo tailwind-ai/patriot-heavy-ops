@@ -59,11 +59,12 @@ export function UserNameForm({ user, className, ...props }: UserNameFormProps) {
     setIsSaving(false)
 
     if (!response?.ok) {
-      return toast({
+      toast({
         title: "Something went wrong.",
         description: "Your name was not updated. Please try again.",
         variant: "destructive",
       })
+      return
     }
 
     toast({

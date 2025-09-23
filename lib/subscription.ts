@@ -4,6 +4,8 @@ import { UserSubscriptionPlan } from "types"
 import { freePlan, proPlan } from "@/config/subscriptions"
 import { db } from "@/lib/db"
 
+const DAY_IN_MS = 86_400_000 // 24 hours in milliseconds
+
 export async function getUserSubscriptionPlan(
   userId: string
 ): Promise<UserSubscriptionPlan> {
@@ -27,7 +29,7 @@ export async function getUserSubscriptionPlan(
   const isPro = Boolean(
     user.stripePriceId &&
       user.stripeCurrentPeriodEnd &&
-      user.stripeCurrentPeriodEnd.getTime() + 86_400_000 > Date.now()
+      user.stripeCurrentPeriodEnd.getTime() + DAY_IN_MS > Date.now()
   )
 
   const plan = isPro ? proPlan : freePlan

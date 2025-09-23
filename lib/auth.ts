@@ -106,7 +106,7 @@ export const authOptions: NextAuthOptions = {
     },
     async jwt({ token, user }) {
       const dbUser = token.email
-        ? await db.user.findFirst({
+        ? await db.user.findUnique({
             where: {
               email: token.email,
             },

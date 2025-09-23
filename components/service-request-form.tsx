@@ -179,11 +179,12 @@ export function ServiceRequestForm({ user, className, ...props }: ServiceRequest
           }
         }
 
-        return toast({
+        toast({
           title: "Failed to create service request",
           description: errorMessage,
           variant: "destructive",
         })
+        return
       }
 
       toast({
