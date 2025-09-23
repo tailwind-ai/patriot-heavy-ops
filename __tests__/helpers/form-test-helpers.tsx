@@ -212,20 +212,23 @@ export const renderWithRole = (
 // Mock fetch for successful responses
 export const mockFetchSuccess = (data: any = {}) => {
   const mockFetch = global.fetch as jest.MockedFunction<typeof fetch>
-  mockFetch.mockResolvedValueOnce({
-    ok: true,
-    json: () => Promise.resolve(data),
-  } as any)
+  const response = new Response(JSON.stringify(data), {
+    status: 200,
+    headers: { 'Content-Type': 'application/json' },
+  })
+  mockFetch.mockResolvedValueOnce(response)
 }
 
 // Mock fetch for error responses
 export const mockFetchError = (message: string = 'Error', status: number = 400) => {
   const mockFetch = global.fetch as jest.MockedFunction<typeof fetch>
-  mockFetch.mockResolvedValueOnce({
-    ok: false,
+  const response = new Response(JSON.stringify({ message }), {
     status,
-    json: () => Promise.resolve({ message }),
-  } as any)
+    headers: { 'Content-Type': 'application/json' },
+  })
+  // Ensure ok = false for non-2xx
+  Object.defineProperty(response, 'ok', { value: false })
+  mockFetch.mockResolvedValueOnce(response)
 }
 
 // Mock geocoding API responses for address autocomplete testing
