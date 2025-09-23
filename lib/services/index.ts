@@ -1,6 +1,6 @@
 /**
  * Service Layer Exports
- * 
+ *
  * Central export point for all platform-agnostic services.
  * This module provides the foundation for both web and mobile applications.
  */
@@ -12,9 +12,10 @@ export {
   type ServiceError,
   type ServiceResult,
   type ServiceLogger,
-} from './base-service';
+} from "./base-service"
 
 // Authentication service
+import { AuthService } from "./auth-service"
 export {
   AuthService,
   type AuthUser,
@@ -22,26 +23,26 @@ export {
   type RegisterData,
   type AuthToken,
   type SessionData,
-} from './auth-service';
+} from "./auth-service"
 
 // Service factory for dependency injection
 export class ServiceFactory {
-  private static authService: AuthService | null = null;
+  private static authService: AuthService | null = null
 
   /**
    * Get singleton instance of AuthService
    */
   static getAuthService(): AuthService {
     if (!this.authService) {
-      this.authService = new AuthService();
+      this.authService = new AuthService()
     }
-    return this.authService;
+    return this.authService
   }
 
   /**
    * Reset all service instances (useful for testing)
    */
   static reset(): void {
-    this.authService = null;
+    this.authService = null
   }
 }
