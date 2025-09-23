@@ -443,16 +443,32 @@ describe("OperatorApplicationForm", () => {
     it("should refresh router on successful submission", async () => {
       const mf = global.fetch as jest.MockedFunction<typeof fetch>
       mf.mockImplementation((url) => {
-        if (typeof url === "string" && url.includes("/api/users/") && url.includes("/operator-application")) {
-          return Promise.resolve({
-            ok: true,
-            json: () => Promise.resolve({ message: "Application submitted successfully" }),
-          } as any)
+        if (
+          typeof url === "string" &&
+          url.includes("/api/users/") &&
+          url.includes("/operator-application")
+        ) {
+          const response = new Response(
+            JSON.stringify({ message: "Application submitted successfully" }),
+            {
+              status: 200,
+              headers: { "Content-Type": "application/json" },
+            }
+          )
+          return Promise.resolve(response)
         }
         if (typeof url === "string" && url.includes("/api/geocoding")) {
-          return Promise.resolve({ ok: true, json: () => Promise.resolve([]) } as any)
+          const response = new Response(JSON.stringify([]), {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+          })
+          return Promise.resolve(response)
         }
-        return Promise.resolve({ ok: true, json: () => Promise.resolve({}) } as any)
+        const response = new Response(JSON.stringify({}), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        })
+        return Promise.resolve(response)
       })
 
       render(<OperatorApplicationForm user={mockUser} />)
