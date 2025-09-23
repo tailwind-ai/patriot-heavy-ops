@@ -16,15 +16,7 @@ import type { UserRole } from "@prisma/client"
 import { hashPassword } from "../../../lib/auth-utils"
 
 // Mock the database
-jest.mock("../../../lib/db", () => ({
-  db: {
-    user: {
-      findUnique: jest.fn(),
-      create: jest.fn(),
-      update: jest.fn(),
-    },
-  },
-}))
+jest.mock("../../../lib/db")
 
 // Mock auth-utils
 jest.mock("../../../lib/auth-utils", () => ({
@@ -32,10 +24,10 @@ jest.mock("../../../lib/auth-utils", () => ({
   verifyPassword: jest.fn(),
 }))
 
-import { db } from "../../../lib/db"
+import { mockUser as mockUserModel } from "../../../lib/db"
 import { verifyPassword } from "../../../lib/auth-utils"
 
-const mockDb = db as jest.Mocked<typeof db>
+// const mockDb = db as jest.Mocked<typeof db>
 const mockHashPassword = hashPassword as jest.MockedFunction<
   typeof hashPassword
 >
@@ -108,14 +100,14 @@ describe("AuthService", () => {
     }
 
     it("should authenticate user with valid credentials", async () => {
-      mockDb.user.findUnique.mockResolvedValue(mockUserWithPassword)
+      mockUserModel.findUnique.mockResolvedValue(mockUserWithPassword)
       mockVerifyPassword.mockResolvedValue(true)
 
       const result = await authService.authenticate(credentials)
 
       expect(result.success).toBe(true)
       expect(result.data).toEqual(mockUser)
-      expect(mockDb.user.findUnique).toHaveBeenCalledWith({
+      expect(mockUserModel.findUnique).toHaveBeenCalledWith({
         where: { email: "test@example.com" },
         select: {
           id: true,
@@ -133,7 +125,7 @@ describe("AuthService", () => {
     })
 
     it("should fail authentication with invalid email", async () => {
-      mockDb.user.findUnique.mockResolvedValue(null)
+      mockUserModel.findUnique.mockResolvedValue(null)
 
       const result = await authService.authenticate(credentials)
 
@@ -143,7 +135,7 @@ describe("AuthService", () => {
     })
 
     it("should fail authentication with invalid password", async () => {
-      mockDb.user.findUnique.mockResolvedValue(mockUserWithPassword)
+      mockUserModel.findUnique.mockResolvedValue(mockUserWithPassword)
       mockVerifyPassword.mockResolvedValue(false)
 
       const result = await authService.authenticate(credentials)
@@ -153,7 +145,10 @@ describe("AuthService", () => {
     })
 
     it("should fail authentication when user has no password", async () => {
-      mockDb.user.findUnique.mockResolvedValue({ ...mockUser, password: null })
+      mockUserModel.findUnique.mockResolvedValue({
+        ...mockUser,
+        password: null,
+      })
 
       const result = await authService.authenticate(credentials)
 
@@ -172,7 +167,7 @@ describe("AuthService", () => {
     })
 
     it("should log authentication attempts", async () => {
-      mockDb.user.findUnique.mockResolvedValue(mockUserWithPassword)
+      mockUserModel.findUnique.mockResolvedValue(mockUserWithPassword)
       mockVerifyPassword.mockResolvedValue(true)
 
       await authService.authenticate(credentials)
@@ -196,16 +191,16 @@ describe("AuthService", () => {
     }
 
     it("should register new user successfully", async () => {
-      mockDb.user.findUnique.mockResolvedValue(null) // User doesn't exist
+      mockUserModel.findUnique.mockResolvedValue(null) // User doesn't exist
       mockHashPassword.mockResolvedValue("hashed-password")
-      mockDb.user.create.mockResolvedValue(mockUser)
+      mockUserModel.create.mockResolvedValue(mockUser)
 
       const result = await authService.register(registerData)
 
       expect(result.success).toBe(true)
       expect(result.data).toEqual(mockUser)
       expect(mockHashPassword).toHaveBeenCalledWith("password123")
-      expect(mockDb.user.create).toHaveBeenCalledWith({
+      expect(mockUserModel.create).toHaveBeenCalledWith({
         data: {
           email: "new@example.com",
           password: "hashed-password",
@@ -223,7 +218,7 @@ describe("AuthService", () => {
     })
 
     it("should fail registration if user already exists", async () => {
-      mockDb.user.findUnique.mockResolvedValue(mockUser)
+      mockUserModel.findUnique.mockResolvedValue(mockUser)
 
       const result = await authService.register(registerData)
 
@@ -240,14 +235,14 @@ describe("AuthService", () => {
 
     it("should handle registration with minimal data", async () => {
       const minimalData = { email: "test@example.com", password: "password123" }
-      mockDb.user.findUnique.mockResolvedValue(null)
+      mockUserModel.findUnique.mockResolvedValue(null)
       mockHashPassword.mockResolvedValue("hashed-password")
-      mockDb.user.create.mockResolvedValue(mockUser)
+      mockUserModel.create.mockResolvedValue(mockUser)
 
       const result = await authService.register(minimalData)
 
       expect(result.success).toBe(true)
-      expect(mockDb.user.create).toHaveBeenCalledWith({
+      expect(mockUserModel.create).toHaveBeenCalledWith({
         data: {
           email: "test@example.com",
           password: "hashed-password",
@@ -261,13 +256,13 @@ describe("AuthService", () => {
 
   describe("getUserById", () => {
     it("should get user by ID successfully", async () => {
-      mockDb.user.findUnique.mockResolvedValue(mockUser)
+      mockUserModel.findUnique.mockResolvedValue(mockUser)
 
       const result = await authService.getUserById("user-123")
 
       expect(result.success).toBe(true)
       expect(result.data).toEqual(mockUser)
-      expect(mockDb.user.findUnique).toHaveBeenCalledWith({
+      expect(mockUserModel.findUnique).toHaveBeenCalledWith({
         where: { id: "user-123" },
         select: {
           id: true,
@@ -280,7 +275,7 @@ describe("AuthService", () => {
     })
 
     it("should fail when user not found", async () => {
-      mockDb.user.findUnique.mockResolvedValue(null)
+      mockUserModel.findUnique.mockResolvedValue(null)
 
       const result = await authService.getUserById("nonexistent")
 
@@ -298,13 +293,13 @@ describe("AuthService", () => {
 
   describe("getUserByEmail", () => {
     it("should get user by email successfully", async () => {
-      mockDb.user.findUnique.mockResolvedValue(mockUser)
+      mockUserModel.findUnique.mockResolvedValue(mockUser)
 
       const result = await authService.getUserByEmail("test@example.com")
 
       expect(result.success).toBe(true)
       expect(result.data).toEqual(mockUser)
-      expect(mockDb.user.findUnique).toHaveBeenCalledWith({
+      expect(mockUserModel.findUnique).toHaveBeenCalledWith({
         where: { email: "test@example.com" },
         select: {
           id: true,
@@ -317,7 +312,7 @@ describe("AuthService", () => {
     })
 
     it("should fail when user not found", async () => {
-      mockDb.user.findUnique.mockResolvedValue(null)
+      mockUserModel.findUnique.mockResolvedValue(null)
 
       const result = await authService.getUserByEmail("nonexistent@example.com")
 
@@ -330,13 +325,13 @@ describe("AuthService", () => {
     it("should update user successfully", async () => {
       const updates = { name: "Updated Name", image: "new-image.jpg" }
       const updatedUser = { ...mockUser, ...updates }
-      mockDb.user.update.mockResolvedValue(updatedUser)
+      mockUserModel.update.mockResolvedValue(updatedUser)
 
       const result = await authService.updateUser("user-123", updates)
 
       expect(result.success).toBe(true)
       expect(result.data).toEqual(updatedUser)
-      expect(mockDb.user.update).toHaveBeenCalledWith({
+      expect(mockUserModel.update).toHaveBeenCalledWith({
         where: { id: "user-123" },
         data: updates,
         select: {
@@ -359,12 +354,12 @@ describe("AuthService", () => {
 
   describe("changePassword", () => {
     it("should change password successfully", async () => {
-      mockDb.user.findUnique.mockResolvedValue({
+      mockUserModel.findUnique.mockResolvedValue({
         password: "old-hashed-password",
       })
       mockVerifyPassword.mockResolvedValue(true)
       mockHashPassword.mockResolvedValue("new-hashed-password")
-      mockDb.user.update.mockResolvedValue(mockUser)
+      mockUserModel.update.mockResolvedValue(mockUser)
 
       const result = await authService.changePassword(
         "user-123",
@@ -378,14 +373,14 @@ describe("AuthService", () => {
         "old-hashed-password"
       )
       expect(mockHashPassword).toHaveBeenCalledWith("newPassword")
-      expect(mockDb.user.update).toHaveBeenCalledWith({
+      expect(mockUserModel.update).toHaveBeenCalledWith({
         where: { id: "user-123" },
         data: { password: "new-hashed-password" },
       })
     })
 
     it("should fail with incorrect current password", async () => {
-      mockDb.user.findUnique.mockResolvedValue({
+      mockUserModel.findUnique.mockResolvedValue({
         password: "old-hashed-password",
       })
       mockVerifyPassword.mockResolvedValue(false)
@@ -401,7 +396,7 @@ describe("AuthService", () => {
     })
 
     it("should fail when user not found", async () => {
-      mockDb.user.findUnique.mockResolvedValue(null)
+      mockUserModel.findUnique.mockResolvedValue(null)
 
       const result = await authService.changePassword(
         "user-123",

@@ -1,47 +1,303 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="47" failures="0" errors="0" time="0.64">
-  <testsuite name="AuthService" errors="0" failures="0" skipped="0" timestamp="2025-09-23T17:39:38" time="0.18" tests="26">
-    <testcase classname="AuthService constructor should initialize with AuthService name" name="AuthService constructor should initialize with AuthService name" time="0.002">
+<testsuites name="jest tests" tests="47" failures="16" errors="0" time="0.78">
+  <testsuite name="AuthService" errors="0" failures="16" skipped="0" timestamp="2025-09-23T18:00:51" time="0.317" tests="26">
+    <testcase classname="AuthService constructor should initialize with AuthService name" name="AuthService constructor should initialize with AuthService name" time="0.001">
     </testcase>
-    <testcase classname="AuthService authenticate should authenticate user with valid credentials" name="AuthService authenticate should authenticate user with valid credentials" time="0.002">
+    <testcase classname="AuthService authenticate should authenticate user with valid credentials" name="AuthService authenticate should authenticate user with valid credentials" time="0.001">
+      <failure>TypeError: Cannot read properties of undefined (reading &apos;findUnique&apos;)
+    at Object.findUnique (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/lib/services/auth-service.test.ts:103:21)
+    at Promise.finally.completed (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
+    at _callCircusTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1006:40)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at _runTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:946:3)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:839:13)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at run (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:757:3)
+    at runAndTransformResultsToJestFormat (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1917:21)
+    at jestAdapter (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/runner.js:101:19)
+    at runTestInternal (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/index.js:275:16)
+    at runTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/index.js:343:7)</failure>
     </testcase>
-    <testcase classname="AuthService authenticate should fail authentication with invalid email" name="AuthService authenticate should fail authentication with invalid email" time="0.007">
+    <testcase classname="AuthService authenticate should fail authentication with invalid email" name="AuthService authenticate should fail authentication with invalid email" time="0">
+      <failure>TypeError: Cannot read properties of undefined (reading &apos;findUnique&apos;)
+    at Object.findUnique (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/lib/services/auth-service.test.ts:128:21)
+    at Promise.finally.completed (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
+    at _callCircusTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1006:40)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at _runTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:946:3)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:839:13)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at run (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:757:3)
+    at runAndTransformResultsToJestFormat (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1917:21)
+    at jestAdapter (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/runner.js:101:19)
+    at runTestInternal (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/index.js:275:16)
+    at runTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/index.js:343:7)</failure>
     </testcase>
-    <testcase classname="AuthService authenticate should fail authentication with invalid password" name="AuthService authenticate should fail authentication with invalid password" time="0.004">
+    <testcase classname="AuthService authenticate should fail authentication with invalid password" name="AuthService authenticate should fail authentication with invalid password" time="0">
+      <failure>TypeError: Cannot read properties of undefined (reading &apos;findUnique&apos;)
+    at Object.findUnique (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/lib/services/auth-service.test.ts:138:21)
+    at Promise.finally.completed (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
+    at _callCircusTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1006:40)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at _runTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:946:3)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:839:13)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at run (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:757:3)
+    at runAndTransformResultsToJestFormat (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1917:21)
+    at jestAdapter (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/runner.js:101:19)
+    at runTestInternal (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/index.js:275:16)
+    at runTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/index.js:343:7)</failure>
     </testcase>
-    <testcase classname="AuthService authenticate should fail authentication when user has no password" name="AuthService authenticate should fail authentication when user has no password" time="0">
+    <testcase classname="AuthService authenticate should fail authentication when user has no password" name="AuthService authenticate should fail authentication when user has no password" time="0.001">
+      <failure>TypeError: Cannot read properties of undefined (reading &apos;findUnique&apos;)
+    at Object.findUnique (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/lib/services/auth-service.test.ts:148:21)
+    at Promise.finally.completed (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
+    at _callCircusTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1006:40)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at _runTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:946:3)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:839:13)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at run (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:757:3)
+    at runAndTransformResultsToJestFormat (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1917:21)
+    at jestAdapter (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/runner.js:101:19)
+    at runTestInternal (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/index.js:275:16)
+    at runTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/index.js:343:7)</failure>
     </testcase>
     <testcase classname="AuthService authenticate should validate required credentials" name="AuthService authenticate should validate required credentials" time="0">
     </testcase>
     <testcase classname="AuthService authenticate should log authentication attempts" name="AuthService authenticate should log authentication attempts" time="0">
+      <failure>TypeError: Cannot read properties of undefined (reading &apos;findUnique&apos;)
+    at Object.findUnique (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/lib/services/auth-service.test.ts:167:21)
+    at Promise.finally.completed (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
+    at _callCircusTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1006:40)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at _runTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:946:3)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:839:13)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at run (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:757:3)
+    at runAndTransformResultsToJestFormat (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1917:21)
+    at jestAdapter (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/runner.js:101:19)
+    at runTestInternal (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/index.js:275:16)
+    at runTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/index.js:343:7)</failure>
     </testcase>
-    <testcase classname="AuthService register should register new user successfully" name="AuthService register should register new user successfully" time="0.001">
+    <testcase classname="AuthService register should register new user successfully" name="AuthService register should register new user successfully" time="0">
+      <failure>TypeError: Cannot read properties of undefined (reading &apos;findUnique&apos;)
+    at Object.findUnique (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/lib/services/auth-service.test.ts:191:21)
+    at Promise.finally.completed (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
+    at _callCircusTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1006:40)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at _runTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:946:3)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:839:13)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at run (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:757:3)
+    at runAndTransformResultsToJestFormat (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1917:21)
+    at jestAdapter (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/runner.js:101:19)
+    at runTestInternal (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/index.js:275:16)
+    at runTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/index.js:343:7)</failure>
     </testcase>
-    <testcase classname="AuthService register should fail registration if user already exists" name="AuthService register should fail registration if user already exists" time="0.001">
+    <testcase classname="AuthService register should fail registration if user already exists" name="AuthService register should fail registration if user already exists" time="0">
+      <failure>TypeError: Cannot read properties of undefined (reading &apos;findUnique&apos;)
+    at Object.findUnique (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/lib/services/auth-service.test.ts:218:21)
+    at Promise.finally.completed (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
+    at _callCircusTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1006:40)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at _runTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:946:3)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:839:13)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at run (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:757:3)
+    at runAndTransformResultsToJestFormat (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1917:21)
+    at jestAdapter (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/runner.js:101:19)
+    at runTestInternal (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/index.js:275:16)
+    at runTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/index.js:343:7)</failure>
     </testcase>
     <testcase classname="AuthService register should validate required registration data" name="AuthService register should validate required registration data" time="0">
     </testcase>
-    <testcase classname="AuthService register should handle registration with minimal data" name="AuthService register should handle registration with minimal data" time="0.001">
+    <testcase classname="AuthService register should handle registration with minimal data" name="AuthService register should handle registration with minimal data" time="0">
+      <failure>TypeError: Cannot read properties of undefined (reading &apos;findUnique&apos;)
+    at Object.findUnique (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/lib/services/auth-service.test.ts:235:21)
+    at Promise.finally.completed (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
+    at _callCircusTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1006:40)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at _runTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:946:3)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:839:13)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at run (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:757:3)
+    at runAndTransformResultsToJestFormat (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1917:21)
+    at jestAdapter (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/runner.js:101:19)
+    at runTestInternal (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/index.js:275:16)
+    at runTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/index.js:343:7)</failure>
     </testcase>
     <testcase classname="AuthService getUserById should get user by ID successfully" name="AuthService getUserById should get user by ID successfully" time="0">
+      <failure>TypeError: Cannot read properties of undefined (reading &apos;findUnique&apos;)
+    at Object.findUnique (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/lib/services/auth-service.test.ts:256:21)
+    at Promise.finally.completed (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
+    at _callCircusTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1006:40)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at _runTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:946:3)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:839:13)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at run (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:757:3)
+    at runAndTransformResultsToJestFormat (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1917:21)
+    at jestAdapter (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/runner.js:101:19)
+    at runTestInternal (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/index.js:275:16)
+    at runTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/index.js:343:7)</failure>
     </testcase>
-    <testcase classname="AuthService getUserById should fail when user not found" name="AuthService getUserById should fail when user not found" time="0.001">
+    <testcase classname="AuthService getUserById should fail when user not found" name="AuthService getUserById should fail when user not found" time="0">
+      <failure>TypeError: Cannot read properties of undefined (reading &apos;findUnique&apos;)
+    at Object.findUnique (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/lib/services/auth-service.test.ts:275:21)
+    at Promise.finally.completed (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
+    at _callCircusTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1006:40)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at _runTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:946:3)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:839:13)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at run (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:757:3)
+    at runAndTransformResultsToJestFormat (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1917:21)
+    at jestAdapter (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/runner.js:101:19)
+    at runTestInternal (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/index.js:275:16)
+    at runTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/index.js:343:7)</failure>
     </testcase>
     <testcase classname="AuthService getUserById should validate required userId" name="AuthService getUserById should validate required userId" time="0">
     </testcase>
     <testcase classname="AuthService getUserByEmail should get user by email successfully" name="AuthService getUserByEmail should get user by email successfully" time="0">
+      <failure>TypeError: Cannot read properties of undefined (reading &apos;findUnique&apos;)
+    at Object.findUnique (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/lib/services/auth-service.test.ts:293:21)
+    at Promise.finally.completed (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
+    at _callCircusTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1006:40)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at _runTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:946:3)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:839:13)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at run (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:757:3)
+    at runAndTransformResultsToJestFormat (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1917:21)
+    at jestAdapter (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/runner.js:101:19)
+    at runTestInternal (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/index.js:275:16)
+    at runTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/index.js:343:7)</failure>
     </testcase>
-    <testcase classname="AuthService getUserByEmail should fail when user not found" name="AuthService getUserByEmail should fail when user not found" time="0.001">
+    <testcase classname="AuthService getUserByEmail should fail when user not found" name="AuthService getUserByEmail should fail when user not found" time="0">
+      <failure>TypeError: Cannot read properties of undefined (reading &apos;findUnique&apos;)
+    at Object.findUnique (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/lib/services/auth-service.test.ts:312:21)
+    at Promise.finally.completed (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
+    at _callCircusTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1006:40)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at _runTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:946:3)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:839:13)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at run (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:757:3)
+    at runAndTransformResultsToJestFormat (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1917:21)
+    at jestAdapter (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/runner.js:101:19)
+    at runTestInternal (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/index.js:275:16)
+    at runTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/index.js:343:7)</failure>
     </testcase>
     <testcase classname="AuthService updateUser should update user successfully" name="AuthService updateUser should update user successfully" time="0">
+      <failure>TypeError: Cannot read properties of undefined (reading &apos;update&apos;)
+    at Object.update (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/lib/services/auth-service.test.ts:325:21)
+    at Promise.finally.completed (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
+    at _callCircusTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1006:40)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at _runTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:946:3)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:839:13)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at run (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:757:3)
+    at runAndTransformResultsToJestFormat (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1917:21)
+    at jestAdapter (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/runner.js:101:19)
+    at runTestInternal (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/index.js:275:16)
+    at runTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/index.js:343:7)</failure>
     </testcase>
     <testcase classname="AuthService updateUser should validate required userId" name="AuthService updateUser should validate required userId" time="0">
     </testcase>
-    <testcase classname="AuthService changePassword should change password successfully" name="AuthService changePassword should change password successfully" time="0.001">
+    <testcase classname="AuthService changePassword should change password successfully" name="AuthService changePassword should change password successfully" time="0">
+      <failure>TypeError: Cannot read properties of undefined (reading &apos;findUnique&apos;)
+    at Object.findUnique (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/lib/services/auth-service.test.ts:354:21)
+    at Promise.finally.completed (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
+    at _callCircusTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1006:40)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at _runTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:946:3)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:839:13)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at run (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:757:3)
+    at runAndTransformResultsToJestFormat (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1917:21)
+    at jestAdapter (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/runner.js:101:19)
+    at runTestInternal (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/index.js:275:16)
+    at runTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/index.js:343:7)</failure>
     </testcase>
     <testcase classname="AuthService changePassword should fail with incorrect current password" name="AuthService changePassword should fail with incorrect current password" time="0">
+      <failure>TypeError: Cannot read properties of undefined (reading &apos;findUnique&apos;)
+    at Object.findUnique (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/lib/services/auth-service.test.ts:380:21)
+    at Promise.finally.completed (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
+    at _callCircusTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1006:40)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at _runTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:946:3)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:839:13)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at run (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:757:3)
+    at runAndTransformResultsToJestFormat (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1917:21)
+    at jestAdapter (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/runner.js:101:19)
+    at runTestInternal (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/index.js:275:16)
+    at runTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/index.js:343:7)</failure>
     </testcase>
     <testcase classname="AuthService changePassword should fail when user not found" name="AuthService changePassword should fail when user not found" time="0">
+      <failure>TypeError: Cannot read properties of undefined (reading &apos;findUnique&apos;)
+    at Object.findUnique (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/lib/services/auth-service.test.ts:396:21)
+    at Promise.finally.completed (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
+    at _callCircusTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1006:40)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at _runTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:946:3)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:839:13)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at run (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:757:3)
+    at runAndTransformResultsToJestFormat (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1917:21)
+    at jestAdapter (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/runner.js:101:19)
+    at runTestInternal (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/index.js:275:16)
+    at runTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/index.js:343:7)</failure>
     </testcase>
     <testcase classname="AuthService validateSessionData should validate correct session data" name="AuthService validateSessionData should validate correct session data" time="0">
     </testcase>
@@ -54,30 +310,30 @@
     <testcase classname="AuthService validateAuthUser should accept null name and image" name="AuthService validateAuthUser should accept null name and image" time="0">
     </testcase>
   </testsuite>
-  <testsuite name="BaseService" errors="0" failures="0" skipped="0" timestamp="2025-09-23T17:39:38" time="0.049" tests="21">
+  <testsuite name="BaseService" errors="0" failures="0" skipped="0" timestamp="2025-09-23T18:00:51" time="0.04" tests="21">
     <testcase classname="BaseService constructor should initialize with service name and logger" name="BaseService constructor should initialize with service name and logger" time="0">
     </testcase>
     <testcase classname="BaseService constructor should use ConsoleLogger as default" name="BaseService constructor should use ConsoleLogger as default" time="0">
     </testcase>
-    <testcase classname="BaseService createError should create standardized error result" name="BaseService createError should create standardized error result" time="0">
+    <testcase classname="BaseService createError should create standardized error result" name="BaseService createError should create standardized error result" time="0.001">
     </testcase>
-    <testcase classname="BaseService createError should log error when created" name="BaseService createError should log error when created" time="0.001">
+    <testcase classname="BaseService createError should log error when created" name="BaseService createError should log error when created" time="0">
     </testcase>
     <testcase classname="BaseService createSuccess should create successful result with data" name="BaseService createSuccess should create successful result with data" time="0">
     </testcase>
-    <testcase classname="BaseService handleAsync should handle successful async operations" name="BaseService handleAsync should handle successful async operations" time="0">
+    <testcase classname="BaseService handleAsync should handle successful async operations" name="BaseService handleAsync should handle successful async operations" time="0.003">
     </testcase>
-    <testcase classname="BaseService handleAsync should handle async operation errors" name="BaseService handleAsync should handle async operation errors" time="0.005">
+    <testcase classname="BaseService handleAsync should handle async operation errors" name="BaseService handleAsync should handle async operation errors" time="0.004">
     </testcase>
     <testcase classname="BaseService handleAsync should handle non-Error exceptions" name="BaseService handleAsync should handle non-Error exceptions" time="0">
     </testcase>
     <testcase classname="BaseService validateRequired should pass validation when all required fields are present" name="BaseService validateRequired should pass validation when all required fields are present" time="0">
     </testcase>
-    <testcase classname="BaseService validateRequired should fail validation when required fields are missing" name="BaseService validateRequired should fail validation when required fields are missing" time="0.002">
+    <testcase classname="BaseService validateRequired should fail validation when required fields are missing" name="BaseService validateRequired should fail validation when required fields are missing" time="0">
     </testcase>
     <testcase classname="BaseService validateRequired should fail validation for null values" name="BaseService validateRequired should fail validation for null values" time="0">
     </testcase>
-    <testcase classname="BaseService validateRequired should fail validation for undefined values" name="BaseService validateRequired should fail validation for undefined values" time="0">
+    <testcase classname="BaseService validateRequired should fail validation for undefined values" name="BaseService validateRequired should fail validation for undefined values" time="0.001">
     </testcase>
     <testcase classname="BaseService validateRequired should fail validation for empty strings" name="BaseService validateRequired should fail validation for empty strings" time="0">
     </testcase>
@@ -87,15 +343,15 @@
     </testcase>
     <testcase classname="BaseService getServiceName should return the service name" name="BaseService getServiceName should return the service name" time="0">
     </testcase>
-    <testcase classname="ConsoleLogger should log info messages" name="ConsoleLogger should log info messages" time="0">
+    <testcase classname="ConsoleLogger should log info messages" name="ConsoleLogger should log info messages" time="0.001">
     </testcase>
     <testcase classname="ConsoleLogger should log warn messages" name="ConsoleLogger should log warn messages" time="0">
     </testcase>
-    <testcase classname="ConsoleLogger should log error messages" name="ConsoleLogger should log error messages" time="0.001">
+    <testcase classname="ConsoleLogger should log error messages" name="ConsoleLogger should log error messages" time="0">
     </testcase>
     <testcase classname="ConsoleLogger should log debug messages in development" name="ConsoleLogger should log debug messages in development" time="0">
     </testcase>
-    <testcase classname="ConsoleLogger should not log debug messages in production" name="ConsoleLogger should not log debug messages in production" time="0">
+    <testcase classname="ConsoleLogger should not log debug messages in production" name="ConsoleLogger should not log debug messages in production" time="0.001">
     </testcase>
   </testsuite>
 </testsuites>

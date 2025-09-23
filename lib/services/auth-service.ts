@@ -61,7 +61,7 @@ export class AuthService extends BaseService {
   async authenticate(credentials: LoginCredentials): Promise<ServiceResult<AuthUser>> {
     this.logOperation('authenticate', { email: credentials.email });
 
-    const validation = this.validateRequired(credentials as Record<string, unknown>, ['email', 'password']);
+    const validation = this.validateRequired(credentials as unknown as Record<string, unknown>, ['email', 'password']);
     if (!validation.success) {
       return this.createError('VALIDATION_ERROR', validation.error?.message || 'Validation failed');
     }
@@ -112,7 +112,7 @@ export class AuthService extends BaseService {
   async register(data: RegisterData): Promise<ServiceResult<AuthUser>> {
     this.logOperation('register', { email: data.email });
 
-    const validation = this.validateRequired(data as Record<string, unknown>, ['email', 'password']);
+    const validation = this.validateRequired(data as unknown as Record<string, unknown>, ['email', 'password']);
     if (!validation.success) {
       return this.createError('VALIDATION_ERROR', validation.error?.message || 'Validation failed');
     }

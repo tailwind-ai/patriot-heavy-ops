@@ -104,8 +104,8 @@ describe('BaseService', () => {
       testService.testCreateError('TEST_ERROR', 'Test error message');
 
       expect(mockLogger.logs).toHaveLength(1);
-      expect(mockLogger.logs[0].level).toBe('error');
-      expect(mockLogger.logs[0].message).toContain('TestService Error: Test error message');
+      expect(mockLogger.logs[0]?.level).toBe('error');
+      expect(mockLogger.logs[0]?.message).toContain('TestService Error: Test error message');
     });
   });
 
@@ -207,8 +207,8 @@ describe('BaseService', () => {
       testService.testLogOperation('test operation');
 
       expect(mockLogger.logs).toHaveLength(1);
-      expect(mockLogger.logs[0].level).toBe('info');
-      expect(mockLogger.logs[0].message).toBe('TestService: test operation');
+      expect(mockLogger.logs[0]?.level).toBe('info');
+      expect(mockLogger.logs[0]?.message).toBe('TestService: test operation');
     });
 
     it('should log operation with metadata', () => {
@@ -216,7 +216,7 @@ describe('BaseService', () => {
       testService.testLogOperation('test operation', meta);
 
       expect(mockLogger.logs).toHaveLength(1);
-      expect(mockLogger.logs[0].meta).toEqual(meta);
+      expect(mockLogger.logs[0]?.meta).toEqual(meta);
     });
   });
 
@@ -270,23 +270,35 @@ describe('ConsoleLogger', () => {
 
   it('should log debug messages in development', () => {
     const originalEnv = process.env.NODE_ENV;
-    process.env.NODE_ENV = 'development';
+    Object.defineProperty(process.env, 'NODE_ENV', {
+      value: 'development',
+      configurable: true
+    });
 
     logger.debug('test debug');
 
     expect(consoleSpy.debug).toHaveBeenCalledWith('[DEBUG] test debug', '');
 
-    process.env.NODE_ENV = originalEnv;
+    Object.defineProperty(process.env, 'NODE_ENV', {
+      value: originalEnv,
+      configurable: true
+    });
   });
 
   it('should not log debug messages in production', () => {
     const originalEnv = process.env.NODE_ENV;
-    process.env.NODE_ENV = 'production';
+    Object.defineProperty(process.env, 'NODE_ENV', {
+      value: 'production',
+      configurable: true
+    });
 
     logger.debug('test debug');
 
     expect(consoleSpy.debug).not.toHaveBeenCalled();
 
-    process.env.NODE_ENV = originalEnv;
+    Object.defineProperty(process.env, 'NODE_ENV', {
+      value: originalEnv,
+      configurable: true
+    });
   });
 });
