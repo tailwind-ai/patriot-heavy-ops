@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1758586508608" clover="3.2.0">
-  <project timestamp="1758586508608" name="All files">
+<coverage generated="1758586803047" clover="3.2.0">
+  <project timestamp="1758586803047" name="All files">
     <metrics statements="1429" coveredstatements="530" conditionals="556" coveredconditionals="200" methods="189" coveredmethods="65" elements="2174" coveredelements="795" complexity="0" loc="1429" ncloc="1429" packages="18" files="96" classes="96"/>
     <package name="app.api.auth.[...nextauth]">
       <metrics statements="8" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
@@ -510,14 +510,14 @@
         <line num="23" count="1" type="stmt"/>
         <line num="24" count="1" type="stmt"/>
         <line num="40" count="29" type="stmt"/>
-        <line num="45" count="458" type="stmt"/>
-        <line num="50" count="458" type="stmt"/>
-        <line num="56" count="458" type="stmt"/>
-        <line num="57" count="458" type="stmt"/>
-        <line num="58" count="458" type="stmt"/>
-        <line num="59" count="458" type="stmt"/>
-        <line num="60" count="458" type="stmt"/>
-        <line num="65" count="458" type="stmt"/>
+        <line num="45" count="459" type="stmt"/>
+        <line num="50" count="459" type="stmt"/>
+        <line num="56" count="459" type="stmt"/>
+        <line num="57" count="459" type="stmt"/>
+        <line num="58" count="459" type="stmt"/>
+        <line num="59" count="459" type="stmt"/>
+        <line num="60" count="459" type="stmt"/>
+        <line num="65" count="459" type="stmt"/>
         <line num="66" count="21" type="cond" truecount="2" falsecount="0"/>
         <line num="67" count="1" type="stmt"/>
         <line num="68" count="1" type="stmt"/>
@@ -529,13 +529,13 @@
         <line num="78" count="10" type="cond" truecount="1" falsecount="1"/>
         <line num="80" count="10" type="stmt"/>
         <line num="82" count="20" type="stmt"/>
-        <line num="87" count="458" type="stmt"/>
+        <line num="87" count="459" type="stmt"/>
         <line num="88" count="382" type="stmt"/>
         <line num="91" count="382" type="cond" truecount="2" falsecount="0"/>
         <line num="92" count="360" type="stmt"/>
         <line num="95" count="382" type="stmt"/>
         <line num="96" count="21" type="stmt"/>
-        <line num="101" count="458" type="stmt"/>
+        <line num="101" count="459" type="stmt"/>
         <line num="102" count="1" type="stmt"/>
         <line num="103" count="1" type="stmt"/>
         <line num="104" count="1" type="stmt"/>
@@ -1019,7 +1019,7 @@
         <line num="41" count="4" type="stmt"/>
         <line num="43" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="53" count="4" type="stmt"/>
-        <line num="55" count="716" type="stmt"/>
+        <line num="55" count="717" type="stmt"/>
       </file>
       <file name="calendar.tsx" path="/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/components/ui/calendar.tsx">
         <metrics statements="7" coveredstatements="0" conditionals="1" coveredconditionals="0" methods="1" coveredmethods="0"/>
@@ -1041,7 +1041,7 @@
         <line num="59" count="1" type="stmt"/>
         <line num="67" count="1" type="stmt"/>
         <line num="79" count="1" type="stmt"/>
-        <line num="81" count="458" type="stmt"/>
+        <line num="81" count="459" type="stmt"/>
       </file>
       <file name="checkbox.tsx" path="/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/components/ui/checkbox.tsx">
         <metrics statements="6" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
@@ -1202,7 +1202,7 @@
         <line num="3" count="2" type="stmt"/>
         <line num="7" count="2" type="stmt"/>
         <line num="22" count="2" type="stmt"/>
-        <line num="24" count="634" type="stmt"/>
+        <line num="24" count="635" type="stmt"/>
       </file>
       <file name="label.tsx" path="/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/components/ui/label.tsx">
         <metrics statements="7" coveredstatements="7" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
@@ -1212,7 +1212,7 @@
         <line num="7" count="2" type="stmt"/>
         <line num="9" count="2" type="stmt"/>
         <line num="24" count="2" type="stmt"/>
-        <line num="26" count="634" type="stmt"/>
+        <line num="26" count="635" type="stmt"/>
       </file>
       <file name="menubar.tsx" path="/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/components/ui/menubar.tsx">
         <metrics statements="37" coveredstatements="0" conditionals="11" coveredconditionals="0" methods="1" coveredmethods="0"/>
@@ -1669,8 +1669,8 @@
         <line num="1" count="6" type="stmt"/>
         <line num="2" count="6" type="stmt"/>
         <line num="4" count="6" type="stmt"/>
-        <line num="6" count="6883" type="stmt"/>
-        <line num="7" count="6883" type="stmt"/>
+        <line num="6" count="6893" type="stmt"/>
+        <line num="7" count="6893" type="stmt"/>
         <line num="10" count="1022" type="stmt"/>
         <line num="11" count="1022" type="stmt"/>
         <line num="12" count="1022" type="stmt"/>
@@ -1769,7 +1769,7 @@
         <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <line num="1" count="4" type="stmt"/>
         <line num="3" count="24" type="stmt"/>
-        <line num="7" count="481" type="stmt"/>
+        <line num="7" count="482" type="stmt"/>
         <line num="11" count="43" type="stmt"/>
       </file>
     </package>

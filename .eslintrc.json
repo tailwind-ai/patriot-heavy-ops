@@ -39,6 +39,7 @@
     "no-console": "warn",
     "no-debugger": "error"
   },
+  "ignorePatterns": ["jest.config.js"],
   "settings": {
     "tailwindcss": {
       "callees": ["cn"],
