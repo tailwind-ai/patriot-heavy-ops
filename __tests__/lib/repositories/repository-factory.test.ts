@@ -120,12 +120,17 @@ describe("RepositoryFactory", () => {
   })
 
   describe("initialization", () => {
-    it.skip("should initialize all repositories and connect to database", async () => {
-      mockDatabase.$connect.mockResolvedValue(undefined)
+    it("should initialize all repositories and connect to database", async () => {
+      // Create a proper mock database with required methods
+      const mockDb = {
+        $connect: jest.fn().mockResolvedValue(undefined),
+        $disconnect: jest.fn().mockResolvedValue(undefined),
+      }
+      RepositoryFactory.setDatabase(mockDb as any)
 
       await RepositoryFactory.initialize()
 
-      expect(mockDatabase.$connect).toHaveBeenCalled()
+      expect(mockDb.$connect).toHaveBeenCalled()
       
       // Verify repositories are created
       const serviceRepo = RepositoryFactory.getServiceRequestRepository()
@@ -135,32 +140,41 @@ describe("RepositoryFactory", () => {
       expect(userRepo).toBeInstanceOf(UserRepository)
     })
 
-    it.skip("should handle database connection errors", async () => {
-      const connectionError = new Error("Connection failed")
-      mockDatabase.$connect.mockRejectedValue(connectionError)
+    it("should handle database connection errors", async () => {
+      // Create a proper mock database with failing connection
+      const mockDb = {
+        $connect: jest.fn().mockRejectedValue(new Error("Connection failed")),
+        $disconnect: jest.fn().mockResolvedValue(undefined),
+      }
+      RepositoryFactory.setDatabase(mockDb as any)
 
       await expect(RepositoryFactory.initialize()).rejects.toThrow("Connection failed")
     })
   })
 
   describe("cleanup", () => {
-    it.skip("should disconnect from database and reset repositories", async () => {
-      mockDatabase.$disconnect.mockResolvedValue(undefined)
+    it("should disconnect from database and reset repositories", async () => {
+      // Create a proper mock database with required methods
+      const mockDb = {
+        $connect: jest.fn().mockResolvedValue(undefined),
+        $disconnect: jest.fn().mockResolvedValue(undefined),
+      }
+      RepositoryFactory.setDatabase(mockDb as any)
 
-      // Create some repositories first
-      RepositoryFactory.getServiceRequestRepository()
-      RepositoryFactory.getUserRepository()
+      // Set up repositories first
+      const serviceRepo = RepositoryFactory.getServiceRequestRepository()
+      const userRepo = RepositoryFactory.getUserRepository()
 
       await RepositoryFactory.cleanup()
 
-      expect(mockDatabase.$disconnect).toHaveBeenCalled()
+      expect(mockDb.$disconnect).toHaveBeenCalled()
       
       // Verify repositories are reset (new instances created)
       const newServiceRepo = RepositoryFactory.getServiceRequestRepository()
       const newUserRepo = RepositoryFactory.getUserRepository()
       
-      expect(newServiceRepo).toBeInstanceOf(ServiceRequestRepository)
-      expect(newUserRepo).toBeInstanceOf(UserRepository)
+      expect(newServiceRepo).not.toBe(serviceRepo)
+      expect(newUserRepo).not.toBe(userRepo)
     })
 
     it("should handle disconnect errors gracefully", async () => {
