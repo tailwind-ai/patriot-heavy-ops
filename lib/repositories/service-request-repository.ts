@@ -83,10 +83,13 @@ export class ServiceRequestRepository extends BaseRepository implements CrudRepo
   /**
    * Find service request by ID
    */
-  async findById(id: string): Promise<RepositoryResult<ServiceRequest | null>> {
+  async findById(id: string): Promise<RepositoryResult<any>> {
     const validation = this.validateRequired({ id }, ["id"]);
     if (!validation.success) {
-      return validation as RepositoryResult<ServiceRequest | null>;
+      return {
+        success: false,
+        error: validation.error!,
+      };
     }
 
     return this.handleAsync(
@@ -140,9 +143,12 @@ export class ServiceRequestRepository extends BaseRepository implements CrudRepo
     filters?: ServiceRequestFilters,
     pagination?: PaginationOptions
   ): Promise<RepositoryResult<ServiceRequestWithUser[]>> {
-    const validation = this.validateRequired(accessOptions, ["userId", "userRole"]);
+    const validation = this.validateRequired(accessOptions as any, ["userId", "userRole"]);
     if (!validation.success) {
-      return validation as RepositoryResult<ServiceRequestWithUser[]>;
+      return {
+        success: false,
+        error: validation.error!,
+      };
     }
 
     return this.handleAsync(
@@ -185,12 +191,12 @@ export class ServiceRequestRepository extends BaseRepository implements CrudRepo
           );
         }
 
-        return this.db.serviceRequest.findMany(query);
+        return this.db.serviceRequest.findMany(query) as any;
       },
       "SERVICE_REQUEST_FIND_MANY_ERROR",
       "Failed to find service requests",
       `findManyWithRoleAccess(${accessOptions.userRole})`
-    );
+    ) as any;
   }
 
   /**
@@ -236,13 +242,16 @@ export class ServiceRequestRepository extends BaseRepository implements CrudRepo
   /**
    * Create new service request
    */
-  async create(data: ServiceRequestCreateInput): Promise<RepositoryResult<ServiceRequest>> {
-    const validation = this.validateRequired(data, [
+  async create(data: ServiceRequestCreateInput): Promise<RepositoryResult<any>> {
+    const validation = this.validateRequired(data as any, [
       "title", "contactName", "contactEmail", "contactPhone", 
       "jobSite", "equipmentCategory", "equipmentDetail", "userId"
     ]);
     if (!validation.success) {
-      return validation as RepositoryResult<ServiceRequest>;
+      return {
+        success: false,
+        error: validation.error!,
+      };
     }
 
     return this.handleAsync(
@@ -250,7 +259,7 @@ export class ServiceRequestRepository extends BaseRepository implements CrudRepo
         data: {
           ...data,
           status: "SUBMITTED",
-        },
+        } as any,
         select: {
           id: true,
           title: true,
@@ -267,10 +276,13 @@ export class ServiceRequestRepository extends BaseRepository implements CrudRepo
   /**
    * Update service request
    */
-  async update(id: string, data: ServiceRequestUpdateInput): Promise<RepositoryResult<ServiceRequest>> {
+  async update(id: string, data: ServiceRequestUpdateInput): Promise<RepositoryResult<any>> {
     const validation = this.validateRequired({ id }, ["id"]);
     if (!validation.success) {
-      return validation as RepositoryResult<ServiceRequest>;
+      return {
+        success: false,
+        error: validation.error!,
+      };
     }
 
     return this.handleAsync(
@@ -293,7 +305,10 @@ export class ServiceRequestRepository extends BaseRepository implements CrudRepo
   async delete(id: string): Promise<RepositoryResult<boolean>> {
     const validation = this.validateRequired({ id }, ["id"]);
     if (!validation.success) {
-      return validation as RepositoryResult<boolean>;
+      return {
+        success: false,
+        error: validation.error!,
+      };
     }
 
     return this.handleAsync(
@@ -338,10 +353,13 @@ export class ServiceRequestRepository extends BaseRepository implements CrudRepo
     changedBy: string,
     reason?: string,
     notes?: string
-  ): Promise<RepositoryResult<ServiceRequest>> {
+  ): Promise<RepositoryResult<any>> {
     const validation = this.validateRequired({ id, newStatus, changedBy }, ["id", "newStatus", "changedBy"]);
     if (!validation.success) {
-      return validation as RepositoryResult<ServiceRequest>;
+      return {
+        success: false,
+        error: validation.error!,
+      };
     }
 
     return this.handleAsync(
@@ -374,8 +392,8 @@ export class ServiceRequestRepository extends BaseRepository implements CrudRepo
               fromStatus: current.status,
               toStatus: newStatus,
               changedBy,
-              reason,
-              notes,
+              reason: reason || null,
+              notes: notes || null,
             },
           });
 

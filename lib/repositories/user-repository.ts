@@ -80,10 +80,13 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
   /**
    * Find user by ID
    */
-  async findById(id: string): Promise<RepositoryResult<User | null>> {
+  async findById(id: string): Promise<RepositoryResult<any>> {
     const validation = this.validateRequired({ id }, ["id"]);
     if (!validation.success) {
-      return validation as RepositoryResult<User | null>;
+      return {
+        success: false,
+        error: validation.error!,
+      };
     }
 
     return this.handleAsync(
@@ -107,10 +110,13 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
   /**
    * Find user by email
    */
-  async findByEmail(email: string): Promise<RepositoryResult<User | null>> {
+  async findByEmail(email: string): Promise<RepositoryResult<any>> {
     const validation = this.validateRequired({ email }, ["email"]);
     if (!validation.success) {
-      return validation as RepositoryResult<User | null>;
+      return {
+        success: false,
+        error: validation.error!,
+      };
     }
 
     return this.handleAsync(
@@ -137,7 +143,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
   async findMany(
     filters?: FilterOptions,
     pagination?: PaginationOptions
-  ): Promise<RepositoryResult<User[]>> {
+  ): Promise<RepositoryResult<any[]>> {
     return this.handleAsync(
       () => {
         let query: any = {
@@ -181,7 +187,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
   async findAvailableOperators(
     filters?: { preferredLocations?: string[]; certifications?: string[] },
     pagination?: PaginationOptions
-  ): Promise<RepositoryResult<User[]>> {
+  ): Promise<RepositoryResult<any[]>> {
     return this.handleAsync(
       () => {
         let whereClause: any = {
@@ -237,10 +243,13 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
   /**
    * Create new user
    */
-  async create(data: UserCreateInput): Promise<RepositoryResult<User>> {
-    const validation = this.validateRequired(data, ["email"]);
+  async create(data: UserCreateInput): Promise<RepositoryResult<any>> {
+    const validation = this.validateRequired(data as any, ["email"]);
     if (!validation.success) {
-      return validation as RepositoryResult<User>;
+      return {
+        success: false,
+        error: validation.error!,
+      };
     }
 
     return this.handleAsync(
@@ -255,7 +264,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
           email: true,
           role: true,
           createdAt: true,
-        },
+        } as any,
       }),
       "USER_CREATE_ERROR",
       "Failed to create user",
@@ -266,10 +275,13 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
   /**
    * Update user
    */
-  async update(id: string, data: UserUpdateInput): Promise<RepositoryResult<User>> {
+  async update(id: string, data: UserUpdateInput): Promise<RepositoryResult<any>> {
     const validation = this.validateRequired({ id }, ["id"]);
     if (!validation.success) {
-      return validation as RepositoryResult<User>;
+      return {
+        success: false,
+        error: validation.error!,
+      };
     }
 
     return this.handleAsync(
@@ -288,7 +300,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
           company: true,
           image: true,
           updatedAt: true,
-        },
+        } as any,
       }),
       "USER_UPDATE_ERROR",
       "Failed to update user",
@@ -302,7 +314,10 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
   async delete(id: string): Promise<RepositoryResult<boolean>> {
     const validation = this.validateRequired({ id }, ["id"]);
     if (!validation.success) {
-      return validation as RepositoryResult<boolean>;
+      return {
+        success: false,
+        error: validation.error!,
+      };
     }
 
     return this.handleAsync(
@@ -344,13 +359,16 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
   async submitOperatorApplication(
     userId: string,
     applicationData: OperatorApplicationInput
-  ): Promise<RepositoryResult<User>> {
+  ): Promise<RepositoryResult<any>> {
     const validation = this.validateRequired(
-      { userId, ...applicationData }, 
+      { userId, ...applicationData } as any, 
       ["userId", "militaryBranch", "yearsOfService"]
     );
     if (!validation.success) {
-      return validation as RepositoryResult<User>;
+      return {
+        success: false,
+        error: validation.error!,
+      };
     }
 
     return this.handleAsync(
@@ -376,7 +394,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
           preferredLocations: true,
           isAvailable: true,
           updatedAt: true,
-        },
+        } as any,
       }),
       "OPERATOR_APPLICATION_ERROR",
       "Failed to submit operator application",
@@ -390,10 +408,13 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
   async setOperatorAvailability(
     operatorId: string,
     isAvailable: boolean
-  ): Promise<RepositoryResult<User>> {
+  ): Promise<RepositoryResult<any>> {
     const validation = this.validateRequired({ operatorId }, ["operatorId"]);
     if (!validation.success) {
-      return validation as RepositoryResult<User>;
+      return {
+        success: false,
+        error: validation.error!,
+      };
     }
 
     return this.handleAsync(
@@ -425,7 +446,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
             email: true,
             isAvailable: true,
             updatedAt: true,
-          },
+          } as any,
         });
       },
       "OPERATOR_AVAILABILITY_UPDATE_ERROR",
@@ -445,10 +466,13 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
       stripePriceId?: string;
       stripeCurrentPeriodEnd?: Date;
     }
-  ): Promise<RepositoryResult<User>> {
+  ): Promise<RepositoryResult<any>> {
     const validation = this.validateRequired({ userId }, ["userId"]);
     if (!validation.success) {
-      return validation as RepositoryResult<User>;
+      return {
+        success: false,
+        error: validation.error!,
+      };
     }
 
     return this.handleAsync(
@@ -465,7 +489,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
           stripePriceId: true,
           stripeCurrentPeriodEnd: true,
           updatedAt: true,
-        },
+        } as any,
       }),
       "USER_STRIPE_UPDATE_ERROR",
       "Failed to update user Stripe information",
@@ -476,10 +500,13 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
   /**
    * Find users by role
    */
-  async findByRole(role: UserRole, pagination?: PaginationOptions): Promise<RepositoryResult<User[]>> {
+  async findByRole(role: UserRole, pagination?: PaginationOptions): Promise<RepositoryResult<any[]>> {
     const validation = this.validateRequired({ role }, ["role"]);
     if (!validation.success) {
-      return validation as RepositoryResult<User[]>;
+      return {
+        success: false,
+        error: validation.error!,
+      };
     }
 
     return this.handleAsync(
@@ -516,10 +543,13 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
   /**
    * Verify user email
    */
-  async verifyEmail(userId: string): Promise<RepositoryResult<User>> {
+  async verifyEmail(userId: string): Promise<RepositoryResult<any>> {
     const validation = this.validateRequired({ userId }, ["userId"]);
     if (!validation.success) {
-      return validation as RepositoryResult<User>;
+      return {
+        success: false,
+        error: validation.error!,
+      };
     }
 
     return this.handleAsync(
@@ -534,7 +564,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
           email: true,
           emailVerified: true,
           updatedAt: true,
-        },
+        } as any,
       }),
       "USER_EMAIL_VERIFY_ERROR",
       "Failed to verify user email",

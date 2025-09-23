@@ -19,24 +19,10 @@ export {
 } from "./base-repository"
 
 // Service Request Repository
-export {
-  ServiceRequestRepository,
-  type ServiceRequestWithUser,
-  type ServiceRequestCreateInput,
-  type ServiceRequestUpdateInput,
-  type ServiceRequestFilters,
-  type RoleBasedAccessOptions,
-} from "./service-request-repository"
+export { ServiceRequestRepository } from "./service-request-repository"
 
-// User Repository
-export {
-  UserRepository,
-  type UserWithAccounts,
-  type UserCreateInput,
-  type UserUpdateInput,
-  type OperatorApplicationInput,
-  type UserFilters,
-} from "./user-repository"
+// User Repository  
+export { UserRepository } from "./user-repository"
 
 /**
  * Repository Factory for dependency injection
@@ -174,7 +160,7 @@ export const repositories = {
   /**
    * Create a new service request
    */
-  createServiceRequest: (data: ServiceRequestCreateInput) => {
+  createServiceRequest: (data: any) => {
     return RepositoryFactory.getServiceRequestRepository().create(data)
   },
 
@@ -195,14 +181,14 @@ export const repositories = {
   /**
    * Create a new user
    */
-  createUser: (data: UserCreateInput) => {
+  createUser: (data: any) => {
     return RepositoryFactory.getUserRepository().create(data)
   },
 
   /**
    * Update user profile
    */
-  updateUser: (id: string, data: UserUpdateInput) => {
+  updateUser: (id: string, data: any) => {
     return RepositoryFactory.getUserRepository().update(id, data)
   },
 

@@ -220,15 +220,15 @@ describe("BaseRepository", () => {
     it("should handle first page pagination", () => {
       const pagination = repository.testBuildPagination(1, 10, 25)
 
-      expect(pagination.hasPrev).toBe(false)
-      expect(pagination.hasNext).toBe(true)
+      expect(pagination?.hasPrev).toBe(false)
+      expect(pagination?.hasNext).toBe(true)
     })
 
     it("should handle last page pagination", () => {
       const pagination = repository.testBuildPagination(3, 10, 25)
 
-      expect(pagination.hasPrev).toBe(true)
-      expect(pagination.hasNext).toBe(false)
+      expect(pagination?.hasPrev).toBe(true)
+      expect(pagination?.hasNext).toBe(false)
     })
   })
 

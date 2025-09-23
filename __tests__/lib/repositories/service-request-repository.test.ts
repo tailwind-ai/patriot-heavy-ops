@@ -379,7 +379,7 @@ describe("ServiceRequestRepository", () => {
       }
 
       mockPrismaClient.serviceRequest.findUnique.mockResolvedValue(mockCurrentRequest)
-      mockPrismaClient.$transaction.mockImplementation(async (callback) => {
+      mockPrismaClient.$transaction.mockImplementation(async (callback: any) => {
         return callback({
           serviceRequest: {
             update: jest.fn().mockResolvedValue(mockUpdatedRequest),

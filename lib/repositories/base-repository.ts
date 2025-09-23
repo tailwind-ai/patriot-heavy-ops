@@ -158,7 +158,7 @@ export abstract class BaseRepository {
       );
     }
 
-    return this.createSuccess(undefined);
+    return this.createSuccess(undefined as void);
   }
 
   /**
@@ -188,11 +188,11 @@ export abstract class BaseRepository {
   /**
    * Apply common query filters and options
    */
-  protected applyFilters<T extends Record<string, unknown>>(
+  protected applyFilters<T extends Record<string, any>>(
     baseQuery: T,
     filters: FilterOptions
   ): T {
-    const query = { ...baseQuery };
+    const query = { ...baseQuery } as any;
 
     if (filters.where) {
       query.where = { ...query.where, ...filters.where };
@@ -216,11 +216,11 @@ export abstract class BaseRepository {
   /**
    * Apply pagination to query
    */
-  protected applyPagination<T extends Record<string, unknown>>(
+  protected applyPagination<T extends Record<string, any>>(
     baseQuery: T,
     pagination: PaginationOptions
   ): T {
-    const query = { ...baseQuery };
+    const query = { ...baseQuery } as any;
 
     if (pagination.limit) {
       query.take = pagination.limit;
