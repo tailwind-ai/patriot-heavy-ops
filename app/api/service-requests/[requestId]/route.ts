@@ -30,10 +30,10 @@ async function verifyCurrentUserHasAccessToRequest(requestId: string) {
 
 export async function GET(
   req: Request,
-  context: z.infer<typeof routeContextSchema>
+  context: { params: Promise<{ requestId: string }> }
 ) {
   try {
-    const { params } = routeContextSchema.parse(context)
+    const params = await context.params
 
     if (!(await verifyCurrentUserHasAccessToRequest(params.requestId))) {
       return new Response(null, { status: 403 })
@@ -84,10 +84,10 @@ export async function GET(
 
 export async function PATCH(
   req: Request,
-  context: z.infer<typeof routeContextSchema>
+  context: { params: Promise<{ requestId: string }> }
 ) {
   try {
-    const { params } = routeContextSchema.parse(context)
+    const params = await context.params
 
     if (!(await verifyCurrentUserHasAccessToRequest(params.requestId))) {
       return new Response(null, { status: 403 })
@@ -142,10 +142,10 @@ export async function PATCH(
 
 export async function DELETE(
   req: Request,
-  context: z.infer<typeof routeContextSchema>
+  context: { params: Promise<{ requestId: string }> }
 ) {
   try {
-    const { params } = routeContextSchema.parse(context)
+    const params = await context.params
 
     if (!(await verifyCurrentUserHasAccessToRequest(params.requestId))) {
       return new Response(null, { status: 403 })

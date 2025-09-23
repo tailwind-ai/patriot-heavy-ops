@@ -13,11 +13,11 @@ const routeContextSchema = z.object({
 
 export async function POST(
   req: Request,
-  context: z.infer<typeof routeContextSchema>
+  context: { params: Promise<{ userId: string }> }
 ) {
   try {
     // Validate the route context.
-    const { params } = routeContextSchema.parse(context)
+    const params = await context.params
 
     // Ensure user is authenticated and has access to this user.
     const session = await getServerSession(authOptions)
