@@ -11,5 +11,3 @@ describe("UserAuthForm Snapshots", () => {
     expectComponentSnapshot(<UserAuthForm mode="register" />)
   })
 })
-
-
