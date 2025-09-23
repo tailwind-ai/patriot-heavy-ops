@@ -66,29 +66,29 @@ export function mockNoSession() {
 }
 
 /**
- * Create mock route context for dynamic routes
+ * Create mock route context for dynamic routes (Next.js 15 - params are now async)
  */
 export function createMockRouteContext(params: Record<string, string>) {
   return {
-    params,
+    params: Promise.resolve(params),
   }
 }
 
 /**
- * Create mock route context for service request routes
+ * Create mock route context for service request routes (Next.js 15)
  */
 export function createMockServiceRequestContext(requestId: string) {
   return {
-    params: { requestId },
+    params: Promise.resolve({ requestId }),
   }
 }
 
 /**
- * Create mock route context for user routes
+ * Create mock route context for user routes (Next.js 15)
  */
 export function createMockUserContext(userId: string) {
   return {
-    params: { userId },
+    params: Promise.resolve({ userId }),
   }
 }
 
