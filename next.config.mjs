@@ -10,9 +10,7 @@ const nextConfig = {
   images: {
     domains: ["avatars.githubusercontent.com"],
   },
-  experimental: {
-    serverComponentsExternalPackages: ["@prisma/client"],
-  },
+  serverExternalPackages: ["@prisma/client"],
   // Fix for client reference manifest issues
   typescript: {
     ignoreBuildErrors: true,
