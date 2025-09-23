@@ -5,12 +5,6 @@ import { authOptions } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { userNameSchema } from "@/lib/validations/user"
 
-const routeContextSchema = z.object({
-  params: z.object({
-    userId: z.string(),
-  }),
-})
-
 export async function PATCH(
   req: Request,
   context: { params: Promise<{ userId: string }> }
