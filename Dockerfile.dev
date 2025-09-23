@@ -8,14 +8,14 @@ RUN apk add --no-cache openssl
 # Copy package files
 COPY package*.json ./
 
+# Copy Prisma schema (needed for postinstall script)
+COPY prisma ./prisma
+
 # Install dependencies
 RUN npm ci
 
 # Copy source code
 COPY . .
-
-# Generate Prisma client
-RUN npx prisma generate
 
 # Expose port
 EXPOSE 3000
