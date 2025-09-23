@@ -28,7 +28,7 @@ import {
 } from "lucide-react"
 import NextImage from "next/image"
 
-export type Icon = LucideIcon
+export type Icon = typeof LucideIcon
 
 export const Icons = {
   logo: Command,
