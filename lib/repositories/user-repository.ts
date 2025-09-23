@@ -190,7 +190,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
   ): Promise<RepositoryResult<User[]>> {
     return this.handleAsync(
       () => {
-        let whereClause: any = {
+        const whereClause: any = {
           role: "OPERATOR",
           isAvailable: true,
         };

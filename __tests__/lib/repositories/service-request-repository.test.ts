@@ -1,17 +1,21 @@
 /**
  * Service Request Repository Tests
- * 
+ *
  * Tests for ServiceRequestRepository with mocked Prisma client
  */
 
-import { ServiceRequestRepository, ServiceRequestCreateInput, ServiceRequestUpdateInput } from "@/lib/repositories/service-request-repository"
+import {
+  ServiceRequestRepository,
+  ServiceRequestCreateInput,
+  ServiceRequestUpdateInput,
+} from "@/lib/repositories/service-request-repository"
 import { ServiceRequestStatus, UserRole } from "@prisma/client"
 
 // Mock Prisma Client
 const mockPrismaClient = {
   serviceRequest: {
     findUnique: jest.fn(),
-    findManyWithRoleAccess: jest.fn(),
+    findMany: jest.fn(),
     create: jest.fn(),
     update: jest.fn(),
     delete: jest.fn(),
@@ -37,10 +41,16 @@ describe("ServiceRequestRepository", () => {
         id: "sr123",
         title: "Test Request",
         status: "SUBMITTED",
-        user: { name: "John Doe", email: "john@example.com", company: "Test Co" },
+        user: {
+          name: "John Doe",
+          email: "john@example.com",
+          company: "Test Co",
+        },
       }
 
-      mockPrismaClient.serviceRequest.findUnique.mockResolvedValue(mockServiceRequest)
+      mockPrismaClient.serviceRequest.findUnique.mockResolvedValue(
+        mockServiceRequest
+      )
 
       const result = await repository.findById("sr123")
 
@@ -93,7 +103,9 @@ describe("ServiceRequestRepository", () => {
     })
 
     it("should handle database errors", async () => {
-      mockPrismaClient.serviceRequest.findUnique.mockRejectedValue(new Error("Database error"))
+      mockPrismaClient.serviceRequest.findUnique.mockRejectedValue(
+        new Error("Database error")
+      )
 
       const result = await repository.findById("sr123")
 
@@ -108,18 +120,28 @@ describe("ServiceRequestRepository", () => {
         id: "sr123",
         title: "Test Request 1",
         status: "SUBMITTED",
-        user: { name: "John Doe", email: "john@example.com", company: "Test Co" },
+        user: {
+          name: "John Doe",
+          email: "john@example.com",
+          company: "Test Co",
+        },
       },
       {
         id: "sr124",
         title: "Test Request 2",
         status: "APPROVED",
-        user: { name: "Jane Smith", email: "jane@example.com", company: "Test Co" },
+        user: {
+          name: "Jane Smith",
+          email: "jane@example.com",
+          company: "Test Co",
+        },
       },
     ]
 
     it("should find requests for ADMIN role", async () => {
-      mockPrismaClient.serviceRequest.findManyWithRoleAccess.mockResolvedValue(mockServiceRequests)
+      mockPrismaClient.serviceRequest.findMany.mockResolvedValue(
+        mockServiceRequests
+      )
 
       const result = await repository.findManyWithRoleAccess({
         userId: "user123",
@@ -136,7 +158,9 @@ describe("ServiceRequestRepository", () => {
     })
 
     it("should find requests for MANAGER role", async () => {
-      mockPrismaClient.serviceRequest.findManyWithRoleAccess.mockResolvedValue(mockServiceRequests)
+      mockPrismaClient.serviceRequest.findMany.mockResolvedValue(
+        mockServiceRequests
+      )
 
       const result = await repository.findManyWithRoleAccess({
         userId: "manager123",
@@ -152,7 +176,9 @@ describe("ServiceRequestRepository", () => {
     })
 
     it("should find requests for OPERATOR role", async () => {
-      mockPrismaClient.serviceRequest.findManyWithRoleAccess.mockResolvedValue(mockServiceRequests)
+      mockPrismaClient.serviceRequest.findMany.mockResolvedValue(
+        mockServiceRequests
+      )
 
       const result = await repository.findManyWithRoleAccess({
         userId: "operator123",
@@ -179,7 +205,9 @@ describe("ServiceRequestRepository", () => {
     })
 
     it("should find requests for USER role", async () => {
-      mockPrismaClient.serviceRequest.findManyWithRoleAccess.mockResolvedValue(mockServiceRequests)
+      mockPrismaClient.serviceRequest.findMany.mockResolvedValue(
+        mockServiceRequests
+      )
 
       const result = await repository.findManyWithRoleAccess({
         userId: "user123",
@@ -197,7 +225,9 @@ describe("ServiceRequestRepository", () => {
     })
 
     it("should apply additional filters", async () => {
-      mockPrismaClient.serviceRequest.findManyWithRoleAccess.mockResolvedValue(mockServiceRequests)
+      mockPrismaClient.serviceRequest.findMany.mockResolvedValue(
+        mockServiceRequests
+      )
 
       const result = await repository.findManyWithRoleAccess(
         {
@@ -250,7 +280,9 @@ describe("ServiceRequestRepository", () => {
         createdAt: new Date(),
       }
 
-      mockPrismaClient.serviceRequest.create.mockResolvedValue(mockCreatedRequest)
+      mockPrismaClient.serviceRequest.create.mockResolvedValue(
+        mockCreatedRequest
+      )
 
       const result = await repository.create(mockCreateInput)
 
@@ -297,7 +329,9 @@ describe("ServiceRequestRepository", () => {
         updatedAt: new Date(),
       }
 
-      mockPrismaClient.serviceRequest.update.mockResolvedValue(mockUpdatedRequest)
+      mockPrismaClient.serviceRequest.update.mockResolvedValue(
+        mockUpdatedRequest
+      )
 
       const result = await repository.update("sr123", mockUpdateInput)
 
@@ -378,17 +412,21 @@ describe("ServiceRequestRepository", () => {
         updatedAt: new Date(),
       }
 
-      mockPrismaClient.serviceRequest.findUnique.mockResolvedValue(mockCurrentRequest)
-      mockPrismaClient.$transaction.mockImplementation(async (callback: any) => {
-        return callback({
-          serviceRequest: {
-            update: jest.fn().mockResolvedValue(mockUpdatedRequest),
-          },
-          serviceRequestStatusHistory: {
-            create: jest.fn().mockResolvedValue({}),
-          },
-        })
-      })
+      mockPrismaClient.serviceRequest.findUnique.mockResolvedValue(
+        mockCurrentRequest
+      )
+      mockPrismaClient.$transaction.mockImplementation(
+        async (callback: any) => {
+          return callback({
+            serviceRequest: {
+              update: jest.fn().mockResolvedValue(mockUpdatedRequest),
+            },
+            serviceRequestStatusHistory: {
+              create: jest.fn().mockResolvedValue({}),
+            },
+          })
+        }
+      )
 
       const result = await repository.updateStatus(
         "sr123",
