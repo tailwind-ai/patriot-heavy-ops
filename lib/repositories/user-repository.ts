@@ -110,7 +110,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
   /**
    * Find user by email
    */
-  async findByEmail(email: string): Promise<RepositoryResult<User | null>> {
+  async findByEmail(email: string): Promise<RepositoryResult<any>> {
     const validation = this.validateRequired({ email }, ["email"]);
     if (!validation.success) {
       return {
@@ -264,7 +264,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
           email: true,
           role: true,
           createdAt: true,
-        } as any,
+        },
       }),
       "USER_CREATE_ERROR",
       "Failed to create user",
@@ -300,7 +300,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
           company: true,
           image: true,
           updatedAt: true,
-        } as any,
+        },
       }),
       "USER_UPDATE_ERROR",
       "Failed to update user",
@@ -394,7 +394,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
           preferredLocations: true,
           isAvailable: true,
           updatedAt: true,
-        } as any,
+        },
       }),
       "OPERATOR_APPLICATION_ERROR",
       "Failed to submit operator application",
@@ -446,7 +446,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
             email: true,
             isAvailable: true,
             updatedAt: true,
-          } as any,
+          },
         });
       },
       "OPERATOR_AVAILABILITY_UPDATE_ERROR",
@@ -489,7 +489,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
           stripePriceId: true,
           stripeCurrentPeriodEnd: true,
           updatedAt: true,
-        } as any,
+        },
       }),
       "USER_STRIPE_UPDATE_ERROR",
       "Failed to update user Stripe information",
@@ -564,7 +564,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
           email: true,
           emailVerified: true,
           updatedAt: true,
-        } as any,
+        },
       }),
       "USER_EMAIL_VERIFY_ERROR",
       "Failed to verify user email",

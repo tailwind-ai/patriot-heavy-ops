@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="21" failures="0" errors="0" time="0.599">
-  <testsuite name="BaseRepository" errors="0" failures="0" skipped="0" timestamp="2025-09-23T21:29:49" time="0.18" tests="21">
-    <testcase classname="BaseRepository constructor should initialize with default options" name="BaseRepository constructor should initialize with default options" time="0.004">
+<testsuites name="jest tests" tests="21" failures="0" errors="0" time="0.608">
+  <testsuite name="BaseRepository" errors="0" failures="0" skipped="0" timestamp="2025-09-23T21:37:02" time="0.203" tests="21">
+    <testcase classname="BaseRepository constructor should initialize with default options" name="BaseRepository constructor should initialize with default options" time="0.001">
     </testcase>
-    <testcase classname="BaseRepository constructor should initialize with custom options" name="BaseRepository constructor should initialize with custom options" time="0.001">
+    <testcase classname="BaseRepository constructor should initialize with custom options" name="BaseRepository constructor should initialize with custom options" time="0.003">
     </testcase>
-    <testcase classname="BaseRepository error handling should create standardized error result" name="BaseRepository error handling should create standardized error result" time="0.002">
+    <testcase classname="BaseRepository error handling should create standardized error result" name="BaseRepository error handling should create standardized error result" time="0.001">
     </testcase>
-    <testcase classname="BaseRepository error handling should create success result" name="BaseRepository error handling should create success result" time="0">
+    <testcase classname="BaseRepository error handling should create success result" name="BaseRepository error handling should create success result" time="0.001">
     </testcase>
     <testcase classname="BaseRepository error handling should create success result with pagination" name="BaseRepository error handling should create success result with pagination" time="0">
     </testcase>
@@ -15,13 +15,13 @@
     </testcase>
     <testcase classname="BaseRepository async operation handling should handle failed async operations" name="BaseRepository async operation handling should handle failed async operations" time="0.006">
     </testcase>
-    <testcase classname="BaseRepository async operation handling should handle Prisma client errors" name="BaseRepository async operation handling should handle Prisma client errors" time="0.001">
+    <testcase classname="BaseRepository async operation handling should handle Prisma client errors" name="BaseRepository async operation handling should handle Prisma client errors" time="0">
     </testcase>
     <testcase classname="BaseRepository validation should validate required parameters successfully" name="BaseRepository validation should validate required parameters successfully" time="0">
     </testcase>
     <testcase classname="BaseRepository validation should fail validation for missing parameters" name="BaseRepository validation should fail validation for missing parameters" time="0">
     </testcase>
-    <testcase classname="BaseRepository validation should fail validation for null/undefined parameters" name="BaseRepository validation should fail validation for null/undefined parameters" time="0">
+    <testcase classname="BaseRepository validation should fail validation for null/undefined parameters" name="BaseRepository validation should fail validation for null/undefined parameters" time="0.001">
     </testcase>
     <testcase classname="BaseRepository pagination should build pagination metadata correctly" name="BaseRepository pagination should build pagination metadata correctly" time="0">
     </testcase>
@@ -33,7 +33,7 @@
     </testcase>
     <testcase classname="BaseRepository query building should apply pagination to base query" name="BaseRepository query building should apply pagination to base query" time="0">
     </testcase>
-    <testcase classname="BaseRepository query building should apply cursor-based pagination" name="BaseRepository query building should apply cursor-based pagination" time="0.001">
+    <testcase classname="BaseRepository query building should apply cursor-based pagination" name="BaseRepository query building should apply cursor-based pagination" time="0">
     </testcase>
     <testcase classname="BaseRepository configuration methods should get repository name" name="BaseRepository configuration methods should get repository name" time="0">
     </testcase>
@@ -41,7 +41,7 @@
     </testcase>
     <testcase classname="BaseRepository configuration methods should manage offline mode" name="BaseRepository configuration methods should manage offline mode" time="0">
     </testcase>
-    <testcase classname="BaseRepository logging should log operations" name="BaseRepository logging should log operations" time="0">
+    <testcase classname="BaseRepository logging should log operations" name="BaseRepository logging should log operations" time="0.001">
     </testcase>
   </testsuite>
 </testsuites>

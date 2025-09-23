@@ -258,7 +258,7 @@ export class ServiceRequestRepository extends BaseRepository implements CrudRepo
       () => this.db.serviceRequest.create({
         data: {
           ...data,
-          status: "SUBMITTED",
+          status: "SUBMITTED" as const,
         } as any,
         select: {
           id: true,
@@ -270,7 +270,7 @@ export class ServiceRequestRepository extends BaseRepository implements CrudRepo
       "SERVICE_REQUEST_CREATE_ERROR",
       "Failed to create service request",
       "create"
-    ) as Promise<RepositoryResult<ServiceRequest>>;
+    );
   }
 
   /**

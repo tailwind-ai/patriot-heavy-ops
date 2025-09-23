@@ -129,8 +129,8 @@ export abstract class BaseRepository {
         ? { 
             originalError: error.message, 
             stack: error.stack,
-            ...(error.name === 'PrismaClientKnownRequestError' && { 
-              prismaCode: (error as any).code 
+            ...(error.name === 'PrismaClientKnownRequestError' && 'code' in error && { 
+              prismaCode: error.code 
             })
           }
         : { originalError: String(error) };
@@ -192,22 +192,22 @@ export abstract class BaseRepository {
     baseQuery: T,
     filters: FilterOptions
   ): T {
-    const query = { ...baseQuery } as any;
+    const query = { ...baseQuery };
 
     if (filters.where) {
-      query.where = { ...query.where, ...filters.where };
+      (query as any).where = { ...(query as any).where, ...filters.where };
     }
 
     if (filters.orderBy) {
-      query.orderBy = filters.orderBy;
+      (query as any).orderBy = filters.orderBy;
     }
 
     if (filters.include) {
-      query.include = filters.include;
+      (query as any).include = filters.include;
     }
 
     if (filters.select) {
-      query.select = filters.select;
+      (query as any).select = filters.select;
     }
 
     return query;
@@ -220,19 +220,19 @@ export abstract class BaseRepository {
     baseQuery: T,
     pagination: PaginationOptions
   ): T {
-    const query = { ...baseQuery } as any;
+    const query = { ...baseQuery };
 
     if (pagination.limit) {
-      query.take = pagination.limit;
+      (query as any).take = pagination.limit;
     }
 
     if (pagination.page && pagination.limit) {
-      query.skip = (pagination.page - 1) * pagination.limit;
+      (query as any).skip = (pagination.page - 1) * pagination.limit;
     }
 
     if (pagination.cursor) {
-      query.cursor = { id: pagination.cursor };
-      query.skip = 1; // Skip the cursor record
+      (query as any).cursor = { id: pagination.cursor };
+      (query as any).skip = 1; // Skip the cursor record
     }
 
     return query;
