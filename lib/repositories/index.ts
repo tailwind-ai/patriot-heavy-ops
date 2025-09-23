@@ -21,7 +21,7 @@ export {
 // Service Request Repository
 export { ServiceRequestRepository } from "./service-request-repository"
 
-// User Repository  
+// User Repository
 export { UserRepository } from "./user-repository"
 
 /**
@@ -29,7 +29,8 @@ export { UserRepository } from "./user-repository"
  * Provides singleton instances and supports testing with mock databases
  */
 export class RepositoryFactory {
-  private static serviceRequestRepository: ServiceRequestRepository | null = null
+  private static serviceRequestRepository: ServiceRequestRepository | null =
+    null
   private static userRepository: UserRepository | null = null
   private static dbInstance: PrismaClient | null = null
 
@@ -66,9 +67,7 @@ export class RepositoryFactory {
    */
   static getUserRepository(): UserRepository {
     if (!this.userRepository) {
-      this.userRepository = new UserRepository(
-        this.getDatabase()
-      )
+      this.userRepository = new UserRepository(this.getDatabase())
     }
     return this.userRepository
   }
@@ -80,20 +79,14 @@ export class RepositoryFactory {
     database?: PrismaClient,
     options?: RepositoryOptions
   ): ServiceRequestRepository {
-    return new ServiceRequestRepository(
-      database || this.getDatabase(),
-      options
-    )
+    return new ServiceRequestRepository(database || this.getDatabase(), options)
   }
 
   static createUserRepository(
     database?: PrismaClient,
     options?: RepositoryOptions
   ): UserRepository {
-    return new UserRepository(
-      database || this.getDatabase(),
-      options
-    )
+    return new UserRepository(database || this.getDatabase(), options)
   }
 
   /**
@@ -116,7 +109,11 @@ export class RepositoryFactory {
     try {
       await this.getDatabase().$connect()
     } catch (error) {
-      console.error("Failed to initialize repository database connection:", error)
+      // eslint-disable-next-line no-console
+      console.error(
+        "Failed to initialize repository database connection:",
+        error
+      )
       throw error
     }
   }
@@ -132,6 +129,7 @@ export class RepositoryFactory {
         await db.$disconnect()
       }
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error("Error during repository cleanup:", error)
     } finally {
       this.reset()
@@ -152,15 +150,16 @@ export const repositories = {
   /**
    * Get service requests with role-based access
    */
-  getServiceRequests: (userId: string, userRole: string) => {
-    return RepositoryFactory.getServiceRequestRepository()
-      .findManyWithRoleAccess({ userId, userRole: userRole as any })
+  getServiceRequests: (userId: string, userRole: string): any => {
+    return RepositoryFactory.getServiceRequestRepository().findManyWithRoleAccess(
+      { userId, userRole: userRole as any }
+    )
   },
 
   /**
    * Create a new service request
    */
-  createServiceRequest: (data: any) => {
+  createServiceRequest: (data: any): any => {
     return RepositoryFactory.getServiceRequestRepository().create(data)
   },
 
@@ -181,40 +180,29 @@ export const repositories = {
   /**
    * Create a new user
    */
-  createUser: (data: any) => {
+  createUser: (data: any): any => {
     return RepositoryFactory.getUserRepository().create(data)
   },
 
   /**
    * Update user profile
    */
-  updateUser: (id: string, data: any) => {
+  updateUser: (id: string, data: any): any => {
     return RepositoryFactory.getUserRepository().update(id, data)
   },
 
   /**
    * Get available operators
    */
-  getAvailableOperators: (filters?: { preferredLocations?: string[]; certifications?: string[] }) => {
+  getAvailableOperators: (filters?: {
+    preferredLocations?: string[]
+    certifications?: string[]
+  }) => {
     return RepositoryFactory.getUserRepository().findAvailableOperators(filters)
   },
 }
 
 /**
  * Type exports for external usage
+ * Import types directly from individual repository files to avoid conflicts
  */
-export type {
-  ServiceRequestCreateInput,
-  ServiceRequestUpdateInput,
-  ServiceRequestFilters,
-  ServiceRequestWithUser,
-  RoleBasedAccessOptions,
-} from "./service-request-repository"
-
-export type {
-  UserCreateInput,
-  UserUpdateInput,
-  UserFilters,
-  UserWithAccounts,
-  OperatorApplicationInput,
-} from "./user-repository"
