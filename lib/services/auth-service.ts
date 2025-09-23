@@ -64,7 +64,7 @@ export class AuthService extends BaseService {
     this.logOperation("authenticate", { email: credentials.email })
 
     const validation = this.validateRequired(
-      credentials as unknown as Record<string, unknown>,
+      this.toValidationRecord(credentials),
       ["email", "password"]
     )
     if (!validation.success) {
@@ -124,10 +124,10 @@ export class AuthService extends BaseService {
   async register(data: RegisterData): Promise<ServiceResult<AuthUser>> {
     this.logOperation("register", { email: data.email })
 
-    const validation = this.validateRequired(
-      data as unknown as Record<string, unknown>,
-      ["email", "password"]
-    )
+    const validation = this.validateRequired(this.toValidationRecord(data), [
+      "email",
+      "password",
+    ])
     if (!validation.success) {
       return this.createError(
         "VALIDATION_ERROR",
@@ -393,5 +393,12 @@ export class AuthService extends BaseService {
       (user.image === null || typeof user.image === "string") &&
       ["USER", "OPERATOR", "MANAGER", "ADMIN"].includes(user.role as string)
     )
+  }
+
+  /**
+   * Helper method to safely convert objects for validation
+   */
+  private toValidationRecord(obj: unknown): Record<string, unknown> {
+    return obj as Record<string, unknown>
   }
 }

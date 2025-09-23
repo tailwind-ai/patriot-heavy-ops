@@ -24,9 +24,6 @@ export {
   type SessionData,
 } from './auth-service';
 
-// Import for factory
-import { AuthService } from './auth-service';
-
 // Service factory for dependency injection
 export class ServiceFactory {
   private static authService: AuthService | null = null;
