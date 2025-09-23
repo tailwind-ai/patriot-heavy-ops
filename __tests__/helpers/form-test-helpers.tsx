@@ -1,27 +1,27 @@
 /**
  * Form Testing Utilities
- * 
+ *
  * This module provides comprehensive utilities for testing form components with
  * improved error handling, semantic element finding, and flexible mocking.
- * 
+ *
  * Key improvements:
  * - Uses try-catch for element finding instead of logical OR
  * - Semantic loading state detection with fallbacks
  * - Proper Jest mocking patterns (mocks must be at module top level)
  * - Null-safe DOM queries with proper error handling
  * - Descriptive error messages for better debugging
- * 
+ *
  * @example Toast Mocking Pattern
  * ```typescript
  * // At the top of your test file (before imports):
  * jest.mock('@/components/ui/use-toast', () => ({
  *   toast: jest.fn(),
  * }))
- * 
+ *
  * // In your test:
  * import { toast } from '@/components/ui/use-toast'
  * const mockToast = toast as jest.MockedFunction<typeof toast>
- * 
+ *
  * // Then use mockToast in your assertions
  * expect(mockToast).toHaveBeenCalledWith({
  *   title: 'Success',
@@ -30,11 +30,11 @@
  * ```
  */
 
-import { ReactElement } from 'react'
-import { render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { SessionProvider } from 'next-auth/react'
-import type { Session } from 'next-auth'
+import { ReactElement } from "react"
+import { render, screen, waitFor } from "@testing-library/react"
+import userEvent from "@testing-library/user-event"
+import { SessionProvider } from "next-auth/react"
+import type { Session } from "next-auth"
 
 // Type-safe mock Response interface
 interface MockResponse {
@@ -55,13 +55,15 @@ export class FormTester {
     // Try label first (more semantic)
     const byLabel = screen.queryByLabelText(labelOrPlaceholder)
     if (byLabel) return byLabel
-    
+
     // Fall back to placeholder
     const byPlaceholder = screen.queryByPlaceholderText(labelOrPlaceholder)
     if (byPlaceholder) return byPlaceholder
-    
+
     // If neither found, throw descriptive error
-    throw new Error(`Could not find input element with label or placeholder: "${labelOrPlaceholder}"`)
+    throw new Error(
+      `Could not find input element with label or placeholder: "${labelOrPlaceholder}"`
+    )
   }
 
   async fillInput(labelOrPlaceholder: string, value: string) {
@@ -76,12 +78,14 @@ export class FormTester {
   }
 
   async clickButton(name: string | RegExp) {
-    const button = screen.getByRole('button', { name })
+    const button = screen.getByRole("button", { name })
     await this.user.click(button)
   }
 
   async submitForm() {
-    const submitButton = screen.getByRole('button', { name: /submit|create|save|apply/i })
+    const submitButton = screen.getByRole("button", {
+      name: /submit|create|save|apply/i,
+    })
     await this.user.click(submitButton)
   }
 
@@ -91,32 +95,42 @@ export class FormTester {
 
   expectNoValidationErrors() {
     const errorMessages = [
-      'required', 'invalid', 'must be', 'should be', 'cannot be',
-      'too short', 'too long', 'does not match'
+      "required",
+      "invalid",
+      "must be",
+      "should be",
+      "cannot be",
+      "too short",
+      "too long",
+      "does not match",
     ]
-    
-    errorMessages.forEach(errorText => {
-      expect(screen.queryByText(new RegExp(errorText, 'i'))).not.toBeInTheDocument()
+
+    errorMessages.forEach((errorText) => {
+      expect(
+        screen.queryByText(new RegExp(errorText, "i"))
+      ).not.toBeInTheDocument()
     })
   }
 
   expectLoadingState() {
     // Check for disabled submit button
-    const submitButton = screen.getByRole('button', { name: /submit|create|save|apply/i })
+    const submitButton = screen.getByRole("button", {
+      name: /submit|create|save|apply/i,
+    })
     expect(submitButton).toBeDisabled()
-    
+
     // Check for loading indicator using more semantic approaches
     // Try multiple methods to find loading indicator
     const loadingIndicators = [
-      screen.queryByRole('status'),
+      screen.queryByRole("status"),
       screen.queryByLabelText(/loading/i),
       screen.queryByText(/loading/i),
-      screen.queryByTestId('loading-spinner')
+      screen.queryByTestId("loading-spinner"),
     ].filter(Boolean)
-    
+
     // If no semantic loading indicator found, fall back to spinner class as last resort
     if (loadingIndicators.length === 0) {
-      const spinner = document.querySelector('.animate-spin')
+      const spinner = document.querySelector(".animate-spin")
       expect(spinner).toBeInTheDocument()
     } else {
       expect(loadingIndicators[0]).toBeInTheDocument()
@@ -124,7 +138,9 @@ export class FormTester {
   }
 
   expectFormEnabled() {
-    const submitButton = screen.getByRole('button', { name: /submit|create|save|apply/i })
+    const submitButton = screen.getByRole("button", {
+      name: /submit|create|save|apply/i,
+    })
     expect(submitButton).not.toBeDisabled()
   }
 }
@@ -132,109 +148,111 @@ export class FormTester {
 // Address autocomplete testing helpers
 export const mockAddressSuggestions = [
   {
-    display_name: 'Austin, TX, USA',
-    lat: '30.2672',
-    lon: '-97.7431',
-    place_id: '1'
+    display_name: "Austin, TX, USA",
+    lat: "30.2672",
+    lon: "-97.7431",
+    place_id: "1",
   },
   {
-    display_name: 'Dallas, TX, USA', 
-    lat: '32.7767',
-    lon: '-96.7970',
-    place_id: '2'
+    display_name: "Dallas, TX, USA",
+    lat: "32.7767",
+    lon: "-96.7970",
+    place_id: "2",
   },
   {
-    display_name: 'Houston, TX, USA',
-    lat: '29.7604',
-    lon: '-95.3698', 
-    place_id: '3'
-  }
+    display_name: "Houston, TX, USA",
+    lat: "29.7604",
+    lon: "-95.3698",
+    place_id: "3",
+  },
 ]
 
 export const setupAddressAutocomplete = () => {
   const mockFetch = global.fetch as MockFetch
   mockFetch.mockImplementation((url) => {
-    if (typeof url === 'string' && url.includes('/api/geocoding')) {
+    if (typeof url === "string" && url.includes("/api/geocoding")) {
       const mockResponse: MockResponse = {
         ok: true,
-        json: () => Promise.resolve(mockAddressSuggestions)
+        json: () => Promise.resolve(mockAddressSuggestions),
       }
       return Promise.resolve(mockResponse as Response)
     }
-    return Promise.reject(new Error('Unhandled fetch'))
+    return Promise.reject(new Error("Unhandled fetch"))
   })
 }
 
 // Equipment and service request test data
 export const mockEquipmentCategories = [
-  'EXCAVATOR',
-  'BULLDOZER', 
-  'CRANE',
-  'DUMP_TRUCK',
-  'LOADER'
+  "EXCAVATOR",
+  "BULLDOZER",
+  "CRANE",
+  "DUMP_TRUCK",
+  "LOADER",
 ]
 
 export const mockServiceRequestData = {
-  title: 'Test Service Request',
-  description: 'Test description for service request',
-  equipmentCategory: 'EXCAVATOR',
-  durationType: 'DAILY',
+  title: "Test Service Request",
+  description: "Test description for service request",
+  equipmentCategory: "EXCAVATOR",
+  durationType: "DAILY",
   totalHours: 8,
-  rateType: 'HOURLY',
-  startDate: '2024-01-15',
-  endDate: '2024-01-15',
-  location: 'Austin, TX, USA'
+  rateType: "HOURLY",
+  startDate: "2024-01-15",
+  endDate: "2024-01-15",
+  location: "Austin, TX, USA",
 }
 
 // Permission testing helpers
 export const renderWithRole = (
   ui: ReactElement,
-  role: 'USER' | 'OPERATOR' | 'MANAGER' | 'ADMIN' = 'USER'
+  role: "USER" | "OPERATOR" | "MANAGER" | "ADMIN" = "USER"
 ) => {
   const mockSession: Session = {
     user: {
-      id: 'test-user-id',
-      name: 'Test User',
-      email: 'test@example.com',
+      id: "test-user-id",
+      name: "Test User",
+      email: "test@example.com",
       role,
       image: null,
     },
-    expires: '2024-12-31',
+    expires: "2024-12-31",
   }
 
-  return render(
-    <SessionProvider session={mockSession}>
-      {ui}
-    </SessionProvider>
-  )
+  return render(<SessionProvider session={mockSession}>{ui}</SessionProvider>)
 }
 
 // Mock fetch for successful responses
 export const mockFetchSuccess = (data: any = {}) => {
   const mockFetch = global.fetch as jest.MockedFunction<typeof fetch>
-  mockFetch.mockResolvedValueOnce({
-    ok: true,
-    json: () => Promise.resolve(data),
-  } as any)
+  const response = new Response(JSON.stringify(data), {
+    status: 200,
+    headers: { "Content-Type": "application/json" },
+  })
+  mockFetch.mockResolvedValueOnce(response)
 }
 
 // Mock fetch for error responses
-export const mockFetchError = (message: string = 'Error', status: number = 400) => {
+export const mockFetchError = (
+  message: string = "Error",
+  status: number = 400
+) => {
   const mockFetch = global.fetch as jest.MockedFunction<typeof fetch>
-  mockFetch.mockResolvedValueOnce({
-    ok: false,
+  const response = new Response(JSON.stringify({ message }), {
     status,
-    json: () => Promise.resolve({ message }),
-  } as any)
+    headers: { "Content-Type": "application/json" },
+  })
+  mockFetch.mockResolvedValueOnce(response)
 }
 
 // Mock geocoding API responses for address autocomplete testing
-export const mockGeocodingResponse = (suggestions: Array<{
-  display_name: string
-  lat: string
-  lon: string
-  place_id: string
-}> = []) => {
+export const mockGeocodingResponse = (
+  suggestions: Array<{
+    display_name: string
+    lat: string
+    lon: string
+    place_id: string
+  }> = []
+) => {
   mockFetchSuccess(suggestions)
 }
 
@@ -256,10 +274,10 @@ export const testFormValidation = async (
 ) => {
   // Try to submit empty form
   await formTester.submitForm()
-  
+
   // Check for validation errors
   await waitFor(() => {
-    requiredFields.forEach(field => {
+    requiredFields.forEach((field) => {
       formTester.expectValidationError(field.errorMessage)
     })
   })
@@ -274,13 +292,13 @@ export const testSuccessfulSubmission = async (
   for (const [field, value] of Object.entries(formData)) {
     await formTester.fillInput(field, value)
   }
-  
+
   // Submit form
   await formTester.submitForm()
-  
+
   // Check loading state appears
   formTester.expectLoadingState()
-  
+
   // If API call is expected, verify it
   if (expectedApiCall) {
     await waitFor(() => {
@@ -289,8 +307,8 @@ export const testSuccessfulSubmission = async (
         expect.objectContaining({
           method: expectedApiCall.method,
           ...(expectedApiCall.body && {
-            body: JSON.stringify(expectedApiCall.body)
-          })
+            body: JSON.stringify(expectedApiCall.body),
+          }),
         })
       )
     })

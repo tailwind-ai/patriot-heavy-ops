@@ -37,13 +37,13 @@
       }
     },
     {
-      "name": "Debug Jest Tests (Docker)",
+      "name": "Attach to Jest in Docker",
       "type": "node",
-      "request": "launch",
-      "program": "/usr/local/bin/docker-compose",
-      "args": ["exec", "app", "npm", "run", "test:debug"],
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen"
+      "request": "attach",
+      "address": "localhost",
+      "port": 9229,
+      "restart": true,
+      "preLaunchTask": "npm:test:debug:docker"
     }
   ]
 }
