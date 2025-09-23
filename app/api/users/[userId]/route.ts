@@ -5,19 +5,13 @@ import { authOptions } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { userNameSchema } from "@/lib/validations/user"
 
-const routeContextSchema = z.object({
-  params: z.object({
-    userId: z.string(),
-  }),
-})
-
 export async function PATCH(
   req: Request,
-  context: z.infer<typeof routeContextSchema>
+  context: { params: Promise<{ userId: string }> }
 ) {
   try {
     // Validate the route context.
-    const { params } = routeContextSchema.parse(context)
+    const params = await context.params
 
     // Ensure user is authentication and has access to this user.
     const session = await getServerSession(authOptions)

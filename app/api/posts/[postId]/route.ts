@@ -1,23 +1,17 @@
 import { getServerSession } from "next-auth"
-import * as z from "zod"
+import { z } from "zod"
 
 import { authOptions } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { postPatchSchema } from "@/lib/validations/post"
 
-const routeContextSchema = z.object({
-  params: z.object({
-    postId: z.string(),
-  }),
-})
-
 export async function DELETE(
   req: Request,
-  context: z.infer<typeof routeContextSchema>
+  context: { params: Promise<{ postId: string }> }
 ) {
   try {
     // Validate the route params.
-    const { params } = routeContextSchema.parse(context)
+    const params = await context.params
 
     // Check if the user has access to this post.
     if (!(await verifyCurrentUserHasAccessToPost(params.postId))) {
@@ -43,11 +37,11 @@ export async function DELETE(
 
 export async function PATCH(
   req: Request,
-  context: z.infer<typeof routeContextSchema>
+  context: { params: Promise<{ postId: string }> }
 ) {
   try {
     // Validate route params.
-    const { params } = routeContextSchema.parse(context)
+    const params = await context.params
 
     // Check if the user has access to this post.
     if (!(await verifyCurrentUserHasAccessToPost(params.postId))) {

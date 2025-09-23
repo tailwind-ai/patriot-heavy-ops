@@ -1,16 +1,10 @@
 import { getServerSession } from "next-auth"
-import * as z from "zod"
+import { z } from "zod"
 
 import { authOptions } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { serviceRequestUpdateSchema } from "@/lib/validations/service-request"
 // Removed unused permission imports
-
-const routeContextSchema = z.object({
-  params: z.object({
-    requestId: z.string(),
-  }),
-})
 
 async function verifyCurrentUserHasAccessToRequest(requestId: string) {
   const session = await getServerSession(authOptions)
@@ -30,10 +24,10 @@ async function verifyCurrentUserHasAccessToRequest(requestId: string) {
 
 export async function GET(
   req: Request,
-  context: z.infer<typeof routeContextSchema>
+  context: { params: Promise<{ requestId: string }> }
 ) {
   try {
-    const { params } = routeContextSchema.parse(context)
+    const params = await context.params
 
     if (!(await verifyCurrentUserHasAccessToRequest(params.requestId))) {
       return new Response(null, { status: 403 })
@@ -84,10 +78,10 @@ export async function GET(
 
 export async function PATCH(
   req: Request,
-  context: z.infer<typeof routeContextSchema>
+  context: { params: Promise<{ requestId: string }> }
 ) {
   try {
-    const { params } = routeContextSchema.parse(context)
+    const params = await context.params
 
     if (!(await verifyCurrentUserHasAccessToRequest(params.requestId))) {
       return new Response(null, { status: 403 })
@@ -142,10 +136,10 @@ export async function PATCH(
 
 export async function DELETE(
   req: Request,
-  context: z.infer<typeof routeContextSchema>
+  context: { params: Promise<{ requestId: string }> }
 ) {
   try {
-    const { params } = routeContextSchema.parse(context)
+    const params = await context.params
 
     if (!(await verifyCurrentUserHasAccessToRequest(params.requestId))) {
       return new Response(null, { status: 403 })

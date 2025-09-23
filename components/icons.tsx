@@ -12,7 +12,6 @@ import {
   Image,
   Laptop,
   Loader2,
-  LucideProps,
   Menu,
   Moon,
   MoreVertical,
@@ -24,11 +23,10 @@ import {
   Twitter,
   User,
   X,
-  type Icon as LucideIcon,
 } from "lucide-react"
 import NextImage from "next/image"
 
-export type Icon = LucideIcon
+export type Icon = React.ComponentType<React.SVGProps<SVGSVGElement>>
 
 export const Icons = {
   logo: Command,
@@ -53,7 +51,7 @@ export const Icons = {
   sun: SunMedium,
   moon: Moon,
   laptop: Laptop,
-  facebook: ({ ...props }: LucideProps) => (
+  facebook: ({ ...props }: React.SVGProps<SVGSVGElement>) => (
     <svg
       aria-hidden="true"
       focusable="false"
@@ -70,7 +68,14 @@ export const Icons = {
       />
     </svg>
   ),
-  linkedin: ({ width = 20, height = 20, className }: LucideProps) => (
+  linkedin: ({
+    width = 20,
+    height = 20,
+    className,
+  }: React.SVGProps<SVGSVGElement> & {
+    width?: number | string | undefined
+    height?: number | string | undefined
+  }) => (
     <NextImage
       src="/images/linkedin-icon.png"
       alt="LinkedIn"
@@ -79,7 +84,7 @@ export const Icons = {
       className={className}
     />
   ),
-  gitHub: ({ ...props }: LucideProps) => (
+  gitHub: ({ ...props }: React.SVGProps<SVGSVGElement>) => (
     <svg
       aria-hidden="true"
       focusable="false"
