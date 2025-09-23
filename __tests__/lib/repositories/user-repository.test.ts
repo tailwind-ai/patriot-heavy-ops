@@ -1,10 +1,15 @@
 /**
  * User Repository Tests
- * 
+ *
  * Tests for UserRepository with mocked Prisma client
  */
 
-import { UserRepository, UserCreateInput, UserUpdateInput, OperatorApplicationInput } from "@/lib/repositories/user-repository"
+import {
+  UserRepository,
+  UserCreateInput,
+  UserUpdateInput,
+  OperatorApplicationInput,
+} from "@/lib/repositories/user-repository"
 import { UserRole } from "@prisma/client"
 
 // Mock Prisma Client
@@ -65,7 +70,9 @@ describe("UserRepository", () => {
     })
 
     it("should handle database errors", async () => {
-      mockPrismaClient.user.findUnique.mockRejectedValue(new Error("Database error"))
+      mockPrismaClient.user.findUnique.mockRejectedValue(
+        new Error("Database error")
+      )
 
       const result = await repository.findById("user123")
 
@@ -354,7 +361,10 @@ describe("UserRepository", () => {
 
       mockPrismaClient.user.update.mockResolvedValue(mockUpdatedUser)
 
-      const result = await repository.submitOperatorApplication("user123", mockApplicationInput)
+      const result = await repository.submitOperatorApplication(
+        "user123",
+        mockApplicationInput
+      )
 
       expect(result.success).toBe(true)
       expect(result.data).toEqual(mockUpdatedUser)
@@ -385,9 +395,16 @@ describe("UserRepository", () => {
     })
 
     it("should handle validation errors", async () => {
-      const invalidInput = { ...mockApplicationInput, militaryBranch: "", yearsOfService: 0 }
+      const invalidInput = {
+        ...mockApplicationInput,
+        militaryBranch: "",
+        yearsOfService: 0,
+      }
 
-      const result = await repository.submitOperatorApplication("user123", invalidInput)
+      const result = await repository.submitOperatorApplication(
+        "user123",
+        invalidInput
+      )
 
       expect(result.success).toBe(false)
       expect(result.error?.code).toBe("VALIDATION_ERROR")
@@ -395,8 +412,9 @@ describe("UserRepository", () => {
     })
   })
 
-  describe("updateOperatorAvailability", () => {
-    it("should update operator availability successfully", async () => {
+  describe("setOperatorAvailability", () => {
+    it("should set operator availability successfully", async () => {
+      const mockUser = { id: "op123", role: "OPERATOR" }
       const mockUpdatedOperator = {
         id: "op123",
         name: "Operator Name",
@@ -405,17 +423,19 @@ describe("UserRepository", () => {
         updatedAt: new Date(),
       }
 
+      mockPrismaClient.user.findUnique.mockResolvedValue(mockUser)
       mockPrismaClient.user.update.mockResolvedValue(mockUpdatedOperator)
 
-      const result = await repository.updateOperatorAvailability("op123", false)
+      const result = await repository.setOperatorAvailability("op123", false)
 
       expect(result.success).toBe(true)
       expect(result.data).toEqual(mockUpdatedOperator)
+      expect(mockPrismaClient.user.findUnique).toHaveBeenCalledWith({
+        where: { id: "op123" },
+        select: { id: true, role: true },
+      })
       expect(mockPrismaClient.user.update).toHaveBeenCalledWith({
-        where: {
-          id: "op123",
-          role: "OPERATOR",
-        },
+        where: { id: "op123" },
         data: {
           isAvailable: false,
           updatedAt: expect.any(Date),
@@ -428,6 +448,31 @@ describe("UserRepository", () => {
           updatedAt: true,
         },
       })
+    })
+
+    it("should handle user not found", async () => {
+      mockPrismaClient.user.findUnique.mockResolvedValue(null)
+
+      const result = await repository.setOperatorAvailability("op123", false)
+
+      expect(result.success).toBe(false)
+      expect(result.error?.code).toBe("OPERATOR_AVAILABILITY_UPDATE_ERROR")
+      expect(result.error?.details?.originalError).toBe(
+        "User with ID op123 not found"
+      )
+    })
+
+    it("should handle user not being an operator", async () => {
+      const mockUser = { id: "user123", role: "USER" }
+      mockPrismaClient.user.findUnique.mockResolvedValue(mockUser)
+
+      const result = await repository.setOperatorAvailability("user123", false)
+
+      expect(result.success).toBe(false)
+      expect(result.error?.code).toBe("OPERATOR_AVAILABILITY_UPDATE_ERROR")
+      expect(result.error?.details?.originalError).toBe(
+        "User with ID user123 is not an operator"
+      )
     })
   })
 

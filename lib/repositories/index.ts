@@ -223,14 +223,12 @@ export type {
   ServiceRequestFilters,
   ServiceRequestWithUser,
   RoleBasedAccessOptions,
+} from "./service-request-repository"
+
+export type {
   UserCreateInput,
   UserUpdateInput,
   UserFilters,
   UserWithAccounts,
   OperatorApplicationInput,
-} from "./service-request-repository"
-
-export type {
-  UserCreateInput as UserCreate,
-  UserUpdateInput as UserUpdate,
 } from "./user-repository"

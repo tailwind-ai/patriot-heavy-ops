@@ -353,7 +353,7 @@ export class ServiceRequestRepository extends BaseRepository implements CrudRepo
         });
 
         if (!current) {
-          throw new Error("Service request not found");
+          throw new Error(`Service request with ID ${id} not found`);
         }
 
         // Update status and create history record in transaction

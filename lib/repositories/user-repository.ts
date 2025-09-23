@@ -385,9 +385,9 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
   }
 
   /**
-   * Update operator availability
+   * Set operator availability status
    */
-  async updateOperatorAvailability(
+  async setOperatorAvailability(
     operatorId: string,
     isAvailable: boolean
   ): Promise<RepositoryResult<User>> {
@@ -397,26 +397,40 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
     }
 
     return this.handleAsync(
-      () => this.db.user.update({
-        where: { 
-          id: operatorId,
-          role: "OPERATOR", // Ensure only operators can have availability updated
-        },
-        data: {
-          isAvailable,
-          updatedAt: new Date(),
-        },
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          isAvailable: true,
-          updatedAt: true,
-        },
-      }),
+      async () => {
+        // First verify the user exists and is an operator
+        const user = await this.db.user.findUnique({
+          where: { id: operatorId },
+          select: { id: true, role: true },
+        });
+
+        if (!user) {
+          throw new Error(`User with ID ${operatorId} not found`);
+        }
+
+        if (user.role !== "OPERATOR") {
+          throw new Error(`User with ID ${operatorId} is not an operator`);
+        }
+
+        // Update availability
+        return this.db.user.update({
+          where: { id: operatorId },
+          data: {
+            isAvailable,
+            updatedAt: new Date(),
+          },
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            isAvailable: true,
+            updatedAt: true,
+          },
+        });
+      },
       "OPERATOR_AVAILABILITY_UPDATE_ERROR",
-      "Failed to update operator availability",
-      `updateOperatorAvailability(${operatorId}, ${isAvailable})`
+      "Failed to set operator availability",
+      `setOperatorAvailability(${operatorId}, ${isAvailable})`
     );
   }
 
