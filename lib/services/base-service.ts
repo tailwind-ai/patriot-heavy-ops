@@ -37,19 +37,23 @@ export interface ServiceLogger {
  */
 export class ConsoleLogger implements ServiceLogger {
   info(message: string, meta?: Record<string, unknown>): void {
+    // eslint-disable-next-line no-console
     console.info(`[INFO] ${message}`, meta ? JSON.stringify(meta) : '');
   }
 
   warn(message: string, meta?: Record<string, unknown>): void {
+    // eslint-disable-next-line no-console
     console.warn(`[WARN] ${message}`, meta ? JSON.stringify(meta) : '');
   }
 
   error(message: string, meta?: Record<string, unknown>): void {
+    // eslint-disable-next-line no-console
     console.error(`[ERROR] ${message}`, meta ? JSON.stringify(meta) : '');
   }
 
   debug(message: string, meta?: Record<string, unknown>): void {
     if (process.env.NODE_ENV === 'development') {
+      // eslint-disable-next-line no-console
       console.debug(`[DEBUG] ${message}`, meta ? JSON.stringify(meta) : '');
     }
   }
