@@ -441,7 +441,35 @@ describe("OperatorApplicationForm", () => {
     })
 
     it("should refresh router on successful submission", async () => {
-      mockFetchSuccess({ message: "Application submitted successfully" })
+      const mf = global.fetch as jest.MockedFunction<typeof fetch>
+      mf.mockImplementation((url) => {
+        if (
+          typeof url === "string" &&
+          url.includes("/api/users/") &&
+          url.includes("/operator-application")
+        ) {
+          const response = new Response(
+            JSON.stringify({ message: "Application submitted successfully" }),
+            {
+              status: 200,
+              headers: { "Content-Type": "application/json" },
+            }
+          )
+          return Promise.resolve(response)
+        }
+        if (typeof url === "string" && url.includes("/api/geocoding")) {
+          const response = new Response(JSON.stringify([]), {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+          })
+          return Promise.resolve(response)
+        }
+        const response = new Response(JSON.stringify({}), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        })
+        return Promise.resolve(response)
+      })
 
       render(<OperatorApplicationForm user={mockUser} />)
 
