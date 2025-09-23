@@ -1,6 +1,5 @@
 import { Inter as FontSans } from "next/font/google"
 import localFont from "next/font/local"
-import type { Viewport } from "next"
 
 import "@/styles/globals.css"
 import { siteConfig } from "@/config/site"
@@ -68,7 +67,7 @@ export const metadata = {
   manifest: `${siteConfig.url}/site.webmanifest`,
 }
 
-export const viewport: Viewport = {
+export const viewport = {
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "white" },
     { media: "(prefers-color-scheme: dark)", color: "black" },
