@@ -5,12 +5,6 @@ import { authOptions } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { operatorApplicationSchema } from "@/lib/validations/user"
 
-const routeContextSchema = z.object({
-  params: z.object({
-    userId: z.string(),
-  }),
-})
-
 export async function POST(
   req: Request,
   context: { params: Promise<{ userId: string }> }
