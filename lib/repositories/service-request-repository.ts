@@ -270,7 +270,7 @@ export class ServiceRequestRepository extends BaseRepository implements CrudRepo
       "SERVICE_REQUEST_CREATE_ERROR",
       "Failed to create service request",
       "create"
-    );
+    ) as Promise<RepositoryResult<ServiceRequest>>;
   }
 
   /**

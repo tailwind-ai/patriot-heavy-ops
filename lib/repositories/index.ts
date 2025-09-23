@@ -19,10 +19,20 @@ export {
 } from "./base-repository"
 
 // Service Request Repository
-export { ServiceRequestRepository } from "./service-request-repository"
+export { 
+  ServiceRequestRepository,
+  type ServiceRequestCreateInput,
+  type ServiceRequestUpdateInput,
+  type ServiceRequestWithUser
+} from "./service-request-repository"
 
-// User Repository
-export { UserRepository } from "./user-repository"
+// User Repository  
+export { 
+  UserRepository,
+  type UserCreateInput,
+  type UserUpdateInput,
+  type UserWithAccounts
+} from "./user-repository"
 
 /**
  * Repository Factory for dependency injection
@@ -150,7 +160,7 @@ export const repositories = {
   /**
    * Get service requests with role-based access
    */
-  getServiceRequests: (userId: string, userRole: UserRole): any => {
+  getServiceRequests: (userId: string, userRole: UserRole) => {
     return RepositoryFactory.getServiceRequestRepository().findManyWithRoleAccess(
       { userId, userRole }
     )
@@ -159,7 +169,7 @@ export const repositories = {
   /**
    * Create a new service request
    */
-  createServiceRequest: (data: any): any => {
+  createServiceRequest: (data: any) => {
     return RepositoryFactory.getServiceRequestRepository().create(data)
   },
 
@@ -180,14 +190,14 @@ export const repositories = {
   /**
    * Create a new user
    */
-  createUser: (data: any): any => {
+  createUser: (data: any) => {
     return RepositoryFactory.getUserRepository().create(data)
   },
 
   /**
    * Update user profile
    */
-  updateUser: (id: string, data: any): any => {
+  updateUser: (id: string, data: any) => {
     return RepositoryFactory.getUserRepository().update(id, data)
   },
 

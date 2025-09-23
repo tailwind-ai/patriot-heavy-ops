@@ -110,7 +110,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
   /**
    * Find user by email
    */
-  async findByEmail(email: string): Promise<RepositoryResult<any>> {
+  async findByEmail(email: string): Promise<RepositoryResult<User | null>> {
     const validation = this.validateRequired({ email }, ["email"]);
     if (!validation.success) {
       return {
