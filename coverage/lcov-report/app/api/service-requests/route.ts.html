@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">94.28% </span>
+                <span class="strong">94.11% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>33/35</span>
+                <span class='fraction'>32/34</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">94.28% </span>
+                <span class="strong">94.11% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>33/35</span>
+                <span class='fraction'>32/34</span>
             </div>
         
             
@@ -235,11 +235,17 @@
 <a name='L170'></a><a href='#L170'>170</a>
 <a name='L171'></a><a href='#L171'>171</a>
 <a name='L172'></a><a href='#L172'>172</a>
-<a name='L173'></a><a href='#L173'>173</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L173'></a><a href='#L173'>173</a>
+<a name='L174'></a><a href='#L174'>174</a>
+<a name='L175'></a><a href='#L175'>175</a>
+<a name='L176'></a><a href='#L176'>176</a>
+<a name='L177'></a><a href='#L177'>177</a>
+<a name='L178'></a><a href='#L178'>178</a>
+<a name='L179'></a><a href='#L179'>179</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -346,7 +352,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -363,10 +369,16 @@
 <span class="cline-any cline-yes">11x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">11x</span>
 <span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -407,12 +419,12 @@
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { getServerSession } from "next-auth/next"
-import * as z from "zod"
-&nbsp;
-import { authOptions } from "@/lib/auth"
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import * as z from "zod"
 import { db } from "@/lib/db"
-import { serviceRequestSchema, calculateTotalHours } from "@/lib/validations/service-request"
+import {
+  serviceRequestSchema,
+  calculateTotalHours,
+} from "@/lib/validations/service-request"
 import { getCurrentUserWithRole } from "@/lib/session"
 import { hasPermission } from "@/lib/permissions"
 &nbsp;
@@ -426,8 +438,8 @@ export async function GET() {
 &nbsp;
     // Check permissions based on user role
     let serviceRequests
-    
-    if (hasPermission(user.role, 'view_all_requests')) {
+&nbsp;
+    if (hasPermission(user.role, "view_all_requests")) {
       // Managers and Admins can see all requests
       serviceRequests = await db.serviceRequest.findMany({
         select: {
@@ -455,7 +467,7 @@ export async function GET() {
           createdAt: "desc",
         },
       })
-    } else if (hasPermission(user.role, 'view_assignments')) {
+    } else if (hasPermission(user.role, "view_assignments")) {
       // Operators can see requests they're assigned to + their own requests
       serviceRequests = await db.serviceRequest.findMany({
         select: {
@@ -475,20 +487,20 @@ export async function GET() {
         where: {
           OR: [
             { userId: user.id }, // Their own requests
-            { 
+            {
               userAssignments: {
                 some: {
-                  operatorId: user.id
-                }
-              }
-            } // Requests they're assigned to
-          ]
+                  operatorId: user.id,
+                },
+              },
+            }, // Requests they're assigned to
+          ],
         },
         orderBy: {
           createdAt: "desc",
         },
       })
-    } else if (hasPermission(user.role, 'view_own_requests')) {
+    } else if (hasPermission(user.role, "view_own_requests")) {
       // Regular users can only see their own requests
       serviceRequests = await db.serviceRequest.findMany({
         select: {
@@ -517,8 +529,8 @@ export async function GET() {
     }
 &nbsp;
     return new Response(JSON.stringify(serviceRequests))
-  } catch (error) {
-    console.error("Error fetching service requests:", error)
+  } catch {
+    // Error fetching service requests
     return new Response(null, { status: 500 })
   }
 }
@@ -532,13 +544,19 @@ export async function POST(req: Request) {
     }
 &nbsp;
     // Check if user has permission to submit requests
-    <span class="missing-if-branch" title="if path not taken" >I</span>if (!hasPermission(user.role, 'submit_requests')) {
-<span class="cstat-no" title="statement not covered" >      return new Response("Forbidden: You don't have permission to submit service requests", { status: 403 })</span>
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (!hasPermission(user.role, "submit_requests")) {
+<span class="cstat-no" title="statement not covered" >      return new Response(</span>
+        "Forbidden: You don't have permission to submit service requests",
+        { status: 403 }
+      )
     }
     const json = await req.json()
     const body = serviceRequestSchema.parse(json)
 &nbsp;
-    const totalHours = calculateTotalHours(body.requestedDurationType, body.requestedDurationValue)
+    const totalHours = calculateTotalHours(
+      body.requestedDurationType,
+      body.requestedDurationValue
+    )
 &nbsp;
     const serviceRequest = await db.serviceRequest.create({
       data: {
@@ -586,7 +604,7 @@ export async function POST(req: Request) {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-09-22T14:38:14.049Z
+                at 2025-09-23T00:20:02.969Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form"
 import * as z from "zod"
 
 import { cn } from "@/lib/utils"
-import { serviceRequestSchema, equipmentCategories, transportOptions, durationTypes, rateTypes, calculateTotalHours } from "@/lib/validations/service-request"
+import { serviceRequestSchema, calculateTotalHours } from "@/lib/validations/service-request"
 import { buttonVariants } from "@/components/ui/button"
 import {
   Card,
@@ -105,8 +105,8 @@ export function ServiceRequestForm({ user, className, ...props }: ServiceRequest
       const data = await response.json()
       
       setJobSiteSuggestions(data || [])
-    } catch (error) {
-      console.error("Address search error:", error)
+    } catch {
+      // Address search error - fallback to manual entry
       setJobSiteSuggestions([])
       toast({
         title: "Address search unavailable",
@@ -179,11 +179,12 @@ export function ServiceRequestForm({ user, className, ...props }: ServiceRequest
           }
         }
 
-        return toast({
+        toast({
           title: "Failed to create service request",
           description: errorMessage,
           variant: "destructive",
         })
+        return
       }
 
       toast({
@@ -193,13 +194,15 @@ export function ServiceRequestForm({ user, className, ...props }: ServiceRequest
       // Navigate and refresh after successful creation
       router.push("/dashboard")
       router.refresh()
-    } catch (error) {
-      console.error("Service request creation error:", error)
+      return
+    } catch {
+      // Service request creation error - show user-friendly message
       toast({
         title: "Network error",
         description: "Unable to connect to the server. Please check your internet connection and try again.",
         variant: "destructive",
       })
+      return
     } finally {
       setIsSaving(false)
     }
@@ -221,7 +224,7 @@ export function ServiceRequestForm({ user, className, ...props }: ServiceRequest
             </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="grid gap-1">
                 <Label htmlFor="contactName">Contact Name</Label>
                 <Input
@@ -246,7 +249,7 @@ export function ServiceRequestForm({ user, className, ...props }: ServiceRequest
                 )}
               </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="grid gap-1">
                 <Label htmlFor="contactPhone">Phone</Label>
                 <Input
@@ -330,17 +333,25 @@ export function ServiceRequestForm({ user, className, ...props }: ServiceRequest
                   <Icons.spinner className="absolute right-3 top-3 size-4 animate-spin" />
                 )}
                 {jobSiteSuggestions.length > 0 && (
-                  <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-auto">
+                  <div className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md border border-gray-200 bg-white shadow-lg">
                     {jobSiteSuggestions.map((suggestion) => (
                       <div
                         key={suggestion.place_id}
                         onClick={() => handleAddressSelect(suggestion)}
-                        className="px-3 py-2 cursor-pointer hover:bg-gray-100 border-b border-gray-100 last:border-b-0"
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault()
+                            handleAddressSelect(suggestion)
+                          }
+                        }}
+                        role="button"
+                        tabIndex={0}
+                        className="cursor-pointer border-b border-gray-100 px-3 py-2 last:border-b-0 hover:bg-gray-100"
                       >
-                        <div className="font-medium text-sm">
+                        <div className="text-sm font-medium">
                           {suggestion.display_name.split(",")[0]}
                         </div>
-                        <div className="text-xs text-gray-500 truncate">
+                        <div className="truncate text-xs text-gray-500">
                           {suggestion.display_name}
                         </div>
                       </div>
@@ -354,7 +365,7 @@ export function ServiceRequestForm({ user, className, ...props }: ServiceRequest
             </div>
             <div className="grid gap-1">
               <Label htmlFor="transport">Equipment Transport</Label>
-              <Select onValueChange={(value) => setValue("transport", value as any)}>
+              <Select onValueChange={(value) => setValue("transport", value as "WE_HANDLE_IT" | "YOU_HANDLE_IT")}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select transport option" />
                 </SelectTrigger>
@@ -367,7 +378,7 @@ export function ServiceRequestForm({ user, className, ...props }: ServiceRequest
                 <p className="px-1 text-xs text-red-600">{errors.transport.message}</p>
               )}
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="grid gap-1">
                 <Label htmlFor="startDate">Start Date</Label>
                 <Input
@@ -405,7 +416,7 @@ export function ServiceRequestForm({ user, className, ...props }: ServiceRequest
           <CardContent className="grid gap-4">
             <div className="grid gap-1">
               <Label htmlFor="equipmentCategory">Equipment Category</Label>
-              <Select onValueChange={(value) => setValue("equipmentCategory", value as any)}>
+              <Select onValueChange={(value) => setValue("equipmentCategory", value as "SKID_STEERS_TRACK_LOADERS" | "FRONT_END_LOADERS" | "BACKHOES_EXCAVATORS" | "BULLDOZERS" | "GRADERS" | "DUMP_TRUCKS" | "WATER_TRUCKS" | "SWEEPERS" | "TRENCHERS")}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select equipment category" />
                 </SelectTrigger>
@@ -445,14 +456,14 @@ export function ServiceRequestForm({ user, className, ...props }: ServiceRequest
           <CardHeader>
             <CardTitle>Duration & Pricing</CardTitle>
             <CardDescription>
-              How long do you need the equipment and what's your budget?
+              How long do you need the equipment and what&apos;s your budget?
             </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
               <div className="grid gap-1">
                 <Label htmlFor="requestedDurationType">Duration Type</Label>
-                <Select onValueChange={(value) => setValue("requestedDurationType", value as any)}>
+                <Select onValueChange={(value) => setValue("requestedDurationType", value as "HALF_DAY" | "FULL_DAY" | "MULTI_DAY" | "WEEKLY")}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select duration type" />
                   </SelectTrigger>
@@ -491,10 +502,10 @@ export function ServiceRequestForm({ user, className, ...props }: ServiceRequest
                 />
               </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="grid gap-1">
                 <Label htmlFor="rateType">Rate Type</Label>
-                <Select onValueChange={(value) => setValue("rateType", value as any)}>
+                <Select onValueChange={(value) => setValue("rateType", value as "HOURLY" | "HALF_DAY" | "DAILY" | "WEEKLY")}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select rate type" />
                   </SelectTrigger>

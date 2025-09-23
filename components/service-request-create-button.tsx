@@ -8,7 +8,7 @@ import { ButtonProps, buttonVariants } from "@/components/ui/button"
 import { toast } from "@/components/ui/use-toast"
 import { Icons } from "@/components/icons"
 
-interface ServiceRequestCreateButtonProps extends ButtonProps {}
+type ServiceRequestCreateButtonProps = ButtonProps
 
 export function ServiceRequestCreateButton({
   className,
@@ -24,8 +24,8 @@ export function ServiceRequestCreateButton({
     try {
       // Navigate to the create service request page
       await router.push("/dashboard/requests/new")
-    } catch (error) {
-      console.error("Navigation error:", error)
+    } catch {
+      // Navigation error
       toast({
         title: "Navigation failed",
         description: "Unable to navigate to the create request page. Please try again.",
@@ -51,9 +51,9 @@ export function ServiceRequestCreateButton({
       {...props}
     >
       {isLoading ? (
-        <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+        <Icons.spinner className="mr-2 size-4 animate-spin" />
       ) : (
-        <Icons.add className="mr-2 h-4 w-4" />
+        <Icons.add className="mr-2 size-4" />
       )}
       New Service Request
     </button>

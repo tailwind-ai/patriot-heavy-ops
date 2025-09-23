@@ -37,17 +37,23 @@ export function ServiceRequestOperations({
 
   async function deleteServiceRequest() {
     try {
-      const response = await fetch(`/api/service-requests/${serviceRequest.id}`, {
-        method: "DELETE",
-      })
+      const response = await fetch(
+        `/api/service-requests/${serviceRequest.id}`,
+        {
+          method: "DELETE",
+        }
+      )
 
       if (!response.ok) {
-        let errorMessage = "Your service request was not deleted. Please try again."
-        
+        let errorMessage =
+          "Your service request was not deleted. Please try again."
+
         if (response.status === 403) {
-          errorMessage = "You are not authorized to delete this service request."
+          errorMessage =
+            "You are not authorized to delete this service request."
         } else if (response.status === 404) {
-          errorMessage = "Service request not found. It may have already been deleted."
+          errorMessage =
+            "Service request not found. It may have already been deleted."
         } else if (response.status >= 500) {
           errorMessage = "A server error occurred. Please try again later."
         }
@@ -61,11 +67,12 @@ export function ServiceRequestOperations({
       }
 
       return true
-    } catch (error) {
-      console.error("Delete service request error:", error)
+    } catch {
+      // Delete service request error
       toast({
         title: "Network error",
-        description: "Unable to connect to the server. Please check your internet connection and try again.",
+        description:
+          "Unable to connect to the server. Please check your internet connection and try again.",
         variant: "destructive",
       })
       return false
@@ -75,18 +82,24 @@ export function ServiceRequestOperations({
   return (
     <>
       <DropdownMenu>
-        <DropdownMenuTrigger className="flex h-8 w-8 items-center justify-center rounded-md border transition-colors hover:bg-muted">
-          <Icons.ellipsis className="h-4 w-4" />
+        <DropdownMenuTrigger className="flex size-8 items-center justify-center rounded-md border transition-colors hover:bg-muted">
+          <Icons.ellipsis className="size-4" />
           <span className="sr-only">Open</span>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem>
-            <Link href={`/dashboard/requests/${serviceRequest.id}`} className="flex w-full">
+            <Link
+              href={`/dashboard/requests/${serviceRequest.id}`}
+              className="flex w-full"
+            >
               View Details
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem>
-            <Link href={`/dashboard/requests/${serviceRequest.id}/edit`} className="flex w-full">
+            <Link
+              href={`/dashboard/requests/${serviceRequest.id}/edit`}
+              className="flex w-full"
+            >
               Edit
             </Link>
           </DropdownMenuItem>
@@ -102,10 +115,12 @@ export function ServiceRequestOperations({
       <AlertDialog open={showDeleteAlert} onOpenChange={setShowDeleteAlert}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure you want to delete this service request?</AlertDialogTitle>
+            <AlertDialogTitle>
+              Are you sure you want to delete this service request?
+            </AlertDialogTitle>
             <AlertDialogDescription>
               This action cannot be undone. This will permanently delete your
-              service request "{serviceRequest.title}".
+              service request &quot;{serviceRequest.title}&quot;.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -131,9 +146,9 @@ export function ServiceRequestOperations({
               className="bg-red-600 focus:ring-red-600"
             >
               {isDeleteLoading ? (
-                <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                <Icons.spinner className="mr-2 size-4 animate-spin" />
               ) : (
-                <Icons.trash className="mr-2 h-4 w-4" />
+                <Icons.trash className="mr-2 size-4" />
               )}
               <span>Delete</span>
             </AlertDialogAction>

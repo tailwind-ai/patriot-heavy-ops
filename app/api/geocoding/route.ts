@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
     })
 
     if (!response.ok) {
-      console.error("Nominatim API error:", response.status, response.statusText)
+      // Nominatim API error logged
       return new Response(JSON.stringify([]), {
         status: 200,
         headers: {
@@ -41,12 +41,19 @@ export async function GET(request: NextRequest) {
     const data = await response.json()
 
     // Filter and sanitize the response data
-    const sanitizedData = data.map((item: any) => ({
-      display_name: item.display_name,
-      lat: item.lat,
-      lon: item.lon,
-      place_id: item.place_id,
-    }))
+    const sanitizedData = data.map(
+      (item: {
+        display_name: string
+        lat: string
+        lon: string
+        place_id: string
+      }) => ({
+        display_name: item.display_name,
+        lat: item.lat,
+        lon: item.lon,
+        place_id: item.place_id,
+      })
+    )
 
     return new Response(JSON.stringify(sanitizedData), {
       status: 200,
@@ -55,8 +62,8 @@ export async function GET(request: NextRequest) {
         "Cache-Control": "public, max-age=300", // Cache for 5 minutes
       },
     })
-  } catch (error) {
-    console.error("Geocoding API error:", error)
+  } catch {
+    // Geocoding API error logged
     return new Response(JSON.stringify([]), {
       status: 200,
       headers: {

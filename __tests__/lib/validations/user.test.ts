@@ -27,7 +27,7 @@ describe('User Validation Schemas', () => {
         const result = userNameSchema.safeParse({ name })
         expect(result.success).toBe(false)
         if (!result.success) {
-          expect(result.error.issues[0].path).toEqual(['name'])
+          expect(result.error.issues[0]?.path).toEqual(['name'])
         }
       })
     })
@@ -39,7 +39,7 @@ describe('User Validation Schemas', () => {
       
       expect(result.success).toBe(false)
       if (!result.success) {
-        expect(result.error.issues[0].path).toEqual(['name'])
+        expect(result.error.issues[0]?.path).toEqual(['name'])
       }
     })
 
@@ -48,7 +48,7 @@ describe('User Validation Schemas', () => {
       
       expect(result.success).toBe(false)
       if (!result.success) {
-        expect(result.error.issues[0].path).toEqual(['name'])
+        expect(result.error.issues[0]?.path).toEqual(['name'])
       }
     })
 
@@ -86,8 +86,8 @@ describe('User Validation Schemas', () => {
       
       expect(result.success).toBe(false)
       if (!result.success) {
-        expect(result.error.issues[0].message).toBe('Please select a location')
-        expect(result.error.issues[0].path).toEqual(['location'])
+        expect(result.error.issues[0]?.message).toBe('Please select a location')
+        expect(result.error.issues[0]?.path).toEqual(['location'])
       }
     })
 
@@ -96,7 +96,7 @@ describe('User Validation Schemas', () => {
       
       expect(result.success).toBe(false)
       if (!result.success) {
-        expect(result.error.issues[0].path).toEqual(['location'])
+        expect(result.error.issues[0]?.path).toEqual(['location'])
       }
     })
 

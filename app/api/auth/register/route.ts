@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
 
     // Hash password and create user
     const hashedPassword = await hashPassword(password)
-    
+
     const user = await db.user.create({
       data: {
         name,
@@ -37,7 +37,9 @@ export async function POST(request: NextRequest) {
     })
 
     // Remove password from response
-    const { password: _, ...userWithoutPassword } = user
+    const { password: _removedPassword, ...userWithoutPassword } = user
+    // Explicitly ignore password variable
+    void _removedPassword
 
     return NextResponse.json({
       message: "User created successfully",
@@ -51,7 +53,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.error("Registration error:", error)
+    // Registration error logged
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

@@ -1,16 +1,9 @@
-import { PrismaAdapter } from "@next-auth/prisma-adapter"
 import { NextAuthOptions } from "next-auth"
-import EmailProvider from "next-auth/providers/email"
-import GitHubProvider from "next-auth/providers/github"
 import CredentialsProvider from "next-auth/providers/credentials"
-import { Client } from "postmark"
 
 import { env } from "@/env.mjs"
-import { siteConfig } from "@/config/site"
 import { db } from "@/lib/db"
 import { verifyPassword } from "@/lib/auth-utils"
-
-const postmarkClient = new Client(env.POSTMARK_API_TOKEN || "")
 
 export const authOptions: NextAuthOptions = {
   // huh any! I know.
@@ -39,11 +32,8 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         try {
           if (!credentials?.email || !credentials?.password) {
-            console.log("Missing credentials")
             return null
           }
-
-          console.log("Attempting to authenticate:", credentials.email)
 
           // First check if user exists without loading password
           const userExists = await db.user.findUnique({
@@ -59,7 +49,6 @@ export const authOptions: NextAuthOptions = {
           })
 
           if (!userExists) {
-            console.log("User not found:", credentials.email)
             return null
           }
 
@@ -74,26 +63,25 @@ export const authOptions: NextAuthOptions = {
           })
 
           if (!passwordData?.password) {
-            console.log("User has no password set")
             return null
           }
 
-          const isValid = await verifyPassword(credentials.password, passwordData.password)
+          const isValid = await verifyPassword(
+            credentials.password,
+            passwordData.password
+          )
 
           if (!isValid) {
-            console.log("Invalid password for:", credentials.email)
             return null
           }
 
-          console.log("Authentication successful for:", credentials.email)
           return {
             id: userExists.id,
             email: userExists.email,
             name: userExists.name,
             image: userExists.image,
           }
-        } catch (error) {
-          console.error("Auth error:", error)
+        } catch {
           return null
         }
       },
@@ -108,27 +96,29 @@ export const authOptions: NextAuthOptions = {
     async session({ token, session }) {
       if (token) {
         session.user.id = token.id
-        session.user.name = token.name
-        session.user.email = token.email
-        session.user.image = token.picture
+        session.user.name = token.name ?? null
+        session.user.email = token.email ?? null
+        session.user.image = token.picture ?? null
         session.user.role = token.role
       }
 
       return session
     },
     async jwt({ token, user }) {
-      const dbUser = await db.user.findFirst({
-        where: {
-          email: token.email,
-        },
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          image: true,
-          role: true,
-        },
-      })
+      const dbUser = token.email
+        ? await db.user.findUnique({
+            where: {
+              email: token.email,
+            },
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              image: true,
+              role: true,
+            },
+          })
+        : null
 
       if (!dbUser) {
         if (user) {

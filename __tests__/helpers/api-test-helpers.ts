@@ -75,6 +75,24 @@ export function createMockRouteContext(params: Record<string, string>) {
 }
 
 /**
+ * Create mock route context for service request routes
+ */
+export function createMockServiceRequestContext(requestId: string) {
+  return {
+    params: { requestId },
+  }
+}
+
+/**
+ * Create mock route context for user routes
+ */
+export function createMockUserContext(userId: string) {
+  return {
+    params: { userId },
+  }
+}
+
+/**
  * Helper to extract JSON from Response object
  */
 export async function getResponseJson(response: Response) {

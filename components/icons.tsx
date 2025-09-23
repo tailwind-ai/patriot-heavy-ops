@@ -70,13 +70,13 @@ export const Icons = {
       />
     </svg>
   ),
-  linkedin: ({ width = 20, height = 20, ...otherProps }: LucideProps) => (
+  linkedin: ({ width = 20, height = 20, className }: LucideProps) => (
     <NextImage
       src="/images/linkedin-icon.png"
       alt="LinkedIn"
       width={Number(width)}
       height={Number(height)}
-      {...otherProps}
+      className={className}
     />
   ),
   gitHub: ({ ...props }: LucideProps) => (

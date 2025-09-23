@@ -68,7 +68,7 @@ describe('Post Validation Schemas', () => {
           const result = postPatchSchema.safeParse({ title })
           expect(result.success).toBe(false)
           if (!result.success) {
-            expect(result.error.issues[0].path).toEqual(['title'])
+            expect(result.error.issues[0]?.path).toEqual(['title'])
           }
         })
       })
@@ -80,7 +80,7 @@ describe('Post Validation Schemas', () => {
         
         expect(result.success).toBe(false)
         if (!result.success) {
-          expect(result.error.issues[0].path).toEqual(['title'])
+          expect(result.error.issues[0]?.path).toEqual(['title'])
         }
       })
 
@@ -260,7 +260,7 @@ describe('Post Validation Schemas', () => {
         if (!result.success) {
           // Should have error for title only
           expect(result.error.issues).toHaveLength(1)
-          expect(result.error.issues[0].path).toEqual(['title'])
+          expect(result.error.issues[0]?.path).toEqual(['title'])
         }
       })
 

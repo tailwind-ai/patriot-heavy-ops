@@ -1,8 +1,10 @@
-// @ts-nocheck
+// TypeScript checking disabled for legacy Stripe integration
 // TODO: Fix this when we turn strict mode on.
 import { UserSubscriptionPlan } from "types"
 import { freePlan, proPlan } from "@/config/subscriptions"
 import { db } from "@/lib/db"
+
+const DAY_IN_MS = 86_400_000 // 24 hours in milliseconds
 
 export async function getUserSubscriptionPlan(
   userId: string
@@ -24,16 +26,19 @@ export async function getUserSubscriptionPlan(
   }
 
   // Check if user is on a pro plan.
-  const isPro =
+  const isPro = Boolean(
     user.stripePriceId &&
-    user.stripeCurrentPeriodEnd?.getTime() + 86_400_000 > Date.now()
+      user.stripeCurrentPeriodEnd &&
+      user.stripeCurrentPeriodEnd.getTime() + DAY_IN_MS > Date.now()
+  )
 
   const plan = isPro ? proPlan : freePlan
 
   return {
     ...plan,
-    ...user,
-    stripeCurrentPeriodEnd: user.stripeCurrentPeriodEnd?.getTime(),
+    stripeCustomerId: user.stripeCustomerId,
+    stripeSubscriptionId: user.stripeSubscriptionId,
+    stripeCurrentPeriodEnd: user.stripeCurrentPeriodEnd?.getTime() || 0,
     isPro,
   }
 }
