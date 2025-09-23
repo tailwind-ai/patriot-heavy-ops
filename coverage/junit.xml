@@ -1,101 +1,129 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="47" failures="0" errors="0" time="0.673">
-  <testsuite name="AuthService" errors="0" failures="0" skipped="0" timestamp="2025-09-23T18:32:40" time="0.212" tests="26">
-    <testcase classname="AuthService constructor should initialize with AuthService name" name="AuthService constructor should initialize with AuthService name" time="0.002">
+<testsuites name="jest tests" tests="60" failures="0" errors="0" time="0.74">
+  <testsuite name="BaseRepository" errors="0" failures="0" skipped="0" timestamp="2025-09-23T19:41:36" time="0.163" tests="21">
+    <testcase classname="BaseRepository constructor should initialize with default options" name="BaseRepository constructor should initialize with default options" time="0.002">
     </testcase>
-    <testcase classname="AuthService authenticate should authenticate user with valid credentials" name="AuthService authenticate should authenticate user with valid credentials" time="0.002">
+    <testcase classname="BaseRepository constructor should initialize with custom options" name="BaseRepository constructor should initialize with custom options" time="0.001">
     </testcase>
-    <testcase classname="AuthService authenticate should fail authentication with invalid email" name="AuthService authenticate should fail authentication with invalid email" time="0.006">
+    <testcase classname="BaseRepository error handling should create standardized error result" name="BaseRepository error handling should create standardized error result" time="0.002">
     </testcase>
-    <testcase classname="AuthService authenticate should fail authentication with invalid password" name="AuthService authenticate should fail authentication with invalid password" time="0.003">
+    <testcase classname="BaseRepository error handling should create success result" name="BaseRepository error handling should create success result" time="0">
     </testcase>
-    <testcase classname="AuthService authenticate should fail authentication when user has no password" name="AuthService authenticate should fail authentication when user has no password" time="0.001">
+    <testcase classname="BaseRepository error handling should create success result with pagination" name="BaseRepository error handling should create success result with pagination" time="0">
     </testcase>
-    <testcase classname="AuthService authenticate should validate required credentials" name="AuthService authenticate should validate required credentials" time="0">
+    <testcase classname="BaseRepository async operation handling should handle successful async operations" name="BaseRepository async operation handling should handle successful async operations" time="0.004">
     </testcase>
-    <testcase classname="AuthService authenticate should log authentication attempts" name="AuthService authenticate should log authentication attempts" time="0">
+    <testcase classname="BaseRepository async operation handling should handle failed async operations" name="BaseRepository async operation handling should handle failed async operations" time="0.007">
     </testcase>
-    <testcase classname="AuthService register should register new user successfully" name="AuthService register should register new user successfully" time="0.001">
+    <testcase classname="BaseRepository async operation handling should handle Prisma client errors" name="BaseRepository async operation handling should handle Prisma client errors" time="0.001">
     </testcase>
-    <testcase classname="AuthService register should fail registration if user already exists" name="AuthService register should fail registration if user already exists" time="0">
+    <testcase classname="BaseRepository validation should validate required parameters successfully" name="BaseRepository validation should validate required parameters successfully" time="0">
     </testcase>
-    <testcase classname="AuthService register should validate required registration data" name="AuthService register should validate required registration data" time="0.001">
+    <testcase classname="BaseRepository validation should fail validation for missing parameters" name="BaseRepository validation should fail validation for missing parameters" time="0">
     </testcase>
-    <testcase classname="AuthService register should handle registration with minimal data" name="AuthService register should handle registration with minimal data" time="0">
+    <testcase classname="BaseRepository validation should fail validation for null/undefined parameters" name="BaseRepository validation should fail validation for null/undefined parameters" time="0">
     </testcase>
-    <testcase classname="AuthService getUserById should get user by ID successfully" name="AuthService getUserById should get user by ID successfully" time="0">
+    <testcase classname="BaseRepository pagination should build pagination metadata correctly" name="BaseRepository pagination should build pagination metadata correctly" time="0">
     </testcase>
-    <testcase classname="AuthService getUserById should fail when user not found" name="AuthService getUserById should fail when user not found" time="0">
+    <testcase classname="BaseRepository pagination should handle first page pagination" name="BaseRepository pagination should handle first page pagination" time="0.001">
     </testcase>
-    <testcase classname="AuthService getUserById should validate required userId" name="AuthService getUserById should validate required userId" time="0">
+    <testcase classname="BaseRepository pagination should handle last page pagination" name="BaseRepository pagination should handle last page pagination" time="0">
     </testcase>
-    <testcase classname="AuthService getUserByEmail should get user by email successfully" name="AuthService getUserByEmail should get user by email successfully" time="0">
+    <testcase classname="BaseRepository query building should apply filters to base query" name="BaseRepository query building should apply filters to base query" time="0">
     </testcase>
-    <testcase classname="AuthService getUserByEmail should fail when user not found" name="AuthService getUserByEmail should fail when user not found" time="0">
+    <testcase classname="BaseRepository query building should apply pagination to base query" name="BaseRepository query building should apply pagination to base query" time="0">
     </testcase>
-    <testcase classname="AuthService updateUser should update user successfully" name="AuthService updateUser should update user successfully" time="0.001">
+    <testcase classname="BaseRepository query building should apply cursor-based pagination" name="BaseRepository query building should apply cursor-based pagination" time="0.001">
     </testcase>
-    <testcase classname="AuthService updateUser should validate required userId" name="AuthService updateUser should validate required userId" time="0">
+    <testcase classname="BaseRepository configuration methods should get repository name" name="BaseRepository configuration methods should get repository name" time="0">
     </testcase>
-    <testcase classname="AuthService changePassword should change password successfully" name="AuthService changePassword should change password successfully" time="0">
+    <testcase classname="BaseRepository configuration methods should manage caching setting" name="BaseRepository configuration methods should manage caching setting" time="0">
     </testcase>
-    <testcase classname="AuthService changePassword should fail with incorrect current password" name="AuthService changePassword should fail with incorrect current password" time="0">
+    <testcase classname="BaseRepository configuration methods should manage offline mode" name="BaseRepository configuration methods should manage offline mode" time="0">
     </testcase>
-    <testcase classname="AuthService changePassword should fail when user not found" name="AuthService changePassword should fail when user not found" time="0">
-    </testcase>
-    <testcase classname="AuthService validateSessionData should validate correct session data" name="AuthService validateSessionData should validate correct session data" time="0">
-    </testcase>
-    <testcase classname="AuthService validateSessionData should reject invalid session data" name="AuthService validateSessionData should reject invalid session data" time="0">
-    </testcase>
-    <testcase classname="AuthService validateAuthUser should validate correct auth user" name="AuthService validateAuthUser should validate correct auth user" time="0">
-    </testcase>
-    <testcase classname="AuthService validateAuthUser should reject invalid auth user data" name="AuthService validateAuthUser should reject invalid auth user data" time="0.002">
-    </testcase>
-    <testcase classname="AuthService validateAuthUser should accept null name and image" name="AuthService validateAuthUser should accept null name and image" time="0">
+    <testcase classname="BaseRepository logging should log operations" name="BaseRepository logging should log operations" time="0">
     </testcase>
   </testsuite>
-  <testsuite name="BaseService" errors="0" failures="0" skipped="0" timestamp="2025-09-23T18:32:41" time="0.04" tests="21">
-    <testcase classname="BaseService constructor should initialize with service name and logger" name="BaseService constructor should initialize with service name and logger" time="0.001">
+  <testsuite name="ServiceRequestRepository" errors="0" failures="0" skipped="0" timestamp="2025-09-23T19:41:36" time="0.113" tests="19">
+    <testcase classname="ServiceRequestRepository findById should find service request by ID successfully" name="ServiceRequestRepository findById should find service request by ID successfully" time="0.024">
     </testcase>
-    <testcase classname="BaseService constructor should use ConsoleLogger as default" name="BaseService constructor should use ConsoleLogger as default" time="0">
+    <testcase classname="ServiceRequestRepository findById should handle validation error for missing ID" name="ServiceRequestRepository findById should handle validation error for missing ID" time="0.003">
     </testcase>
-    <testcase classname="BaseService createError should create standardized error result" name="BaseService createError should create standardized error result" time="0">
+    <testcase classname="ServiceRequestRepository findById should handle database errors" name="ServiceRequestRepository findById should handle database errors" time="0.005">
     </testcase>
-    <testcase classname="BaseService createError should log error when created" name="BaseService createError should log error when created" time="0.001">
+    <testcase classname="ServiceRequestRepository findManyWithRoleAccess should find requests for ADMIN role" name="ServiceRequestRepository findManyWithRoleAccess should find requests for ADMIN role" time="0.001">
     </testcase>
-    <testcase classname="BaseService createSuccess should create successful result with data" name="BaseService createSuccess should create successful result with data" time="0">
+    <testcase classname="ServiceRequestRepository findManyWithRoleAccess should find requests for MANAGER role" name="ServiceRequestRepository findManyWithRoleAccess should find requests for MANAGER role" time="0.001">
     </testcase>
-    <testcase classname="BaseService handleAsync should handle successful async operations" name="BaseService handleAsync should handle successful async operations" time="0">
+    <testcase classname="ServiceRequestRepository findManyWithRoleAccess should find requests for OPERATOR role" name="ServiceRequestRepository findManyWithRoleAccess should find requests for OPERATOR role" time="0">
     </testcase>
-    <testcase classname="BaseService handleAsync should handle async operation errors" name="BaseService handleAsync should handle async operation errors" time="0.005">
+    <testcase classname="ServiceRequestRepository findManyWithRoleAccess should find requests for USER role" name="ServiceRequestRepository findManyWithRoleAccess should find requests for USER role" time="0.001">
     </testcase>
-    <testcase classname="BaseService handleAsync should handle non-Error exceptions" name="BaseService handleAsync should handle non-Error exceptions" time="0">
+    <testcase classname="ServiceRequestRepository findManyWithRoleAccess should apply additional filters" name="ServiceRequestRepository findManyWithRoleAccess should apply additional filters" time="0.001">
     </testcase>
-    <testcase classname="BaseService validateRequired should pass validation when all required fields are present" name="BaseService validateRequired should pass validation when all required fields are present" time="0.001">
+    <testcase classname="ServiceRequestRepository create should create service request successfully" name="ServiceRequestRepository create should create service request successfully" time="0.005">
     </testcase>
-    <testcase classname="BaseService validateRequired should fail validation when required fields are missing" name="BaseService validateRequired should fail validation when required fields are missing" time="0">
+    <testcase classname="ServiceRequestRepository create should handle validation errors" name="ServiceRequestRepository create should handle validation errors" time="0.001">
     </testcase>
-    <testcase classname="BaseService validateRequired should fail validation for null values" name="BaseService validateRequired should fail validation for null values" time="0">
+    <testcase classname="ServiceRequestRepository update should update service request successfully" name="ServiceRequestRepository update should update service request successfully" time="0.002">
     </testcase>
-    <testcase classname="BaseService validateRequired should fail validation for undefined values" name="BaseService validateRequired should fail validation for undefined values" time="0">
+    <testcase classname="ServiceRequestRepository update should handle validation error for missing ID" name="ServiceRequestRepository update should handle validation error for missing ID" time="0.001">
     </testcase>
-    <testcase classname="BaseService validateRequired should fail validation for empty strings" name="BaseService validateRequired should fail validation for empty strings" time="0">
+    <testcase classname="ServiceRequestRepository delete should delete service request successfully" name="ServiceRequestRepository delete should delete service request successfully" time="0.001">
     </testcase>
-    <testcase classname="BaseService logOperation should log operation with service name" name="BaseService logOperation should log operation with service name" time="0">
+    <testcase classname="ServiceRequestRepository delete should handle validation error for missing ID" name="ServiceRequestRepository delete should handle validation error for missing ID" time="0.002">
     </testcase>
-    <testcase classname="BaseService logOperation should log operation with metadata" name="BaseService logOperation should log operation with metadata" time="0.001">
+    <testcase classname="ServiceRequestRepository count should count service requests successfully" name="ServiceRequestRepository count should count service requests successfully" time="0.001">
     </testcase>
-    <testcase classname="BaseService getServiceName should return the service name" name="BaseService getServiceName should return the service name" time="0">
+    <testcase classname="ServiceRequestRepository count should count with filters" name="ServiceRequestRepository count should count with filters" time="0.001">
     </testcase>
-    <testcase classname="ConsoleLogger should log info messages" name="ConsoleLogger should log info messages" time="0">
+    <testcase classname="ServiceRequestRepository updateStatus should update status with history tracking" name="ServiceRequestRepository updateStatus should update status with history tracking" time="0.001">
     </testcase>
-    <testcase classname="ConsoleLogger should log warn messages" name="ConsoleLogger should log warn messages" time="0">
+    <testcase classname="ServiceRequestRepository updateStatus should handle service request not found" name="ServiceRequestRepository updateStatus should handle service request not found" time="0.007">
     </testcase>
-    <testcase classname="ConsoleLogger should log error messages" name="ConsoleLogger should log error messages" time="0">
+    <testcase classname="ServiceRequestRepository updateStatus should handle validation errors" name="ServiceRequestRepository updateStatus should handle validation errors" time="0.001">
     </testcase>
-    <testcase classname="ConsoleLogger should log debug messages in development" name="ConsoleLogger should log debug messages in development" time="0.001">
+  </testsuite>
+  <testsuite name="UserRepository" errors="0" failures="0" skipped="0" timestamp="2025-09-23T19:41:36" time="0.078" tests="20">
+    <testcase classname="UserRepository findById should find user by ID successfully" name="UserRepository findById should find user by ID successfully" time="0.004">
     </testcase>
-    <testcase classname="ConsoleLogger should not log debug messages in production" name="ConsoleLogger should not log debug messages in production" time="0">
+    <testcase classname="UserRepository findById should handle validation error for missing ID" name="UserRepository findById should handle validation error for missing ID" time="0.001">
+    </testcase>
+    <testcase classname="UserRepository findById should handle database errors" name="UserRepository findById should handle database errors" time="0.008">
+    </testcase>
+    <testcase classname="UserRepository findByEmail should find user by email successfully" name="UserRepository findByEmail should find user by email successfully" time="0.001">
+    </testcase>
+    <testcase classname="UserRepository findByEmail should return null for non-existent email" name="UserRepository findByEmail should return null for non-existent email" time="0.002">
+    </testcase>
+    <testcase classname="UserRepository findAvailableOperators should find available operators without filters" name="UserRepository findAvailableOperators should find available operators without filters" time="0.001">
+    </testcase>
+    <testcase classname="UserRepository findAvailableOperators should find operators with location filter" name="UserRepository findAvailableOperators should find operators with location filter" time="0">
+    </testcase>
+    <testcase classname="UserRepository findAvailableOperators should find operators with certification filter" name="UserRepository findAvailableOperators should find operators with certification filter" time="0.001">
+    </testcase>
+    <testcase classname="UserRepository create should create user successfully" name="UserRepository create should create user successfully" time="0.001">
+    </testcase>
+    <testcase classname="UserRepository create should create user with custom role" name="UserRepository create should create user with custom role" time="0.001">
+    </testcase>
+    <testcase classname="UserRepository create should handle validation errors" name="UserRepository create should handle validation errors" time="0.001">
+    </testcase>
+    <testcase classname="UserRepository update should update user successfully" name="UserRepository update should update user successfully" time="0.001">
+    </testcase>
+    <testcase classname="UserRepository submitOperatorApplication should submit operator application successfully" name="UserRepository submitOperatorApplication should submit operator application successfully" time="0.002">
+    </testcase>
+    <testcase classname="UserRepository submitOperatorApplication should handle validation errors" name="UserRepository submitOperatorApplication should handle validation errors" time="0.002">
+    </testcase>
+    <testcase classname="UserRepository updateOperatorAvailability should update operator availability successfully" name="UserRepository updateOperatorAvailability should update operator availability successfully" time="0.001">
+    </testcase>
+    <testcase classname="UserRepository updateStripeInfo should update Stripe information successfully" name="UserRepository updateStripeInfo should update Stripe information successfully" time="0.001">
+    </testcase>
+    <testcase classname="UserRepository findByRole should find users by role successfully" name="UserRepository findByRole should find users by role successfully" time="0.001">
+    </testcase>
+    <testcase classname="UserRepository verifyEmail should verify user email successfully" name="UserRepository verifyEmail should verify user email successfully" time="0.001">
+    </testcase>
+    <testcase classname="UserRepository delete should delete user successfully" name="UserRepository delete should delete user successfully" time="0">
+    </testcase>
+    <testcase classname="UserRepository count should count users successfully" name="UserRepository count should count users successfully" time="0.001">
     </testcase>
   </testsuite>
 </testsuites>
