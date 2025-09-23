@@ -13,6 +13,21 @@ const createJestConfig = nextJest({
 })
 
 // Add any custom config to be passed to Jest
+// Dynamically include optional reporters to avoid failures when not installed (e.g., inside Docker volumes)
+const reporters = ["default"]
+try {
+  require.resolve("jest-junit")
+  reporters.push([
+    "jest-junit",
+    {
+      outputDirectory: "coverage",
+      outputName: "junit.xml",
+    },
+  ])
+} catch (_) {
+  // jest-junit not available in this environment; skip
+}
+
 const customJestConfig = {
   setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
   moduleNameMapper: {
@@ -29,6 +44,7 @@ const customJestConfig = {
     "app/api/**/*.{js,jsx,ts,tsx}",
     "!**/*.d.ts",
     "!**/node_modules/**",
+    "!**/__snapshots__/**",
   ],
   coverageThreshold: {
     global: {
@@ -43,6 +59,11 @@ const customJestConfig = {
     "**/*.(test|spec).(js|jsx|ts|tsx)",
   ],
   testPathIgnorePatterns: ["<rootDir>/.next/", "<rootDir>/node_modules/"],
+  // Enhanced snapshot and reporting configuration
+  verbose: true,
+  errorOnDeprecated: true,
+  reporters,
+  // Note: watch plugins disabled for Jest 30 compatibility
 }
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
