@@ -21,9 +21,17 @@ export class RealBackgroundAgent {
   async detectIssues(prNumber: number): Promise<GitHubIssue[]> {
     try {
       console.log(`🔍 Fetching issues from PR #${prNumber}...`)
-      const issues = await this.githubIntegration.getPRIssues(prNumber)
-      console.log(`✅ Found ${issues.length} issues from GitHub`)
-      return issues
+      
+      // Get both comment issues and CI failure issues
+      const [commentIssues, ciIssues] = await Promise.all([
+        this.githubIntegration.getPRIssues(prNumber),
+        this.githubIntegration.getCIFailureIssues(prNumber)
+      ])
+      
+      const allIssues = [...commentIssues, ...ciIssues]
+      console.log(`✅ Found ${commentIssues.length} comment issues and ${ciIssues.length} CI failure issues`)
+      
+      return allIssues
     } catch (error) {
       console.error('Error fetching GitHub issues:', error)
       return []

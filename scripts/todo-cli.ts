@@ -86,6 +86,7 @@ async function initializeTodos() {
 async function initializeFromGitHubPR(prNumber: number) {
   console.log(`🤖 Fetching issues from GitHub PR #${prNumber}...`)
   console.log(`🧹 Clearing previous todos for fresh PR-specific detection...`)
+  console.log(`🔍 Checking for Copilot comments and CI failures...`)
   
   const todos = await enhancedTodoManager.initializeFromGitHubPR(prNumber)
   console.log(`✅ Found ${todos.length} issues from GitHub PR #${prNumber}`)
@@ -105,7 +106,8 @@ async function initializeFromGitHubPR(prNumber: number) {
     todos.forEach((todo, index) => {
       const priority = getPriorityEmoji(todo.priority)
       const status = getStatusEmoji(todo.status)
-      console.log(`  ${index + 1}. ${status} ${priority} ${todo.content}`)
+      const typeIcon = getIssueTypeIcon(todo.issueType)
+      console.log(`  ${index + 1}. ${status} ${priority} ${typeIcon} ${todo.content}`)
       if (todo.suggestedFix) {
         console.log(`     💡 Fix: ${todo.suggestedFix}`)
       }
@@ -317,6 +319,17 @@ function getPriorityEmoji(priority: string): string {
     case 'medium': return '🟡'
     case 'low': return '🟢'
     default: return '⚪'
+  }
+}
+
+function getIssueTypeIcon(issueType: string): string {
+  switch (issueType) {
+    case 'copilot_comment': return '🤖'
+    case 'ci_failure': return '🚨'
+    case 'vercel_failure': return '▲'
+    case 'lint_error': return '🔍'
+    case 'test_failure': return '🧪'
+    default: return '📝'
   }
 }
 
