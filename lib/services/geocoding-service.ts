@@ -149,7 +149,8 @@ export class NominatimProvider implements GeocodingProvider {
           components.city =
             nominatimItem.address.city ||
             nominatimItem.address.town ||
-            nominatimItem.address.village!
+            nominatimItem.address.village ||
+            ""
         }
         if (nominatimItem.address.state) {
           components.state = nominatimItem.address.state
@@ -237,7 +238,7 @@ export class NominatimProvider implements GeocodingProvider {
       }
       if (data.address.city || data.address.town || data.address.village) {
         components.city =
-          data.address.city || data.address.town || data.address.village!
+          data.address.city || data.address.town || data.address.village || ""
       }
       if (data.address.state) {
         components.state = data.address.state
