@@ -12,7 +12,7 @@ import {
   RegisterData,
 } from "../../../lib/services/auth-service"
 import { ServiceLogger } from "../../../lib/services/base-service"
-import { UserRole } from "@prisma/client"
+import type { UserRole } from "@prisma/client"
 import { hashPassword } from "../../../lib/auth-utils"
 
 // Mock the database
