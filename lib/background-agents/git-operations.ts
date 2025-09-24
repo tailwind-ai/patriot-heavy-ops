@@ -97,8 +97,8 @@ export class GitOperations {
   private async createTreeItems(
     changes: FileChange[], 
     existingTree: Array<{ path: string; mode: string; type: string; sha?: string }>
-  ): Promise<Array<{ path: string; mode: string; type: string; sha?: string }>> {
-    const treeItems: Array<{ path: string; mode: string; type: string; sha?: string }> = []
+  ): Promise<Array<{ path?: string; mode?: "100644" | "100755" | "040000" | "160000" | "120000"; type?: "tree" | "blob" | "commit"; sha?: string | null; content?: string }>> {
+    const treeItems: Array<{ path?: string; mode?: "100644" | "100755" | "040000" | "160000" | "120000"; type?: "tree" | "blob" | "commit"; sha?: string | null; content?: string }> = []
 
     // Add all existing files except the ones being changed
     const changedPaths = new Set(changes.map(c => c.path))

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createMockRequest } from '@/__tests__/helpers/api-test-helpers'
 import { POST, GET } from '@/app/api/auth/mobile/refresh/route'
+import { UserRole } from '@prisma/client'
 import { verifyToken, generateAccessToken, generateRefreshToken, isTokenExpired } from '@/lib/auth-utils'
 import { authRateLimit } from '@/lib/middleware/rate-limit'
 
@@ -220,7 +221,7 @@ describe('/api/auth/mobile/refresh', () => {
       const updatedUser = {
         ...mockUser,
         email: 'updated@example.com',
-        role: 'MANAGER'
+        role: UserRole.MANAGER
       }
 
       mockVerifyToken.mockReturnValue(mockTokenPayload)
@@ -244,7 +245,7 @@ describe('/api/auth/mobile/refresh', () => {
     })
 
     it('should handle user with no role', async () => {
-      const userWithoutRole = { ...mockUser, role: null }
+      const userWithoutRole = { ...mockUser, role: UserRole.USER }
       
       mockVerifyToken.mockReturnValue(mockTokenPayload)
       mockIsTokenExpired.mockReturnValue(false)

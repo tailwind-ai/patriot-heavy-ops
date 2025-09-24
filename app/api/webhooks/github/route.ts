@@ -108,7 +108,12 @@ async function resolveGitHubConversation(
   resolution: string,
   repository: string
 ) {
-  const [owner, repo] = repository.split("/")
+  const parts = repository.split("/")
+  if (parts.length !== 2 || !parts[0] || !parts[1]) {
+    console.error(`Invalid repository format: ${repository}`)
+    return
+  }
+  const [owner, repo] = parts as [string, string]
   
   try {
     const { Octokit } = await import("@octokit/rest")

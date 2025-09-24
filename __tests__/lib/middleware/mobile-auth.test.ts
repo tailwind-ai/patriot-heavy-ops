@@ -55,7 +55,7 @@ describe("Mobile Authentication Middleware", () => {
       })
 
       // Set up database mock after reset
-      mockDb.user.findUnique.mockImplementation((args: any) => {
+      ;(mockDb.user.findUnique as jest.Mock).mockImplementation((args: any) => {
         if (args.where.id === mockUser.id) {
           return Promise.resolve(mockUser)
         }
@@ -144,7 +144,7 @@ describe("Mobile Authentication Middleware", () => {
         email: "test@example.com",
       })
       // Mock database error - this should cause JWT auth to fail and fallback to session
-      mockDb.user.findUnique.mockRejectedValue(new Error("Database error"))
+      ;(mockDb.user.findUnique as jest.Mock).mockRejectedValue(new Error("Database error"))
       mockGetServerSession.mockResolvedValue(null)
 
       const req = createMockRequest("GET", "http://localhost/api/test", {
@@ -167,7 +167,7 @@ describe("Mobile Authentication Middleware", () => {
         email: "test@example.com",
       })
       // Ensure database returns null for this specific user
-      mockDb.user.findUnique.mockImplementation((args: any) => {
+      ;(mockDb.user.findUnique as jest.Mock).mockImplementation((args: any) => {
         if (args.where.id === "nonexistent-user") {
           return Promise.resolve(null)
         }
@@ -203,7 +203,7 @@ describe("Mobile Authentication Middleware", () => {
         email: mockUser.email,
         role: mockUser.role,
       })
-      mockDb.user.findUnique.mockResolvedValue(mockUser)
+      ;(mockDb.user.findUnique as jest.Mock).mockResolvedValue(mockUser)
 
       const req = createMockRequest("GET", "http://localhost/api/test", {
         headers: {
@@ -222,7 +222,7 @@ describe("Mobile Authentication Middleware", () => {
       mockExtractBearerToken.mockReturnValue(null)
       mockVerifyToken.mockReturnValue(null)
       mockGetServerSession.mockResolvedValue(null)
-      mockDb.user.findUnique.mockResolvedValue(null)
+      ;(mockDb.user.findUnique as jest.Mock).mockResolvedValue(null)
 
       try {
         const result = await requireAuth(req)
@@ -298,7 +298,7 @@ describe("Mobile Authentication Middleware", () => {
         email: mockUser.email,
         role: mockUser.role,
       })
-      mockDb.user.findUnique.mockResolvedValue(mockUser)
+      ;(mockDb.user.findUnique as jest.Mock).mockResolvedValue(mockUser)
 
       const req = createMockRequest("GET", "http://localhost/api/test", {
         headers: {
@@ -325,7 +325,7 @@ describe("Mobile Authentication Middleware", () => {
         email: mockUser.email,
         role: mockUser.role,
       })
-      mockDb.user.findUnique.mockResolvedValue(mockUser)
+      ;(mockDb.user.findUnique as jest.Mock).mockResolvedValue(mockUser)
 
       const req = createMockRequest("GET", "http://localhost/api/test", {
         headers: {
@@ -359,7 +359,7 @@ describe("Mobile Authentication Middleware", () => {
         email: mockUser.email,
         role: mockUser.role,
       })
-      mockDb.user.findUnique.mockResolvedValue(mockUser)
+      ;(mockDb.user.findUnique as jest.Mock).mockResolvedValue(mockUser)
 
       const req = createMockRequest("GET", "http://localhost/api/test", {
         headers: {
@@ -421,7 +421,7 @@ describe("Mobile Authentication Middleware", () => {
         email: mockJwtUser.email,
         role: mockJwtUser.role,
       })
-      mockDb.user.findUnique.mockResolvedValue(mockJwtUser)
+      ;(mockDb.user.findUnique as jest.Mock).mockResolvedValue(mockJwtUser)
       mockGetServerSession.mockResolvedValue(mockSession)
 
       const req = createMockRequest("GET", "http://localhost/api/test", {

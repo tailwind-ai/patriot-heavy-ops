@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { POST, GET } from "@/app/api/auth/mobile/login/route"
 import { createMockRequest } from "@/__tests__/helpers/api-test-helpers"
+import { UserRole } from "@prisma/client"
 import {
   verifyPassword,
   generateAccessToken,
@@ -325,7 +326,7 @@ describe("/api/auth/mobile/login", () => {
     })
 
     it("should handle user with no role", async () => {
-      const userWithoutRole = { ...mockUserData, role: null }
+      const userWithoutRole = { ...mockUserData, role: UserRole.USER }
       mockDbUser.mockResolvedValue(userWithoutRole)
       mockVerifyPassword.mockResolvedValue(true)
       mockGenerateAccessToken.mockReturnValue("access-token")
