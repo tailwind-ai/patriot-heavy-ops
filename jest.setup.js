@@ -22,8 +22,83 @@ jest.mock('./env.mjs', () => ({
   },
 }))
 
-// Mock the database
-jest.mock('./lib/db')
+// Mock the database - must be done before any imports
+jest.mock('./lib/db', () => {
+  const mockUser = {
+    findUnique: jest.fn(),
+    findFirst: jest.fn(),
+    findMany: jest.fn(),
+    create: jest.fn(),
+    update: jest.fn(),
+    delete: jest.fn(),
+    count: jest.fn(),
+  }
+
+  const mockServiceRequest = {
+    findUnique: jest.fn(),
+    findFirst: jest.fn(),
+    findMany: jest.fn(),
+    create: jest.fn(),
+    update: jest.fn(),
+    delete: jest.fn(),
+    count: jest.fn(),
+  }
+
+  const mockUserSubscription = {
+    findUnique: jest.fn(),
+    findFirst: jest.fn(),
+    findMany: jest.fn(),
+    create: jest.fn(),
+    update: jest.fn(),
+    delete: jest.fn(),
+    upsert: jest.fn(),
+  }
+
+  const mockPost = {
+    findUnique: jest.fn(),
+    findFirst: jest.fn(),
+    findMany: jest.fn(),
+    create: jest.fn(),
+    update: jest.fn(),
+    delete: jest.fn(),
+    count: jest.fn(),
+  }
+
+  const mockOperatorApplication = {
+    findUnique: jest.fn(),
+    findFirst: jest.fn(),
+    findMany: jest.fn(),
+    create: jest.fn(),
+    update: jest.fn(),
+    delete: jest.fn(),
+  }
+
+  const mockUserAssignment = {
+    findUnique: jest.fn(),
+    findFirst: jest.fn(),
+    findMany: jest.fn(),
+    create: jest.fn(),
+    update: jest.fn(),
+    delete: jest.fn(),
+  }
+
+  return {
+    db: {
+      user: mockUser,
+      serviceRequest: mockServiceRequest,
+      userSubscription: mockUserSubscription,
+      post: mockPost,
+      operatorApplication: mockOperatorApplication,
+      userAssignment: mockUserAssignment,
+    },
+    mockUser,
+    mockServiceRequest,
+    mockUserSubscription,
+    mockPost,
+    mockOperatorApplication,
+    mockUserAssignment,
+  }
+})
 
 // Mock Stripe
 jest.mock('stripe', () => {

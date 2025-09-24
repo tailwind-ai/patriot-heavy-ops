@@ -1,39 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="14" failures="8" errors="0" time="0.501">
-  <testsuite name="/api/auth/mobile/login" errors="0" failures="8" skipped="0" timestamp="2025-09-24T02:47:24" time="0.204" tests="14">
-    <testcase classname="/api/auth/mobile/login POST should successfully login with valid credentials" name="/api/auth/mobile/login POST should successfully login with valid credentials" time="0.022">
-      <failure>Error: expect(received).toBe(expected) // Object.is equality
-
-Expected: 200
-Received: 500
-    at Object.toBe (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/login.test.ts:66:31)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
+<testsuites name="jest tests" tests="14" failures="0" errors="0" time="0.434">
+  <testsuite name="/api/auth/mobile/login" errors="0" failures="0" skipped="0" timestamp="2025-09-24T02:49:28" time="0.169" tests="14">
+    <testcase classname="/api/auth/mobile/login POST should successfully login with valid credentials" name="/api/auth/mobile/login POST should successfully login with valid credentials" time="0.003">
     </testcase>
-    <testcase classname="/api/auth/mobile/login POST should return 401 for invalid email" name="/api/auth/mobile/login POST should return 401 for invalid email" time="0.002">
-      <failure>Error: expect(received).toBe(expected) // Object.is equality
-
-Expected: 401
-Received: 500
-    at Object.toBe (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/login.test.ts:101:31)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
+    <testcase classname="/api/auth/mobile/login POST should return 401 for invalid email" name="/api/auth/mobile/login POST should return 401 for invalid email" time="0.001">
     </testcase>
-    <testcase classname="/api/auth/mobile/login POST should return 401 for user without password" name="/api/auth/mobile/login POST should return 401 for user without password" time="0.002">
-      <failure>Error: expect(received).toBe(expected) // Object.is equality
-
-Expected: 401
-Received: 500
-    at Object.toBe (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/login.test.ts:121:31)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
+    <testcase classname="/api/auth/mobile/login POST should return 401 for user without password" name="/api/auth/mobile/login POST should return 401 for user without password" time="0.001">
     </testcase>
-    <testcase classname="/api/auth/mobile/login POST should return 401 for invalid password" name="/api/auth/mobile/login POST should return 401 for invalid password" time="0.001">
-      <failure>Error: expect(received).toBe(expected) // Object.is equality
-
-Expected: 401
-Received: 500
-    at Object.toBe (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/login.test.ts:139:31)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
+    <testcase classname="/api/auth/mobile/login POST should return 401 for invalid password" name="/api/auth/mobile/login POST should return 401 for invalid password" time="0">
     </testcase>
-    <testcase classname="/api/auth/mobile/login POST should return 400 for invalid request data" name="/api/auth/mobile/login POST should return 400 for invalid request data" time="0.005">
+    <testcase classname="/api/auth/mobile/login POST should return 400 for invalid request data" name="/api/auth/mobile/login POST should return 400 for invalid request data" time="0.02">
     </testcase>
     <testcase classname="/api/auth/mobile/login POST should return 400 for missing email" name="/api/auth/mobile/login POST should return 400 for missing email" time="0.001">
     </testcase>
@@ -41,43 +17,17 @@ Received: 500
     </testcase>
     <testcase classname="/api/auth/mobile/login POST should handle database errors gracefully" name="/api/auth/mobile/login POST should handle database errors gracefully" time="0.001">
     </testcase>
-    <testcase classname="/api/auth/mobile/login POST should handle malformed JSON gracefully" name="/api/auth/mobile/login POST should handle malformed JSON gracefully" time="0.002">
-      <failure>Error: expect(received).toBe(expected) // Object.is equality
-
-Expected: 500
-Received: 400
-    at Object.toBe (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/login.test.ts:229:31)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
+    <testcase classname="/api/auth/mobile/login POST should handle malformed JSON gracefully" name="/api/auth/mobile/login POST should handle malformed JSON gracefully" time="0.001">
     </testcase>
-    <testcase classname="/api/auth/mobile/login POST should apply rate limiting" name="/api/auth/mobile/login POST should apply rate limiting" time="0.001">
+    <testcase classname="/api/auth/mobile/login POST should apply rate limiting" name="/api/auth/mobile/login POST should apply rate limiting" time="0.002">
     </testcase>
     <testcase classname="/api/auth/mobile/login POST should normalize email to lowercase" name="/api/auth/mobile/login POST should normalize email to lowercase" time="0.001">
-      <failure>Error: expect(jest.fn()).toHaveBeenCalledWith(...expected)
-
-Expected: {&quot;select&quot;: Any&lt;Object&gt;, &quot;where&quot;: {&quot;email&quot;: &quot;test@example.com&quot;}}
-
-Number of calls: 0
-    at Object.toHaveBeenCalledWith (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/login.test.ts:274:37)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
     </testcase>
-    <testcase classname="/api/auth/mobile/login POST should generate tokens with correct payload" name="/api/auth/mobile/login POST should generate tokens with correct payload" time="0.001">
-      <failure>Error: expect(jest.fn()).toHaveBeenCalledWith(...expected)
-
-Expected: {&quot;email&quot;: &quot;test@example.com&quot;, &quot;role&quot;: &quot;USER&quot;, &quot;userId&quot;: &quot;user-123&quot;}
-
-Number of calls: 0
-    at Object.toHaveBeenCalledWith (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/login.test.ts:300:39)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
+    <testcase classname="/api/auth/mobile/login POST should generate tokens with correct payload" name="/api/auth/mobile/login POST should generate tokens with correct payload" time="0">
     </testcase>
-    <testcase classname="/api/auth/mobile/login POST should handle user with no role" name="/api/auth/mobile/login POST should handle user with no role" time="0.001">
-      <failure>Error: expect(received).toBe(expected) // Object.is equality
-
-Expected: 200
-Received: 500
-    at Object.toBe (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/login.test.ts:320:31)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
+    <testcase classname="/api/auth/mobile/login POST should handle user with no role" name="/api/auth/mobile/login POST should handle user with no role" time="0">
     </testcase>
-    <testcase classname="/api/auth/mobile/login GET should return 405 Method Not Allowed" name="/api/auth/mobile/login GET should return 405 Method Not Allowed" time="0">
+    <testcase classname="/api/auth/mobile/login GET should return 405 Method Not Allowed" name="/api/auth/mobile/login GET should return 405 Method Not Allowed" time="0.001">
     </testcase>
   </testsuite>
 </testsuites>
