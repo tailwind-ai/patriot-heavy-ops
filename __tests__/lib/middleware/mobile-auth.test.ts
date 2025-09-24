@@ -381,7 +381,7 @@ describe('Mobile Authentication Middleware', () => {
       mockDbUser.findUnique.mockResolvedValue(mockJwtUser)
       mockGetServerSession.mockResolvedValue(mockSession)
 
-      const req = createMockRequest('GET','http://localhost/api/test', {
+      const req = createMockRequest('GET', 'http://localhost/api/test', {
         headers: {
           authorization: 'Bearer valid.token'
         }
