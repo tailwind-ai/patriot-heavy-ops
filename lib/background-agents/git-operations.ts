@@ -139,7 +139,6 @@ export class GitOperations {
   }
 
   private generateCommitMessage(issueType: string, changes: FileChange[]): string {
-    const fileCount = changes.length
     const fileList = changes.map(c => c.path).join(", ")
     
     // Map issue types to source descriptions
