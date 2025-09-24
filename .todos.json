@@ -1,0 +1,36 @@
+[
+  {
+    "id": "github-1",
+    "content": "import type { UserRole } from \"@prisma/client\"",
+    "status": "pending",
+    "priority": "medium",
+    "dependencies": [],
+    "issueType": "lint_error",
+    "files": ["__tests__/lib/services/auth-service.test.ts"],
+    "lineNumbers": [5],
+    "suggestedFix": "import type { UserRole } from \"@prisma/client\"",
+    "createdAt": "2025-09-24T17:50:35.095Z",
+    "updatedAt": "2025-09-24T17:50:35.095Z",
+    "estimatedTime": "5-20 min",
+    "tags": ["lint-error", "medium", "testing", "authentication"],
+    "assignee": "test-specialist",
+    "relatedPR": "#237"
+  },
+  {
+    "id": "github-2",
+    "content": "The command suggestion uses template literal syntax within a regular string. This should either use ...",
+    "status": "pending",
+    "priority": "low",
+    "dependencies": [],
+    "issueType": "lint_error",
+    "files": ["scripts/todo-cli.ts"],
+    "lineNumbers": [125],
+    "suggestedFix": "",
+    "createdAt": "2025-09-24T17:50:35.095Z",
+    "updatedAt": "2025-09-24T17:50:35.095Z",
+    "estimatedTime": "5-20 min",
+    "tags": ["lint-error", "low"],
+    "assignee": "general-developer",
+    "relatedPR": "#237"
+  }
+]

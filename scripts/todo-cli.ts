@@ -9,11 +9,19 @@ import { enhancedTodoManager, EnhancedTodoItem } from "../lib/background-agents/
 
 async function main() {
   const command = process.argv[2]
+  const prNumber = process.argv[3]
   
   try {
     switch (command) {
       case 'init':
         await initializeTodos()
+        break
+      case 'github':
+        if (!prNumber) {
+          console.log('❌ Please provide PR number: npm run todo github <PR_NUMBER>')
+          process.exit(1)
+        }
+        await initializeFromGitHubPR(parseInt(prNumber))
         break
       case 'list':
         await listTodos()
@@ -68,6 +76,37 @@ async function initializeTodos() {
     todos.slice(0, 3).forEach((todo, index) => {
       const priority = getPriorityEmoji(todo.priority)
       console.log(`  ${index + 1}. ${priority} ${todo.content}`)
+    })
+  }
+}
+
+async function initializeFromGitHubPR(prNumber: number) {
+  console.log(`🤖 Fetching issues from GitHub PR #${prNumber}...`)
+  const todos = await enhancedTodoManager.initializeFromGitHubPR(prNumber)
+  console.log(`✅ Found ${todos.length} issues from GitHub PR #${prNumber}`)
+  
+  // Show summary
+  const summary = enhancedTodoManager.getProgressSummary()
+  console.log('\n📊 Summary:')
+  console.log(`  Total: ${summary.total}`)
+  console.log(`  Ready: ${summary.pending}`)
+  console.log(`  In Progress: ${summary.inProgress}`)
+  console.log(`  Completed: ${summary.completed}`)
+  console.log(`  Completion Rate: ${summary.completionRate.toFixed(1)}%`)
+  
+  // Show the GitHub todos
+  if (todos.length > 0) {
+    console.log('\n🎯 GitHub PR Issues:')
+    todos.forEach((todo, index) => {
+      const priority = getPriorityEmoji(todo.priority)
+      const status = getStatusEmoji(todo.status)
+      console.log(`  ${index + 1}. ${status} ${priority} ${todo.content}`)
+      if (todo.suggestedFix) {
+        console.log(`     💡 Fix: ${todo.suggestedFix}`)
+      }
+      if (todo.files && todo.files.length > 0) {
+        console.log(`     📁 Files: ${todo.files.join(', ')}`)
+      }
     })
   }
 }
@@ -227,18 +266,20 @@ async function addTodo() {
 function showHelp() {
   console.log('📋 Todo CLI Commands:')
   console.log('='.repeat(25))
-  console.log('init     - Initialize todos from Background Agent')
-  console.log('list     - List all todos')
-  console.log('next     - Show next todo to work on')
-  console.log('ready    - Show todos ready to work on')
-  console.log('blocked  - Show blocked todos')
-  console.log('progress - Show progress summary')
-  console.log('update   - Update todo status')
-  console.log('add      - Add new todo')
-  console.log('help     - Show this help')
+  console.log('init           - Initialize todos from Background Agent')
+  console.log('github <PR>    - Fetch todos from GitHub PR comments')
+  console.log('list           - List all todos')
+  console.log('next           - Show next todo to work on')
+  console.log('ready          - Show todos ready to work on')
+  console.log('blocked        - Show blocked todos')
+  console.log('progress       - Show progress summary')
+  console.log('update         - Update todo status')
+  console.log('add            - Add new todo')
+  console.log('help           - Show this help')
   console.log()
   console.log('Examples:')
   console.log('  npm run todo init')
+  console.log('  npm run todo github 237')
   console.log('  npm run todo next')
   console.log('  npm run todo update issue-1 completed')
   console.log('  npm run todo add "Fix mobile auth" high')
