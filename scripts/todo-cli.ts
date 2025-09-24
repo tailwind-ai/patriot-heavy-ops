@@ -161,7 +161,7 @@ async function showNextTodo() {
   }
   
   console.log(`\n🚀 To start working on this todo, run:`)
-  console.log(`   npm run todo update \${nextTodo.id} in_progress`)
+  console.log(`   npm run todo update ${nextTodo.id} in_progress`)
 }
 
 async function showReadyTodos() {

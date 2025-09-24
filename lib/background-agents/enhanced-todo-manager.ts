@@ -366,10 +366,19 @@ export class EnhancedTodoManager {
   }
 }
 
-// Export singleton instance
-export const enhancedTodoManager = new EnhancedTodoManager(mockBackgroundAgent)
+// Module-scoped singleton instance
+let _enhancedTodoManager: EnhancedTodoManager | undefined
 
-// Make sure the singleton persists across module reloads
-if (!(global as Record<string, unknown>).enhancedTodoManager) {
-  ;(global as Record<string, unknown>).enhancedTodoManager = enhancedTodoManager
+/**
+ * Get the singleton instance of EnhancedTodoManager.
+ * This avoids using global state and is safe for production and testing.
+ */
+export function getEnhancedTodoManager(): EnhancedTodoManager {
+  if (!_enhancedTodoManager) {
+    _enhancedTodoManager = new EnhancedTodoManager(mockBackgroundAgent)
+  }
+  return _enhancedTodoManager
 }
+
+// Optionally, export the singleton instance for compatibility
+export const enhancedTodoManager = getEnhancedTodoManager()
