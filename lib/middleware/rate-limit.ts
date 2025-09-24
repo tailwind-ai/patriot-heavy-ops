@@ -1,4 +1,15 @@
 import { NextRequest, NextResponse } from "next/server"
+import { generateRateLimitKey } from "@/lib/utils/ip-utils"
+
+/**
+ * Redis client interface for rate limiting
+ * Compatible with popular Redis clients like ioredis and node-redis
+ */
+interface RedisClient {
+  get(key: string): Promise<string | null>
+  setex(key: string, seconds: number, value: string): Promise<string>
+  del(key: string): Promise<number>
+}
 
 /**
  * Rate limiting configuration
@@ -72,9 +83,9 @@ class MemoryRateLimitStore implements RateLimitStore {
  * Suitable for multi-instance production deployments
  */
 class RedisRateLimitStore implements RateLimitStore {
-  private redis: any // Redis client type
+  private redis: RedisClient
 
-  constructor(redisClient: any) {
+  constructor(redisClient: RedisClient) {
     this.redis = redisClient
   }
 
@@ -116,7 +127,7 @@ const defaultStore = new MemoryRateLimitStore()
 /**
  * Create a Redis store instance (optional, requires Redis client)
  */
-export function createRedisRateLimitStore(redisClient: any): RateLimitStore {
+export function createRedisRateLimitStore(redisClient: RedisClient): RateLimitStore {
   return new RedisRateLimitStore(redisClient)
 }
 
@@ -124,10 +135,7 @@ export function createRedisRateLimitStore(redisClient: any): RateLimitStore {
  * Default key generator using IP address
  */
 function defaultKeyGenerator(req: NextRequest): string {
-  const forwarded = req.headers.get('x-forwarded-for')
-  const realIp = req.headers.get('x-real-ip')
-  const ip = forwarded ? forwarded.split(',')[0] : realIp || 'unknown'
-  return `rate_limit:${ip}`
+  return generateRateLimitKey(req, 'rate_limit')
 }
 
 /**
@@ -195,12 +203,7 @@ export const authRateLimit = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   maxRequests: 5, // 5 attempts per 15 minutes
   message: 'Too many authentication attempts, please try again in 15 minutes',
-  keyGenerator: (req: NextRequest) => {
-    const forwarded = req.headers.get('x-forwarded-for')
-    const realIp = req.headers.get('x-real-ip')
-    const ip = forwarded ? forwarded.split(',')[0] : realIp || 'unknown'
-    return `auth_rate_limit:${ip}`
-  }
+  keyGenerator: (req: NextRequest) => generateRateLimitKey(req, 'auth_rate_limit')
 })
 
 /**
@@ -211,12 +214,7 @@ export const apiRateLimit = rateLimit({
   windowMs: 60 * 1000, // 1 minute
   maxRequests: 100, // 100 requests per minute
   message: 'API rate limit exceeded, please slow down',
-  keyGenerator: (req: NextRequest) => {
-    const forwarded = req.headers.get('x-forwarded-for')
-    const realIp = req.headers.get('x-real-ip')
-    const ip = forwarded ? forwarded.split(',')[0] : realIp || 'unknown'
-    return `api_rate_limit:${ip}`
-  }
+  keyGenerator: (req: NextRequest) => generateRateLimitKey(req, 'api_rate_limit')
 })
 
 /**

@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
 import { env } from "@/env.mjs"
+import { JWTPayload } from "@/types/mobile-auth"
 
 /**
  * JWT Configuration Constants
@@ -26,17 +27,6 @@ export async function hashPassword(password: string): Promise<string> {
  */
 export async function verifyPassword(password: string, hash: string): Promise<boolean> {
   return bcrypt.compare(password, hash)
-}
-
-/**
- * JWT token payload interface
- */
-export interface JWTPayload {
-  userId: string
-  email: string
-  role?: string
-  iat?: number
-  exp?: number
 }
 
 /**

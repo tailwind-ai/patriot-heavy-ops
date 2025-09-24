@@ -6,8 +6,8 @@ import {
   verifyToken,
   extractBearerToken,
   isTokenExpired,
-  JWTPayload
 } from '@/lib/auth-utils'
+import { JWTPayload } from '@/types/mobile-auth'
 
 // Mock environment variables
 jest.mock('@/env.mjs', () => ({
