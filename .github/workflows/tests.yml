@@ -1,10 +1,12 @@
 name: CI Tests
 
 on:
-  push:
-    branches: [ main, sam-dev, chore/** ]
   pull_request:
-    branches: [ main ]
+    branches: [main, sam-dev]
+    
+concurrency:
+  group: tests-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   test:
