@@ -96,6 +96,33 @@ global.TextDecoder = TextDecoder
 
 // Note: MSW server setup is done per-test file to avoid import issues
 
+// Mock NextResponse for API route testing
+jest.mock('next/server', () => ({
+  NextRequest: jest.fn(),
+  NextResponse: {
+    json: jest.fn((data, init) => {
+      const response = new Response(JSON.stringify(data), {
+        status: init?.status || 200,
+        statusText: init?.statusText || 'OK',
+        headers: {
+          'Content-Type': 'application/json',
+          ...init?.headers,
+        },
+      })
+      
+      // Add json method to response for testing
+      response.json = async () => data
+      return response
+    }),
+    redirect: jest.fn((url, status = 302) => {
+      return new Response(null, {
+        status,
+        headers: { Location: url },
+      })
+    }),
+  },
+}))
+
 // Global test utilities
 global.fetch = jest.fn()
 

@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server"
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
-import { extractBearerToken, verifyToken, JWTPayload } from "@/lib/auth-utils"
+import { extractBearerToken, verifyToken } from "@/lib/auth-utils"
 import { db } from "@/lib/db"
 
 /**

@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
 import { db } from "@/lib/db"
-import { verifyPassword, generateAccessToken, generateRefreshToken } from "@/lib/auth-utils"
+import {
+  verifyPassword,
+  generateAccessToken,
+  generateRefreshToken,
+} from "@/lib/auth-utils"
 import { authRateLimit } from "@/lib/middleware/rate-limit"
 
 /**
@@ -9,7 +13,7 @@ import { authRateLimit } from "@/lib/middleware/rate-limit"
  */
 const mobileLoginSchema = z.object({
   email: z.string().email("Invalid email address"),
-  password: z.string().min(1, "Password is required")
+  password: z.string().min(1, "Password is required"),
 })
 
 /**
@@ -32,7 +36,9 @@ interface MobileLoginResponse {
  * POST /api/auth/mobile/login
  * Authenticate user and return JWT tokens for mobile app consumption
  */
-export async function POST(req: NextRequest): Promise<NextResponse<MobileLoginResponse>> {
+export async function POST(
+  req: NextRequest
+): Promise<NextResponse<MobileLoginResponse>> {
   // Apply rate limiting
   const rateLimitResponse = await authRateLimit(req)
   if (rateLimitResponse) {
@@ -51,15 +57,15 @@ export async function POST(req: NextRequest): Promise<NextResponse<MobileLoginRe
         email: true,
         name: true,
         role: true,
-        password: true
-      }
+        password: true,
+      },
     })
 
-    if (!user || !user.password) {
+    if (!user?.password) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: "Invalid email or password" 
+        {
+          success: false,
+          error: "Invalid email or password",
         },
         { status: 401 }
       )
@@ -67,49 +73,48 @@ export async function POST(req: NextRequest): Promise<NextResponse<MobileLoginRe
 
     // Verify password
     const isValidPassword = await verifyPassword(password, user.password)
-    
+
     if (!isValidPassword) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: "Invalid email or password" 
+        {
+          success: false,
+          error: "Invalid email or password",
         },
         { status: 401 }
       )
     }
 
-        // Generate JWT tokens
-        const tokenPayload = {
-          userId: user.id,
-          email: user.email || '',
-          role: user.role || undefined
-        }
+    // Generate JWT tokens
+    const tokenPayload = {
+      userId: user.id,
+      email: user.email || "",
+      role: user.role || undefined,
+    }
 
     const accessToken = generateAccessToken(tokenPayload)
     const refreshToken = generateRefreshToken(tokenPayload)
 
     // Return successful response with tokens
-        return NextResponse.json({
-          success: true,
-          accessToken,
-          refreshToken,
-          user: {
-            id: user.id,
-            email: user.email || '',
-            name: user.name || undefined,
-            role: user.role || undefined
-          }
-        })
-
+    return NextResponse.json({
+      success: true,
+      accessToken,
+      refreshToken,
+      user: {
+        id: user.id,
+        email: user.email || "",
+        name: user.name || undefined,
+        role: user.role || undefined,
+      },
+    })
   } catch (error) {
-    console.error('Mobile login error:', error)
+    console.error("Mobile login error:", error)
 
     // Handle validation errors
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: error.errors[0]?.message || "Invalid request data" 
+        {
+          success: false,
+          error: error.errors[0]?.message || "Invalid request data",
         },
         { status: 400 }
       )
@@ -117,9 +122,9 @@ export async function POST(req: NextRequest): Promise<NextResponse<MobileLoginRe
 
     // Handle database errors
     return NextResponse.json(
-      { 
-        success: false, 
-        error: "Authentication failed" 
+      {
+        success: false,
+        error: "Authentication failed",
       },
       { status: 500 }
     )
@@ -131,8 +136,5 @@ export async function POST(req: NextRequest): Promise<NextResponse<MobileLoginRe
  * Return method not allowed for GET requests
  */
 export async function GET(): Promise<NextResponse> {
-  return NextResponse.json(
-    { error: "Method not allowed" },
-    { status: 405 }
-  )
+  return NextResponse.json({ error: "Method not allowed" }, { status: 405 })
 }

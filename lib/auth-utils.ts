@@ -80,7 +80,7 @@ export function verifyToken(token: string): JWTPayload | null {
     }) as JWTPayload
     
     return decoded
-  } catch (error) {
+  } catch {
     // Token is invalid, expired, or malformed
     return null
   }
@@ -90,7 +90,7 @@ export function verifyToken(token: string): JWTPayload | null {
  * Extract Bearer token from Authorization header
  */
 export function extractBearerToken(authHeader: string | null): string | null {
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+  if (!authHeader?.startsWith('Bearer ')) {
     return null
   }
   
