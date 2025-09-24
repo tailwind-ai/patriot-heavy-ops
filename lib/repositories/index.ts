@@ -5,7 +5,8 @@
  * Provides factory pattern for dependency injection and mobile compatibility.
  */
 
-import { PrismaClient, UserRole } from "@prisma/client"
+import { PrismaClient } from "@prisma/client"
+import type { UserRole } from "@prisma/client"
 import { db } from "@/lib/db"
 
 // Base repository infrastructure

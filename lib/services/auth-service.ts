@@ -157,7 +157,7 @@ export class AuthService extends BaseService {
             email: data.email.toLowerCase(),
             password: hashedPassword,
             name: data.name || null,
-            role: "USER" as UserRole,
+            role: "USER",
           },
           select: {
             id: true,

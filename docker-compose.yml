@@ -46,8 +46,7 @@ services:
       GITHUB_CLIENT_SECRET: your_github_client_secret
       # App configuration
       NODE_ENV: development
-      # Fix Prisma OpenSSL detection
-      PRISMA_QUERY_ENGINE_LIBRARY: /app/node_modules/.prisma/client/libquery_engine-linux-musl-arm64-openssl-3.0.x.so.node
+      # Fix Prisma OpenSSL detection - removed problematic library path
     depends_on:
       postgres:
         condition: service_healthy

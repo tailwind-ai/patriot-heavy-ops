@@ -5,7 +5,8 @@
  * Abstracts Prisma operations behind a mobile-compatible interface.
  */
 
-import { PrismaClient, ServiceRequest, ServiceRequestStatus, UserRole } from "@prisma/client"
+import { PrismaClient } from "@prisma/client"
+import type { ServiceRequest, ServiceRequestStatus, UserRole } from "@prisma/client"
 import { 
   BaseRepository, 
   CrudRepository, 
