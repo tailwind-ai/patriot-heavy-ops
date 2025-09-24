@@ -35,7 +35,9 @@ jobs:
         run: npm run lint
 
       - name: Run unit tests with coverage
-        run: npm run test:ci
+        run: |
+          set -o pipefail
+          npm run test:ci 2>&1 | tee test-output.log
 
       - name: Upload coverage
         uses: actions/upload-artifact@v4
@@ -45,8 +47,34 @@ jobs:
 
       - name: Upload build output
         run: npm run build && tar -czf build.tar.gz .next
+
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: build
           path: build.tar.gz
+
+      # Always upload test logs
+      - name: Upload test logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-logs
+          path: test-output.log
+
+      # Post summary to PR if tests failed
+      - name: Post summary on failure
+        if: failure() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const log = fs.readFileSync('test-output.log', 'utf8');
+            const summary = log.split('\n').slice(-20).join('\n'); // last 20 lines
+            const issue_number = context.payload.pull_request.number;
+            await github.rest.issues.createComment({
+              ...context.repo,
+              issue_number,
+              body: `🚨 **CI Tests Failed**\n\n**Last 20 log lines:**\n\`\`\`\n${summary}\n\`\`\`\n\nFull logs available in the uploaded artifact.`
+            });
