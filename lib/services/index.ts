@@ -38,10 +38,24 @@ export {
   type GeocodingCacheEntry,
 } from "./geocoding-service"
 
+// Service Request business logic service
+import { ServiceRequestService } from "./service-request-service"
+export {
+  ServiceRequestService,
+  type DurationType,
+  type RateType,
+  type EquipmentCategory,
+  type TransportOption,
+  type ServiceRequestCalculationInput,
+  type ServiceRequestCalculationResult,
+  type StatusTransition,
+} from "./service-request-service"
+
 // Service factory for dependency injection
 export class ServiceFactory {
   private static authService: AuthService | null = null
   private static geocodingService: GeocodingService | null = null
+  private static serviceRequestService: ServiceRequestService | null = null
 
   /**
    * Get singleton instance of AuthService
@@ -64,10 +78,21 @@ export class ServiceFactory {
   }
 
   /**
+   * Get singleton instance of ServiceRequestService
+   */
+  static getServiceRequestService(): ServiceRequestService {
+    if (!this.serviceRequestService) {
+      this.serviceRequestService = new ServiceRequestService()
+    }
+    return this.serviceRequestService
+  }
+
+  /**
    * Reset all service instances (useful for testing)
    */
   static reset(): void {
     this.authService = null
     this.geocodingService = null
+    this.serviceRequestService = null
   }
 }
