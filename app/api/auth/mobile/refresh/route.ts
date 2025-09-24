@@ -21,7 +21,7 @@ interface TokenRefreshResponse {
   user?: {
     id: string
     email: string
-    name?: string
+    name?: string | undefined
     role?: string
   }
   error?: string

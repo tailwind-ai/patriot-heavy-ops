@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="69" failures="41" errors="0" time="2.291">
-  <testsuite name="Mobile Authentication Middleware" errors="0" failures="13" skipped="0" timestamp="2025-09-24T01:34:58" time="0.344" tests="18">
+<testsuites name="jest tests" tests="69" failures="41" errors="0" time="3.062">
+  <testsuite name="Mobile Authentication Middleware" errors="0" failures="13" skipped="0" timestamp="2025-09-24T02:24:53" time="0.468" tests="18">
     <testcase classname="Mobile Authentication Middleware authenticateRequest should authenticate with valid JWT Bearer token" name="Mobile Authentication Middleware authenticateRequest should authenticate with valid JWT Bearer token" time="0.002">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;user&apos;)
-    at Object.user (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/lib/middleware/mobile-auth.test.ts:36:14)
+      <failure>TypeError: Cannot read properties of undefined (reading &apos;mockResolvedValue&apos;)
+    at Object.mockResolvedValue (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/lib/middleware/mobile-auth.test.ts:36:27)
     at Promise.finally.completed (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
     at new Promise (&lt;anonymous&gt;)
     at callAsyncCircusFn (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
@@ -83,7 +83,7 @@
     at runTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/testWorker.js:343:7)
     at Object.worker (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/testWorker.js:497:12)</failure>
     </testcase>
-    <testcase classname="Mobile Authentication Middleware authenticateRequest should handle database errors during JWT auth" name="Mobile Authentication Middleware authenticateRequest should handle database errors during JWT auth" time="0">
+    <testcase classname="Mobile Authentication Middleware authenticateRequest should handle database errors during JWT auth" name="Mobile Authentication Middleware authenticateRequest should handle database errors during JWT auth" time="0.001">
       <failure>TypeError: Cannot set property url of #&lt;NextRequest&gt; which has only a getter
     at new Request (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/whatwg-fetch/dist/fetch.umd.js:381:16)
     at new NextRequest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/next/src/server/web/spec-extension/request.ts:39:10)
@@ -104,7 +104,7 @@
     at runTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/testWorker.js:343:7)
     at Object.worker (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/testWorker.js:497:12)</failure>
     </testcase>
-    <testcase classname="Mobile Authentication Middleware authenticateRequest should handle user not found in database" name="Mobile Authentication Middleware authenticateRequest should handle user not found in database" time="0">
+    <testcase classname="Mobile Authentication Middleware authenticateRequest should handle user not found in database" name="Mobile Authentication Middleware authenticateRequest should handle user not found in database" time="0.001">
       <failure>TypeError: Cannot set property url of #&lt;NextRequest&gt; which has only a getter
     at new Request (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/whatwg-fetch/dist/fetch.umd.js:381:16)
     at new NextRequest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/next/src/server/web/spec-extension/request.ts:39:10)
@@ -126,8 +126,8 @@
     at Object.worker (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/testWorker.js:497:12)</failure>
     </testcase>
     <testcase classname="Mobile Authentication Middleware requireAuth should return user when authenticated" name="Mobile Authentication Middleware requireAuth should return user when authenticated" time="0">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;user&apos;)
-    at Object.user (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/lib/middleware/mobile-auth.test.ts:178:14)
+      <failure>TypeError: Cannot read properties of undefined (reading &apos;mockResolvedValue&apos;)
+    at Object.mockResolvedValue (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/lib/middleware/mobile-auth.test.ts:178:27)
     at Promise.finally.completed (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
     at new Promise (&lt;anonymous&gt;)
     at callAsyncCircusFn (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
@@ -167,7 +167,7 @@
     </testcase>
     <testcase classname="Mobile Authentication Middleware hasRole should return true for exact role match" name="Mobile Authentication Middleware hasRole should return true for exact role match" time="0">
     </testcase>
-    <testcase classname="Mobile Authentication Middleware hasRole should return true for admin role regardless of required role" name="Mobile Authentication Middleware hasRole should return true for admin role regardless of required role" time="0">
+    <testcase classname="Mobile Authentication Middleware hasRole should return true for admin role regardless of required role" name="Mobile Authentication Middleware hasRole should return true for admin role regardless of required role" time="0.001">
     </testcase>
     <testcase classname="Mobile Authentication Middleware hasRole should return false for role mismatch" name="Mobile Authentication Middleware hasRole should return false for role mismatch" time="0">
     </testcase>
@@ -176,8 +176,8 @@
     <testcase classname="Mobile Authentication Middleware hasRole should return false when user is undefined" name="Mobile Authentication Middleware hasRole should return false when user is undefined" time="0">
     </testcase>
     <testcase classname="Mobile Authentication Middleware requireRole should return user when role matches" name="Mobile Authentication Middleware requireRole should return user when role matches" time="0">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;user&apos;)
-    at Object.user (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/lib/middleware/mobile-auth.test.ts:262:14)
+      <failure>TypeError: Cannot read properties of undefined (reading &apos;mockResolvedValue&apos;)
+    at Object.mockResolvedValue (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/lib/middleware/mobile-auth.test.ts:262:27)
     at Promise.finally.completed (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
     at new Promise (&lt;anonymous&gt;)
     at callAsyncCircusFn (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
@@ -195,8 +195,8 @@
     at Object.worker (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/testWorker.js:497:12)</failure>
     </testcase>
     <testcase classname="Mobile Authentication Middleware requireRole should throw 403 response when role insufficient" name="Mobile Authentication Middleware requireRole should throw 403 response when role insufficient" time="0">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;user&apos;)
-    at Object.user (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/lib/middleware/mobile-auth.test.ts:291:14)
+      <failure>TypeError: Cannot read properties of undefined (reading &apos;mockResolvedValue&apos;)
+    at Object.mockResolvedValue (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/lib/middleware/mobile-auth.test.ts:291:27)
     at Promise.finally.completed (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
     at new Promise (&lt;anonymous&gt;)
     at callAsyncCircusFn (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
@@ -214,8 +214,8 @@
     at Object.worker (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/testWorker.js:497:12)</failure>
     </testcase>
     <testcase classname="Mobile Authentication Middleware requireRole should allow admin role for any required role" name="Mobile Authentication Middleware requireRole should allow admin role for any required role" time="0">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;user&apos;)
-    at Object.user (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/lib/middleware/mobile-auth.test.ts:318:14)
+      <failure>TypeError: Cannot read properties of undefined (reading &apos;mockResolvedValue&apos;)
+    at Object.mockResolvedValue (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/lib/middleware/mobile-auth.test.ts:318:27)
     at Promise.finally.completed (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
     at new Promise (&lt;anonymous&gt;)
     at callAsyncCircusFn (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
@@ -253,9 +253,11 @@
     at runTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/testWorker.js:343:7)
     at Object.worker (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/testWorker.js:497:12)</failure>
     </testcase>
-    <testcase classname="Mobile Authentication Middleware Backward compatibility should prioritize JWT auth over session auth when both present" name="Mobile Authentication Middleware Backward compatibility should prioritize JWT auth over session auth when both present" time="0">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;user&apos;)
-    at Object.user (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/lib/middleware/mobile-auth.test.ts:382:14)
+    <testcase classname="Mobile Authentication Middleware Backward compatibility should prioritize JWT auth over session auth when both present" name="Mobile Authentication Middleware Backward compatibility should prioritize JWT auth over session auth when both present" time="0.001">
+      <failure>TypeError: Cannot set property url of #&lt;NextRequest&gt; which has only a getter
+    at new Request (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/whatwg-fetch/dist/fetch.umd.js:381:16)
+    at new NextRequest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/next/src/server/web/spec-extension/request.ts:39:10)
+    at Object.&lt;anonymous&gt; (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/lib/middleware/mobile-auth.test.ts:385:19)
     at Promise.finally.completed (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
     at new Promise (&lt;anonymous&gt;)
     at callAsyncCircusFn (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
@@ -273,10 +275,10 @@
     at Object.worker (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/testWorker.js:497:12)</failure>
     </testcase>
   </testsuite>
-  <testsuite name="/api/auth/mobile/refresh" errors="0" failures="14" skipped="0" timestamp="2025-09-24T01:34:58" time="0.357" tests="14">
+  <testsuite name="/api/auth/mobile/refresh" errors="0" failures="14" skipped="0" timestamp="2025-09-24T02:24:53" time="0.466" tests="14">
     <testcase classname="/api/auth/mobile/refresh POST should successfully refresh tokens with valid refresh token" name="/api/auth/mobile/refresh POST should successfully refresh tokens with valid refresh token" time="0.002">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;user&apos;)
-    at Object.user (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/refresh.test.ts:49:14)
+      <failure>TypeError: Cannot read properties of undefined (reading &apos;mockResolvedValue&apos;)
+    at Object.mockResolvedValue (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/refresh.test.ts:48:27)
     at Promise.finally.completed (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
     at new Promise (&lt;anonymous&gt;)
     at callAsyncCircusFn (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
@@ -297,7 +299,7 @@
       <failure>TypeError: Cannot set property url of #&lt;NextRequest&gt; which has only a getter
     at new Request (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/whatwg-fetch/dist/fetch.umd.js:381:16)
     at new NextRequest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/next/src/server/web/spec-extension/request.ts:39:10)
-    at Object.&lt;anonymous&gt; (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/refresh.test.ts:87:19)
+    at Object.&lt;anonymous&gt; (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/refresh.test.ts:86:19)
     at Promise.finally.completed (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
     at new Promise (&lt;anonymous&gt;)
     at callAsyncCircusFn (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
@@ -314,11 +316,11 @@
     at runTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/testWorker.js:343:7)
     at Object.worker (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/testWorker.js:497:12)</failure>
     </testcase>
-    <testcase classname="/api/auth/mobile/refresh POST should return 401 for expired refresh token" name="/api/auth/mobile/refresh POST should return 401 for expired refresh token" time="0">
+    <testcase classname="/api/auth/mobile/refresh POST should return 401 for expired refresh token" name="/api/auth/mobile/refresh POST should return 401 for expired refresh token" time="0.001">
       <failure>TypeError: Cannot set property url of #&lt;NextRequest&gt; which has only a getter
     at new Request (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/whatwg-fetch/dist/fetch.umd.js:381:16)
     at new NextRequest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/next/src/server/web/spec-extension/request.ts:39:10)
-    at Object.&lt;anonymous&gt; (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/refresh.test.ts:106:19)
+    at Object.&lt;anonymous&gt; (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/refresh.test.ts:105:19)
     at Promise.finally.completed (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
     at new Promise (&lt;anonymous&gt;)
     at callAsyncCircusFn (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
@@ -336,8 +338,8 @@
     at Object.worker (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/testWorker.js:497:12)</failure>
     </testcase>
     <testcase classname="/api/auth/mobile/refresh POST should return 401 when user not found in database" name="/api/auth/mobile/refresh POST should return 401 when user not found in database" time="0">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;user&apos;)
-    at Object.user (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/refresh.test.ts:122:14)
+      <failure>TypeError: Cannot read properties of undefined (reading &apos;mockResolvedValue&apos;)
+    at Object.mockResolvedValue (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/refresh.test.ts:121:27)
     at Promise.finally.completed (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
     at new Promise (&lt;anonymous&gt;)
     at callAsyncCircusFn (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
@@ -354,11 +356,11 @@
     at runTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/testWorker.js:343:7)
     at Object.worker (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/testWorker.js:497:12)</failure>
     </testcase>
-    <testcase classname="/api/auth/mobile/refresh POST should return 400 for missing refresh token" name="/api/auth/mobile/refresh POST should return 400 for missing refresh token" time="0">
+    <testcase classname="/api/auth/mobile/refresh POST should return 400 for missing refresh token" name="/api/auth/mobile/refresh POST should return 400 for missing refresh token" time="0.001">
       <failure>TypeError: Cannot set property url of #&lt;NextRequest&gt; which has only a getter
     at new Request (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/whatwg-fetch/dist/fetch.umd.js:381:16)
     at new NextRequest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/next/src/server/web/spec-extension/request.ts:39:10)
-    at Object.&lt;anonymous&gt; (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/refresh.test.ts:140:19)
+    at Object.&lt;anonymous&gt; (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/refresh.test.ts:139:19)
     at Promise.finally.completed (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
     at new Promise (&lt;anonymous&gt;)
     at callAsyncCircusFn (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
@@ -375,11 +377,11 @@
     at runTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/testWorker.js:343:7)
     at Object.worker (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/testWorker.js:497:12)</failure>
     </testcase>
-    <testcase classname="/api/auth/mobile/refresh POST should return 400 for empty refresh token" name="/api/auth/mobile/refresh POST should return 400 for empty refresh token" time="0.001">
+    <testcase classname="/api/auth/mobile/refresh POST should return 400 for empty refresh token" name="/api/auth/mobile/refresh POST should return 400 for empty refresh token" time="0">
       <failure>TypeError: Cannot set property url of #&lt;NextRequest&gt; which has only a getter
     at new Request (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/whatwg-fetch/dist/fetch.umd.js:381:16)
     at new NextRequest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/next/src/server/web/spec-extension/request.ts:39:10)
-    at Object.&lt;anonymous&gt; (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/refresh.test.ts:158:19)
+    at Object.&lt;anonymous&gt; (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/refresh.test.ts:157:19)
     at Promise.finally.completed (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
     at new Promise (&lt;anonymous&gt;)
     at callAsyncCircusFn (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
@@ -396,9 +398,9 @@
     at runTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/testWorker.js:343:7)
     at Object.worker (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/testWorker.js:497:12)</failure>
     </testcase>
-    <testcase classname="/api/auth/mobile/refresh POST should handle database errors gracefully" name="/api/auth/mobile/refresh POST should handle database errors gracefully" time="0">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;user&apos;)
-    at Object.user (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/refresh.test.ts:173:14)
+    <testcase classname="/api/auth/mobile/refresh POST should handle database errors gracefully" name="/api/auth/mobile/refresh POST should handle database errors gracefully" time="0.001">
+      <failure>TypeError: Cannot read properties of undefined (reading &apos;mockRejectedValue&apos;)
+    at Object.mockRejectedValue (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/refresh.test.ts:172:27)
     at Promise.finally.completed (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
     at new Promise (&lt;anonymous&gt;)
     at callAsyncCircusFn (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
@@ -419,7 +421,7 @@
       <failure>TypeError: Cannot set property url of #&lt;NextRequest&gt; which has only a getter
     at new Request (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/whatwg-fetch/dist/fetch.umd.js:381:16)
     at new NextRequest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/next/src/server/web/spec-extension/request.ts:39:10)
-    at Object.&lt;anonymous&gt; (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/refresh.test.ts:189:19)
+    at Object.&lt;anonymous&gt; (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/refresh.test.ts:188:19)
     at Promise.finally.completed (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
     at new Promise (&lt;anonymous&gt;)
     at callAsyncCircusFn (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
@@ -437,10 +439,9 @@
     at Object.worker (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/testWorker.js:497:12)</failure>
     </testcase>
     <testcase classname="/api/auth/mobile/refresh POST should apply rate limiting" name="/api/auth/mobile/refresh POST should apply rate limiting" time="0.001">
-      <failure>TypeError: Cannot set property url of #&lt;NextRequest&gt; which has only a getter
-    at new Request (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/whatwg-fetch/dist/fetch.umd.js:381:16)
-    at new NextRequest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/next/src/server/web/spec-extension/request.ts:39:10)
-    at Object.&lt;anonymous&gt; (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/refresh.test.ts:209:19)
+      <failure>TypeError: Response.json is not a function
+    at Function.json (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/next/src/server/web/spec-extension/response.ts:113:41)
+    at Object.json (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/refresh.test.ts:202:46)
     at Promise.finally.completed (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
     at new Promise (&lt;anonymous&gt;)
     at callAsyncCircusFn (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
@@ -457,9 +458,9 @@
     at runTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/testWorker.js:343:7)
     at Object.worker (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/testWorker.js:497:12)</failure>
     </testcase>
-    <testcase classname="/api/auth/mobile/refresh POST should generate new tokens with current user data" name="/api/auth/mobile/refresh POST should generate new tokens with current user data" time="0.001">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;user&apos;)
-    at Object.user (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/refresh.test.ts:231:14)
+    <testcase classname="/api/auth/mobile/refresh POST should generate new tokens with current user data" name="/api/auth/mobile/refresh POST should generate new tokens with current user data" time="0">
+      <failure>TypeError: Cannot read properties of undefined (reading &apos;mockResolvedValue&apos;)
+    at Object.mockResolvedValue (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/refresh.test.ts:230:27)
     at Promise.finally.completed (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
     at new Promise (&lt;anonymous&gt;)
     at callAsyncCircusFn (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
@@ -477,8 +478,8 @@
     at Object.worker (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/testWorker.js:497:12)</failure>
     </testcase>
     <testcase classname="/api/auth/mobile/refresh POST should handle user with no role" name="/api/auth/mobile/refresh POST should handle user with no role" time="0">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;user&apos;)
-    at Object.user (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/refresh.test.ts:257:14)
+      <failure>TypeError: Cannot read properties of undefined (reading &apos;mockResolvedValue&apos;)
+    at Object.mockResolvedValue (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/refresh.test.ts:256:27)
     at Promise.finally.completed (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
     at new Promise (&lt;anonymous&gt;)
     at callAsyncCircusFn (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
@@ -496,8 +497,8 @@
     at Object.worker (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/testWorker.js:497:12)</failure>
     </testcase>
     <testcase classname="/api/auth/mobile/refresh POST should handle user with no name" name="/api/auth/mobile/refresh POST should handle user with no name" time="0">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;user&apos;)
-    at Object.user (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/refresh.test.ts:286:14)
+      <failure>TypeError: Cannot read properties of undefined (reading &apos;mockResolvedValue&apos;)
+    at Object.mockResolvedValue (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/refresh.test.ts:285:27)
     at Promise.finally.completed (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
     at new Promise (&lt;anonymous&gt;)
     at callAsyncCircusFn (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
@@ -515,8 +516,8 @@
     at Object.worker (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/testWorker.js:497:12)</failure>
     </testcase>
     <testcase classname="/api/auth/mobile/refresh POST should verify token expiration before processing" name="/api/auth/mobile/refresh POST should verify token expiration before processing" time="0">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;user&apos;)
-    at Object.user (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/refresh.test.ts:305:14)
+      <failure>TypeError: Cannot read properties of undefined (reading &apos;mockResolvedValue&apos;)
+    at Object.mockResolvedValue (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/refresh.test.ts:304:27)
     at Promise.finally.completed (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
     at new Promise (&lt;anonymous&gt;)
     at callAsyncCircusFn (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
@@ -537,7 +538,7 @@
       <failure>TypeError: Response.json is not a function
     at Function.json (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/next/src/server/web/spec-extension/response.ts:113:41)
     at json (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/app/api/auth/mobile/refresh/route.ts:143:23)
-    at Object.&lt;anonymous&gt; (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/refresh.test.ts:320:33)
+    at Object.&lt;anonymous&gt; (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/refresh.test.ts:319:33)
     at Promise.finally.completed (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
     at new Promise (&lt;anonymous&gt;)
     at callAsyncCircusFn (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
@@ -555,10 +556,12 @@
     at Object.worker (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/testWorker.js:497:12)</failure>
     </testcase>
   </testsuite>
-  <testsuite name="/api/auth/mobile/login" errors="0" failures="14" skipped="0" timestamp="2025-09-24T01:34:58" time="0.357" tests="14">
+  <testsuite name="/api/auth/mobile/login" errors="0" failures="14" skipped="0" timestamp="2025-09-24T02:24:53" time="0.477" tests="14">
     <testcase classname="/api/auth/mobile/login POST should successfully login with valid credentials" name="/api/auth/mobile/login POST should successfully login with valid credentials" time="0.002">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;user&apos;)
-    at Object.user (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/login.test.ts:40:14)
+      <failure>TypeError: Cannot set property url of #&lt;NextRequest&gt; which has only a getter
+    at new Request (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/whatwg-fetch/dist/fetch.umd.js:381:16)
+    at new NextRequest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/next/src/server/web/spec-extension/request.ts:39:10)
+    at Object.&lt;anonymous&gt; (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/login.test.ts:56:19)
     at Promise.finally.completed (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
     at new Promise (&lt;anonymous&gt;)
     at callAsyncCircusFn (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
@@ -576,8 +579,10 @@
     at Object.worker (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/testWorker.js:497:12)</failure>
     </testcase>
     <testcase classname="/api/auth/mobile/login POST should return 401 for invalid email" name="/api/auth/mobile/login POST should return 401 for invalid email" time="0.001">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;user&apos;)
-    at Object.user (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/login.test.ts:77:14)
+      <failure>TypeError: Cannot set property url of #&lt;NextRequest&gt; which has only a getter
+    at new Request (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/whatwg-fetch/dist/fetch.umd.js:381:16)
+    at new NextRequest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/next/src/server/web/spec-extension/request.ts:39:10)
+    at Object.&lt;anonymous&gt; (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/login.test.ts:90:19)
     at Promise.finally.completed (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
     at new Promise (&lt;anonymous&gt;)
     at callAsyncCircusFn (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
@@ -594,9 +599,11 @@
     at runTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/testWorker.js:343:7)
     at Object.worker (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/testWorker.js:497:12)</failure>
     </testcase>
-    <testcase classname="/api/auth/mobile/login POST should return 401 for user without password" name="/api/auth/mobile/login POST should return 401 for user without password" time="0">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;user&apos;)
-    at Object.user (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/login.test.ts:96:14)
+    <testcase classname="/api/auth/mobile/login POST should return 401 for user without password" name="/api/auth/mobile/login POST should return 401 for user without password" time="0.001">
+      <failure>TypeError: Cannot set property url of #&lt;NextRequest&gt; which has only a getter
+    at new Request (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/whatwg-fetch/dist/fetch.umd.js:381:16)
+    at new NextRequest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/next/src/server/web/spec-extension/request.ts:39:10)
+    at Object.&lt;anonymous&gt; (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/login.test.ts:109:19)
     at Promise.finally.completed (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
     at new Promise (&lt;anonymous&gt;)
     at callAsyncCircusFn (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
@@ -614,8 +621,10 @@
     at Object.worker (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/testWorker.js:497:12)</failure>
     </testcase>
     <testcase classname="/api/auth/mobile/login POST should return 401 for invalid password" name="/api/auth/mobile/login POST should return 401 for invalid password" time="0.001">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;user&apos;)
-    at Object.user (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/login.test.ts:112:14)
+      <failure>TypeError: Cannot set property url of #&lt;NextRequest&gt; which has only a getter
+    at new Request (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/whatwg-fetch/dist/fetch.umd.js:381:16)
+    at new NextRequest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/next/src/server/web/spec-extension/request.ts:39:10)
+    at Object.&lt;anonymous&gt; (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/login.test.ts:126:19)
     at Promise.finally.completed (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
     at new Promise (&lt;anonymous&gt;)
     at callAsyncCircusFn (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
@@ -632,11 +641,11 @@
     at runTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/testWorker.js:343:7)
     at Object.worker (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/testWorker.js:497:12)</failure>
     </testcase>
-    <testcase classname="/api/auth/mobile/login POST should return 400 for invalid request data" name="/api/auth/mobile/login POST should return 400 for invalid request data" time="0.001">
+    <testcase classname="/api/auth/mobile/login POST should return 400 for invalid request data" name="/api/auth/mobile/login POST should return 400 for invalid request data" time="0">
       <failure>TypeError: Cannot set property url of #&lt;NextRequest&gt; which has only a getter
     at new Request (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/whatwg-fetch/dist/fetch.umd.js:381:16)
     at new NextRequest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/next/src/server/web/spec-extension/request.ts:39:10)
-    at Object.&lt;anonymous&gt; (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/login.test.ts:134:19)
+    at Object.&lt;anonymous&gt; (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/login.test.ts:145:19)
     at Promise.finally.completed (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
     at new Promise (&lt;anonymous&gt;)
     at callAsyncCircusFn (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
@@ -657,7 +666,7 @@
       <failure>TypeError: Cannot set property url of #&lt;NextRequest&gt; which has only a getter
     at new Request (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/whatwg-fetch/dist/fetch.umd.js:381:16)
     at new NextRequest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/next/src/server/web/spec-extension/request.ts:39:10)
-    at Object.&lt;anonymous&gt; (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/login.test.ts:152:19)
+    at Object.&lt;anonymous&gt; (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/login.test.ts:163:19)
     at Promise.finally.completed (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
     at new Promise (&lt;anonymous&gt;)
     at callAsyncCircusFn (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
@@ -674,11 +683,11 @@
     at runTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/testWorker.js:343:7)
     at Object.worker (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/testWorker.js:497:12)</failure>
     </testcase>
-    <testcase classname="/api/auth/mobile/login POST should return 400 for missing password" name="/api/auth/mobile/login POST should return 400 for missing password" time="0">
+    <testcase classname="/api/auth/mobile/login POST should return 400 for missing password" name="/api/auth/mobile/login POST should return 400 for missing password" time="0.001">
       <failure>TypeError: Cannot set property url of #&lt;NextRequest&gt; which has only a getter
     at new Request (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/whatwg-fetch/dist/fetch.umd.js:381:16)
     at new NextRequest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/next/src/server/web/spec-extension/request.ts:39:10)
-    at Object.&lt;anonymous&gt; (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/login.test.ts:169:19)
+    at Object.&lt;anonymous&gt; (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/login.test.ts:180:19)
     at Promise.finally.completed (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
     at new Promise (&lt;anonymous&gt;)
     at callAsyncCircusFn (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
@@ -695,9 +704,11 @@
     at runTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/testWorker.js:343:7)
     at Object.worker (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/testWorker.js:497:12)</failure>
     </testcase>
-    <testcase classname="/api/auth/mobile/login POST should handle database errors gracefully" name="/api/auth/mobile/login POST should handle database errors gracefully" time="0">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;user&apos;)
-    at Object.user (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/login.test.ts:182:14)
+    <testcase classname="/api/auth/mobile/login POST should handle database errors gracefully" name="/api/auth/mobile/login POST should handle database errors gracefully" time="0.001">
+      <failure>TypeError: Cannot set property url of #&lt;NextRequest&gt; which has only a getter
+    at new Request (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/whatwg-fetch/dist/fetch.umd.js:381:16)
+    at new NextRequest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/next/src/server/web/spec-extension/request.ts:39:10)
+    at Object.&lt;anonymous&gt; (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/login.test.ts:197:19)
     at Promise.finally.completed (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
     at new Promise (&lt;anonymous&gt;)
     at callAsyncCircusFn (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
@@ -718,7 +729,7 @@
       <failure>TypeError: Cannot set property url of #&lt;NextRequest&gt; which has only a getter
     at new Request (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/whatwg-fetch/dist/fetch.umd.js:381:16)
     at new NextRequest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/next/src/server/web/spec-extension/request.ts:39:10)
-    at Object.&lt;anonymous&gt; (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/login.test.ts:198:19)
+    at Object.&lt;anonymous&gt; (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/login.test.ts:211:19)
     at Promise.finally.completed (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
     at new Promise (&lt;anonymous&gt;)
     at callAsyncCircusFn (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
@@ -736,10 +747,9 @@
     at Object.worker (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/testWorker.js:497:12)</failure>
     </testcase>
     <testcase classname="/api/auth/mobile/login POST should apply rate limiting" name="/api/auth/mobile/login POST should apply rate limiting" time="0.001">
-      <failure>TypeError: Cannot set property url of #&lt;NextRequest&gt; which has only a getter
-    at new Request (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/whatwg-fetch/dist/fetch.umd.js:381:16)
-    at new NextRequest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/next/src/server/web/spec-extension/request.ts:39:10)
-    at Object.&lt;anonymous&gt; (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/login.test.ts:218:19)
+      <failure>TypeError: Response.json is not a function
+    at Function.json (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/next/src/server/web/spec-extension/response.ts:113:41)
+    at Object.json (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/login.test.ts:225:46)
     at Promise.finally.completed (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
     at new Promise (&lt;anonymous&gt;)
     at callAsyncCircusFn (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
@@ -756,9 +766,11 @@
     at runTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/testWorker.js:343:7)
     at Object.worker (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/testWorker.js:497:12)</failure>
     </testcase>
-    <testcase classname="/api/auth/mobile/login POST should normalize email to lowercase" name="/api/auth/mobile/login POST should normalize email to lowercase" time="0">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;user&apos;)
-    at Object.user (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/login.test.ts:237:14)
+    <testcase classname="/api/auth/mobile/login POST should normalize email to lowercase" name="/api/auth/mobile/login POST should normalize email to lowercase" time="0.001">
+      <failure>TypeError: Cannot set property url of #&lt;NextRequest&gt; which has only a getter
+    at new Request (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/whatwg-fetch/dist/fetch.umd.js:381:16)
+    at new NextRequest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/next/src/server/web/spec-extension/request.ts:39:10)
+    at Object.&lt;anonymous&gt; (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/login.test.ts:255:19)
     at Promise.finally.completed (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
     at new Promise (&lt;anonymous&gt;)
     at callAsyncCircusFn (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
@@ -776,8 +788,10 @@
     at Object.worker (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/testWorker.js:497:12)</failure>
     </testcase>
     <testcase classname="/api/auth/mobile/login POST should generate tokens with correct payload" name="/api/auth/mobile/login POST should generate tokens with correct payload" time="0">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;user&apos;)
-    at Object.user (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/login.test.ts:256:14)
+      <failure>TypeError: Cannot set property url of #&lt;NextRequest&gt; which has only a getter
+    at new Request (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/whatwg-fetch/dist/fetch.umd.js:381:16)
+    at new NextRequest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/next/src/server/web/spec-extension/request.ts:39:10)
+    at Object.&lt;anonymous&gt; (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/login.test.ts:274:19)
     at Promise.finally.completed (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
     at new Promise (&lt;anonymous&gt;)
     at callAsyncCircusFn (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
@@ -794,9 +808,11 @@
     at runTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/testWorker.js:343:7)
     at Object.worker (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/testWorker.js:497:12)</failure>
     </testcase>
-    <testcase classname="/api/auth/mobile/login POST should handle user with no role" name="/api/auth/mobile/login POST should handle user with no role" time="0">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;user&apos;)
-    at Object.user (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/login.test.ts:280:14)
+    <testcase classname="/api/auth/mobile/login POST should handle user with no role" name="/api/auth/mobile/login POST should handle user with no role" time="0.001">
+      <failure>TypeError: Cannot set property url of #&lt;NextRequest&gt; which has only a getter
+    at new Request (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/whatwg-fetch/dist/fetch.umd.js:381:16)
+    at new NextRequest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/next/src/server/web/spec-extension/request.ts:39:10)
+    at Object.&lt;anonymous&gt; (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/login.test.ts:298:19)
     at Promise.finally.completed (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
     at new Promise (&lt;anonymous&gt;)
     at callAsyncCircusFn (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
@@ -817,7 +833,7 @@
       <failure>TypeError: Response.json is not a function
     at Function.json (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/next/src/server/web/spec-extension/response.ts:113:41)
     at json (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/app/api/auth/mobile/login/route.ts:134:23)
-    at Object.&lt;anonymous&gt; (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/login.test.ts:308:33)
+    at Object.&lt;anonymous&gt; (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/api/auth/mobile/login.test.ts:321:33)
     at Promise.finally.completed (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
     at new Promise (&lt;anonymous&gt;)
     at callAsyncCircusFn (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
@@ -835,14 +851,14 @@
     at Object.worker (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/testWorker.js:497:12)</failure>
     </testcase>
   </testsuite>
-  <testsuite name="Auth Utils" errors="0" failures="0" skipped="0" timestamp="2025-09-24T01:34:58" time="1.691" tests="23">
-    <testcase classname="Auth Utils Password hashing and verification should hash a password" name="Auth Utils Password hashing and verification should hash a password" time="0.308">
+  <testsuite name="Auth Utils" errors="0" failures="0" skipped="0" timestamp="2025-09-24T02:24:53" time="2.326" tests="23">
+    <testcase classname="Auth Utils Password hashing and verification should hash a password" name="Auth Utils Password hashing and verification should hash a password" time="0.316">
     </testcase>
-    <testcase classname="Auth Utils Password hashing and verification should verify a correct password" name="Auth Utils Password hashing and verification should verify a correct password" time="0.549">
+    <testcase classname="Auth Utils Password hashing and verification should verify a correct password" name="Auth Utils Password hashing and verification should verify a correct password" time="0.593">
     </testcase>
-    <testcase classname="Auth Utils Password hashing and verification should reject an incorrect password" name="Auth Utils Password hashing and verification should reject an incorrect password" time="0.553">
+    <testcase classname="Auth Utils Password hashing and verification should reject an incorrect password" name="Auth Utils Password hashing and verification should reject an incorrect password" time="1.027">
     </testcase>
-    <testcase classname="Auth Utils JWT token generation should generate an access token" name="Auth Utils JWT token generation should generate an access token" time="0.002">
+    <testcase classname="Auth Utils JWT token generation should generate an access token" name="Auth Utils JWT token generation should generate an access token" time="0.004">
     </testcase>
     <testcase classname="Auth Utils JWT token generation should generate a refresh token" name="Auth Utils JWT token generation should generate a refresh token" time="0.001">
     </testcase>
@@ -856,7 +872,7 @@
     </testcase>
     <testcase classname="Auth Utils JWT token verification should return null for malformed token" name="Auth Utils JWT token verification should return null for malformed token" time="0">
     </testcase>
-    <testcase classname="Auth Utils JWT token verification should return null for empty token" name="Auth Utils JWT token verification should return null for empty token" time="0.001">
+    <testcase classname="Auth Utils JWT token verification should return null for empty token" name="Auth Utils JWT token verification should return null for empty token" time="0">
     </testcase>
     <testcase classname="Auth Utils Bearer token extraction should extract token from valid Bearer header" name="Auth Utils Bearer token extraction should extract token from valid Bearer header" time="0">
     </testcase>
@@ -868,7 +884,7 @@
     </testcase>
     <testcase classname="Auth Utils Bearer token extraction should handle Bearer with extra spaces" name="Auth Utils Bearer token extraction should handle Bearer with extra spaces" time="0">
     </testcase>
-    <testcase classname="Auth Utils Token expiration checking should detect expired token" name="Auth Utils Token expiration checking should detect expired token" time="0">
+    <testcase classname="Auth Utils Token expiration checking should detect expired token" name="Auth Utils Token expiration checking should detect expired token" time="0.001">
     </testcase>
     <testcase classname="Auth Utils Token expiration checking should detect valid token" name="Auth Utils Token expiration checking should detect valid token" time="0">
     </testcase>
@@ -878,9 +894,9 @@
     </testcase>
     <testcase classname="Auth Utils Token expiration checking should not expire token with sufficient time remaining" name="Auth Utils Token expiration checking should not expire token with sufficient time remaining" time="0">
     </testcase>
-    <testcase classname="Auth Utils Integration tests should create and verify token end-to-end" name="Auth Utils Integration tests should create and verify token end-to-end" time="0">
+    <testcase classname="Auth Utils Integration tests should create and verify token end-to-end" name="Auth Utils Integration tests should create and verify token end-to-end" time="0.001">
     </testcase>
-    <testcase classname="Auth Utils Integration tests should handle token lifecycle correctly" name="Auth Utils Integration tests should handle token lifecycle correctly" time="0.002">
+    <testcase classname="Auth Utils Integration tests should handle token lifecycle correctly" name="Auth Utils Integration tests should handle token lifecycle correctly" time="0.001">
     </testcase>
   </testsuite>
 </testsuites>

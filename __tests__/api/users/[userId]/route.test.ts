@@ -201,10 +201,16 @@ describe('/api/users/[userId]', () => {
         // Create request with invalid JSON - using helper for consistency
         const request = createMockRequest('PATCH', `http://localhost:3000/api/users/${mockUserId}`)
         // Override the body with invalid JSON by creating a new request
-        const invalidRequest = new Request(request.url, {
-          method: request.method,
-          body: 'invalid json',
-          headers: request.headers
+        const invalidRequest = createMockRequest(
+          'PATCH',
+          request.url,
+          undefined,
+          Object.fromEntries(request.headers.entries())
+        )
+        // Manually set invalid body
+        Object.defineProperty(invalidRequest, 'json', {
+          value: () => Promise.reject(new SyntaxError('Unexpected token')),
+          writable: false,
         })
 
         const response = await PATCH(invalidRequest, mockContext)

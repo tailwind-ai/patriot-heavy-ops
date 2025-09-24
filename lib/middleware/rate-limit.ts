@@ -213,7 +213,8 @@ export const apiRateLimit = rateLimit({
   message: 'API rate limit exceeded, please slow down',
   keyGenerator: (req: NextRequest) => {
     const forwarded = req.headers.get('x-forwarded-for')
-    const ip = forwarded ? forwarded.split(',')[0] : req.ip || 'unknown'
+    const realIp = req.headers.get('x-real-ip')
+    const ip = forwarded ? forwarded.split(',')[0] : realIp || 'unknown'
     return `api_rate_limit:${ip}`
   }
 })

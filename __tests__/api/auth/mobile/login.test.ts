@@ -1,6 +1,7 @@
-import { NextRequest, NextResponse } from "next/server"
+import { NextResponse } from "next/server"
 import { POST, GET } from "@/app/api/auth/mobile/login/route"
-import { mockUser, resetDbMocks } from "@/__mocks__/lib/db"
+import { mockUser as mockDbUser, resetDbMocks } from "@/__mocks__/lib/db"
+import { createMockRequest } from "@/__tests__/helpers/api-test-helpers"
 import {
   verifyPassword,
   generateAccessToken,
@@ -48,15 +49,19 @@ describe("/api/auth/mobile/login", () => {
     }
 
     it("should successfully login with valid credentials", async () => {
-      mockUser.findUnique.mockResolvedValue(mockUserData)
+      mockDbUser.findUnique.mockResolvedValue(mockUserData)
       mockVerifyPassword.mockResolvedValue(true)
       mockGenerateAccessToken.mockReturnValue("access-token")
       mockGenerateRefreshToken.mockReturnValue("refresh-token")
 
-      const req = new NextRequest("http://localhost/api/auth/mobile/login", {
-        method: "POST",
-        body: JSON.stringify(validLoginData),
-      })
+      const req = createMockRequest(
+        "POST",
+        "http://localhost/api/auth/mobile/login",
+        {
+          method: "POST",
+          body: JSON.stringify(validLoginData),
+        }
+      )
 
       const response = await POST(req)
       const data = await response.json()
@@ -66,13 +71,13 @@ describe("/api/auth/mobile/login", () => {
       expect(data.accessToken).toBe("access-token")
       expect(data.refreshToken).toBe("refresh-token")
       expect(data.user).toEqual({
-        id: mockUser.id,
-        email: mockUser.email,
-        name: mockUser.name,
-        role: mockUser.role,
+        id: mockUserData.id,
+        email: mockUserData.email,
+        name: mockUserData.name,
+        role: mockUserData.role,
       })
 
-      expect(mockUser.findUnique).toHaveBeenCalledWith({
+      expect(mockDbUser.findUnique).toHaveBeenCalledWith({
         where: { email: validLoginData.email.toLowerCase() },
         select: {
           id: true,
@@ -85,12 +90,16 @@ describe("/api/auth/mobile/login", () => {
     })
 
     it("should return 401 for invalid email", async () => {
-      mockUser.findUnique.mockResolvedValue(null)
+      mockDbUser.findUnique.mockResolvedValue(null)
 
-      const req = new NextRequest("http://localhost/api/auth/mobile/login", {
-        method: "POST",
-        body: JSON.stringify(validLoginData),
-      })
+      const req = createMockRequest(
+        "POST",
+        "http://localhost/api/auth/mobile/login",
+        {
+          method: "POST",
+          body: JSON.stringify(validLoginData),
+        }
+      )
 
       const response = await POST(req)
       const data = await response.json()
@@ -103,13 +112,17 @@ describe("/api/auth/mobile/login", () => {
     })
 
     it("should return 401 for user without password", async () => {
-      const userWithoutPassword = { ...mockUser, password: null }
-      mockUser.findUnique.mockResolvedValue(userWithoutPassword)
+      const userWithoutPassword = { ...mockUserData, password: null }
+      mockDbUser.findUnique.mockResolvedValue(userWithoutPassword)
 
-      const req = new NextRequest("http://localhost/api/auth/mobile/login", {
-        method: "POST",
-        body: JSON.stringify(validLoginData),
-      })
+      const req = createMockRequest(
+        "POST",
+        "http://localhost/api/auth/mobile/login",
+        {
+          method: "POST",
+          body: JSON.stringify(validLoginData),
+        }
+      )
 
       const response = await POST(req)
       const data = await response.json()
@@ -120,13 +133,17 @@ describe("/api/auth/mobile/login", () => {
     })
 
     it("should return 401 for invalid password", async () => {
-      mockUser.findUnique.mockResolvedValue(mockUserData)
+      mockDbUser.findUnique.mockResolvedValue(mockUserData)
       mockVerifyPassword.mockResolvedValue(false)
 
-      const req = new NextRequest("http://localhost/api/auth/mobile/login", {
-        method: "POST",
-        body: JSON.stringify(validLoginData),
-      })
+      const req = createMockRequest(
+        "POST",
+        "http://localhost/api/auth/mobile/login",
+        {
+          method: "POST",
+          body: JSON.stringify(validLoginData),
+        }
+      )
 
       const response = await POST(req)
       const data = await response.json()
@@ -142,10 +159,14 @@ describe("/api/auth/mobile/login", () => {
         password: "",
       }
 
-      const req = new NextRequest("http://localhost/api/auth/mobile/login", {
-        method: "POST",
-        body: JSON.stringify(invalidData),
-      })
+      const req = createMockRequest(
+        "POST",
+        "http://localhost/api/auth/mobile/login",
+        {
+          method: "POST",
+          body: JSON.stringify(invalidData),
+        }
+      )
 
       const response = await POST(req)
       const data = await response.json()
@@ -160,10 +181,14 @@ describe("/api/auth/mobile/login", () => {
         password: "password123",
       }
 
-      const req = new NextRequest("http://localhost/api/auth/mobile/login", {
-        method: "POST",
-        body: JSON.stringify(invalidData),
-      })
+      const req = createMockRequest(
+        "POST",
+        "http://localhost/api/auth/mobile/login",
+        {
+          method: "POST",
+          body: JSON.stringify(invalidData),
+        }
+      )
 
       const response = await POST(req)
       const data = await response.json()
@@ -177,10 +202,14 @@ describe("/api/auth/mobile/login", () => {
         email: "test@example.com",
       }
 
-      const req = new NextRequest("http://localhost/api/auth/mobile/login", {
-        method: "POST",
-        body: JSON.stringify(invalidData),
-      })
+      const req = createMockRequest(
+        "POST",
+        "http://localhost/api/auth/mobile/login",
+        {
+          method: "POST",
+          body: JSON.stringify(invalidData),
+        }
+      )
 
       const response = await POST(req)
       const data = await response.json()
@@ -190,14 +219,18 @@ describe("/api/auth/mobile/login", () => {
     })
 
     it("should handle database errors gracefully", async () => {
-      mockUser.findUnique.mockRejectedValue(
+      mockDbUser.findUnique.mockRejectedValue(
         new Error("Database connection failed")
       )
 
-      const req = new NextRequest("http://localhost/api/auth/mobile/login", {
-        method: "POST",
-        body: JSON.stringify(validLoginData),
-      })
+      const req = createMockRequest(
+        "POST",
+        "http://localhost/api/auth/mobile/login",
+        {
+          method: "POST",
+          body: JSON.stringify(validLoginData),
+        }
+      )
 
       const response = await POST(req)
       const data = await response.json()
@@ -208,10 +241,14 @@ describe("/api/auth/mobile/login", () => {
     })
 
     it("should handle malformed JSON gracefully", async () => {
-      const req = new NextRequest("http://localhost/api/auth/mobile/login", {
-        method: "POST",
-        body: "invalid-json",
-      })
+      const req = createMockRequest(
+        "POST",
+        "http://localhost/api/auth/mobile/login",
+        {
+          method: "POST",
+          body: "invalid-json",
+        }
+      )
 
       const response = await POST(req)
       const data = await response.json()
@@ -228,10 +265,14 @@ describe("/api/auth/mobile/login", () => {
       )
       mockAuthRateLimit.mockResolvedValue(rateLimitResponse)
 
-      const req = new NextRequest("http://localhost/api/auth/mobile/login", {
-        method: "POST",
-        body: JSON.stringify(validLoginData),
-      })
+      const req = createMockRequest(
+        "POST",
+        "http://localhost/api/auth/mobile/login",
+        {
+          method: "POST",
+          body: JSON.stringify(validLoginData),
+        }
+      )
 
       const response = await POST(req)
       const data = await response.json()
@@ -247,41 +288,49 @@ describe("/api/auth/mobile/login", () => {
         password: "password123",
       }
 
-      mockUser.findUnique.mockResolvedValue(mockUserData)
+      mockDbUser.findUnique.mockResolvedValue(mockUserData)
       mockVerifyPassword.mockResolvedValue(true)
       mockGenerateAccessToken.mockReturnValue("access-token")
       mockGenerateRefreshToken.mockReturnValue("refresh-token")
 
-      const req = new NextRequest("http://localhost/api/auth/mobile/login", {
-        method: "POST",
-        body: JSON.stringify(upperCaseEmailData),
-      })
+      const req = createMockRequest(
+        "POST",
+        "http://localhost/api/auth/mobile/login",
+        {
+          method: "POST",
+          body: JSON.stringify(upperCaseEmailData),
+        }
+      )
 
       await POST(req)
 
-      expect(mockUser.findUnique).toHaveBeenCalledWith({
+      expect(mockDbUser.findUnique).toHaveBeenCalledWith({
         where: { email: "test@example.com" }, // Should be lowercase
         select: expect.any(Object),
       })
     })
 
     it("should generate tokens with correct payload", async () => {
-      mockUser.findUnique.mockResolvedValue(mockUserData)
+      mockDbUser.findUnique.mockResolvedValue(mockUserData)
       mockVerifyPassword.mockResolvedValue(true)
       mockGenerateAccessToken.mockReturnValue("access-token")
       mockGenerateRefreshToken.mockReturnValue("refresh-token")
 
-      const req = new NextRequest("http://localhost/api/auth/mobile/login", {
-        method: "POST",
-        body: JSON.stringify(validLoginData),
-      })
+      const req = createMockRequest(
+        "POST",
+        "http://localhost/api/auth/mobile/login",
+        {
+          method: "POST",
+          body: JSON.stringify(validLoginData),
+        }
+      )
 
       await POST(req)
 
       const expectedPayload = {
-        userId: mockUser.id,
-        email: mockUser.email,
-        role: mockUser.role,
+        userId: mockUserData.id,
+        email: mockUserData.email,
+        role: mockUserData.role,
       }
 
       expect(mockGenerateAccessToken).toHaveBeenCalledWith(expectedPayload)
@@ -289,16 +338,20 @@ describe("/api/auth/mobile/login", () => {
     })
 
     it("should handle user with no role", async () => {
-      const userWithoutRole = { ...mockUser, role: null }
-      mockUser.findUnique.mockResolvedValue(userWithoutRole)
+      const userWithoutRole = { ...mockUserData, role: null }
+      mockDbUser.findUnique.mockResolvedValue(userWithoutRole)
       mockVerifyPassword.mockResolvedValue(true)
       mockGenerateAccessToken.mockReturnValue("access-token")
       mockGenerateRefreshToken.mockReturnValue("refresh-token")
 
-      const req = new NextRequest("http://localhost/api/auth/mobile/login", {
-        method: "POST",
-        body: JSON.stringify(validLoginData),
-      })
+      const req = createMockRequest(
+        "POST",
+        "http://localhost/api/auth/mobile/login",
+        {
+          method: "POST",
+          body: JSON.stringify(validLoginData),
+        }
+      )
 
       const response = await POST(req)
       const data = await response.json()

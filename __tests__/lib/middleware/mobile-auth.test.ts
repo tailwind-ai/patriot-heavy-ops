@@ -7,7 +7,8 @@ import {
   requireRole
 } from '@/lib/middleware/mobile-auth'
 import { generateAccessToken } from '@/lib/auth-utils'
-import { mockUser, resetDbMocks } from '@/__mocks__/lib/db'
+import { mockUser as mockDbUser, resetDbMocks } from '@/__mocks__/lib/db'
+import { createMockRequest } from '@/__tests__/helpers/api-test-helpers'
 
 // Mock dependencies
 jest.mock('next-auth/next')
@@ -33,14 +34,12 @@ describe('Mobile Authentication Middleware', () => {
       }
 
       // Mock database user lookup
-      mockUser.findUnique.mockResolvedValue(mockUser)
+      mockDbUser.findUnique.mockResolvedValue(mockUserData)
 
       // Create a mock request with Bearer token
       const token = 'valid.jwt.token'
-      const req = new NextRequest('http://localhost/api/test', {
-        headers: {
-          authorization: `Bearer ${token}`
-        }
+      const req = createMockRequest('GET', 'http://localhost/api/test', undefined, {
+        authorization: `Bearer ${token}`
       })
 
       // Mock token verification (this would normally be done by verifyToken)
@@ -71,7 +70,7 @@ describe('Mobile Authentication Middleware', () => {
 
       mockGetServerSession.mockResolvedValue(mockSession)
 
-      const req = new NextRequest('http://localhost/api/test')
+      const req = createMockRequest('GET','http://localhost/api/test')
 
       const result = await authenticateRequest(req)
 
@@ -87,7 +86,7 @@ describe('Mobile Authentication Middleware', () => {
     it('should return unauthenticated when no valid auth found', async () => {
       mockGetServerSession.mockResolvedValue(null)
 
-      const req = new NextRequest('http://localhost/api/test')
+      const req = createMockRequest('GET','http://localhost/api/test')
 
       const result = await authenticateRequest(req)
 
@@ -97,7 +96,7 @@ describe('Mobile Authentication Middleware', () => {
     })
 
     it('should handle invalid JWT token gracefully', async () => {
-      const req = new NextRequest('http://localhost/api/test', {
+      const req = createMockRequest('GET','http://localhost/api/test', {
         headers: {
           authorization: 'Bearer invalid.token'
         }
@@ -118,7 +117,7 @@ describe('Mobile Authentication Middleware', () => {
     })
 
     it('should handle database errors during JWT auth', async () => {
-      const req = new NextRequest('http://localhost/api/test', {
+      const req = createMockRequest('GET','http://localhost/api/test', {
         headers: {
           authorization: 'Bearer valid.token'
         }
@@ -133,7 +132,7 @@ describe('Mobile Authentication Middleware', () => {
         })
       }))
 
-      mockUser.findUnique.mockRejectedValue(new Error('Database error'))
+      mockDbUser.findUnique.mockRejectedValue(new Error('Database error'))
       mockGetServerSession.mockResolvedValue(null)
 
       const result = await authenticateRequest(req)
@@ -143,7 +142,7 @@ describe('Mobile Authentication Middleware', () => {
     })
 
     it('should handle user not found in database', async () => {
-      const req = new NextRequest('http://localhost/api/test', {
+      const req = createMockRequest('GET','http://localhost/api/test', {
         headers: {
           authorization: 'Bearer valid.token'
         }
@@ -157,7 +156,7 @@ describe('Mobile Authentication Middleware', () => {
         })
       }))
 
-      mockUser.findUnique.mockResolvedValue(null)
+      mockDbUser.findUnique.mockResolvedValue(null)
       mockGetServerSession.mockResolvedValue(null)
 
       const result = await authenticateRequest(req)
@@ -175,9 +174,9 @@ describe('Mobile Authentication Middleware', () => {
         role: 'USER'
       }
 
-      mockUser.findUnique.mockResolvedValue(mockUser)
+      mockDbUser.findUnique.mockResolvedValue(mockUser)
 
-      const req = new NextRequest('http://localhost/api/test', {
+      const req = createMockRequest('GET','http://localhost/api/test', {
         headers: {
           authorization: 'Bearer valid.token'
         }
@@ -198,7 +197,7 @@ describe('Mobile Authentication Middleware', () => {
     })
 
     it('should throw 401 response when not authenticated', async () => {
-      const req = new NextRequest('http://localhost/api/test')
+      const req = createMockRequest('GET','http://localhost/api/test')
       mockGetServerSession.mockResolvedValue(null)
 
       await expect(requireAuth(req)).rejects.toThrow()
@@ -259,9 +258,9 @@ describe('Mobile Authentication Middleware', () => {
         role: 'MANAGER'
       }
 
-      mockUser.findUnique.mockResolvedValue(mockUser)
+      mockDbUser.findUnique.mockResolvedValue(mockUser)
 
-      const req = new NextRequest('http://localhost/api/test', {
+      const req = createMockRequest('GET','http://localhost/api/test', {
         headers: {
           authorization: 'Bearer valid.token'
         }
@@ -288,9 +287,9 @@ describe('Mobile Authentication Middleware', () => {
         role: 'USER'
       }
 
-      mockUser.findUnique.mockResolvedValue(mockUser)
+      mockDbUser.findUnique.mockResolvedValue(mockUser)
 
-      const req = new NextRequest('http://localhost/api/test', {
+      const req = createMockRequest('GET','http://localhost/api/test', {
         headers: {
           authorization: 'Bearer valid.token'
         }
@@ -315,9 +314,9 @@ describe('Mobile Authentication Middleware', () => {
         role: 'admin'
       }
 
-      mockUser.findUnique.mockResolvedValue(mockUser)
+      mockDbUser.findUnique.mockResolvedValue(mockUser)
 
-      const req = new NextRequest('http://localhost/api/test', {
+      const req = createMockRequest('GET','http://localhost/api/test', {
         headers: {
           authorization: 'Bearer valid.token'
         }
@@ -351,7 +350,7 @@ describe('Mobile Authentication Middleware', () => {
       mockGetServerSession.mockResolvedValue(mockSession)
 
       // Request without Bearer token (legacy behavior)
-      const req = new NextRequest('http://localhost/api/legacy')
+      const req = createMockRequest('GET','http://localhost/api/legacy')
 
       const result = await authenticateRequest(req)
 
@@ -379,10 +378,10 @@ describe('Mobile Authentication Middleware', () => {
         }
       }
 
-      mockUser.findUnique.mockResolvedValue(mockJwtUser)
+      mockDbUser.findUnique.mockResolvedValue(mockJwtUser)
       mockGetServerSession.mockResolvedValue(mockSession)
 
-      const req = new NextRequest('http://localhost/api/test', {
+      const req = createMockRequest('GET','http://localhost/api/test', {
         headers: {
           authorization: 'Bearer valid.token'
         }
