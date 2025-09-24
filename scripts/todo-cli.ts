@@ -252,10 +252,25 @@ async function updateTodoStatus() {
     return
   }
   
+  // ENFORCE DEFINITION OF DONE: Don't allow "completed" without verification
+  if (status === 'completed') {
+    console.log('🔍 Verifying completion criteria...')
+    console.log('⚠️  REMINDER: Tasks can only be marked "completed" when:')
+    console.log('   • ALL tests pass (npm test)')
+    console.log('   • ALL linting passes')
+    console.log('   • ALL TypeScript compilation passes')
+    console.log('   • ALL CI checks are green')
+    console.log('')
+    console.log('⚠️  WARNING: Only mark as completed after full verification!')
+  }
+  
   const success = enhancedTodoManager.updateTodoStatus(todoId, status)
   
   if (success) {
     console.log(`✅ Updated todo ${todoId} to ${status}`)
+    if (status === 'completed') {
+      console.log('🎯 Remember: Definition of Done = ALL checks passing!')
+    }
   } else {
     console.log(`❌ Todo ${todoId} not found`)
   }

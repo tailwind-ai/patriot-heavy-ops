@@ -391,7 +391,7 @@ export class AuthService extends BaseService {
       typeof user.email === "string" &&
       (user.name === null || typeof user.name === "string") &&
       (user.image === null || typeof user.image === "string") &&
-      ["USER", "OPERATOR", "MANAGER", "ADMIN"].includes(user.role as string)
+      Object.values(UserRole).includes(user.role as UserRole)
     )
   }
 

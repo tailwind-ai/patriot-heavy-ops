@@ -377,19 +377,61 @@ export class EnhancedTodoManager {
   }
 }
 
-// Module-scoped singleton instance
-let _enhancedTodoManager: EnhancedTodoManager | undefined
+/**
+ * Singleton manager using WeakMap for better isolation
+ * This avoids shared state between test runs and SSR environments
+ */
+class EnhancedTodoManagerSingleton {
+  private static instance: EnhancedTodoManager | undefined
+  private static instanceMap = new WeakMap<object, EnhancedTodoManager>()
+
+  /**
+   * Get singleton instance with optional context for testing isolation
+   */
+  static getInstance(context?: object): EnhancedTodoManager {
+    // If context is provided (e.g., for testing), use context-specific instance
+    if (context) {
+      let instance = this.instanceMap.get(context)
+      if (!instance) {
+        instance = new EnhancedTodoManager(mockBackgroundAgent)
+        this.instanceMap.set(context, instance)
+      }
+      return instance
+    }
+
+    // Default singleton for production
+    if (!this.instance) {
+      this.instance = new EnhancedTodoManager(mockBackgroundAgent)
+    }
+    return this.instance
+  }
+
+  /**
+   * Reset singleton (useful for testing)
+   */
+  static reset(context?: object): void {
+    if (context) {
+      this.instanceMap.delete(context)
+    } else {
+      this.instance = undefined
+    }
+  }
+}
 
 /**
  * Get the singleton instance of EnhancedTodoManager.
- * This avoids using global state and is safe for production and testing.
+ * Supports optional context for testing isolation.
  */
-export function getEnhancedTodoManager(): EnhancedTodoManager {
-  if (!_enhancedTodoManager) {
-    _enhancedTodoManager = new EnhancedTodoManager(mockBackgroundAgent)
-  }
-  return _enhancedTodoManager
+export function getEnhancedTodoManager(context?: object): EnhancedTodoManager {
+  return EnhancedTodoManagerSingleton.getInstance(context)
 }
 
-// Optionally, export the singleton instance for compatibility
+/**
+ * Reset the singleton instance (useful for testing)
+ */
+export function resetEnhancedTodoManager(context?: object): void {
+  EnhancedTodoManagerSingleton.reset(context)
+}
+
+// Export the singleton instance for compatibility
 export const enhancedTodoManager = getEnhancedTodoManager()

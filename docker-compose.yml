@@ -46,12 +46,6 @@ services:
       GITHUB_CLIENT_SECRET: your_github_client_secret
       # App configuration
       NODE_ENV: development
-      # Previous fix for Prisma OpenSSL detection involved setting PRISMA_QUERY_ENGINE_LIBRARY to a specific library path.
-      # This was removed as newer Prisma versions and updated base images no longer require it in most environments.
-      # If you encounter errors related to OpenSSL or native Prisma libraries, you may need to set:
-      #   PRISMA_QUERY_ENGINE_LIBRARY=/path/to/libquery_engine.so.node
-      # Replace the path above with the correct location for your environment.
-      # See https://www.prisma.io/docs/reference/troubleshooting for more details.
     depends_on:
       postgres:
         condition: service_healthy
