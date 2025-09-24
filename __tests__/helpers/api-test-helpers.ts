@@ -177,6 +177,72 @@ export const TEST_USERS = {
 } as const
 
 /**
+ * Create a mock NextRequest with malformed JSON for testing error handling
+ */
+export function createMockRequestWithMalformedJSON(
+  method: string,
+  url: string = 'http://localhost:3000/api/test',
+  headers?: Record<string, string>
+): NextRequest {
+  const requestInit: RequestInit = {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+      ...headers,
+    },
+    body: 'invalid json content', // Malformed JSON
+  }
+
+  // Create a mock NextRequest that extends Request
+  const request = new Request(url, requestInit) as NextRequest
+  
+  // Add NextRequest-specific properties
+  Object.defineProperty(request, 'nextUrl', {
+    value: new URL(url),
+    writable: false,
+  })
+
+  Object.defineProperty(request, 'cookies', {
+    value: {
+      get: jest.fn(),
+      set: jest.fn(),
+      delete: jest.fn(),
+      has: jest.fn(),
+      clear: jest.fn(),
+    },
+    writable: false,
+  })
+
+  Object.defineProperty(request, 'geo', {
+    value: undefined,
+    writable: false,
+  })
+
+  Object.defineProperty(request, 'ip', {
+    value: '127.0.0.1',
+    writable: false,
+  })
+
+  Object.defineProperty(request, 'page', {
+    value: undefined,
+    writable: false,
+  })
+
+  Object.defineProperty(request, 'ua', {
+    value: undefined,
+    writable: false,
+  })
+
+  // Override the json method to simulate JSON parsing error
+  Object.defineProperty(request, 'json', {
+    value: () => Promise.reject(new SyntaxError('Unexpected token in JSON')),
+    writable: false,
+  })
+
+  return request
+}
+
+/**
  * Reset all mocks between tests
  */
 export function resetAllMocks() {

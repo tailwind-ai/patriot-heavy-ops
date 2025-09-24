@@ -12,6 +12,7 @@ import {
 
 async function main() {
   const command = process.argv[2]
+  const args = process.argv.slice(2)
   const prNumber = process.argv[3]
 
   try {
@@ -39,6 +40,15 @@ async function main() {
           process.exit(1)
         }
         await syncFromGitHubActions(parseInt(prNumber))
+        break
+      case "resolve":
+        const todoId = args[1]
+        const resolution = args.slice(2).join(" ")
+        if (!todoId) {
+          console.log("❌ Please provide a todo ID: npm run todo resolve <TODO_ID> [resolution message]")
+          process.exit(1)
+        }
+        await resolveTodoWithComment(todoId, resolution)
         break
       case "list":
         await listTodos()
@@ -200,6 +210,76 @@ async function syncFromGitHubActions(prNumber: number) {
     console.log("⚠️  Falling back to direct GitHub API fetch")
     await initializeFromGitHubPR(prNumber)
   }
+}
+
+async function resolveTodoWithComment(todoId: string, resolution?: string) {
+  console.log(`🔧 Resolving todo ${todoId}...`)
+  
+  const todo = enhancedTodoManager.getTodoById(todoId)
+  if (!todo) {
+    console.log(`❌ Todo ${todoId} not found`)
+    return
+  }
+
+  // Mark todo as completed
+  const success = enhancedTodoManager.updateTodoStatus(todoId, "completed")
+  if (!success) {
+    console.log(`❌ Failed to update todo ${todoId}`)
+    return
+  }
+
+  console.log(`✅ Marked todo ${todoId} as completed`)
+
+  // If this todo has GitHub comment info, resolve the conversation
+  if (todo.issueType === "copilot_comment" && todo.relatedPR) {
+    try {
+      const { execSync } = await import("child_process")
+      const prNumber = todo.relatedPR.replace("#", "")
+      
+      const resolutionMessage = resolution || `Fixed the issue: ${todo.content}`
+      
+      console.log(`🔍 Looking for review conversations in PR ${prNumber}...`)
+      
+      // Get PR review conversations
+      const reviewsOutput = execSync(
+        `gh api repos/samuelhenry/patriot-heavy-ops/pulls/${prNumber}/reviews --jq '.[] | select(.state == "COMMENTED") | {id: .id, body: .body}'`,
+        { encoding: "utf8" }
+      )
+      
+      if (reviewsOutput.trim()) {
+        console.log(`📝 Found review conversations, attempting to resolve...`)
+        
+        // Add a resolution comment to the PR
+        const commentBody = `✅ **Copilot Suggestions Resolved**
+
+${resolutionMessage}
+
+The following Copilot suggestion has been addressed:
+> ${todo.content}
+
+All related review conversations should now be resolved.
+
+_Resolved via Background Agent workflow_`
+
+        execSync(
+          `gh pr comment ${prNumber} --repo samuelhenry/patriot-heavy-ops --body "${commentBody.replace(/"/g, '\\"')}"`,
+          { encoding: "utf8" }
+        )
+
+        console.log(`✅ Added resolution comment to PR ${prNumber}`)
+        console.log(`ℹ️  Note: Please manually resolve the review conversation in GitHub UI`)
+      } else {
+        console.log(`ℹ️  No review conversations found for PR ${prNumber}`)
+      }
+    } catch (error) {
+      console.error("❌ Failed to resolve conversation:", error)
+      console.log("ℹ️  You may need to manually resolve the conversation in GitHub")
+    }
+  }
+
+  // Show updated progress
+  const summary = enhancedTodoManager.getProgressSummary()
+  console.log(`\n📊 Progress: ${summary.completed}/${summary.total} completed (${summary.completionRate.toFixed(1)}%)`)
 }
 
 async function listTodos() {
@@ -381,6 +461,7 @@ function showHelp() {
     "github <PR>    - Fetch todos from GitHub PR comments (clears previous)"
   )
   console.log("sync <PR>      - Sync todos from GitHub Actions workflow")
+  console.log("resolve <ID>   - Mark todo as resolved and comment on GitHub")
   console.log("clear          - Clear all todos")
   console.log("list           - List all todos")
   console.log("next           - Show next todo to work on")

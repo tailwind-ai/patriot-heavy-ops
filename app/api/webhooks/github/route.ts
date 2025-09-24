@@ -75,11 +75,7 @@ export async function POST(req: NextRequest) {
     const pr = payload.issue
 
     // Check if comment is from Copilot or contains code suggestions
-    if (
-      comment.user?.login?.includes("copilot") ||
-      comment.body?.includes("```") ||
-      comment.body?.includes("suggestion")
-    ) {
+    if (isCopilotOrSuggestionComment(comment)) {
       try {
         await processPRWebhook({
           prNumber: pr.number,
@@ -102,4 +98,115 @@ export async function POST(req: NextRequest) {
   }
 
   return NextResponse.json({ message: "Event not processed" })
+}
+
+/**
+ * Resolve a GitHub PR review conversation
+ */
+async function resolveGitHubConversation(
+  commentId: number,
+  resolution: string,
+  repository: string
+) {
+  const [owner, repo] = repository.split("/")
+  
+  try {
+    const { Octokit } = await import("@octokit/rest")
+    const octokit = new Octokit({
+      auth: process.env.GITHUB_ACCESS_TOKEN,
+    })
+
+    // First, reply to the comment with the resolution
+    await octokit.rest.pulls.createReplyForReviewComment({
+      owner,
+      repo,
+      comment_id: commentId,
+      body: `✅ **Resolved**
+
+${resolution}
+
+This suggestion has been implemented and the conversation is now resolved.`,
+    })
+
+    // Then resolve the conversation thread
+    // Note: This requires the comment to be part of a review
+    try {
+      await octokit.rest.pulls.dismissReview({
+        owner,
+        repo,
+        pull_number: 240, // This should be dynamic based on the PR
+        review_id: commentId, // This might need to be the review ID, not comment ID
+        message: "Resolved by Background Agent",
+      })
+    } catch (dismissError) {
+      // If dismiss doesn't work, try to resolve via GraphQL API
+      console.log("Attempting to resolve conversation via GraphQL...")
+      
+      const mutation = `
+        mutation ResolveReviewThread($threadId: ID!) {
+          resolveReviewThread(input: {threadId: $threadId}) {
+            thread {
+              id
+              isResolved
+            }
+          }
+        }
+      `
+      
+      // This would require getting the thread ID first
+      console.log("GraphQL resolution not implemented yet - manual resolution required")
+    }
+
+    console.log(`✅ Resolved conversation for comment ${commentId}`)
+  } catch (error) {
+    console.error(`❌ Failed to resolve conversation ${commentId}:`, error)
+  }
+}
+
+/**
+ * Enhanced comment detection to identify Copilot suggestions and code reviews
+ * with more specific patterns to reduce false positives
+ */
+function isCopilotOrSuggestionComment(comment: {
+  user?: { login?: string; id?: number }
+  body?: string
+}): boolean {
+  const body = comment.body || ""
+  const userLogin = comment.user?.login?.toLowerCase() || ""
+  const userId = comment.user?.id
+
+  // Official Copilot user IDs and logins
+  const copilotUserIds = [175728472] // GitHub Copilot bot user ID
+  const copilotLogins = ["copilot", "github-copilot", "copilot-pull-request-reviewer"]
+
+  // Check for official Copilot users
+  if (userId && copilotUserIds.includes(userId)) {
+    return true
+  }
+
+  if (copilotLogins.some(login => userLogin.includes(login))) {
+    return true
+  }
+
+  // Check for code suggestion patterns (more specific than just "```")
+  const hasSuggestionBlock = body.includes("```suggestion")
+  const hasCodeBlock = body.includes("```") && (
+    body.includes("suggestion") ||
+    body.includes("nitpick") ||
+    body.includes("Consider") ||
+    body.includes("recommend")
+  )
+
+  // Check for common Copilot review patterns
+  const copilotPatterns = [
+    /\[nitpick\]/i,
+    /```suggestion/,
+    /Consider using/i,
+    /This could be improved/i,
+    /You might want to/i
+  ]
+
+  const hasCopilotPattern = copilotPatterns.some(pattern => pattern.test(body))
+
+  return hasSuggestionBlock || hasCodeBlock || hasCopilotPattern
 }

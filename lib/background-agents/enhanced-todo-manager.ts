@@ -218,6 +218,13 @@ export class EnhancedTodoManager {
   }
 
   /**
+   * Get todo by ID
+   */
+  getTodoById(id: string): EnhancedTodoItem | null {
+    return this.todos.find(todo => todo.id === id) || null
+  }
+
+  /**
    * Get progress summary
    */
   getProgressSummary(): {

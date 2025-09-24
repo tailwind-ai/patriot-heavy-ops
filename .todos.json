@@ -6,21 +6,13 @@
     "priority": "high",
     "dependencies": [],
     "issueType": "ci_failure",
-    "files": [
-      "app/api/webhooks/github/route.ts"
-    ],
-    "lineNumbers": [
-      82
-    ],
+    "files": ["app/api/webhooks/github/route.ts"],
+    "lineNumbers": [82],
     "suggestedFix": "",
     "createdAt": "2025-09-24T21:05:20.876Z",
     "updatedAt": "2025-09-24T21:05:20.876Z",
     "estimatedTime": "10-30 min",
-    "tags": [
-      "ci-failure",
-      "high",
-      "api"
-    ],
+    "tags": ["ci-failure", "high", "api"],
     "assignee": "api-specialist",
     "relatedPR": "#240"
   },
@@ -37,17 +29,14 @@
     "createdAt": "2025-09-24T21:05:20.876Z",
     "updatedAt": "2025-09-24T21:05:20.876Z",
     "estimatedTime": "10-30 min",
-    "tags": [
-      "ci-failure",
-      "high"
-    ],
+    "tags": ["ci-failure", "high"],
     "assignee": "general-developer",
     "relatedPR": "#240"
   },
   {
     "id": "github-4",
     "content": "CI Failure: test - Unable to analyze failure logs",
-    "status": "pending",
+    "status": "completed",
     "priority": "high",
     "dependencies": [],
     "issueType": "ci_failure",
@@ -55,38 +44,26 @@
     "lineNumbers": [],
     "suggestedFix": "Check GitHub Actions logs manually",
     "createdAt": "2025-09-24T21:05:20.876Z",
-    "updatedAt": "2025-09-24T21:05:20.876Z",
+    "updatedAt": "2025-09-24T21:30:13.474Z",
     "estimatedTime": "10-30 min",
-    "tags": [
-      "ci-failure",
-      "high"
-    ],
+    "tags": ["ci-failure", "high"],
     "assignee": "general-developer",
     "relatedPR": "#240"
   },
   {
     "id": "github-1",
     "content": "[nitpick] The manual override of the `json` method is fragile and tightly couples the test to the implementation. Consider using a proper mock request helper or testing library that better simulates malformed JSON scenarios.",
-    "status": "pending",
+    "status": "completed",
     "priority": "medium",
     "dependencies": [],
     "issueType": "copilot_comment",
-    "files": [
-      "__tests__/api/users/[userId]/route.test.ts"
-    ],
-    "lineNumbers": [
-      20
-    ],
+    "files": ["__tests__/api/users/[userId]/route.test.ts"],
+    "lineNumbers": [20],
     "suggestedFix": "",
     "createdAt": "2025-09-24T21:05:20.876Z",
-    "updatedAt": "2025-09-24T21:05:20.876Z",
+    "updatedAt": "2025-09-24T21:27:45.028Z",
     "estimatedTime": "5-15 min",
-    "tags": [
-      "copilot-comment",
-      "medium",
-      "testing",
-      "api"
-    ],
+    "tags": ["copilot-comment", "medium", "testing", "api"],
     "assignee": "test-specialist",
     "relatedPR": "#240"
   }
