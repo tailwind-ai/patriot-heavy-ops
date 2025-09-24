@@ -60,7 +60,36 @@ jobs:
         run: sleep 30
 
       - name: Run integration tests
-        run: npm run test:integration || echo "Integration tests not yet implemented"
+        run: |
+          set -o pipefail
+          npm run test:integration 2>&1 | tee integration-output.log || exit 1
 
       - name: Stop services
         run: docker compose down
+
+      # Always upload integration logs
+      - name: Upload integration logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-logs
+          path: integration-output.log
+
+      # Post summary to PR if integration tests failed
+      - name: Post summary on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const log = fs.readFileSync('integration-output.log', 'utf8');
+            const summary = log.split('\n').slice(-20).join('\n'); // last 20 lines
+            const issue_number = context.payload.workflow_run.pull_requests[0]?.number;
+            if (issue_number) {
+              await github.rest.issues.createComment({
+                ...context.repo,
+                issue_number,
+                body: `🚨 **Integration Tests Failed**\n\n**Last 20 log lines:**\n\`\`\`\n${summary}\n\`\`\`\n\nFull logs available in the uploaded artifact.`
+              });
+            }
