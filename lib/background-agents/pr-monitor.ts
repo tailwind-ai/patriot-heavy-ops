@@ -12,7 +12,7 @@ type PRWebhookData = {
   commentData?: any
 }
 
-type IssueDetection = {
+export type IssueDetection = {
   type: "copilot_comment" | "ci_failure" | "vercel_failure" | "lint_error" | "test_failure"
   severity: "low" | "medium" | "high" | "critical"
   description: string
@@ -31,6 +31,9 @@ export async function processPRWebhook(data: PRWebhookData) {
   try {
     // Get PR details
     const [owner, repo] = data.repository.split("/")
+    if (!owner || !repo) {
+      throw new Error("Invalid repository format")
+    }
     const pr = await octokit.rest.pulls.get({
       owner,
       repo,

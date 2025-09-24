@@ -32,6 +32,9 @@ export class GitOperations {
       })
 
       const headBranch = pr.data.head.ref
+      if (!headBranch) {
+        throw new Error("PR head branch not found")
+      }
       const headSha = pr.data.head.sha
 
       // Get the current tree
