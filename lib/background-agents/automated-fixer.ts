@@ -237,7 +237,7 @@ export class AutomatedFixer {
       if (codeBlock) {
         const code = codeBlock.replace(/```\w*\n?/, "").replace(/```$/, "")
         // Apply the code suggestion
-        return this.insertCodeAtLines(lines, code, lineNumbers).join("\n")
+        return this.insertCodeAtLines(lines, code).join("\n")
       }
     }
 
