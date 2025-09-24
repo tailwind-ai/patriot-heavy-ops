@@ -120,7 +120,14 @@ export const statusChangeSchema = z.object({
   notes: z.string().max(1000).optional(),
 })
 
-// Helper function to calculate total hours
+// NOTE: Business logic functions have been moved to ServiceRequestService
+// These functions are deprecated and will be removed in a future version
+// Use ServiceRequestService.calculateTotalHours() and ServiceRequestService.getDurationDisplayText() instead
+
+/**
+ * @deprecated Use ServiceRequestService.calculateTotalHours() instead
+ * This function will be removed in a future version
+ */
 export function calculateTotalHours(durationType: typeof durationTypes[number], durationValue: number): number {
   switch (durationType) {
     case "HALF_DAY":
@@ -136,7 +143,10 @@ export function calculateTotalHours(durationType: typeof durationTypes[number], 
   }
 }
 
-// Helper function to get duration display text
+/**
+ * @deprecated Use ServiceRequestService.getDurationDisplayText() instead
+ * This function will be removed in a future version
+ */
 export function getDurationDisplayText(durationType: typeof durationTypes[number], durationValue: number): string {
   switch (durationType) {
     case "HALF_DAY":
