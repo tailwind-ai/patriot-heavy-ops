@@ -84,10 +84,10 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
   async findById(id: string): Promise<RepositoryResult<any>> {
     const validation = this.validateRequired({ id }, ["id"]);
     if (!validation.success) {
-      return {
-        success: false,
-        error: validation.error || 'Validation failed',
-      };
+      const errorMessage = typeof validation.error === 'string' 
+        ? validation.error 
+        : validation.error?.message || 'Validation failed';
+      return this.createError('VALIDATION_ERROR', errorMessage);
     }
 
     return this.handleAsync(
@@ -114,10 +114,10 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
   async findByEmail(email: string): Promise<RepositoryResult<any>> {
     const validation = this.validateRequired({ email }, ["email"]);
     if (!validation.success) {
-      return {
-        success: false,
-        error: validation.error || 'Validation failed',
-      };
+      const errorMessage = typeof validation.error === 'string' 
+        ? validation.error 
+        : validation.error?.message || 'Validation failed';
+      return this.createError('VALIDATION_ERROR', errorMessage);
     }
 
     return this.handleAsync(
@@ -245,12 +245,12 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
    * Create new user
    */
   async create(data: UserCreateInput): Promise<RepositoryResult<any>> {
-    const validation = this.validateRequired(data, ["email"]);
+    const validation = this.validateRequired(data as unknown as Record<string, unknown>, ["email"]);
     if (!validation.success) {
-      return {
-        success: false,
-        error: validation.error || 'Validation failed',
-      };
+      const errorMessage = typeof validation.error === 'string' 
+        ? validation.error 
+        : validation.error?.message || 'Validation failed';
+      return this.createError('VALIDATION_ERROR', errorMessage);
     }
 
     return this.handleAsync(
@@ -279,10 +279,10 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
   async update(id: string, data: UserUpdateInput): Promise<RepositoryResult<any>> {
     const validation = this.validateRequired({ id }, ["id"]);
     if (!validation.success) {
-      return {
-        success: false,
-        error: validation.error || 'Validation failed',
-      };
+      const errorMessage = typeof validation.error === 'string' 
+        ? validation.error 
+        : validation.error?.message || 'Validation failed';
+      return this.createError('VALIDATION_ERROR', errorMessage);
     }
 
     return this.handleAsync(
@@ -315,10 +315,10 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
   async delete(id: string): Promise<RepositoryResult<boolean>> {
     const validation = this.validateRequired({ id }, ["id"]);
     if (!validation.success) {
-      return {
-        success: false,
-        error: validation.error || 'Validation failed',
-      };
+      const errorMessage = typeof validation.error === 'string' 
+        ? validation.error 
+        : validation.error?.message || 'Validation failed';
+      return this.createError('VALIDATION_ERROR', errorMessage);
     }
 
     return this.handleAsync(
@@ -366,10 +366,10 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
       ["userId", "militaryBranch", "yearsOfService"]
     );
     if (!validation.success) {
-      return {
-        success: false,
-        error: validation.error || 'Validation failed',
-      };
+      const errorMessage = typeof validation.error === 'string' 
+        ? validation.error 
+        : validation.error?.message || 'Validation failed';
+      return this.createError('VALIDATION_ERROR', errorMessage);
     }
 
     return this.handleAsync(
@@ -412,10 +412,10 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
   ): Promise<RepositoryResult<any>> {
     const validation = this.validateRequired({ operatorId }, ["operatorId"]);
     if (!validation.success) {
-      return {
-        success: false,
-        error: validation.error || 'Validation failed',
-      };
+      const errorMessage = typeof validation.error === 'string' 
+        ? validation.error 
+        : validation.error?.message || 'Validation failed';
+      return this.createError('VALIDATION_ERROR', errorMessage);
     }
 
     return this.handleAsync(
@@ -470,10 +470,10 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
   ): Promise<RepositoryResult<any>> {
     const validation = this.validateRequired({ userId }, ["userId"]);
     if (!validation.success) {
-      return {
-        success: false,
-        error: validation.error || 'Validation failed',
-      };
+      const errorMessage = typeof validation.error === 'string' 
+        ? validation.error 
+        : validation.error?.message || 'Validation failed';
+      return this.createError('VALIDATION_ERROR', errorMessage);
     }
 
     return this.handleAsync(
@@ -504,10 +504,10 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
   async findByRole(role: UserRole, pagination?: PaginationOptions): Promise<RepositoryResult<User[]>> {
     const validation = this.validateRequired({ role }, ["role"]);
     if (!validation.success) {
-      return {
-        success: false,
-        error: validation.error || 'Validation failed',
-      };
+      const errorMessage = typeof validation.error === 'string' 
+        ? validation.error 
+        : validation.error?.message || 'Validation failed';
+      return this.createError('VALIDATION_ERROR', errorMessage);
     }
 
     return this.handleAsync(
@@ -547,10 +547,10 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
   async verifyEmail(userId: string): Promise<RepositoryResult<any>> {
     const validation = this.validateRequired({ userId }, ["userId"]);
     if (!validation.success) {
-      return {
-        success: false,
-        error: validation.error || 'Validation failed',
-      };
+      const errorMessage = typeof validation.error === 'string' 
+        ? validation.error 
+        : validation.error?.message || 'Validation failed';
+      return this.createError('VALIDATION_ERROR', errorMessage);
     }
 
     return this.handleAsync(
