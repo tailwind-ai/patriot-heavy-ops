@@ -8,8 +8,6 @@ import {
 import { resetDbMocks } from "@/__mocks__/lib/db"
 import { createMockRequest } from "@/__tests__/helpers/api-test-helpers"
 import { extractBearerToken, verifyToken } from "@/lib/auth-utils"
-import { db } from "@/lib/db"
-
 // Mock dependencies
 jest.mock("next-auth/next")
 jest.mock("@/lib/db")
@@ -20,11 +18,13 @@ const mockExtractBearerToken = extractBearerToken as jest.MockedFunction<
   typeof extractBearerToken
 >
 const mockVerifyToken = verifyToken as jest.MockedFunction<typeof verifyToken>
-const mockDb = db as jest.Mocked<typeof db>
-
 const mockGetServerSession = getServerSession as jest.MockedFunction<
   typeof getServerSession
 >
+
+// Import the mocked db after mocking
+import { db } from "@/lib/db"
+const mockDb = db as jest.Mocked<typeof db>
 
 describe("Mobile Authentication Middleware", () => {
   beforeEach(() => {

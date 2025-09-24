@@ -104,11 +104,11 @@ export class GitOperations {
     const changedPaths = new Set(changes.map(c => c.path))
     
     for (const item of existingTree) {
-      if (item.type === "blob" && !changedPaths.has(item.path)) {
+      if (item.type === "blob" && !changedPaths.has(item.path) && item.sha) {
         treeItems.push({
           path: item.path,
-          mode: item.mode,
-          type: item.type,
+          mode: item.mode as "100644",
+          type: item.type as "blob",
           sha: item.sha,
         })
       }

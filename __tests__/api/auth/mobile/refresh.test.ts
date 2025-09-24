@@ -46,9 +46,25 @@ describe('/api/auth/mobile/refresh', () => {
 
     const mockUser = {
       id: 'user-123',
-      email: 'test@example.com',
       name: 'Test User',
-      role: 'USER'
+      email: 'test@example.com',
+      password: null,
+      emailVerified: null,
+      image: null,
+      role: 'USER',
+      phone: null,
+      company: null,
+      createdAt: new Date('2023-01-01'),
+      updatedAt: new Date('2023-01-01'),
+      militaryBranch: null,
+      yearsOfService: null,
+      certifications: [],
+      preferredLocations: [],
+      isAvailable: true,
+      stripeCustomerId: null,
+      stripeSubscriptionId: null,
+      stripePriceId: null,
+      stripeCurrentPeriodEnd: null,
     }
 
     it('should successfully refresh tokens with valid refresh token', async () => {

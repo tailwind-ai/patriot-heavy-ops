@@ -413,9 +413,10 @@ function extractCodeFromComment(commentBody: string): string {
   return codeBlocks ? codeBlocks.join("\n") : ""
 }
 
-async function generateCIFix(check: { name: string; conclusion?: string }): Promise<string> {
+async function generateCIFix(check: { name: string; conclusion?: string | null }): Promise<string> {
   // Analyze check output to generate fix suggestions
-  return `Fix for CI failure in ${check.name}. Check the logs for specific error details.`
+  const conclusion = check.conclusion || "unknown"
+  return `Fix for CI failure in ${check.name} (${conclusion}). Check the logs for specific error details.`
 }
 
 async function generateVercelFix(deployment: { state: string; url?: string }): Promise<string> {

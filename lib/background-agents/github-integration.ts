@@ -219,21 +219,21 @@ export class GitHubIntegration {
 
       // Filter runs related to the PR
       const prRuns = runs.workflow_runs.filter((run) =>
-        run.pull_requests.some((pr) => pr.number === prNumber)
+        run.pull_requests && run.pull_requests.some((pr) => pr.number === prNumber)
       )
 
       return prRuns.map((run) => ({
         id: run.id,
-        name: run.name,
-        status: run.status,
+        name: run.name || "Unknown Workflow",
+        status: run.status || "unknown",
         conclusion: run.conclusion || "unknown",
         created_at: run.created_at,
         updated_at: run.updated_at,
         html_url: run.html_url,
         head_sha: run.head_sha,
-        pull_requests: run.pull_requests.map((pr) => ({
+        pull_requests: (run.pull_requests || []).map((pr) => ({
           number: pr.number,
-          title: pr.title,
+          title: `PR #${pr.number}`, // GitHub API doesn't include title in workflow runs
         })),
       }))
     } catch (error) {
@@ -263,7 +263,7 @@ export class GitHubIntegration {
           conclusion: job.conclusion || "unknown",
           started_at: job.started_at || "",
           completed_at: job.completed_at || "",
-          steps: job.steps.map((step) => ({
+          steps: (job.steps || []).map((step) => ({
             name: step.name,
             status: step.status,
             conclusion: step.conclusion || "unknown",
@@ -293,7 +293,7 @@ export class GitHubIntegration {
           job_id: jobId,
         })
 
-      const logContent = Buffer.from(logs, "base64").toString("utf-8")
+      const logContent = Buffer.from(logs as string, "base64").toString("utf-8")
 
       return this.parseFailureLogs(logContent)
     } catch (error) {
