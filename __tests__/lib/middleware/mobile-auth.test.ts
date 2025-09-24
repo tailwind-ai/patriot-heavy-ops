@@ -350,7 +350,7 @@ describe('Mobile Authentication Middleware', () => {
       mockGetServerSession.mockResolvedValue(mockSession)
 
       // Request without Bearer token (legacy behavior)
-      const req = createMockRequest('GET','http://localhost/api/legacy')
+      const req = createMockRequest('GET', 'http://localhost/api/legacy')
 
       const result = await authenticateRequest(req)
 
