@@ -125,7 +125,8 @@ export function createRedisRateLimitStore(redisClient: any): RateLimitStore {
  */
 function defaultKeyGenerator(req: NextRequest): string {
   const forwarded = req.headers.get('x-forwarded-for')
-  const ip = forwarded ? forwarded.split(',')[0] : req.ip || 'unknown'
+  const realIp = req.headers.get('x-real-ip')
+  const ip = forwarded ? forwarded.split(',')[0] : realIp || 'unknown'
   return `rate_limit:${ip}`
 }
 
@@ -196,7 +197,8 @@ export const authRateLimit = rateLimit({
   message: 'Too many authentication attempts, please try again in 15 minutes',
   keyGenerator: (req: NextRequest) => {
     const forwarded = req.headers.get('x-forwarded-for')
-    const ip = forwarded ? forwarded.split(',')[0] : req.ip || 'unknown'
+    const realIp = req.headers.get('x-real-ip')
+    const ip = forwarded ? forwarded.split(',')[0] : realIp || 'unknown'
     return `auth_rate_limit:${ip}`
   }
 })

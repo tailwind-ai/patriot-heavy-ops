@@ -35,6 +35,37 @@ export function createMockRequest(
     writable: false,
   })
 
+  Object.defineProperty(request, 'cookies', {
+    value: {
+      get: jest.fn(),
+      set: jest.fn(),
+      delete: jest.fn(),
+      has: jest.fn(),
+      clear: jest.fn(),
+    },
+    writable: false,
+  })
+
+  Object.defineProperty(request, 'geo', {
+    value: undefined,
+    writable: false,
+  })
+
+  Object.defineProperty(request, 'ip', {
+    value: '127.0.0.1',
+    writable: false,
+  })
+
+  Object.defineProperty(request, 'page', {
+    value: undefined,
+    writable: false,
+  })
+
+  Object.defineProperty(request, 'ua', {
+    value: undefined,
+    writable: false,
+  })
+
   return request
 }
 

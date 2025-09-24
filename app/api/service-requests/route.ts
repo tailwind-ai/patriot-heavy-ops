@@ -28,7 +28,13 @@ async function getAuthenticatedUser(
 
   // Fallback to session-based auth for backward compatibility
   const sessionUser = await getCurrentUserWithRole()
-  return sessionUser
+  if (!sessionUser) return null
+
+  return {
+    id: sessionUser.id,
+    email: sessionUser.email || "",
+    role: sessionUser.role,
+  }
 }
 
 export async function GET(req: NextRequest) {
@@ -42,7 +48,7 @@ export async function GET(req: NextRequest) {
     // Check permissions based on user role
     let serviceRequests
 
-    if (hasPermission(user.role, "view_all_requests")) {
+    if (hasPermission(user.role as any, "view_all_requests")) {
       // Managers and Admins can see all requests
       serviceRequests = await db.serviceRequest.findMany({
         select: {
@@ -70,7 +76,7 @@ export async function GET(req: NextRequest) {
           createdAt: "desc",
         },
       })
-    } else if (hasPermission(user.role, "view_assignments")) {
+    } else if (hasPermission(user.role as any, "view_assignments")) {
       // Operators can see requests they're assigned to + their own requests
       serviceRequests = await db.serviceRequest.findMany({
         select: {
@@ -103,7 +109,7 @@ export async function GET(req: NextRequest) {
           createdAt: "desc",
         },
       })
-    } else if (hasPermission(user.role, "view_own_requests")) {
+    } else if (hasPermission(user.role as any, "view_own_requests")) {
       // Regular users can only see their own requests
       serviceRequests = await db.serviceRequest.findMany({
         select: {
@@ -147,7 +153,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Check if user has permission to submit requests
-    if (!hasPermission(user.role, "submit_requests")) {
+    if (!hasPermission(user.role as any, "submit_requests")) {
       return new Response(
         "Forbidden: You don't have permission to submit service requests",
         { status: 403 }

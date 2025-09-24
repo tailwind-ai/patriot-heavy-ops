@@ -7,7 +7,7 @@ import {
   requireRole
 } from '@/lib/middleware/mobile-auth'
 import { generateAccessToken } from '@/lib/auth-utils'
-import { db } from '@/lib/db'
+import { mockUser, resetDbMocks } from '@/__mocks__/lib/db'
 
 // Mock dependencies
 jest.mock('next-auth/next')
@@ -16,12 +16,12 @@ jest.mock('@/lib/auth-utils')
 jest.mock('@/lib/auth')
 
 const mockGetServerSession = getServerSession as jest.MockedFunction<typeof getServerSession>
-const mockDb = db as jest.Mocked<typeof db>
 const mockGenerateAccessToken = generateAccessToken as jest.MockedFunction<typeof generateAccessToken>
 
 describe('Mobile Authentication Middleware', () => {
   beforeEach(() => {
     jest.clearAllMocks()
+    resetDbMocks()
   })
 
   describe('authenticateRequest', () => {
@@ -33,7 +33,7 @@ describe('Mobile Authentication Middleware', () => {
       }
 
       // Mock database user lookup
-      mockDb.user.findUnique.mockResolvedValue(mockUser)
+      mockUser.findUnique.mockResolvedValue(mockUser)
 
       // Create a mock request with Bearer token
       const token = 'valid.jwt.token'
@@ -133,7 +133,7 @@ describe('Mobile Authentication Middleware', () => {
         })
       }))
 
-      mockDb.user.findUnique.mockRejectedValue(new Error('Database error'))
+      mockUser.findUnique.mockRejectedValue(new Error('Database error'))
       mockGetServerSession.mockResolvedValue(null)
 
       const result = await authenticateRequest(req)
@@ -157,7 +157,7 @@ describe('Mobile Authentication Middleware', () => {
         })
       }))
 
-      mockDb.user.findUnique.mockResolvedValue(null)
+      mockUser.findUnique.mockResolvedValue(null)
       mockGetServerSession.mockResolvedValue(null)
 
       const result = await authenticateRequest(req)
@@ -175,7 +175,7 @@ describe('Mobile Authentication Middleware', () => {
         role: 'USER'
       }
 
-      mockDb.user.findUnique.mockResolvedValue(mockUser)
+      mockUser.findUnique.mockResolvedValue(mockUser)
 
       const req = new NextRequest('http://localhost/api/test', {
         headers: {
@@ -259,7 +259,7 @@ describe('Mobile Authentication Middleware', () => {
         role: 'MANAGER'
       }
 
-      mockDb.user.findUnique.mockResolvedValue(mockUser)
+      mockUser.findUnique.mockResolvedValue(mockUser)
 
       const req = new NextRequest('http://localhost/api/test', {
         headers: {
@@ -288,7 +288,7 @@ describe('Mobile Authentication Middleware', () => {
         role: 'USER'
       }
 
-      mockDb.user.findUnique.mockResolvedValue(mockUser)
+      mockUser.findUnique.mockResolvedValue(mockUser)
 
       const req = new NextRequest('http://localhost/api/test', {
         headers: {
@@ -315,7 +315,7 @@ describe('Mobile Authentication Middleware', () => {
         role: 'admin'
       }
 
-      mockDb.user.findUnique.mockResolvedValue(mockUser)
+      mockUser.findUnique.mockResolvedValue(mockUser)
 
       const req = new NextRequest('http://localhost/api/test', {
         headers: {
@@ -379,7 +379,7 @@ describe('Mobile Authentication Middleware', () => {
         }
       }
 
-      mockDb.user.findUnique.mockResolvedValue(mockJwtUser)
+      mockUser.findUnique.mockResolvedValue(mockJwtUser)
       mockGetServerSession.mockResolvedValue(mockSession)
 
       const req = new NextRequest('http://localhost/api/test', {

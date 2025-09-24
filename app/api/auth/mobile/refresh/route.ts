@@ -90,7 +90,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<TokenRefreshR
     // Generate new tokens with current user data
     const tokenPayload = {
       userId: user.id,
-      email: user.email,
+      email: user.email || '',
       role: user.role || undefined
     }
 
@@ -104,7 +104,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<TokenRefreshR
       refreshToken: newRefreshToken,
       user: {
         id: user.id,
-        email: user.email,
+        email: user.email || '',
         name: user.name || undefined,
         role: user.role || undefined
       }

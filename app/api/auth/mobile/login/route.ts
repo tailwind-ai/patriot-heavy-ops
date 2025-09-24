@@ -78,28 +78,28 @@ export async function POST(req: NextRequest): Promise<NextResponse<MobileLoginRe
       )
     }
 
-    // Generate JWT tokens
-    const tokenPayload = {
-      userId: user.id,
-      email: user.email,
-      role: user.role || undefined
-    }
+        // Generate JWT tokens
+        const tokenPayload = {
+          userId: user.id,
+          email: user.email || '',
+          role: user.role || undefined
+        }
 
     const accessToken = generateAccessToken(tokenPayload)
     const refreshToken = generateRefreshToken(tokenPayload)
 
     // Return successful response with tokens
-    return NextResponse.json({
-      success: true,
-      accessToken,
-      refreshToken,
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name || undefined,
-        role: user.role || undefined
-      }
-    })
+        return NextResponse.json({
+          success: true,
+          accessToken,
+          refreshToken,
+          user: {
+            id: user.id,
+            email: user.email || '',
+            name: user.name || undefined,
+            role: user.role || undefined
+          }
+        })
 
   } catch (error) {
     console.error('Mobile login error:', error)
