@@ -13,7 +13,7 @@ jobs:
       - name: Fetch latest deployment
         run: |
           curl -s -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
-          "https://api.vercel.com/v13/deployments?projectId=<YOUR_PROJECT_ID>&limit=1" \
+          "https://api.vercel.com/v13/deployments?projectId=pVL2Eh1elGVkCLNcOaSJVtsN&limit=1" \
           > vercel.json
           cat vercel.json | jq .
 
