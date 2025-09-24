@@ -60,6 +60,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ success: true })
       } catch (error) {
         // Log error for debugging
+        // eslint-disable-next-line no-console
         console.error("Error processing PR webhook:", error)
         return NextResponse.json(
           { error: "Failed to process webhook" },
@@ -88,6 +89,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ success: true })
       } catch (error) {
         // Log error for debugging
+        // eslint-disable-next-line no-console
         console.error("Error processing comment webhook:", error)
         return NextResponse.json(
           { error: "Failed to process webhook" },
@@ -103,18 +105,21 @@ export async function POST(req: NextRequest) {
 /**
  * Resolve a GitHub PR review conversation
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function resolveGitHubConversation(
   commentId: number,
   resolution: string,
-  repository: string
+  repository: string,
+  pullNumber: number
 ) {
   const parts = repository.split("/")
   if (parts.length !== 2 || !parts[0] || !parts[1]) {
+    // eslint-disable-next-line no-console
     console.error(`Invalid repository format: ${repository}`)
     return
   }
   const [owner, repo] = parts as [string, string]
-  
+
   try {
     const { Octokit } = await import("@octokit/rest")
     const octokit = new Octokit({
@@ -125,6 +130,7 @@ async function resolveGitHubConversation(
     await octokit.rest.pulls.createReplyForReviewComment({
       owner,
       repo,
+      pull_number: pullNumber,
       comment_id: commentId,
       body: `✅ **Resolved**
 
@@ -139,31 +145,27 @@ This suggestion has been implemented and the conversation is now resolved.`,
       await octokit.rest.pulls.dismissReview({
         owner,
         repo,
-        pull_number: 240, // This should be dynamic based on the PR
+        pull_number: pullNumber,
         review_id: commentId, // This might need to be the review ID, not comment ID
         message: "Resolved by Background Agent",
       })
-    } catch (dismissError) {
+    } catch {
       // If dismiss doesn't work, try to resolve via GraphQL API
+      // eslint-disable-next-line no-console
       console.log("Attempting to resolve conversation via GraphQL...")
-      
-      const mutation = `
-        mutation ResolveReviewThread($threadId: ID!) {
-          resolveReviewThread(input: {threadId: $threadId}) {
-            thread {
-              id
-              isResolved
-            }
-          }
-        }
-      `
-      
+
+      // GraphQL mutation would be used here if thread ID was available
       // This would require getting the thread ID first
-      console.log("GraphQL resolution not implemented yet - manual resolution required")
+      // eslint-disable-next-line no-console
+      console.log(
+        "GraphQL resolution not implemented yet - manual resolution required"
+      )
     }
 
+    // eslint-disable-next-line no-console
     console.log(`✅ Resolved conversation for comment ${commentId}`)
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error(`❌ Failed to resolve conversation ${commentId}:`, error)
   }
 }
@@ -182,25 +184,29 @@ function isCopilotOrSuggestionComment(comment: {
 
   // Official Copilot user IDs and logins
   const copilotUserIds = [175728472] // GitHub Copilot bot user ID
-  const copilotLogins = ["copilot", "github-copilot", "copilot-pull-request-reviewer"]
+  const copilotLogins = [
+    "copilot",
+    "github-copilot",
+    "copilot-pull-request-reviewer",
+  ]
 
   // Check for official Copilot users
   if (userId && copilotUserIds.includes(userId)) {
     return true
   }
 
-  if (copilotLogins.some(login => userLogin.includes(login))) {
+  if (copilotLogins.some((login) => userLogin.includes(login))) {
     return true
   }
 
   // Check for code suggestion patterns (more specific than just "```")
   const hasSuggestionBlock = body.includes("```suggestion")
-  const hasCodeBlock = body.includes("```") && (
-    body.includes("suggestion") ||
-    body.includes("nitpick") ||
-    body.includes("Consider") ||
-    body.includes("recommend")
-  )
+  const hasCodeBlock =
+    body.includes("```") &&
+    (body.includes("suggestion") ||
+      body.includes("nitpick") ||
+      body.includes("Consider") ||
+      body.includes("recommend"))
 
   // Check for common Copilot review patterns
   const copilotPatterns = [
@@ -208,10 +214,12 @@ function isCopilotOrSuggestionComment(comment: {
     /```suggestion/,
     /Consider using/i,
     /This could be improved/i,
-    /You might want to/i
+    /You might want to/i,
   ]
 
-  const hasCopilotPattern = copilotPatterns.some(pattern => pattern.test(body))
+  const hasCopilotPattern = copilotPatterns.some((pattern) =>
+    pattern.test(body)
+  )
 
   return hasSuggestionBlock || hasCodeBlock || hasCopilotPattern
 }
