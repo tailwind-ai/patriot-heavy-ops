@@ -1,9 +1,9 @@
 /**
  * Geocoding Service
- * 
+ *
  * Platform-agnostic geocoding service that supports multiple providers
  * and is designed for both web and mobile applications.
- * 
+ *
  * Design Principles:
  * - Zero React/DOM dependencies for mobile compatibility
  * - Provider pattern for multiple geocoding sources
@@ -52,8 +52,13 @@ export interface GeocodingCacheEntry {
 // Provider interface for different geocoding sources
 export interface GeocodingProvider {
   name: string
-  searchAddresses(query: string, options?: GeocodingSearchOptions): Promise<GeocodingAddress[]>
-  reverseGeocode(coordinates: GeocodingCoordinates): Promise<GeocodingAddress | null>
+  searchAddresses(
+    query: string,
+    options?: GeocodingSearchOptions
+  ): Promise<GeocodingAddress[]>
+  reverseGeocode(
+    coordinates: GeocodingCoordinates
+  ): Promise<GeocodingAddress | null>
   isAvailable(): Promise<boolean>
 }
 
@@ -64,7 +69,7 @@ export class NominatimProvider implements GeocodingProvider {
   private userAgent = "PatriotHeavyOps/1.0 (contact@patriotheavyops.com)"
 
   async searchAddresses(
-    query: string, 
+    query: string,
     options: GeocodingSearchOptions = {}
   ): Promise<GeocodingAddress[]> {
     if (query.length < 3) {
@@ -76,7 +81,7 @@ export class NominatimProvider implements GeocodingProvider {
     url.searchParams.set("format", "json")
     url.searchParams.set("addressdetails", "1")
     url.searchParams.set("limit", String(options.limit || 5))
-    
+
     if (options.countryCode) {
       url.searchParams.set("countrycodes", options.countryCode)
     }
@@ -92,26 +97,55 @@ export class NominatimProvider implements GeocodingProvider {
     }
 
     const data = await response.json()
-    
-    return data.map((item: any) => ({
-      displayName: item.display_name,
-      coordinates: {
-        latitude: parseFloat(item.lat),
-        longitude: parseFloat(item.lon),
-      },
-      placeId: item.place_id,
-      components: item.address ? {
-        streetNumber: item.address.house_number,
-        streetName: item.address.road,
-        city: item.address.city || item.address.town || item.address.village,
-        state: item.address.state,
-        postalCode: item.address.postcode,
-        country: item.address.country,
-      } : undefined,
-    }))
+
+    return data.map((item: unknown) => {
+      const nominatimItem = item as {
+        display_name: string
+        lat: string
+        lon: string
+        place_id: string
+        address?: {
+          house_number?: string
+          road?: string
+          city?: string
+          town?: string
+          village?: string
+          state?: string
+          postcode?: string
+          country?: string
+        }
+      }
+
+      const result: GeocodingAddress = {
+        displayName: nominatimItem.display_name,
+        coordinates: {
+          latitude: parseFloat(nominatimItem.lat),
+          longitude: parseFloat(nominatimItem.lon),
+        },
+        placeId: nominatimItem.place_id,
+      }
+
+      if (nominatimItem.address) {
+        result.components = {
+          streetNumber: nominatimItem.address.house_number,
+          streetName: nominatimItem.address.road,
+          city:
+            nominatimItem.address.city ||
+            nominatimItem.address.town ||
+            nominatimItem.address.village,
+          state: nominatimItem.address.state,
+          postalCode: nominatimItem.address.postcode,
+          country: nominatimItem.address.country,
+        }
+      }
+
+      return result
+    })
   }
 
-  async reverseGeocode(coordinates: GeocodingCoordinates): Promise<GeocodingAddress | null> {
+  async reverseGeocode(
+    coordinates: GeocodingCoordinates
+  ): Promise<GeocodingAddress | null> {
     const url = new URL(`${this.baseUrl}/reverse`)
     url.searchParams.set("lat", String(coordinates.latitude))
     url.searchParams.set("lon", String(coordinates.longitude))
@@ -128,28 +162,48 @@ export class NominatimProvider implements GeocodingProvider {
       throw new Error(`Nominatim reverse geocoding error: ${response.status}`)
     }
 
-    const data = await response.json()
-    
+    const data = (await response.json()) as {
+      display_name?: string
+      lat: string
+      lon: string
+      place_id: string
+      address?: {
+        house_number?: string
+        road?: string
+        city?: string
+        town?: string
+        village?: string
+        state?: string
+        postcode?: string
+        country?: string
+      }
+    }
+
     if (!data.display_name) {
       return null
     }
 
-    return {
+    const result: GeocodingAddress = {
       displayName: data.display_name,
       coordinates: {
         latitude: parseFloat(data.lat),
         longitude: parseFloat(data.lon),
       },
       placeId: data.place_id,
-      components: data.address ? {
+    }
+
+    if (data.address) {
+      result.components = {
         streetNumber: data.address.house_number,
         streetName: data.address.road,
         city: data.address.city || data.address.town || data.address.village,
         state: data.address.state,
         postalCode: data.address.postcode,
         country: data.address.country,
-      } : undefined,
+      }
     }
+
+    return result
   }
 
   async isAvailable(): Promise<boolean> {
@@ -170,15 +224,20 @@ export class MobileLocationProvider implements GeocodingProvider {
   name = "mobile-location"
 
   async searchAddresses(
-    query: string, 
-    options?: GeocodingSearchOptions
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _query: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _options?: GeocodingSearchOptions
   ): Promise<GeocodingAddress[]> {
     // Future implementation for React Native location services
     // This would integrate with device GPS and local geocoding
     throw new Error("Mobile location provider not yet implemented")
   }
 
-  async reverseGeocode(coordinates: GeocodingCoordinates): Promise<GeocodingAddress | null> {
+  async reverseGeocode(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _coordinates: GeocodingCoordinates
+  ): Promise<GeocodingAddress | null> {
     // Future implementation for React Native reverse geocoding
     throw new Error("Mobile location provider not yet implemented")
   }
@@ -200,12 +259,9 @@ export class GeocodingService extends BaseService {
 
   constructor(logger?: ServiceLogger) {
     super("GeocodingService", logger)
-    
+
     // Initialize default providers
-    this.providers = [
-      new NominatimProvider(),
-      new MobileLocationProvider(),
-    ]
+    this.providers = [new NominatimProvider(), new MobileLocationProvider()]
   }
 
   /**
@@ -226,7 +282,12 @@ export class GeocodingService extends BaseService {
     // Validate input
     const validation = this.validateRequired({ query }, ["query"])
     if (!validation.success) {
-      return validation
+      const error = validation.error || {
+        code: "VALIDATION_ERROR",
+        message: "Validation failed",
+        details: {},
+      }
+      return this.createError(error.code, error.message, error.details)
     }
 
     if (query.length < 3) {
@@ -256,19 +317,19 @@ export class GeocodingService extends BaseService {
           continue
         }
 
-        this.logOperation("Attempting geocoding", { 
-          provider: provider.name, 
-          query: query.substring(0, 50) 
+        this.logOperation("Attempting geocoding", {
+          provider: provider.name,
+          query: query.substring(0, 50),
         })
 
         const results = await provider.searchAddresses(query, options)
-        
+
         // Cache successful results
         this.setCache(cacheKey, results)
-        
-        this.logOperation("Geocoding successful", { 
-          provider: provider.name, 
-          resultCount: results.length 
+
+        this.logOperation("Geocoding successful", {
+          provider: provider.name,
+          resultCount: results.length,
         })
 
         return this.createSuccess(results)
@@ -296,11 +357,16 @@ export class GeocodingService extends BaseService {
   ): Promise<ServiceResult<GeocodingAddress | null>> {
     // Validate input
     const validation = this.validateRequired(
-      { latitude: coordinates.latitude, longitude: coordinates.longitude }, 
+      { latitude: coordinates.latitude, longitude: coordinates.longitude },
       ["latitude", "longitude"]
     )
     if (!validation.success) {
-      return validation
+      const error = validation.error || {
+        code: "VALIDATION_ERROR",
+        message: "Validation failed",
+        details: {},
+      }
+      return this.createError(error.code, error.message, error.details)
     }
 
     // Check rate limiting
@@ -315,8 +381,11 @@ export class GeocodingService extends BaseService {
     const cacheKey = `reverse:${coordinates.latitude},${coordinates.longitude}`
     const cached = this.getFromCache(cacheKey)
     if (cached && cached.results.length > 0) {
-      this.logOperation("Reverse geocoding cache hit", { coordinates, cacheKey })
-      return this.createSuccess(cached.results[0])
+      this.logOperation("Reverse geocoding cache hit", {
+        coordinates,
+        cacheKey,
+      })
+      return this.createSuccess(cached.results[0] || null)
     }
 
     // Try providers in order until one succeeds
@@ -326,21 +395,21 @@ export class GeocodingService extends BaseService {
           continue
         }
 
-        this.logOperation("Attempting reverse geocoding", { 
-          provider: provider.name, 
-          coordinates 
+        this.logOperation("Attempting reverse geocoding", {
+          provider: provider.name,
+          coordinates,
         })
 
         const result = await provider.reverseGeocode(coordinates)
-        
+
         // Cache successful results
         if (result) {
           this.setCache(cacheKey, [result])
         }
-        
-        this.logOperation("Reverse geocoding successful", { 
-          provider: provider.name, 
-          hasResult: !!result 
+
+        this.logOperation("Reverse geocoding successful", {
+          provider: provider.name,
+          hasResult: !!result,
         })
 
         return this.createSuccess(result)
@@ -380,18 +449,19 @@ export class GeocodingService extends BaseService {
 
   // Private helper methods
   private checkRateLimit(operation: string): boolean {
-    const key = `${operation}:${Date.now()}`
     const now = Date.now()
-    
+
     if (!this.rateLimitMap.has(operation)) {
       this.rateLimitMap.set(operation, [])
     }
 
-    const requests = this.rateLimitMap.get(operation)!
-    
+    const requests = this.rateLimitMap.get(operation) || []
+
     // Remove old requests outside the window
-    const validRequests = requests.filter(time => now - time < this.rateLimitWindow)
-    
+    const validRequests = requests.filter(
+      (time) => now - time < this.rateLimitWindow
+    )
+
     if (validRequests.length >= this.rateLimitMax) {
       return false
     }
@@ -399,7 +469,7 @@ export class GeocodingService extends BaseService {
     // Add current request
     validRequests.push(now)
     this.rateLimitMap.set(operation, validRequests)
-    
+
     return true
   }
 
@@ -425,13 +495,15 @@ export class GeocodingService extends BaseService {
       timestamp: Date.now(),
       ttl: this.defaultCacheTTL,
     }
-    
+
     this.cache.set(key, entry)
-    
+
     // Prevent cache from growing too large
     if (this.cache.size > 100) {
       const oldestKey = this.cache.keys().next().value
-      this.cache.delete(oldestKey)
+      if (oldestKey) {
+        this.cache.delete(oldestKey)
+      }
     }
   }
 }
