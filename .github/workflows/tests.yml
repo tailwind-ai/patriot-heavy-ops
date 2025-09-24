@@ -3,7 +3,9 @@ name: CI Tests
 on:
   pull_request:
     branches: [main, sam-dev]
-    
+  push: 
+    branches: [main, sam-dev]
+  
 concurrency:
   group: tests-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
