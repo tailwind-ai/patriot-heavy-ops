@@ -86,7 +86,7 @@ describe('Mobile Authentication Middleware', () => {
     it('should return unauthenticated when no valid auth found', async () => {
       mockGetServerSession.mockResolvedValue(null)
 
-      const req = createMockRequest('GET','http://localhost/api/test')
+      const req = createMockRequest('GET', 'http://localhost/api/test')
 
       const result = await authenticateRequest(req)
 
