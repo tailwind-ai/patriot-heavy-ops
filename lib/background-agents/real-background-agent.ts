@@ -59,7 +59,7 @@ export class RealBackgroundAgent {
 
       // High priority issues next
       if (a.priority === "high" && b.priority === "medium") return -1
-      if (b.priority === "high" && b.priority === "medium") return 1
+      if (a.priority === "high" && a.priority === "medium") return 1
 
       // Issues with no dependencies first
       if (a.dependencies.length === 0 && b.dependencies.length > 0) return -1

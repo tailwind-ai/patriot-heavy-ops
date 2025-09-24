@@ -1,4 +1,4 @@
-import { Octokit } from '@octokit/rest'
+import { Octokit } from "@octokit/rest"
 
 export interface GitHubComment {
   id: number
@@ -16,8 +16,13 @@ export interface GitHubComment {
 export interface GitHubIssue {
   id: string
   content: string
-  type: 'copilot_comment' | 'ci_failure' | 'vercel_failure' | 'lint_error' | 'test_failure'
-  severity: 'low' | 'medium' | 'high' | 'critical'
+  type:
+    | "copilot_comment"
+    | "ci_failure"
+    | "vercel_failure"
+    | "lint_error"
+    | "test_failure"
+  severity: "low" | "medium" | "high" | "critical"
   files?: string[]
   lineNumbers?: number[]
   suggestedFix?: string
@@ -39,26 +44,27 @@ export class GitHubIntegration {
    */
   async getPRComments(prNumber: number): Promise<GitHubComment[]> {
     try {
-      const { data: comments } = await this.octokit.rest.pulls.listReviewComments({
-        owner: this.owner,
-        repo: this.repo,
-        pull_number: prNumber,
-      })
+      const { data: comments } =
+        await this.octokit.rest.pulls.listReviewComments({
+          owner: this.owner,
+          repo: this.repo,
+          pull_number: prNumber,
+        })
 
-      return comments.map(comment => ({
+      return comments.map((comment) => ({
         id: comment.id,
         body: comment.body,
         user: {
-          login: comment.user?.login || 'unknown',
-          type: comment.user?.type || 'User'
+          login: comment.user?.login || "unknown",
+          type: comment.user?.type || "User",
         },
         created_at: comment.created_at,
         path: comment.path,
-        position: comment.position,
-        original_position: comment.original_position
+        position: comment.position || 0,
+        original_position: comment.original_position || 0,
       }))
     } catch (error) {
-      console.error('Error fetching PR comments:', error)
+      console.error("Error fetching PR comments:", error)
       return []
     }
   }
@@ -71,7 +77,7 @@ export class GitHubIntegration {
 
     for (const comment of comments) {
       // Skip non-Copilot comments
-      if (comment.user.login !== 'Copilot') continue
+      if (comment.user.login !== "Copilot") continue
 
       const issue = this.parseCopilotComment(comment)
       if (issue) {
@@ -87,30 +93,33 @@ export class GitHubIntegration {
    */
   private parseCopilotComment(comment: GitHubComment): GitHubIssue | null {
     const body = comment.body.toLowerCase()
-    
+
     // Determine issue type based on comment content
-    let type: GitHubIssue['type'] = 'copilot_comment'
-    let severity: GitHubIssue['severity'] = 'medium'
+    let type: GitHubIssue["type"] = "copilot_comment"
+    let severity: GitHubIssue["severity"] = "medium"
     let suggestedFix: string | undefined
 
     // Check for specific patterns in Copilot comments
-    if (body.includes('import') && body.includes('type')) {
-      type = 'lint_error'
-      severity = 'medium'
+    if (body.includes("import") && body.includes("type")) {
+      type = "lint_error"
+      severity = "medium"
       suggestedFix = this.extractSuggestion(comment.body)
-    } else if (body.includes('template literal') || body.includes('backticks')) {
-      type = 'lint_error'
-      severity = 'low'
+    } else if (
+      body.includes("template literal") ||
+      body.includes("backticks")
+    ) {
+      type = "lint_error"
+      severity = "low"
       suggestedFix = this.extractSuggestion(comment.body)
-    } else if (body.includes('test') && body.includes('fail')) {
-      type = 'test_failure'
-      severity = 'high'
-    } else if (body.includes('ci') || body.includes('build')) {
-      type = 'ci_failure'
-      severity = 'high'
-    } else if (body.includes('vercel') || body.includes('deploy')) {
-      type = 'vercel_failure'
-      severity = 'high'
+    } else if (body.includes("test") && body.includes("fail")) {
+      type = "test_failure"
+      severity = "high"
+    } else if (body.includes("ci") || body.includes("build")) {
+      type = "ci_failure"
+      severity = "high"
+    } else if (body.includes("vercel") || body.includes("deploy")) {
+      type = "vercel_failure"
+      severity = "high"
     }
 
     return {
@@ -118,9 +127,9 @@ export class GitHubIntegration {
       content: this.extractDescription(comment.body),
       type,
       severity,
-      files: comment.path ? [comment.path] : undefined,
-      lineNumbers: comment.position ? [comment.position] : undefined,
-      suggestedFix
+      files: comment.path ? [comment.path] : [],
+      lineNumbers: comment.position ? [comment.position] : [],
+      suggestedFix,
     }
   }
 
@@ -129,15 +138,16 @@ export class GitHubIntegration {
    */
   private extractDescription(body: string): string {
     // Remove code blocks and extract the main description
-    const lines = body.split('\n')
-    const description = lines.find(line => 
-      line.trim() && 
-      !line.startsWith('```') && 
-      !line.startsWith('The ') && 
-      !line.startsWith('Change to')
+    const lines = body.split("\n")
+    const description = lines.find(
+      (line) =>
+        line.trim() &&
+        !line.startsWith("```") &&
+        !line.startsWith("The ") &&
+        !line.startsWith("Change to")
     )
-    
-    return description?.trim() || body.substring(0, 100) + '...'
+
+    return description?.trim() || body.substring(0, 100) + "..."
   }
 
   /**
@@ -145,12 +155,12 @@ export class GitHubIntegration {
    */
   private extractSuggestion(body: string): string | undefined {
     const suggestionMatch = body.match(/```suggestion\n([\s\S]*?)\n```/)
-    if (suggestionMatch) {
+    if (suggestionMatch?.[1]) {
       return suggestionMatch[1].trim()
     }
 
     const codeBlockMatch = body.match(/```[\s\S]*?\n([\s\S]*?)\n```/)
-    if (codeBlockMatch) {
+    if (codeBlockMatch?.[1]) {
       return codeBlockMatch[1].trim()
     }
 
