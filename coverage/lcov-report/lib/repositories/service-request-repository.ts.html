@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">78.57% </span>
+                <span class="strong">78.88% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>66/84</span>
+                <span class='fraction'>71/90</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">64.15% </span>
+                <span class="strong">57.14% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>34/53</span>
+                <span class='fraction'>44/77</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">78.57% </span>
+                <span class="strong">78.88% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>66/84</span>
+                <span class='fraction'>71/90</span>
             </div>
         
             
@@ -661,7 +661,7 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
@@ -720,7 +720,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">5x</span>
@@ -823,7 +823,7 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
@@ -854,7 +854,7 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
@@ -880,7 +880,7 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
@@ -931,7 +931,7 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
@@ -1164,10 +1164,10 @@ export class ServiceRequestRepository extends BaseRepository implements CrudRepo
   async findById(id: string): Promise&lt;RepositoryResult&lt;any&gt;&gt; {
     const validation = this.validateRequired({ id }, ["id"]);
     if (!validation.success) {
-      return {
-        success: false,
-        error: validation.error!,
-      };
+      const errorMessage = typeof validation.error === 'string' 
+        ? <span class="branch-0 cbranch-no" title="branch not covered" >validation.error </span>
+        : validation.error?.message || <span class="branch-1 cbranch-no" title="branch not covered" >'Validation failed';</span>
+      return this.createError('VALIDATION_ERROR', errorMessage);
     }
 &nbsp;
     return this.handleAsync(
@@ -1221,12 +1221,12 @@ export class ServiceRequestRepository extends BaseRepository implements CrudRepo
     filters?: ServiceRequestFilters,
     pagination?: PaginationOptions
   ): Promise&lt;RepositoryResult&lt;ServiceRequestWithUser[]&gt;&gt; {
-    const validation = this.validateRequired(accessOptions, ["userId", "userRole"]);
+    const validation = this.validateRequired(accessOptions as unknown as Record&lt;string, unknown&gt;, ["userId", "userRole"]);
     <span class="missing-if-branch" title="if path not taken" >I</span>if (!validation.success) {
-<span class="cstat-no" title="statement not covered" >      return {</span>
-        success: false,
-        error: validation.error!,
-      };
+      const errorMessage = <span class="cstat-no" title="statement not covered" >typeof validation.error === 'string' </span>
+        ? validation.error 
+        : validation.error?.message || 'Validation failed';
+<span class="cstat-no" title="statement not covered" >      return this.createError('VALIDATION_ERROR', errorMessage);</span>
     }
 &nbsp;
     return this.handleAsync(
@@ -1321,15 +1321,15 @@ export class ServiceRequestRepository extends BaseRepository implements CrudRepo
    * Create new service request
    */
   async create(data: ServiceRequestCreateInput): Promise&lt;RepositoryResult&lt;any&gt;&gt; {
-    const validation = this.validateRequired(data, [
+    const validation = this.validateRequired(data as unknown as Record&lt;string, unknown&gt;, [
       "title", "contactName", "contactEmail", "contactPhone", 
       "jobSite", "equipmentCategory", "equipmentDetail", "userId"
     ]);
     if (!validation.success) {
-      return {
-        success: false,
-        error: validation.error!,
-      };
+      const errorMessage = typeof validation.error === 'string' 
+        ? <span class="branch-0 cbranch-no" title="branch not covered" >validation.error </span>
+        : validation.error?.message || <span class="branch-1 cbranch-no" title="branch not covered" >'Validation failed';</span>
+      return this.createError('VALIDATION_ERROR', errorMessage);
     }
 &nbsp;
     return this.handleAsync(
@@ -1357,10 +1357,10 @@ export class ServiceRequestRepository extends BaseRepository implements CrudRepo
   async update(id: string, data: ServiceRequestUpdateInput): Promise&lt;RepositoryResult&lt;any&gt;&gt; {
     const validation = this.validateRequired({ id }, ["id"]);
     if (!validation.success) {
-      return {
-        success: false,
-        error: validation.error!,
-      };
+      const errorMessage = typeof validation.error === 'string' 
+        ? <span class="branch-0 cbranch-no" title="branch not covered" >validation.error </span>
+        : validation.error?.message || <span class="branch-1 cbranch-no" title="branch not covered" >'Validation failed';</span>
+      return this.createError('VALIDATION_ERROR', errorMessage);
     }
 &nbsp;
     return this.handleAsync(
@@ -1383,10 +1383,10 @@ export class ServiceRequestRepository extends BaseRepository implements CrudRepo
   async delete(id: string): Promise&lt;RepositoryResult&lt;boolean&gt;&gt; {
     const validation = this.validateRequired({ id }, ["id"]);
     if (!validation.success) {
-      return {
-        success: false,
-        error: validation.error!,
-      };
+      const errorMessage = typeof validation.error === 'string' 
+        ? <span class="branch-0 cbranch-no" title="branch not covered" >validation.error </span>
+        : validation.error?.message || <span class="branch-1 cbranch-no" title="branch not covered" >'Validation failed';</span>
+      return this.createError('VALIDATION_ERROR', errorMessage);
     }
 &nbsp;
     return this.handleAsync(
@@ -1434,10 +1434,10 @@ export class ServiceRequestRepository extends BaseRepository implements CrudRepo
   ): Promise&lt;RepositoryResult&lt;any&gt;&gt; {
     const validation = this.validateRequired({ id, newStatus, changedBy }, ["id", "newStatus", "changedBy"]);
     if (!validation.success) {
-      return {
-        success: false,
-        error: validation.error!,
-      };
+      const errorMessage = typeof validation.error === 'string' 
+        ? <span class="branch-0 cbranch-no" title="branch not covered" >validation.error </span>
+        : validation.error?.message || <span class="branch-1 cbranch-no" title="branch not covered" >'Validation failed';</span>
+      return this.createError('VALIDATION_ERROR', errorMessage);
     }
 &nbsp;
     return this.handleAsync(
@@ -1588,7 +1588,7 @@ export class ServiceRequestRepository extends BaseRepository implements CrudRepo
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-09-24T19:23:49.495Z
+                at 2025-09-24T21:59:55.982Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

@@ -419,7 +419,8 @@ async function generateCIFix(check: { name: string; conclusion?: string | null }
   return `Fix for CI failure in ${check.name} (${conclusion}). Check the logs for specific error details.`
 }
 
-async function generateVercelFix(deployment: { state: string; url?: string }): Promise<string> {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+async function generateVercelFix(_deployment: { state: string; url?: string }): Promise<string> {
   // Analyze Vercel deployment failure to generate fix suggestions
   return `Fix for Vercel deployment failure. Check build logs for specific error details.`
 }

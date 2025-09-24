@@ -360,7 +360,7 @@ export class GitHubIntegration {
       if (line.includes("error TS") || line.includes("TypeScript error")) {
         errorType = "typescript"
         const match = line.match(/error TS(\d+):\s*(.+)/)
-        if (match && match[1] && match[2]) {
+        if (match?.[1] && match?.[2]) {
           errorMessage = `TypeScript error TS${match[1]}: ${match[2]}`
           suggestedFix = this.getTypeScriptFix(match[1])
         }
@@ -391,7 +391,7 @@ export class GitHubIntegration {
       const fileMatch = line.match(
         /([a-zA-Z0-9_/.-]+\.(ts|tsx|js|jsx|json|md))/
       )
-      if (fileMatch && fileMatch[1]) {
+      if (fileMatch?.[1]) {
         affectedFiles.push(fileMatch[1])
       }
     }
