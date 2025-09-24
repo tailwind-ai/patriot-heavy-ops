@@ -126,16 +126,43 @@ export class NominatimProvider implements GeocodingProvider {
       }
 
       if (nominatimItem.address) {
-        result.components = {
-          streetNumber: nominatimItem.address.house_number,
-          streetName: nominatimItem.address.road,
-          city:
+        const components: {
+          streetNumber?: string
+          streetName?: string
+          city?: string
+          state?: string
+          postalCode?: string
+          country?: string
+        } = {}
+
+        if (nominatimItem.address.house_number) {
+          components.streetNumber = nominatimItem.address.house_number
+        }
+        if (nominatimItem.address.road) {
+          components.streetName = nominatimItem.address.road
+        }
+        if (
+          nominatimItem.address.city ||
+          nominatimItem.address.town ||
+          nominatimItem.address.village
+        ) {
+          components.city =
             nominatimItem.address.city ||
             nominatimItem.address.town ||
-            nominatimItem.address.village,
-          state: nominatimItem.address.state,
-          postalCode: nominatimItem.address.postcode,
-          country: nominatimItem.address.country,
+            nominatimItem.address.village!
+        }
+        if (nominatimItem.address.state) {
+          components.state = nominatimItem.address.state
+        }
+        if (nominatimItem.address.postcode) {
+          components.postalCode = nominatimItem.address.postcode
+        }
+        if (nominatimItem.address.country) {
+          components.country = nominatimItem.address.country
+        }
+
+        if (Object.keys(components).length > 0) {
+          result.components = components
         }
       }
 
@@ -193,13 +220,37 @@ export class NominatimProvider implements GeocodingProvider {
     }
 
     if (data.address) {
-      result.components = {
-        streetNumber: data.address.house_number,
-        streetName: data.address.road,
-        city: data.address.city || data.address.town || data.address.village,
-        state: data.address.state,
-        postalCode: data.address.postcode,
-        country: data.address.country,
+      const components: {
+        streetNumber?: string
+        streetName?: string
+        city?: string
+        state?: string
+        postalCode?: string
+        country?: string
+      } = {}
+
+      if (data.address.house_number) {
+        components.streetNumber = data.address.house_number
+      }
+      if (data.address.road) {
+        components.streetName = data.address.road
+      }
+      if (data.address.city || data.address.town || data.address.village) {
+        components.city =
+          data.address.city || data.address.town || data.address.village!
+      }
+      if (data.address.state) {
+        components.state = data.address.state
+      }
+      if (data.address.postcode) {
+        components.postalCode = data.address.postcode
+      }
+      if (data.address.country) {
+        components.country = data.address.country
+      }
+
+      if (Object.keys(components).length > 0) {
+        result.components = components
       }
     }
 
