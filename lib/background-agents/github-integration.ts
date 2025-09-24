@@ -94,6 +94,7 @@ export class GitHubIntegration {
         original_position: comment.original_position || 0,
       }))
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error("Error fetching PR comments:", error)
       return []
     }
@@ -219,7 +220,7 @@ export class GitHubIntegration {
 
       // Filter runs related to the PR
       const prRuns = runs.workflow_runs.filter((run) =>
-        run.pull_requests && run.pull_requests.some((pr) => pr.number === prNumber)
+        run.pull_requests?.some((pr) => pr.number === prNumber)
       )
 
       return prRuns.map((run) => ({
@@ -237,6 +238,7 @@ export class GitHubIntegration {
         })),
       }))
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error("Error fetching workflow runs:", error)
       return []
     }
@@ -271,13 +273,14 @@ export class GitHubIntegration {
           })),
         }))
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error("Error fetching failed jobs:", error)
       return []
     }
   }
 
   /**
-   * Get job logs and analyze failure cause
+   * Get job logs and analyze failure cause using GitHub CLI
    */
   async analyzeJobFailure(jobId: number): Promise<{
     errorType: string
@@ -286,23 +289,52 @@ export class GitHubIntegration {
     affectedFiles: string[]
   }> {
     try {
-      const { data: logs } =
-        await this.octokit.rest.actions.downloadJobLogsForWorkflowRun({
-          owner: this.owner,
-          repo: this.repo,
-          job_id: jobId,
-        })
+      // Use GitHub CLI to get job logs (works with PAT permissions)
+      const { execSync } = await import("child_process")
 
-      const logContent = Buffer.from(logs as string, "base64").toString("utf-8")
+      const logContent = execSync(
+        `gh api repos/${this.owner}/${this.repo}/actions/jobs/${jobId}/logs --paginate`,
+        {
+          encoding: "utf8",
+          env: {
+            ...process.env,
+            GITHUB_TOKEN: process.env.GITHUB_ACCESS_TOKEN,
+          },
+        }
+      )
 
       return this.parseFailureLogs(logContent)
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error("Error analyzing job failure:", error)
-      return {
-        errorType: "unknown",
-        errorMessage: "Unable to analyze failure logs",
-        suggestedFix: "Check GitHub Actions logs manually",
-        affectedFiles: [],
+
+      // Fallback: try to get basic job info without logs
+      try {
+        const { execSync } = await import("child_process")
+        const jobInfo = execSync(
+          `gh api repos/${this.owner}/${this.repo}/actions/jobs/${jobId} --jq '.name + ": " + .conclusion'`,
+          {
+            encoding: "utf8",
+            env: {
+              ...process.env,
+              GITHUB_TOKEN: process.env.GITHUB_ACCESS_TOKEN,
+            },
+          }
+        )
+
+        return {
+          errorType: "ci_failure",
+          errorMessage: `Job failed: ${jobInfo.trim()}`,
+          suggestedFix: `Check GitHub Actions logs at: https://github.com/${this.owner}/${this.repo}/actions/jobs/${jobId}`,
+          affectedFiles: [],
+        }
+      } catch {
+        return {
+          errorType: "unknown",
+          errorMessage: "Unable to analyze failure logs - check permissions",
+          suggestedFix: "Verify GitHub token has Actions:read permissions",
+          affectedFiles: [],
+        }
       }
     }
   }
@@ -419,6 +451,7 @@ export class GitHubIntegration {
         }
       }
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error("Error fetching CI failure issues:", error)
     }
 
