@@ -1,0 +1,32 @@
+name: Vercel Logs to GitHub
+
+on:
+  check_suite:
+    types: [completed]
+
+jobs:
+  fetch-vercel-logs:
+    if: github.event.check_suite.app.name == 'Vercel'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get deployment ID
+        run: |
+          echo "DEPLOYMENT_URL=$(jq -r '.check_suite.head_branch' <<< '${{ toJson(github.event) }}')" >> $GITHUB_ENV
+
+      - name: Fetch logs from Vercel API
+        run: |
+          curl -s -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
+          "https://api.vercel.com/v13/deployments?projectId=<prj_z2UADNdDnCmAVzfC5O2InyapEBdU>&limit=1" \
+          > vercel.json
+          cat vercel.json | jq .
+
+      - name: Post logs to GitHub PR
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          issue-number: ${{ github.event.check_suite.pull_requests[0].number }}
+          body: |
+            🚨 **Vercel Deployment Logs**
+            ```
+            $(jq -r '.deployments[0].readyState' vercel.json)
+            ```
