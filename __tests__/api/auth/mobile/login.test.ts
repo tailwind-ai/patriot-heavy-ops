@@ -57,7 +57,7 @@ describe("/api/auth/mobile/login", () => {
       password: "hashed-password",
       emailVerified: null,
       image: null,
-      role: "USER",
+      role: "USER" as const,
       phone: null,
       company: null,
       createdAt: new Date("2023-01-01"),

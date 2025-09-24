@@ -39,7 +39,7 @@ describe('/api/auth/mobile/refresh', () => {
     const mockTokenPayload = {
       userId: 'user-123',
       email: 'test@example.com',
-      role: 'USER',
+      role: 'USER' as const,
       iat: Math.floor(Date.now() / 1000),
       exp: Math.floor(Date.now() / 1000) + 7 * 24 * 60 * 60 // 7 days
     }
@@ -51,7 +51,7 @@ describe('/api/auth/mobile/refresh', () => {
       password: null,
       emailVerified: null,
       image: null,
-      role: 'USER',
+      role: 'USER' as const,
       phone: null,
       company: null,
       createdAt: new Date('2023-01-01'),
