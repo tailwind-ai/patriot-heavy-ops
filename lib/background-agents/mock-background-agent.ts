@@ -18,6 +18,7 @@ export type MockTodoItem = {
     | "vercel_failure"
     | "lint_error"
     | "test_failure"
+    | "definition_of_done"
   files?: string[]
   lineNumbers?: number[]
   suggestedFix?: string

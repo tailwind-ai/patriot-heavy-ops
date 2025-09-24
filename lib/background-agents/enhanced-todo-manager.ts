@@ -60,7 +60,7 @@ export class EnhancedTodoManager {
   async initializeFromGitHubPR(prNumber: number): Promise<EnhancedTodoItem[]> {
     // Clear existing todos for fresh PR-specific detection
     this.todos = []
-    
+
     // Use real background agent to fetch GitHub issues
     const realAgent = new RealBackgroundAgent(
       process.env.GITHUB_ACCESS_TOKEN || "",
@@ -69,6 +69,43 @@ export class EnhancedTodoManager {
     )
 
     const agentTodos = await realAgent.processPRIssues(prNumber)
+
+    const enhancedTodos: EnhancedTodoItem[] = agentTodos.map((todo) => ({
+      ...todo,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      estimatedTime: this.estimateTime(todo),
+      tags: this.generateTags(todo),
+      assignee: this.suggestAssignee(todo),
+      relatedPR: `#${prNumber}`,
+    }))
+
+    // Replace todos with fresh PR-specific ones
+    this.todos = enhancedTodos
+
+    // Save to persistence
+    TodoPersistence.saveTodos(this.todos)
+
+    return enhancedTodos
+  }
+
+  /**
+   * Initialize todos from real GitHub PR issues including Definition of Done
+   */
+  async initializeFromGitHubPRWithDoD(
+    prNumber: number
+  ): Promise<EnhancedTodoItem[]> {
+    // Clear existing todos for fresh PR-specific detection
+    this.todos = []
+
+    // Use real background agent to fetch GitHub issues including DoD
+    const realAgent = new RealBackgroundAgent(
+      process.env.GITHUB_ACCESS_TOKEN || "",
+      "samuelhenry",
+      "patriot-heavy-ops"
+    )
+
+    const agentTodos = await realAgent.processPRIssuesWithDoD(prNumber)
 
     const enhancedTodos: EnhancedTodoItem[] = agentTodos.map((todo) => ({
       ...todo,
@@ -221,7 +258,7 @@ export class EnhancedTodoManager {
    * Get todo by ID
    */
   getTodoById(id: string): EnhancedTodoItem | null {
-    return this.todos.find(todo => todo.id === id) || null
+    return this.todos.find((todo) => todo.id === id) || null
   }
 
   /**
@@ -264,6 +301,7 @@ export class EnhancedTodoManager {
       vercel_failure: "15-45 min",
       lint_error: "5-20 min",
       test_failure: "15-60 min",
+      definition_of_done: "2-5 min",
     }
 
     const complexity = todo.files?.length || 1

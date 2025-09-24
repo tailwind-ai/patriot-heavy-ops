@@ -214,6 +214,30 @@ export class RealBackgroundAgent {
     console.log(`✅ Added ${todos.length} todos from GitHub PR #${prNumber}`)
     return todos
   }
+
+  /**
+   * Process issues including Definition of Done checks
+   */
+  async processPRIssuesWithDoD(prNumber: number): Promise<MockTodoItem[]> {
+    console.log(`🤖 Processing issues from PR #${prNumber} with Definition of Done checks...`)
+    
+    // Get regular issues (comments, CI failures)
+    const regularIssues = await this.detectIssues(prNumber)
+    
+    // Get Definition of Done todos if PR is ready
+    const dodIssues = await this.githubIntegration.getDefinitionOfDoneTodos(prNumber)
+    
+    // Combine all issues
+    const allIssues = [...regularIssues, ...dodIssues]
+    const todos = await this.convertIssuesToTodos(allIssues)
+    
+    // Clear existing todos and add new ones
+    this.todos = []
+    todos.forEach((todo) => this.addTodo(todo))
+    
+    console.log(`✅ Added ${todos.length} todos from GitHub PR #${prNumber} (${dodIssues.length} DoD todos)`)
+    return todos
+  }
 }
 
 // Export singleton instance

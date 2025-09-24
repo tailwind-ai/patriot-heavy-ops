@@ -7,6 +7,9 @@ on:
     types: [submitted]
   issue_comment:
     types: [created]
+  status:
+  check_run:
+    types: [completed]
 
 jobs:
   background-agent:
@@ -48,10 +51,24 @@ jobs:
               echo "Not a PR comment, skipping"
               exit 0
             fi
+          elif [ "${{ github.event_name }}" = "status" ] || [ "${{ github.event_name }}" = "check_run" ]; then
+            # For status/check events, find associated PR
+            PR_NUMBER=$(gh pr list --state open --json number,headRefName --jq '.[] | select(.headRefName == "${{ github.ref_name }}") | .number' | head -1)
+            if [ -z "$PR_NUMBER" ]; then
+              echo "No open PR found for this ref, skipping"
+              exit 0
+            fi
           fi
 
           echo "Processing PR #$PR_NUMBER with Background Agent..."
-          npx tsx scripts/todo-cli.ts github $PR_NUMBER
+
+          # Use DoD-enabled version for status/check events (when CI might be passing)
+          if [ "${{ github.event_name }}" = "status" ] || [ "${{ github.event_name }}" = "check_run" ]; then
+            echo "Using Definition of Done checks for status/check event..."
+            npx tsx scripts/todo-cli.ts github-dod $PR_NUMBER
+          else
+            npx tsx scripts/todo-cli.ts github $PR_NUMBER
+          fi
         env:
           GITHUB_ACCESS_TOKEN: ${{ secrets.SAM_PAT_EXP_09_04_2026 }}
 

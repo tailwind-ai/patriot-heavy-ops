@@ -22,6 +22,7 @@ export interface GitHubIssue {
     | "vercel_failure"
     | "lint_error"
     | "test_failure"
+    | "definition_of_done"
   severity: "low" | "medium" | "high" | "critical"
   files?: string[]
   lineNumbers?: number[]
@@ -453,6 +454,153 @@ export class GitHubIntegration {
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error("Error fetching CI failure issues:", error)
+    }
+
+    return issues
+  }
+
+  /**
+   * Check PR status and determine if Definition of Done verification is needed
+   */
+  async getPRStatus(prNumber: number): Promise<{
+    allChecksPass: boolean
+    readyForDoD: boolean
+    checksStatus: Array<{
+      name: string
+      status: string
+      conclusion: string
+    }>
+  }> {
+    try {
+      const { data: pr } = await this.octokit.rest.pulls.get({
+        owner: this.owner,
+        repo: this.repo,
+        pull_number: prNumber,
+      })
+
+      // Get combined status for the PR
+      const { data: combinedStatus } = await this.octokit.rest.repos.getCombinedStatusForRef({
+        owner: this.owner,
+        repo: this.repo,
+        ref: pr.head.sha,
+      })
+
+      // Get check runs for the PR
+      const { data: checkRuns } = await this.octokit.rest.checks.listForRef({
+        owner: this.owner,
+        repo: this.repo,
+        ref: pr.head.sha,
+      })
+
+      const checksStatus = [
+        ...combinedStatus.statuses.map(status => ({
+          name: status.context,
+          status: status.state,
+          conclusion: status.state,
+        })),
+        ...checkRuns.check_runs.map(check => ({
+          name: check.name,
+          status: check.status || 'unknown',
+          conclusion: check.conclusion || 'unknown',
+        }))
+      ]
+
+      const allChecksPass = 
+        combinedStatus.state === 'success' &&
+        checkRuns.check_runs.every(check => 
+          check.conclusion === 'success' || check.conclusion === 'neutral'
+        )
+
+      const readyForDoD = allChecksPass && pr.mergeable_state === 'clean'
+
+      return {
+        allChecksPass,
+        readyForDoD,
+        checksStatus,
+      }
+    } catch (error) {
+      console.error("Error checking PR status:", error)
+      return {
+        allChecksPass: false,
+        readyForDoD: false,
+        checksStatus: [],
+      }
+    }
+  }
+
+  /**
+   * Generate Definition of Done todos when PR is ready
+   */
+  async getDefinitionOfDoneTodos(prNumber: number): Promise<GitHubIssue[]> {
+    const issues: GitHubIssue[] = []
+    
+    try {
+      const prStatus = await this.getPRStatus(prNumber)
+      
+      // Only create DoD todos if all checks are passing
+      if (!prStatus.allChecksPass) {
+        return issues
+      }
+
+      // Create Definition of Done verification todos
+      const dodTodos = [
+        {
+          id: `dod-tests-${prNumber}`,
+          content: "Verify ALL tests pass (npm test returns 0 exit code)",
+          type: "definition_of_done" as const,
+          severity: "critical" as const,
+          suggestedFix: "Run 'npm test' and ensure all tests pass with exit code 0",
+        },
+        {
+          id: `dod-linting-${prNumber}`,
+          content: "Verify ALL linting passes (ESLint clean)",
+          type: "definition_of_done" as const,
+          severity: "critical" as const,
+          suggestedFix: "Run 'npx eslint . --ext .ts,.tsx --max-warnings 0' and fix all issues",
+        },
+        {
+          id: `dod-typescript-${prNumber}`,
+          content: "Verify ALL TypeScript compilation passes",
+          type: "definition_of_done" as const,
+          severity: "critical" as const,
+          suggestedFix: "Run 'npx tsc --noEmit' and fix all compilation errors",
+        },
+        {
+          id: `dod-commits-${prNumber}`,
+          content: "Verify ALL changes committed with conventional commits",
+          type: "definition_of_done" as const,
+          severity: "critical" as const,
+          suggestedFix: "Check git log and ensure all commits follow conventional commit format",
+        },
+        {
+          id: `dod-pushed-${prNumber}`,
+          content: "Verify ALL changes pushed to remote branch",
+          type: "definition_of_done" as const,
+          severity: "critical" as const,
+          suggestedFix: "Run 'git status' and 'git push' to ensure all changes are pushed",
+        },
+        {
+          id: `dod-ci-checks-${prNumber}`,
+          content: `Monitor ALL CI checks are green on PR #${prNumber}`,
+          type: "definition_of_done" as const,
+          severity: "critical" as const,
+          suggestedFix: `Use 'gh pr checks ${prNumber}' to monitor CI status until all checks pass`,
+        },
+        {
+          id: `dod-complete-${prNumber}`,
+          content: "Confirm Definition of Done achieved - 100% of checks passing",
+          type: "definition_of_done" as const,
+          severity: "critical" as const,
+          suggestedFix: "Only mark complete when ALL above verification steps pass",
+        },
+      ]
+
+      issues.push(...dodTodos)
+
+      console.log(`✅ Generated ${dodTodos.length} Definition of Done todos for PR #${prNumber}`)
+      
+    } catch (error) {
+      console.error("Error generating Definition of Done todos:", error)
     }
 
     return issues

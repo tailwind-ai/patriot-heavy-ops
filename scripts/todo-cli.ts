@@ -29,6 +29,15 @@ async function main() {
         }
         await initializeFromGitHubPR(parseInt(prNumber))
         break
+      case "github-dod":
+        if (!prNumber) {
+          console.log(
+            "❌ Please provide PR number: npm run todo github-dod <PR_NUMBER>"
+          )
+          process.exit(1)
+        }
+        await initializeFromGitHubPRWithDoD(parseInt(prNumber))
+        break
       case "clear":
         await clearAllTodos()
         break
@@ -142,6 +151,68 @@ async function initializeFromGitHubPR(prNumber: number) {
       }
     })
   } else {
+    console.log("\n🎉 No issues found in GitHub PR #" + prNumber)
+  }
+}
+
+async function initializeFromGitHubPRWithDoD(prNumber: number) {
+  console.log(`🤖 Fetching issues from GitHub PR #${prNumber} with Definition of Done checks...`)
+  console.log(`🧹 Clearing previous todos for fresh PR-specific detection...`)
+  console.log(`🔍 Checking for Copilot comments, CI failures, and DoD requirements...`)
+
+  const todos = await enhancedTodoManager.initializeFromGitHubPRWithDoD(prNumber)
+  console.log(`✅ Found ${todos.length} issues from GitHub PR #${prNumber}`)
+
+  // Show summary
+  const summary = enhancedTodoManager.getProgressSummary()
+  console.log("\n📊 Summary:")
+  console.log(`  Total: ${summary.total}`)
+  console.log(`  Ready: ${summary.pending}`)
+  console.log(`  In Progress: ${summary.inProgress}`)
+  console.log(`  Completed: ${summary.completed}`)
+  console.log(`  Completion Rate: ${summary.completionRate.toFixed(1)}%`)
+
+  // Separate DoD todos from regular issues
+  const dodTodos = todos.filter(todo => todo.issueType === 'definition_of_done')
+  const regularTodos = todos.filter(todo => todo.issueType !== 'definition_of_done')
+
+  // Show regular GitHub todos
+  if (regularTodos.length > 0) {
+    console.log("\n🎯 GitHub PR Issues:")
+    regularTodos.forEach((todo, index) => {
+      const priority = getPriorityEmoji(todo.priority)
+      const status = getStatusEmoji(todo.status)
+      const typeIcon = getIssueTypeIcon(todo.issueType)
+      console.log(
+        `  ${index + 1}. ${status} ${priority} ${typeIcon} ${todo.content}`
+      )
+      if (todo.suggestedFix) {
+        console.log(`     💡 Fix: ${todo.suggestedFix}`)
+      }
+      if (todo.files && todo.files.length > 0) {
+        console.log(`     📁 Files: ${todo.files.join(", ")}`)
+      }
+    })
+  }
+
+  // Show Definition of Done todos
+  if (dodTodos.length > 0) {
+    console.log("\n🎯 Definition of Done Verification:")
+    dodTodos.forEach((todo, index) => {
+      const priority = getPriorityEmoji(todo.priority)
+      const status = getStatusEmoji(todo.status)
+      const typeIcon = getIssueTypeIcon(todo.issueType)
+      console.log(
+        `  ${index + 1}. ${status} ${priority} ${typeIcon} ${todo.content}`
+      )
+      if (todo.suggestedFix) {
+        console.log(`     💡 Fix: ${todo.suggestedFix}`)
+      }
+    })
+    console.log("\n🚨 CRITICAL: All Definition of Done items must be verified before marking PR as complete!")
+  }
+
+  if (todos.length === 0) {
     console.log("\n🎉 No issues found in GitHub PR #" + prNumber)
   }
 }
@@ -460,6 +531,9 @@ function showHelp() {
   console.log(
     "github <PR>    - Fetch todos from GitHub PR comments (clears previous)"
   )
+  console.log(
+    "github-dod <PR> - Fetch todos with Definition of Done checks (clears previous)"
+  )
   console.log("sync <PR>      - Sync todos from GitHub Actions workflow")
   console.log("resolve <ID>   - Mark todo as resolved and comment on GitHub")
   console.log("clear          - Clear all todos")
@@ -475,6 +549,7 @@ function showHelp() {
   console.log("Examples:")
   console.log("  npm run todo init")
   console.log("  npm run todo github 238")
+  console.log("  npm run todo github-dod 242  # Include Definition of Done checks")
   console.log("  npm run todo clear")
   console.log("  npm run todo next")
   console.log("  npm run todo update issue-1 completed")
@@ -523,6 +598,8 @@ function getIssueTypeIcon(issueType: string): string {
       return "🔍"
     case "test_failure":
       return "🧪"
+    case "definition_of_done":
+      return "✅"
     default:
       return "📝"
   }
