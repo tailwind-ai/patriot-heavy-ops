@@ -1,3 +1,4 @@
+import { NextRequest } from "next/server"
 import { GET, POST } from "@/app/api/service-requests/route"
 import {
   createMockRequest,
@@ -11,9 +12,11 @@ import {
   MOCK_SERVICE_REQUEST,
 } from "@/__tests__/helpers/mock-data"
 import { getCurrentUserWithRole } from "@/lib/session"
+import { authenticateRequest } from "@/lib/middleware/mobile-auth"
 
 // Mock dependencies
 jest.mock("@/lib/session")
+jest.mock("@/lib/middleware/mobile-auth")
 jest.mock("@/lib/db", () => ({
   db: {
     serviceRequest: {
@@ -37,10 +40,17 @@ import { db } from "@/lib/db"
 const mockDb = db as any
 const mockGetCurrentUserWithRole =
   getCurrentUserWithRole as jest.MockedFunction<typeof getCurrentUserWithRole>
+const mockAuthenticateRequest = 
+  authenticateRequest as jest.MockedFunction<typeof authenticateRequest>
 
 describe("/api/service-requests", () => {
   beforeEach(() => {
     jest.clearAllMocks()
+    // Mock mobile auth to return unauthenticated by default (fallback to session)
+    mockAuthenticateRequest.mockResolvedValue({
+      isAuthenticated: false,
+      error: 'No valid authentication found'
+    })
   })
 
   describe("GET /api/service-requests", () => {
@@ -48,9 +58,59 @@ describe("/api/service-requests", () => {
       it("should return 401 when no session exists", async () => {
         mockGetCurrentUserWithRole.mockResolvedValue(null)
 
-        const response = await GET()
+        const req = createMockRequest('GET', 'http://localhost/api/service-requests')
+        const response = await GET(req)
 
         assertResponse(response, 401)
+      })
+
+      it("should authenticate with JWT Bearer token", async () => {
+        const user = { ...TEST_USERS.USER }
+        
+        // Mock JWT authentication success
+        mockAuthenticateRequest.mockResolvedValue({
+          isAuthenticated: true,
+          user: {
+            id: user.id,
+            email: user.email,
+            role: user.role
+          },
+          authMethod: 'jwt'
+        })
+
+        const mockRequests = [{ ...MOCK_SERVICE_REQUEST, userId: user.id }]
+        mockDb.serviceRequest.findMany.mockResolvedValue(mockRequests)
+
+        const req = createMockRequest('GET', 'http://localhost/api/service-requests', undefined, {
+          authorization: 'Bearer valid.jwt.token'
+        })
+        const response = await GET(req)
+
+        assertResponse(response, 200)
+        expect(mockAuthenticateRequest).toHaveBeenCalledWith(req)
+      })
+
+      it("should fallback to session auth when JWT fails", async () => {
+        const user = { ...TEST_USERS.USER }
+        
+        // Mock JWT auth failure, session auth success
+        mockAuthenticateRequest.mockResolvedValue({
+          isAuthenticated: false,
+          error: 'Invalid token'
+        })
+        mockGetCurrentUserWithRole.mockResolvedValue(user)
+
+        const mockRequests = [{ ...MOCK_SERVICE_REQUEST, userId: user.id }]
+        mockDb.serviceRequest.findMany.mockResolvedValue(mockRequests)
+
+        const req = createMockRequest('GET', 'http://localhost/api/service-requests', undefined, {
+          authorization: 'Bearer invalid.token'
+        })
+        const response = await GET(req)
+
+        assertResponse(response, 200)
+        expect(mockAuthenticateRequest).toHaveBeenCalledWith(req)
+        expect(mockGetCurrentUserWithRole).toHaveBeenCalled()
       })
     })
 
@@ -62,7 +122,8 @@ describe("/api/service-requests", () => {
         const mockRequests = [{ ...MOCK_SERVICE_REQUEST, userId: user.id }]
         mockDb.serviceRequest.findMany.mockResolvedValue(mockRequests)
 
-        const response = await GET()
+        const req = createMockRequest('GET', 'http://localhost/api/service-requests')
+        const response = await GET(req)
 
         assertResponse(response, 200)
 
@@ -100,7 +161,8 @@ describe("/api/service-requests", () => {
         const mockRequests = [{ ...MOCK_SERVICE_REQUEST, userId: user.id }]
         mockDb.serviceRequest.findMany.mockResolvedValue(mockRequests)
 
-        const response = await GET()
+        const req = createMockRequest('GET', 'http://localhost/api/service-requests')
+        const response = await GET(req)
 
         assertResponse(response, 200)
 
@@ -136,7 +198,8 @@ describe("/api/service-requests", () => {
         const mockRequests = [MOCK_SERVICE_REQUEST]
         mockDb.serviceRequest.findMany.mockResolvedValue(mockRequests)
 
-        const response = await GET()
+        const req = createMockRequest('GET', 'http://localhost/api/service-requests')
+        const response = await GET(req)
 
         assertResponse(response, 200)
 
@@ -167,7 +230,8 @@ describe("/api/service-requests", () => {
         const mockRequests = [MOCK_SERVICE_REQUEST]
         mockDb.serviceRequest.findMany.mockResolvedValue(mockRequests)
 
-        const response = await GET()
+        const req = createMockRequest('GET', 'http://localhost/api/service-requests')
+        const response = await GET(req)
 
         assertResponse(response, 200)
 
@@ -201,7 +265,8 @@ describe("/api/service-requests", () => {
           new Error("Database error")
         )
 
-        const response = await GET()
+        const req = createMockRequest('GET', 'http://localhost/api/service-requests')
+        const response = await GET(req)
 
         assertResponse(response, 500)
       })
@@ -217,7 +282,7 @@ describe("/api/service-requests", () => {
           "POST",
           "http://localhost:3000/api/service-requests",
           VALID_SERVICE_REQUEST_DATA
-        )
+        ) as NextRequest
         const response = await POST(request)
 
         assertResponse(response, 401)
@@ -241,7 +306,7 @@ describe("/api/service-requests", () => {
           "POST",
           "http://localhost:3000/api/service-requests",
           VALID_SERVICE_REQUEST_DATA
-        )
+        ) as NextRequest
         const response = await POST(request)
 
         assertResponse(response, 200)
@@ -272,7 +337,7 @@ describe("/api/service-requests", () => {
           "POST",
           "http://localhost:3000/api/service-requests",
           VALID_SERVICE_REQUEST_DATA
-        )
+        ) as NextRequest
         const response = await POST(request)
 
         assertResponse(response, 200)
@@ -294,7 +359,7 @@ describe("/api/service-requests", () => {
           "POST",
           "http://localhost:3000/api/service-requests",
           VALID_SERVICE_REQUEST_DATA
-        )
+        ) as NextRequest
         const response = await POST(request)
 
         assertResponse(response, 200)
@@ -316,7 +381,7 @@ describe("/api/service-requests", () => {
           "POST",
           "http://localhost:3000/api/service-requests",
           VALID_SERVICE_REQUEST_DATA
-        )
+        ) as NextRequest
         const response = await POST(request)
 
         assertResponse(response, 200)
@@ -332,7 +397,7 @@ describe("/api/service-requests", () => {
           "POST",
           "http://localhost:3000/api/service-requests",
           INVALID_SERVICE_REQUEST_DATA
-        )
+        ) as NextRequest
         const response = await POST(request)
 
         assertResponse(response, 422)
@@ -355,7 +420,7 @@ describe("/api/service-requests", () => {
           "POST",
           "http://localhost:3000/api/service-requests",
           invalidData
-        )
+        ) as NextRequest
         const response = await POST(request)
 
         assertResponse(response, 422)
@@ -374,7 +439,7 @@ describe("/api/service-requests", () => {
           "POST",
           "http://localhost:3000/api/service-requests",
           invalidData
-        )
+        ) as NextRequest
         const response = await POST(request)
 
         assertResponse(response, 422)
@@ -398,7 +463,7 @@ describe("/api/service-requests", () => {
           "POST",
           "http://localhost:3000/api/service-requests",
           VALID_SERVICE_REQUEST_DATA
-        )
+        ) as NextRequest
         const response = await POST(request)
 
         assertResponse(response, 200)
@@ -456,7 +521,7 @@ describe("/api/service-requests", () => {
           "POST",
           "http://localhost:3000/api/service-requests",
           VALID_SERVICE_REQUEST_DATA
-        )
+        ) as NextRequest
         const response = await POST(request)
 
         assertResponse(response, 500)
@@ -478,7 +543,7 @@ describe("/api/service-requests", () => {
           headers: request.headers,
         })
 
-        const response = await POST(invalidRequest)
+        const response = await POST(invalidRequest as NextRequest)
 
         assertResponse(response, 500)
       })

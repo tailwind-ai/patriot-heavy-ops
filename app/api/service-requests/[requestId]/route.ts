@@ -1,12 +1,28 @@
+import { NextRequest } from "next/server"
 import { getServerSession } from "next-auth"
 import { z } from "zod"
 
 import { authOptions } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { serviceRequestUpdateSchema } from "@/lib/validations/service-request"
-// Removed unused permission imports
+import { authenticateRequest } from "@/lib/middleware/mobile-auth"
 
-async function verifyCurrentUserHasAccessToRequest(requestId: string) {
+async function verifyCurrentUserHasAccessToRequest(requestId: string, req?: NextRequest) {
+  // Try mobile auth first if request is provided
+  if (req) {
+    const authResult = await authenticateRequest(req)
+    if (authResult.isAuthenticated && authResult.user) {
+      const count = await db.serviceRequest.count({
+        where: {
+          id: requestId,
+          userId: authResult.user.id,
+        },
+      })
+      return count > 0
+    }
+  }
+  
+  // Fallback to session auth
   const session = await getServerSession(authOptions)
   if (!session?.user?.id) {
     return null
@@ -23,13 +39,13 @@ async function verifyCurrentUserHasAccessToRequest(requestId: string) {
 }
 
 export async function GET(
-  req: Request,
+  req: NextRequest,
   context: { params: Promise<{ requestId: string }> }
 ) {
   try {
     const params = await context.params
 
-    if (!(await verifyCurrentUserHasAccessToRequest(params.requestId))) {
+    if (!(await verifyCurrentUserHasAccessToRequest(params.requestId, req))) {
       return new Response(null, { status: 403 })
     }
 
@@ -77,13 +93,13 @@ export async function GET(
 }
 
 export async function PATCH(
-  req: Request,
+  req: NextRequest,
   context: { params: Promise<{ requestId: string }> }
 ) {
   try {
     const params = await context.params
 
-    if (!(await verifyCurrentUserHasAccessToRequest(params.requestId))) {
+    if (!(await verifyCurrentUserHasAccessToRequest(params.requestId, req))) {
       return new Response(null, { status: 403 })
     }
 
@@ -135,13 +151,13 @@ export async function PATCH(
 }
 
 export async function DELETE(
-  req: Request,
+  req: NextRequest,
   context: { params: Promise<{ requestId: string }> }
 ) {
   try {
     const params = await context.params
 
-    if (!(await verifyCurrentUserHasAccessToRequest(params.requestId))) {
+    if (!(await verifyCurrentUserHasAccessToRequest(params.requestId, req))) {
       return new Response(null, { status: 403 })
     }
 

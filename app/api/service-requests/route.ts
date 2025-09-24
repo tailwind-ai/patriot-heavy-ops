@@ -1,4 +1,5 @@
 import * as z from "zod"
+import { NextRequest } from "next/server"
 import { db } from "@/lib/db"
 import {
   serviceRequestSchema,
@@ -6,10 +7,24 @@ import {
 } from "@/lib/validations/service-request"
 import { getCurrentUserWithRole } from "@/lib/session"
 import { hasPermission } from "@/lib/permissions"
+import { authenticateRequest } from "@/lib/middleware/mobile-auth"
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
-    const user = await getCurrentUserWithRole()
+    // Try mobile auth first, fallback to session auth
+    const authResult = await authenticateRequest(req)
+    
+    let user
+    if (authResult.isAuthenticated && authResult.user) {
+      user = {
+        id: authResult.user.id,
+        email: authResult.user.email,
+        role: authResult.user.role || 'USER'
+      }
+    } else {
+      // Fallback to session-based auth for backward compatibility
+      user = await getCurrentUserWithRole()
+    }
 
     if (!user) {
       return new Response("Unauthorized", { status: 401 })
@@ -114,9 +129,22 @@ export async function GET() {
   }
 }
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
-    const user = await getCurrentUserWithRole()
+    // Try mobile auth first, fallback to session auth
+    const authResult = await authenticateRequest(req)
+    
+    let user
+    if (authResult.isAuthenticated && authResult.user) {
+      user = {
+        id: authResult.user.id,
+        email: authResult.user.email,
+        role: authResult.user.role || 'USER'
+      }
+    } else {
+      // Fallback to session-based auth for backward compatibility
+      user = await getCurrentUserWithRole()
+    }
 
     if (!user) {
       return new Response("Unauthorized", { status: 401 })
