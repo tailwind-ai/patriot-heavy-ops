@@ -199,27 +199,34 @@ function isCopilotOrSuggestionComment(comment: {
     return true
   }
 
-  // Check for code suggestion patterns (more specific than just "```")
+  // Check for GitHub's official suggestion blocks
   const hasSuggestionBlock = body.includes("```suggestion")
-  const hasCodeBlock =
+
+  // Enhanced Copilot-specific patterns with higher precision
+  const copilotPatterns = [
+    /```[\s\S]*?suggestion[\s\S]*?```/i, // Official suggestion blocks
+    /\[nitpick\]/i, // Common Copilot nitpick format
+    /\[suggestion\]/i, // Common Copilot suggestion format
+    /Consider using.*instead/i,
+    /This could be improved by/i,
+    /You might want to consider/i,
+    /I suggest.*instead/i,
+    /It would be better to/i,
+    /A more.*approach would be/i,
+  ]
+
+  // Only consider code blocks that specifically mention suggestions or improvements
+  const hasRelevantCodeBlock =
     body.includes("```") &&
     (body.includes("suggestion") ||
       body.includes("nitpick") ||
-      body.includes("Consider") ||
-      body.includes("recommend"))
-
-  // Check for common Copilot review patterns
-  const copilotPatterns = [
-    /\[nitpick\]/i,
-    /```suggestion/,
-    /Consider using/i,
-    /This could be improved/i,
-    /You might want to/i,
-  ]
+      body.includes("improvement") ||
+      body.includes("better approach") ||
+      body.includes("Consider using"))
 
   const hasCopilotPattern = copilotPatterns.some((pattern) =>
     pattern.test(body)
   )
 
-  return hasSuggestionBlock || hasCodeBlock || hasCopilotPattern
+  return hasSuggestionBlock || hasRelevantCodeBlock || hasCopilotPattern
 }
