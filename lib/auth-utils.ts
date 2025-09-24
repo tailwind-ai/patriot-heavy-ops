@@ -3,6 +3,17 @@ import jwt from "jsonwebtoken"
 import { env } from "@/env.mjs"
 
 /**
+ * JWT Configuration Constants
+ */
+export const JWT_CONFIG = {
+  ACCESS_TOKEN_EXPIRY: '15m',
+  REFRESH_TOKEN_EXPIRY: '7d',
+  ISSUER: 'patriot-heavy-ops',
+  AUDIENCE: 'mobile-app',
+  EXPIRATION_BUFFER_SECONDS: 30, // Buffer for clock skew tolerance
+} as const
+
+/**
  * Hash a password using bcrypt
  */
 export async function hashPassword(password: string): Promise<string> {
@@ -36,9 +47,9 @@ export function generateAccessToken(payload: Omit<JWTPayload, 'iat' | 'exp'>): s
     payload,
     env.NEXTAUTH_SECRET,
     { 
-      expiresIn: '15m',
-      issuer: 'patriot-heavy-ops',
-      audience: 'mobile-app'
+      expiresIn: JWT_CONFIG.ACCESS_TOKEN_EXPIRY,
+      issuer: JWT_CONFIG.ISSUER,
+      audience: JWT_CONFIG.AUDIENCE
     }
   )
 }
@@ -51,9 +62,9 @@ export function generateRefreshToken(payload: Omit<JWTPayload, 'iat' | 'exp'>): 
     payload,
     env.NEXTAUTH_SECRET,
     { 
-      expiresIn: '7d',
-      issuer: 'patriot-heavy-ops',
-      audience: 'mobile-app'
+      expiresIn: JWT_CONFIG.REFRESH_TOKEN_EXPIRY,
+      issuer: JWT_CONFIG.ISSUER,
+      audience: JWT_CONFIG.AUDIENCE
     }
   )
 }
@@ -64,8 +75,8 @@ export function generateRefreshToken(payload: Omit<JWTPayload, 'iat' | 'exp'>): 
 export function verifyToken(token: string): JWTPayload | null {
   try {
     const decoded = jwt.verify(token, env.NEXTAUTH_SECRET, {
-      issuer: 'patriot-heavy-ops',
-      audience: 'mobile-app'
+      issuer: JWT_CONFIG.ISSUER,
+      audience: JWT_CONFIG.AUDIENCE
     }) as JWTPayload
     
     return decoded
@@ -87,13 +98,12 @@ export function extractBearerToken(authHeader: string | null): string | null {
 }
 
 /**
- * Check if a token is expired (with 30 second buffer)
+ * Check if a token is expired (with configurable buffer for clock skew)
  */
 export function isTokenExpired(payload: JWTPayload): boolean {
   if (!payload.exp) return true
   
   const now = Math.floor(Date.now() / 1000)
-  const buffer = 30 // 30 second buffer
   
-  return payload.exp <= (now + buffer)
+  return payload.exp <= (now + JWT_CONFIG.EXPIRATION_BUFFER_SECONDS)
 }

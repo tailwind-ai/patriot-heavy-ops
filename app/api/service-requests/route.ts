@@ -9,22 +9,31 @@ import { getCurrentUserWithRole } from "@/lib/session"
 import { hasPermission } from "@/lib/permissions"
 import { authenticateRequest } from "@/lib/middleware/mobile-auth"
 
+/**
+ * Helper function to get authenticated user from either JWT or session
+ */
+async function getAuthenticatedUser(
+  req: NextRequest
+): Promise<{ id: string; email: string; role: string } | null> {
+  // Try mobile auth first, fallback to session auth
+  const authResult = await authenticateRequest(req)
+
+  if (authResult.isAuthenticated && authResult.user) {
+    return {
+      id: authResult.user.id,
+      email: authResult.user.email,
+      role: authResult.user.role || "USER",
+    }
+  }
+
+  // Fallback to session-based auth for backward compatibility
+  const sessionUser = await getCurrentUserWithRole()
+  return sessionUser
+}
+
 export async function GET(req: NextRequest) {
   try {
-    // Try mobile auth first, fallback to session auth
-    const authResult = await authenticateRequest(req)
-    
-    let user
-    if (authResult.isAuthenticated && authResult.user) {
-      user = {
-        id: authResult.user.id,
-        email: authResult.user.email,
-        role: authResult.user.role || 'USER'
-      }
-    } else {
-      // Fallback to session-based auth for backward compatibility
-      user = await getCurrentUserWithRole()
-    }
+    const user = await getAuthenticatedUser(req)
 
     if (!user) {
       return new Response("Unauthorized", { status: 401 })
@@ -131,20 +140,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    // Try mobile auth first, fallback to session auth
-    const authResult = await authenticateRequest(req)
-    
-    let user
-    if (authResult.isAuthenticated && authResult.user) {
-      user = {
-        id: authResult.user.id,
-        email: authResult.user.email,
-        role: authResult.user.role || 'USER'
-      }
-    } else {
-      // Fallback to session-based auth for backward compatibility
-      user = await getCurrentUserWithRole()
-    }
+    const user = await getAuthenticatedUser(req)
 
     if (!user) {
       return new Response("Unauthorized", { status: 401 })

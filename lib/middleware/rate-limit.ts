@@ -8,6 +8,7 @@ interface RateLimitConfig {
   maxRequests: number
   message?: string
   keyGenerator?: (req: NextRequest) => string
+  store?: RateLimitStore
 }
 
 /**
@@ -19,22 +20,105 @@ interface RateLimitEntry {
 }
 
 /**
- * In-memory rate limit store
- * In production, consider using Redis or similar external store
+ * Rate limit store interface for different storage backends
  */
-const rateLimitStore = new Map<string, RateLimitEntry>()
+interface RateLimitStore {
+  get(key: string): Promise<RateLimitEntry | null>
+  set(key: string, entry: RateLimitEntry): Promise<void>
+  delete(key: string): Promise<void>
+  cleanup?(): Promise<void>
+}
 
 /**
- * Clean up expired entries periodically
+ * In-memory rate limit store implementation
+ * Suitable for single-instance deployments or development
  */
-setInterval(() => {
-  const now = Date.now()
-  for (const [key, entry] of rateLimitStore.entries()) {
-    if (now > entry.resetTime) {
-      rateLimitStore.delete(key)
+class MemoryRateLimitStore implements RateLimitStore {
+  private store = new Map<string, RateLimitEntry>()
+  private lastCleanup = Date.now()
+  private readonly cleanupInterval = 60000 // 1 minute
+
+  async get(key: string): Promise<RateLimitEntry | null> {
+    // Lazy cleanup to avoid setInterval in serverless environments
+    await this.lazyCleanup()
+    return this.store.get(key) || null
+  }
+
+  async set(key: string, entry: RateLimitEntry): Promise<void> {
+    this.store.set(key, entry)
+  }
+
+  async delete(key: string): Promise<void> {
+    this.store.delete(key)
+  }
+
+  private async lazyCleanup(): Promise<void> {
+    const now = Date.now()
+    if (now - this.lastCleanup < this.cleanupInterval) {
+      return
+    }
+
+    this.lastCleanup = now
+    for (const [key, entry] of this.store.entries()) {
+      if (now > entry.resetTime) {
+        this.store.delete(key)
+      }
     }
   }
-}, 60000) // Clean up every minute
+}
+
+/**
+ * Redis-based rate limit store implementation
+ * Suitable for multi-instance production deployments
+ */
+class RedisRateLimitStore implements RateLimitStore {
+  private redis: any // Redis client type
+
+  constructor(redisClient: any) {
+    this.redis = redisClient
+  }
+
+  async get(key: string): Promise<RateLimitEntry | null> {
+    try {
+      const data = await this.redis.get(key)
+      return data ? JSON.parse(data) : null
+    } catch (error) {
+      console.error('Redis rate limit get error:', error)
+      return null
+    }
+  }
+
+  async set(key: string, entry: RateLimitEntry): Promise<void> {
+    try {
+      const ttl = Math.ceil((entry.resetTime - Date.now()) / 1000)
+      if (ttl > 0) {
+        await this.redis.setex(key, ttl, JSON.stringify(entry))
+      }
+    } catch (error) {
+      console.error('Redis rate limit set error:', error)
+    }
+  }
+
+  async delete(key: string): Promise<void> {
+    try {
+      await this.redis.del(key)
+    } catch (error) {
+      console.error('Redis rate limit delete error:', error)
+    }
+  }
+}
+
+/**
+ * Default in-memory store instance
+ */
+const defaultStore = new MemoryRateLimitStore()
+
+/**
+ * Create a Redis store instance (optional, requires Redis client)
+ */
+export function createRedisRateLimitStore(redisClient: any): RateLimitStore {
+  return new RedisRateLimitStore(redisClient)
+}
 
 /**
  * Default key generator using IP address
@@ -53,7 +137,8 @@ export function rateLimit(config: RateLimitConfig) {
     windowMs,
     maxRequests,
     message = 'Too many requests, please try again later',
-    keyGenerator = defaultKeyGenerator
+    keyGenerator = defaultKeyGenerator,
+    store = defaultStore
   } = config
 
   return async (req: NextRequest): Promise<NextResponse | null> => {
@@ -61,7 +146,7 @@ export function rateLimit(config: RateLimitConfig) {
     const now = Date.now()
     const resetTime = now + windowMs
 
-    let entry = rateLimitStore.get(key)
+    let entry = await store.get(key)
 
     if (!entry || now > entry.resetTime) {
       // Create new entry or reset expired entry
@@ -69,7 +154,7 @@ export function rateLimit(config: RateLimitConfig) {
         count: 1,
         resetTime
       }
-      rateLimitStore.set(key, entry)
+      await store.set(key, entry)
       return null // Allow request
     }
 
@@ -95,7 +180,7 @@ export function rateLimit(config: RateLimitConfig) {
 
     // Increment counter
     entry.count++
-    rateLimitStore.set(key, entry)
+    await store.set(key, entry)
 
     return null // Allow request
   }
