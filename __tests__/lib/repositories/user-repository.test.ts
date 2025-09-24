@@ -10,7 +10,7 @@ import {
   UserUpdateInput,
   OperatorApplicationInput,
 } from "@/lib/repositories/user-repository"
-import type { UserRole } from "@prisma/client"
+import { UserRole } from "@prisma/client"
 
 // Mock Prisma Client
 const mockPrismaClient = {

@@ -88,7 +88,7 @@ export class MockBackgroundAgent {
       issueType: issue.type,
       files: issue.files || [],
       lineNumbers: issue.lineNumbers || [],
-      suggestedFix: issue.suggestedFix || undefined
+      suggestedFix: issue.suggestedFix
     }
       todos.push(todo)
     }

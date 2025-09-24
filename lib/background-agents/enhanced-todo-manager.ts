@@ -107,7 +107,7 @@ export class EnhancedTodoManager {
       const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 }
       return priorityOrder[a.priority] - priorityOrder[b.priority]
     })
-    return sorted.length > 0 ? sorted[0] : null
+    return sorted.length > 0 ? sorted[0]! : null
   }
 
   /**

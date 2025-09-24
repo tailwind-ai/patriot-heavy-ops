@@ -9,7 +9,7 @@ import {
   ServiceRequestCreateInput,
   ServiceRequestUpdateInput,
 } from "@/lib/repositories/service-request-repository"
-import type { ServiceRequestStatus, UserRole } from "@prisma/client"
+import { ServiceRequestStatus, UserRole } from "@prisma/client"
 
 // Mock Prisma Client
 const mockPrismaClient = {
