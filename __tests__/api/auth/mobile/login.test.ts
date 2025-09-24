@@ -342,12 +342,12 @@ describe("/api/auth/mobile/login", () => {
       const data = await response.json()
 
       expect(response.status).toBe(200)
-      expect(data.user.role).toBeUndefined()
+      expect(data.user.role).toBe(UserRole.USER)
 
       const expectedPayload = {
         userId: userWithoutRole.id,
         email: userWithoutRole.email,
-        role: undefined,
+        role: UserRole.USER,
       }
 
       expect(mockGenerateAccessToken).toHaveBeenCalledWith(expectedPayload)
