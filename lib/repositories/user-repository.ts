@@ -86,7 +86,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
     if (!validation.success) {
       return {
         success: false,
-        error: validation.error!,
+        error: validation.error || 'Validation failed',
       };
     }
 
@@ -116,7 +116,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
     if (!validation.success) {
       return {
         success: false,
-        error: validation.error!,
+        error: validation.error || 'Validation failed',
       };
     }
 
@@ -249,7 +249,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
     if (!validation.success) {
       return {
         success: false,
-        error: validation.error!,
+        error: validation.error || 'Validation failed',
       };
     }
 
@@ -281,7 +281,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
     if (!validation.success) {
       return {
         success: false,
-        error: validation.error!,
+        error: validation.error || 'Validation failed',
       };
     }
 
@@ -317,7 +317,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
     if (!validation.success) {
       return {
         success: false,
-        error: validation.error!,
+        error: validation.error || 'Validation failed',
       };
     }
 
@@ -368,7 +368,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
     if (!validation.success) {
       return {
         success: false,
-        error: validation.error!,
+        error: validation.error || 'Validation failed',
       };
     }
 
@@ -414,7 +414,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
     if (!validation.success) {
       return {
         success: false,
-        error: validation.error!,
+        error: validation.error || 'Validation failed',
       };
     }
 
@@ -472,7 +472,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
     if (!validation.success) {
       return {
         success: false,
-        error: validation.error!,
+        error: validation.error || 'Validation failed',
       };
     }
 
@@ -506,7 +506,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
     if (!validation.success) {
       return {
         success: false,
-        error: validation.error!,
+        error: validation.error || 'Validation failed',
       };
     }
 
@@ -549,7 +549,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
     if (!validation.success) {
       return {
         success: false,
-        error: validation.error!,
+        error: validation.error || 'Validation failed',
       };
     }
 

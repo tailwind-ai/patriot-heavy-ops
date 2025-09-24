@@ -89,7 +89,7 @@ export class ServiceRequestRepository extends BaseRepository implements CrudRepo
     if (!validation.success) {
       return {
         success: false,
-        error: validation.error!,
+        error: validation.error || 'Validation failed',
       };
     }
 
@@ -148,7 +148,7 @@ export class ServiceRequestRepository extends BaseRepository implements CrudRepo
     if (!validation.success) {
       return {
         success: false,
-        error: validation.error!,
+        error: validation.error || 'Validation failed',
       };
     }
 
@@ -251,7 +251,7 @@ export class ServiceRequestRepository extends BaseRepository implements CrudRepo
     if (!validation.success) {
       return {
         success: false,
-        error: validation.error!,
+        error: validation.error || 'Validation failed',
       };
     }
 
@@ -282,7 +282,7 @@ export class ServiceRequestRepository extends BaseRepository implements CrudRepo
     if (!validation.success) {
       return {
         success: false,
-        error: validation.error!,
+        error: validation.error || 'Validation failed',
       };
     }
 
@@ -308,7 +308,7 @@ export class ServiceRequestRepository extends BaseRepository implements CrudRepo
     if (!validation.success) {
       return {
         success: false,
-        error: validation.error!,
+        error: validation.error || 'Validation failed',
       };
     }
 
@@ -359,7 +359,7 @@ export class ServiceRequestRepository extends BaseRepository implements CrudRepo
     if (!validation.success) {
       return {
         success: false,
-        error: validation.error!,
+        error: validation.error || 'Validation failed',
       };
     }
 

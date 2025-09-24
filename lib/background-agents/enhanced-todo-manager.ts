@@ -58,6 +58,9 @@ export class EnhancedTodoManager {
    * Initialize todos from real GitHub PR issues
    */
   async initializeFromGitHubPR(prNumber: number): Promise<EnhancedTodoItem[]> {
+    // Clear existing todos for fresh PR-specific detection
+    this.todos = []
+    
     // Use real background agent to fetch GitHub issues
     const realAgent = new RealBackgroundAgent(
       process.env.GITHUB_ACCESS_TOKEN || "",
@@ -77,13 +80,21 @@ export class EnhancedTodoManager {
       relatedPR: `#${prNumber}`,
     }))
 
-    // Add to existing todos instead of replacing
-    this.todos = [...this.todos, ...enhancedTodos]
+    // Replace todos with fresh PR-specific ones
+    this.todos = enhancedTodos
 
     // Save to persistence
     TodoPersistence.saveTodos(this.todos)
 
     return enhancedTodos
+  }
+
+  /**
+   * Clear all todos (useful for switching to new PR)
+   */
+  clearAllTodos(): void {
+    this.todos = []
+    TodoPersistence.saveTodos(this.todos)
   }
 
   /**

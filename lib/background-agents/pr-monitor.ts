@@ -8,8 +8,20 @@ type PRWebhookData = {
   repository: string
   baseBranch: string
   action: string
-  prData?: any
-  commentData?: any
+  prData?: {
+    number: number
+    title: string
+    body: string
+    state: string
+    head: { sha: string }
+    base: { sha: string }
+  }
+  commentData?: {
+    id: number
+    body: string
+    user: { login: string }
+    created_at: string
+  }
 }
 
 export type IssueDetection = {
@@ -73,7 +85,12 @@ async function detectIssues(
   owner: string,
   repo: string,
   prNumber: number,
-  commentData?: any
+  commentData?: {
+    id: number
+    body: string
+    user: { login: string }
+    created_at: string
+  }
 ): Promise<IssueDetection[]> {
   const issues: IssueDetection[] = []
 
@@ -109,7 +126,12 @@ async function detectIssues(
 }
 
 async function detectCopilotComment(
-  commentData: any
+  commentData: {
+    id: number
+    body: string
+    user: { login: string }
+    created_at: string
+  }
 ): Promise<IssueDetection | null> {
   const body = commentData.body || ""
   const author = commentData.user?.login || ""
@@ -230,7 +252,7 @@ async function detectVercelFailures(
     if (response.ok) {
       const deployments = await response.json()
       const prDeployment = deployments.deployments?.find(
-        (d: any) => d.meta?.githubCommitRef === `pull/${prNumber}/head`
+        (d: { meta?: { githubCommitRef?: string } }) => d.meta?.githubCommitRef === `pull/${prNumber}/head`
       )
 
       if (prDeployment && prDeployment.state === "ERROR") {
@@ -315,7 +337,7 @@ async function processIssue(
           issue.type
         )
 
-        if (commitResult.success) {
+        if (commitResult.success && commitResult.commitSha) {
           // Update PR with fix details
           await gitOps.updatePRWithFix(commitResult.commitSha, issue.type)
 
@@ -391,12 +413,12 @@ function extractCodeFromComment(commentBody: string): string {
   return codeBlocks ? codeBlocks.join("\n") : ""
 }
 
-async function generateCIFix(check: any): Promise<string> {
+async function generateCIFix(check: { name: string; conclusion?: string }): Promise<string> {
   // Analyze check output to generate fix suggestions
   return `Fix for CI failure in ${check.name}. Check the logs for specific error details.`
 }
 
-async function generateVercelFix(): Promise<string> {
+async function generateVercelFix(deployment: { state: string; url?: string }): Promise<string> {
   // Analyze Vercel deployment failure to generate fix suggestions
   return `Fix for Vercel deployment failure. Check build logs for specific error details.`
 }

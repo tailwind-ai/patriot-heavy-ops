@@ -33,7 +33,7 @@ export class TodoPersistence {
       const todos = JSON.parse(data)
       
       // Convert date strings back to Date objects
-      return todos.map((todo: any) => ({
+      return todos.map((todo: { createdAt: string; updatedAt: string; [key: string]: unknown }) => ({
         ...todo,
         createdAt: new Date(todo.createdAt),
         updatedAt: new Date(todo.updatedAt)

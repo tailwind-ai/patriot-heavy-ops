@@ -11,9 +11,16 @@ import { authRateLimit } from "@/lib/middleware/rate-limit"
 // Mock dependencies
 jest.mock("@/lib/auth-utils")
 jest.mock("@/lib/middleware/rate-limit")
+jest.mock("@/lib/db", () => ({
+  db: {
+    user: {
+      findUnique: jest.fn(),
+    },
+  },
+}))
 
 // Import the mocked database
-import { mockUser } from "@/__mocks__/lib/db"
+import { db } from "@/lib/db"
 const mockVerifyPassword = verifyPassword as jest.MockedFunction<
   typeof verifyPassword
 >
@@ -25,6 +32,9 @@ const mockGenerateRefreshToken = generateRefreshToken as jest.MockedFunction<
 >
 const mockAuthRateLimit = authRateLimit as jest.MockedFunction<
   typeof authRateLimit
+>
+const mockDbUser = db.user.findUnique as jest.MockedFunction<
+  typeof db.user.findUnique
 >
 
 describe("/api/auth/mobile/login", () => {
@@ -49,7 +59,7 @@ describe("/api/auth/mobile/login", () => {
     }
 
     it("should successfully login with valid credentials", async () => {
-      mockUser.findUnique.mockResolvedValue(mockUserData)
+      mockDbUser.mockResolvedValue(mockUserData)
       mockVerifyPassword.mockResolvedValue(true)
       mockGenerateAccessToken.mockReturnValue("access-token")
       mockGenerateRefreshToken.mockReturnValue("refresh-token")
@@ -74,7 +84,7 @@ describe("/api/auth/mobile/login", () => {
         role: mockUserData.role,
       })
 
-      expect(mockUser.findUnique).toHaveBeenCalledWith({
+      expect(mockDbUser).toHaveBeenCalledWith({
         where: { email: validLoginData.email.toLowerCase() },
         select: {
           id: true,
@@ -87,7 +97,7 @@ describe("/api/auth/mobile/login", () => {
     })
 
     it("should return 401 for invalid email", async () => {
-      mockUser.findUnique.mockResolvedValue(null)
+      mockDbUser.mockResolvedValue(null)
 
       const req = createMockRequest(
         "POST",
@@ -107,7 +117,7 @@ describe("/api/auth/mobile/login", () => {
 
     it("should return 401 for user without password", async () => {
       const userWithoutPassword = { ...mockUserData, password: null }
-      mockUser.findUnique.mockResolvedValue(userWithoutPassword)
+      mockDbUser.mockResolvedValue(userWithoutPassword)
 
       const req = createMockRequest(
         "POST",
@@ -124,7 +134,7 @@ describe("/api/auth/mobile/login", () => {
     })
 
     it("should return 401 for invalid password", async () => {
-      mockUser.findUnique.mockResolvedValue(mockUserData)
+      mockDbUser.mockResolvedValue(mockUserData)
       mockVerifyPassword.mockResolvedValue(false)
 
       const req = createMockRequest(
@@ -198,9 +208,7 @@ describe("/api/auth/mobile/login", () => {
     })
 
     it("should handle database errors gracefully", async () => {
-      mockUser.findUnique.mockRejectedValue(
-        new Error("Database connection failed")
-      )
+      mockDbUser.mockRejectedValue(new Error("Database connection failed"))
 
       const req = createMockRequest(
         "POST",
@@ -258,7 +266,7 @@ describe("/api/auth/mobile/login", () => {
         password: "password123",
       }
 
-      mockUser.findUnique.mockResolvedValue(mockUserData)
+      mockDbUser.mockResolvedValue(mockUserData)
       mockVerifyPassword.mockResolvedValue(true)
       mockGenerateAccessToken.mockReturnValue("access-token")
       mockGenerateRefreshToken.mockReturnValue("refresh-token")
@@ -271,14 +279,14 @@ describe("/api/auth/mobile/login", () => {
 
       await POST(req)
 
-      expect(mockUser.findUnique).toHaveBeenCalledWith({
+      expect(mockDbUser).toHaveBeenCalledWith({
         where: { email: "test@example.com" }, // Should be lowercase
         select: expect.any(Object),
       })
     })
 
     it("should generate tokens with correct payload", async () => {
-      mockUser.findUnique.mockResolvedValue(mockUserData)
+      mockDbUser.mockResolvedValue(mockUserData)
       mockVerifyPassword.mockResolvedValue(true)
       mockGenerateAccessToken.mockReturnValue("access-token")
       mockGenerateRefreshToken.mockReturnValue("refresh-token")
@@ -303,7 +311,7 @@ describe("/api/auth/mobile/login", () => {
 
     it("should handle user with no role", async () => {
       const userWithoutRole = { ...mockUserData, role: null }
-      mockUser.findUnique.mockResolvedValue(userWithoutRole)
+      mockDbUser.mockResolvedValue(userWithoutRole)
       mockVerifyPassword.mockResolvedValue(true)
       mockGenerateAccessToken.mockReturnValue("access-token")
       mockGenerateRefreshToken.mockReturnValue("refresh-token")

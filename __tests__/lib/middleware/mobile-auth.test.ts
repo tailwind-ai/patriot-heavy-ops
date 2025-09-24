@@ -11,7 +11,14 @@ import { createMockRequest } from "@/__tests__/helpers/api-test-helpers"
 // Mock dependencies
 jest.mock("next-auth/next")
 jest.mock("@/lib/db")
-jest.mock("@/lib/auth-utils")
+jest.mock("@/lib/auth-utils", () => ({
+  extractBearerToken: jest.fn(),
+  verifyToken: jest.fn(),
+  generateAccessToken: jest.fn(),
+  generateRefreshToken: jest.fn(),
+  hashPassword: jest.fn(),
+  verifyPassword: jest.fn(),
+}))
 jest.mock("@/lib/auth")
 
 const mockGetServerSession = getServerSession as jest.MockedFunction<
@@ -33,7 +40,8 @@ describe("Mobile Authentication Middleware", () => {
       }
 
       // Mock database user lookup
-      mockDbUser.findUnique.mockResolvedValue(mockUser)
+      const { db } = require("@/lib/db")
+      db.user.findUnique.mockResolvedValue(mockUser)
 
       // Create a mock request with Bearer token
       const token = "valid.jwt.token"
@@ -46,15 +54,14 @@ describe("Mobile Authentication Middleware", () => {
         }
       )
 
-      // Mock token verification (this would normally be done by verifyToken)
-      jest.doMock("@/lib/auth-utils", () => ({
-        ...jest.requireActual("@/lib/auth-utils"),
-        verifyToken: jest.fn().mockReturnValue({
-          userId: mockUser.id,
-          email: mockUser.email,
-          role: mockUser.role,
-        }),
-      }))
+      // Mock token verification
+      const { verifyToken, extractBearerToken } = require("@/lib/auth-utils")
+      extractBearerToken.mockReturnValue(token)
+      verifyToken.mockReturnValue({
+        userId: mockUser.id,
+        email: mockUser.email,
+        role: mockUser.role,
+      })
 
       const result = await authenticateRequest(req)
 

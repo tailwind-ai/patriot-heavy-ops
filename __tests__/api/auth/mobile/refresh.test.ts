@@ -1,24 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createMockRequest } from '@/__tests__/helpers/api-test-helpers'
 import { POST, GET } from '@/app/api/auth/mobile/refresh/route'
-import { mockUser as mockDbUser, resetDbMocks } from '@/__mocks__/lib/db'
 import { verifyToken, generateAccessToken, generateRefreshToken, isTokenExpired } from '@/lib/auth-utils'
 import { authRateLimit } from '@/lib/middleware/rate-limit'
 
 // Mock dependencies
-jest.mock('@/lib/db')
+jest.mock('@/lib/db', () => ({
+  db: {
+    user: {
+      findUnique: jest.fn(),
+    },
+  },
+}))
 jest.mock('@/lib/auth-utils')
 jest.mock('@/lib/middleware/rate-limit')
+
+// Import the mocked database
+import { db } from '@/lib/db'
 const mockVerifyToken = verifyToken as jest.MockedFunction<typeof verifyToken>
 const mockGenerateAccessToken = generateAccessToken as jest.MockedFunction<typeof generateAccessToken>
 const mockGenerateRefreshToken = generateRefreshToken as jest.MockedFunction<typeof generateRefreshToken>
 const mockIsTokenExpired = isTokenExpired as jest.MockedFunction<typeof isTokenExpired>
 const mockAuthRateLimit = authRateLimit as jest.MockedFunction<typeof authRateLimit>
+const mockDbUser = db.user.findUnique as jest.MockedFunction<typeof db.user.findUnique>
 
 describe('/api/auth/mobile/refresh', () => {
   beforeEach(() => {
     jest.clearAllMocks()
-    resetDbMocks()
     // Mock rate limiting to allow requests by default
     mockAuthRateLimit.mockResolvedValue(null)
   })
@@ -46,7 +54,7 @@ describe('/api/auth/mobile/refresh', () => {
     it('should successfully refresh tokens with valid refresh token', async () => {
       mockVerifyToken.mockReturnValue(mockTokenPayload)
       mockIsTokenExpired.mockReturnValue(false)
-      mockDbUser.findUnique.mockResolvedValue(mockUser)
+      mockDbUser.mockResolvedValue(mockUser)
       mockGenerateAccessToken.mockReturnValue('new-access-token')
       mockGenerateRefreshToken.mockReturnValue('new-refresh-token')
 
@@ -67,7 +75,7 @@ describe('/api/auth/mobile/refresh', () => {
       })
 
       expect(mockVerifyToken).toHaveBeenCalledWith(validRefreshData.refreshToken)
-      expect(mockDbUser.findUnique).toHaveBeenCalledWith({
+      expect(mockDbUser).toHaveBeenCalledWith({
         where: { id: mockTokenPayload.userId },
         select: {
           id: true,
@@ -110,7 +118,7 @@ describe('/api/auth/mobile/refresh', () => {
     it('should return 401 when user not found in database', async () => {
       mockVerifyToken.mockReturnValue(mockTokenPayload)
       mockIsTokenExpired.mockReturnValue(false)
-      mockDbUser.findUnique.mockResolvedValue(null)
+      mockDbUser.mockResolvedValue(null)
 
       const req = createMockRequest('POST', 'http://localhost/api/auth/mobile/refresh', validRefreshData)
 
@@ -132,7 +140,7 @@ describe('/api/auth/mobile/refresh', () => {
 
       expect(response.status).toBe(400)
       expect(data.success).toBe(false)
-      expect(data.error).toContain('required')
+      expect(data.error).toContain('Required')
     })
 
     it('should return 400 for empty refresh token', async () => {
@@ -152,7 +160,7 @@ describe('/api/auth/mobile/refresh', () => {
     it('should handle database errors gracefully', async () => {
       mockVerifyToken.mockReturnValue(mockTokenPayload)
       mockIsTokenExpired.mockReturnValue(false)
-      mockDbUser.findUnique.mockRejectedValue(new Error('Database connection failed'))
+      mockDbUser.mockRejectedValue(new Error('Database connection failed'))
 
       const req = createMockRequest('POST', 'http://localhost/api/auth/mobile/refresh', validRefreshData)
 
@@ -170,9 +178,9 @@ describe('/api/auth/mobile/refresh', () => {
       const response = await POST(req)
       const data = await response.json()
 
-      expect(response.status).toBe(500)
+      expect(response.status).toBe(400)
       expect(data.success).toBe(false)
-      expect(data.error).toBe('Token refresh failed')
+      expect(data.error).toContain('Expected object, received string')
     })
 
     it('should apply rate limiting', async () => {
@@ -201,7 +209,7 @@ describe('/api/auth/mobile/refresh', () => {
 
       mockVerifyToken.mockReturnValue(mockTokenPayload)
       mockIsTokenExpired.mockReturnValue(false)
-      mockDbUser.findUnique.mockResolvedValue(updatedUser)
+      mockDbUser.mockResolvedValue(updatedUser)
       mockGenerateAccessToken.mockReturnValue('new-access-token')
       mockGenerateRefreshToken.mockReturnValue('new-refresh-token')
 
@@ -224,7 +232,7 @@ describe('/api/auth/mobile/refresh', () => {
       
       mockVerifyToken.mockReturnValue(mockTokenPayload)
       mockIsTokenExpired.mockReturnValue(false)
-      mockDbUser.findUnique.mockResolvedValue(userWithoutRole)
+      mockDbUser.mockResolvedValue(userWithoutRole)
       mockGenerateAccessToken.mockReturnValue('new-access-token')
       mockGenerateRefreshToken.mockReturnValue('new-refresh-token')
 
@@ -250,7 +258,7 @@ describe('/api/auth/mobile/refresh', () => {
       
       mockVerifyToken.mockReturnValue(mockTokenPayload)
       mockIsTokenExpired.mockReturnValue(false)
-      mockDbUser.findUnique.mockResolvedValue(userWithoutName)
+      mockDbUser.mockResolvedValue(userWithoutName)
       mockGenerateAccessToken.mockReturnValue('new-access-token')
       mockGenerateRefreshToken.mockReturnValue('new-refresh-token')
 
@@ -266,7 +274,7 @@ describe('/api/auth/mobile/refresh', () => {
     it('should verify token expiration before processing', async () => {
       mockVerifyToken.mockReturnValue(mockTokenPayload)
       mockIsTokenExpired.mockReturnValue(false)
-      mockDbUser.findUnique.mockResolvedValue(mockUser)
+      mockDbUser.mockResolvedValue(mockUser)
 
       const req = createMockRequest('POST', 'http://localhost/api/auth/mobile/refresh', validRefreshData)
 

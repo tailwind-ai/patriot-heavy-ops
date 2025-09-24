@@ -65,7 +65,11 @@ export async function authenticateRequest(req: NextRequest): Promise<AuthResult>
 async function authenticateWithJWT(token: string): Promise<AuthResult> {
   const payload = verifyToken(token)
   
+  console.log('authenticateWithJWT - token:', token)
+  console.log('authenticateWithJWT - payload:', payload)
+  
   if (!payload) {
+    console.log('authenticateWithJWT - payload is null/undefined')
     return {
       isAuthenticated: false,
       error: 'Invalid or expired token'
@@ -74,6 +78,7 @@ async function authenticateWithJWT(token: string): Promise<AuthResult> {
   
   // Verify user still exists in database
   try {
+    console.log('authenticateWithJWT - calling database with userId:', payload.userId)
     const user = await db.user.findUnique({
       where: { id: payload.userId },
       select: {
@@ -83,7 +88,10 @@ async function authenticateWithJWT(token: string): Promise<AuthResult> {
       }
     })
     
+    console.log('authenticateWithJWT - database returned user:', user)
+    
     if (!user) {
+      console.log('authenticateWithJWT - user not found in database')
       return {
         isAuthenticated: false,
         error: 'User not found'

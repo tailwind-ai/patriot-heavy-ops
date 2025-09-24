@@ -23,6 +23,9 @@ async function main() {
         }
         await initializeFromGitHubPR(parseInt(prNumber))
         break
+      case 'clear':
+        await clearAllTodos()
+        break
       case 'list':
         await listTodos()
         break
@@ -82,6 +85,8 @@ async function initializeTodos() {
 
 async function initializeFromGitHubPR(prNumber: number) {
   console.log(`🤖 Fetching issues from GitHub PR #${prNumber}...`)
+  console.log(`🧹 Clearing previous todos for fresh PR-specific detection...`)
+  
   const todos = await enhancedTodoManager.initializeFromGitHubPR(prNumber)
   console.log(`✅ Found ${todos.length} issues from GitHub PR #${prNumber}`)
   
@@ -108,7 +113,15 @@ async function initializeFromGitHubPR(prNumber: number) {
         console.log(`     📁 Files: ${todo.files.join(', ')}`)
       }
     })
+  } else {
+    console.log('\n🎉 No issues found in GitHub PR #' + prNumber)
   }
+}
+
+async function clearAllTodos() {
+  console.log('🧹 Clearing all todos...')
+  enhancedTodoManager.clearAllTodos()
+  console.log('✅ All todos cleared')
 }
 
 async function listTodos() {
@@ -267,7 +280,8 @@ function showHelp() {
   console.log('📋 Todo CLI Commands:')
   console.log('='.repeat(25))
   console.log('init           - Initialize todos from Background Agent')
-  console.log('github <PR>    - Fetch todos from GitHub PR comments')
+  console.log('github <PR>    - Fetch todos from GitHub PR comments (clears previous)')
+  console.log('clear          - Clear all todos')
   console.log('list           - List all todos')
   console.log('next           - Show next todo to work on')
   console.log('ready          - Show todos ready to work on')
@@ -279,7 +293,8 @@ function showHelp() {
   console.log()
   console.log('Examples:')
   console.log('  npm run todo init')
-  console.log('  npm run todo github 237')
+  console.log('  npm run todo github 238')
+  console.log('  npm run todo clear')
   console.log('  npm run todo next')
   console.log('  npm run todo update issue-1 completed')
   console.log('  npm run todo add "Fix mobile auth" high')
