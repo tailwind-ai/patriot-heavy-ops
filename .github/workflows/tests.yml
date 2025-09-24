@@ -39,22 +39,24 @@ jobs:
           set -o pipefail
           npm run test:ci 2>&1 | tee test-output.log
 
+      - name: Build output
+        run: npm run build && tar -czf build.tar.gz .next
+
+      # Upload artifacts (still useful for debugging via Actions UI)
       - name: Upload coverage
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: coverage
           path: coverage/
 
-      - name: Upload build output
-        run: npm run build && tar -czf build.tar.gz .next
-
       - name: Upload build artifact
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: build
           path: build.tar.gz
 
-      # Always upload test logs
       - name: Upload test logs
         if: always()
         uses: actions/upload-artifact@v4
@@ -62,7 +64,6 @@ jobs:
           name: test-logs
           path: test-output.log
 
-      # Post summary to PR if tests failed
       - name: Post summary on failure
         if: failure() && github.event_name == 'pull_request'
         uses: actions/github-script@v7
@@ -71,7 +72,7 @@ jobs:
           script: |
             const fs = require('fs');
             const log = fs.readFileSync('test-output.log', 'utf8');
-            const summary = log.split('\n').slice(-20).join('\n'); // last 20 lines
+            const summary = log.split('\n').slice(-20).join('\n');
             const issue_number = context.payload.pull_request.number;
             await github.rest.issues.createComment({
               ...context.repo,
