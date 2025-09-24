@@ -129,7 +129,7 @@ export class GitHubIntegration {
       severity,
       files: comment.path ? [comment.path] : [],
       lineNumbers: comment.position ? [comment.position] : [],
-      suggestedFix,
+      suggestedFix: suggestedFix || '',
     }
   }
 
