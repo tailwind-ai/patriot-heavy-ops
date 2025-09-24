@@ -25,7 +25,8 @@
     "test:debug-watch": "npm run test:debug -- --watchAll",
     "test:update-snapshots": "jest --updateSnapshot",
     "test:snapshots": "jest --testNamePattern='snapshot'",
-    "todo": "tsx scripts/todo-cli.ts"
+    "todo": "tsx scripts/todo-cli.ts",
+    "approve-workflows": "./scripts/auto-approve-workflows.sh"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.1.0",
