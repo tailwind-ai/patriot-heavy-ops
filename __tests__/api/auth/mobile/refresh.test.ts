@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { createMockRequest } from '@/__tests__/helpers/api-test-helpers'
 import { POST, GET } from '@/app/api/auth/mobile/refresh/route'
 import { mockUser as mockDbUser, resetDbMocks } from '@/__mocks__/lib/db'
 import { verifyToken, generateAccessToken, generateRefreshToken, isTokenExpired } from '@/lib/auth-utils'
@@ -49,10 +50,7 @@ describe('/api/auth/mobile/refresh', () => {
       mockGenerateAccessToken.mockReturnValue('new-access-token')
       mockGenerateRefreshToken.mockReturnValue('new-refresh-token')
 
-      const req = new NextRequest('http://localhost/api/auth/mobile/refresh', {
-        method: 'POST',
-        body: JSON.stringify(validRefreshData)
-      })
+      const req = createMockRequest('POST', 'http://localhost/api/auth/mobile/refresh', validRefreshData)
 
       const response = await POST(req)
       const data = await response.json()
@@ -83,10 +81,7 @@ describe('/api/auth/mobile/refresh', () => {
     it('should return 401 for invalid refresh token', async () => {
       mockVerifyToken.mockReturnValue(null)
 
-      const req = new NextRequest('http://localhost/api/auth/mobile/refresh', {
-        method: 'POST',
-        body: JSON.stringify(validRefreshData)
-      })
+      const req = createMockRequest('POST', 'http://localhost/api/auth/mobile/refresh', validRefreshData)
 
       const response = await POST(req)
       const data = await response.json()
@@ -102,10 +97,7 @@ describe('/api/auth/mobile/refresh', () => {
       mockVerifyToken.mockReturnValue(mockTokenPayload)
       mockIsTokenExpired.mockReturnValue(true)
 
-      const req = new NextRequest('http://localhost/api/auth/mobile/refresh', {
-        method: 'POST',
-        body: JSON.stringify(validRefreshData)
-      })
+      const req = createMockRequest('POST', 'http://localhost/api/auth/mobile/refresh', validRefreshData)
 
       const response = await POST(req)
       const data = await response.json()
@@ -120,10 +112,7 @@ describe('/api/auth/mobile/refresh', () => {
       mockIsTokenExpired.mockReturnValue(false)
       mockDbUser.findUnique.mockResolvedValue(null)
 
-      const req = new NextRequest('http://localhost/api/auth/mobile/refresh', {
-        method: 'POST',
-        body: JSON.stringify(validRefreshData)
-      })
+      const req = createMockRequest('POST', 'http://localhost/api/auth/mobile/refresh', validRefreshData)
 
       const response = await POST(req)
       const data = await response.json()
@@ -136,10 +125,7 @@ describe('/api/auth/mobile/refresh', () => {
     it('should return 400 for missing refresh token', async () => {
       const invalidData = {}
 
-      const req = new NextRequest('http://localhost/api/auth/mobile/refresh', {
-        method: 'POST',
-        body: JSON.stringify(invalidData)
-      })
+      const req = createMockRequest('POST', 'http://localhost/api/auth/mobile/refresh', invalidData)
 
       const response = await POST(req)
       const data = await response.json()
@@ -154,10 +140,7 @@ describe('/api/auth/mobile/refresh', () => {
         refreshToken: ''
       }
 
-      const req = new NextRequest('http://localhost/api/auth/mobile/refresh', {
-        method: 'POST',
-        body: JSON.stringify(invalidData)
-      })
+      const req = createMockRequest('POST', 'http://localhost/api/auth/mobile/refresh', invalidData)
 
       const response = await POST(req)
       const data = await response.json()
@@ -171,10 +154,7 @@ describe('/api/auth/mobile/refresh', () => {
       mockIsTokenExpired.mockReturnValue(false)
       mockDbUser.findUnique.mockRejectedValue(new Error('Database connection failed'))
 
-      const req = new NextRequest('http://localhost/api/auth/mobile/refresh', {
-        method: 'POST',
-        body: JSON.stringify(validRefreshData)
-      })
+      const req = createMockRequest('POST', 'http://localhost/api/auth/mobile/refresh', validRefreshData)
 
       const response = await POST(req)
       const data = await response.json()
@@ -185,10 +165,7 @@ describe('/api/auth/mobile/refresh', () => {
     })
 
     it('should handle malformed JSON gracefully', async () => {
-      const req = new NextRequest('http://localhost/api/auth/mobile/refresh', {
-        method: 'POST',
-        body: 'invalid-json'
-      })
+      const req = createMockRequest('POST', 'http://localhost/api/auth/mobile/refresh', 'invalid-json')
 
       const response = await POST(req)
       const data = await response.json()
@@ -205,10 +182,7 @@ describe('/api/auth/mobile/refresh', () => {
       )
       mockAuthRateLimit.mockResolvedValue(rateLimitResponse)
 
-      const req = new NextRequest('http://localhost/api/auth/mobile/refresh', {
-        method: 'POST',
-        body: JSON.stringify(validRefreshData)
-      })
+      const req = createMockRequest('POST', 'http://localhost/api/auth/mobile/refresh', validRefreshData)
 
       const response = await POST(req)
       const data = await response.json()
@@ -231,10 +205,7 @@ describe('/api/auth/mobile/refresh', () => {
       mockGenerateAccessToken.mockReturnValue('new-access-token')
       mockGenerateRefreshToken.mockReturnValue('new-refresh-token')
 
-      const req = new NextRequest('http://localhost/api/auth/mobile/refresh', {
-        method: 'POST',
-        body: JSON.stringify(validRefreshData)
-      })
+      const req = createMockRequest('POST', 'http://localhost/api/auth/mobile/refresh', validRefreshData)
 
       await POST(req)
 
@@ -257,10 +228,7 @@ describe('/api/auth/mobile/refresh', () => {
       mockGenerateAccessToken.mockReturnValue('new-access-token')
       mockGenerateRefreshToken.mockReturnValue('new-refresh-token')
 
-      const req = new NextRequest('http://localhost/api/auth/mobile/refresh', {
-        method: 'POST',
-        body: JSON.stringify(validRefreshData)
-      })
+      const req = createMockRequest('POST', 'http://localhost/api/auth/mobile/refresh', validRefreshData)
 
       const response = await POST(req)
       const data = await response.json()
@@ -286,10 +254,7 @@ describe('/api/auth/mobile/refresh', () => {
       mockGenerateAccessToken.mockReturnValue('new-access-token')
       mockGenerateRefreshToken.mockReturnValue('new-refresh-token')
 
-      const req = new NextRequest('http://localhost/api/auth/mobile/refresh', {
-        method: 'POST',
-        body: JSON.stringify(validRefreshData)
-      })
+      const req = createMockRequest('POST', 'http://localhost/api/auth/mobile/refresh', validRefreshData)
 
       const response = await POST(req)
       const data = await response.json()
@@ -303,10 +268,7 @@ describe('/api/auth/mobile/refresh', () => {
       mockIsTokenExpired.mockReturnValue(false)
       mockDbUser.findUnique.mockResolvedValue(mockUser)
 
-      const req = new NextRequest('http://localhost/api/auth/mobile/refresh', {
-        method: 'POST',
-        body: JSON.stringify(validRefreshData)
-      })
+      const req = createMockRequest('POST', 'http://localhost/api/auth/mobile/refresh', validRefreshData)
 
       await POST(req)
 

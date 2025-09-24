@@ -34,7 +34,7 @@ describe('Mobile Authentication Middleware', () => {
       }
 
       // Mock database user lookup
-      mockDbUser.findUnique.mockResolvedValue(mockUserData)
+      mockDbUser.findUnique.mockResolvedValue(mockUser)
 
       // Create a mock request with Bearer token
       const token = 'valid.jwt.token'
@@ -128,7 +128,7 @@ describe('Mobile Authentication Middleware', () => {
         ...jest.requireActual('@/lib/auth-utils'),
         verifyToken: jest.fn().mockReturnValue({
           userId: 'user-123',
-          email: 'test@example.com'
+          email: 'test@example.com',
         })
       }))
 
@@ -152,7 +152,7 @@ describe('Mobile Authentication Middleware', () => {
         ...jest.requireActual('@/lib/auth-utils'),
         verifyToken: jest.fn().mockReturnValue({
           userId: 'nonexistent-user',
-          email: 'test@example.com'
+          email: 'test@example.com',
         })
       }))
 
@@ -239,7 +239,7 @@ describe('Mobile Authentication Middleware', () => {
     it('should return false when user has no role', () => {
       const user = {
         id: 'user-123',
-        email: 'test@example.com'
+        email: 'test@example.com',
       }
 
       expect(hasRole(user, 'USER')).toBe(false)

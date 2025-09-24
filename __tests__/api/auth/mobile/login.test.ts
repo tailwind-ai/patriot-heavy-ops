@@ -57,10 +57,7 @@ describe("/api/auth/mobile/login", () => {
       const req = createMockRequest(
         "POST",
         "http://localhost/api/auth/mobile/login",
-        {
-          method: "POST",
-          body: JSON.stringify(validLoginData),
-        }
+        validLoginData
       )
 
       const response = await POST(req)
@@ -95,10 +92,7 @@ describe("/api/auth/mobile/login", () => {
       const req = createMockRequest(
         "POST",
         "http://localhost/api/auth/mobile/login",
-        {
-          method: "POST",
-          body: JSON.stringify(validLoginData),
-        }
+        validLoginData
       )
 
       const response = await POST(req)
@@ -118,10 +112,7 @@ describe("/api/auth/mobile/login", () => {
       const req = createMockRequest(
         "POST",
         "http://localhost/api/auth/mobile/login",
-        {
-          method: "POST",
-          body: JSON.stringify(validLoginData),
-        }
+        validLoginData
       )
 
       const response = await POST(req)
@@ -139,10 +130,7 @@ describe("/api/auth/mobile/login", () => {
       const req = createMockRequest(
         "POST",
         "http://localhost/api/auth/mobile/login",
-        {
-          method: "POST",
-          body: JSON.stringify(validLoginData),
-        }
+        validLoginData
       )
 
       const response = await POST(req)
@@ -162,10 +150,7 @@ describe("/api/auth/mobile/login", () => {
       const req = createMockRequest(
         "POST",
         "http://localhost/api/auth/mobile/login",
-        {
-          method: "POST",
-          body: JSON.stringify(invalidData),
-        }
+        invalidData
       )
 
       const response = await POST(req)
@@ -184,10 +169,7 @@ describe("/api/auth/mobile/login", () => {
       const req = createMockRequest(
         "POST",
         "http://localhost/api/auth/mobile/login",
-        {
-          method: "POST",
-          body: JSON.stringify(invalidData),
-        }
+        invalidData
       )
 
       const response = await POST(req)
@@ -205,10 +187,7 @@ describe("/api/auth/mobile/login", () => {
       const req = createMockRequest(
         "POST",
         "http://localhost/api/auth/mobile/login",
-        {
-          method: "POST",
-          body: JSON.stringify(invalidData),
-        }
+        invalidData
       )
 
       const response = await POST(req)
@@ -226,10 +205,7 @@ describe("/api/auth/mobile/login", () => {
       const req = createMockRequest(
         "POST",
         "http://localhost/api/auth/mobile/login",
-        {
-          method: "POST",
-          body: JSON.stringify(validLoginData),
-        }
+        validLoginData
       )
 
       const response = await POST(req)
@@ -244,10 +220,7 @@ describe("/api/auth/mobile/login", () => {
       const req = createMockRequest(
         "POST",
         "http://localhost/api/auth/mobile/login",
-        {
-          method: "POST",
-          body: "invalid-json",
-        }
+        "invalid-json"
       )
 
       const response = await POST(req)
@@ -268,10 +241,7 @@ describe("/api/auth/mobile/login", () => {
       const req = createMockRequest(
         "POST",
         "http://localhost/api/auth/mobile/login",
-        {
-          method: "POST",
-          body: JSON.stringify(validLoginData),
-        }
+        validLoginData
       )
 
       const response = await POST(req)
@@ -296,10 +266,7 @@ describe("/api/auth/mobile/login", () => {
       const req = createMockRequest(
         "POST",
         "http://localhost/api/auth/mobile/login",
-        {
-          method: "POST",
-          body: JSON.stringify(upperCaseEmailData),
-        }
+        upperCaseEmailData
       )
 
       await POST(req)
@@ -319,10 +286,7 @@ describe("/api/auth/mobile/login", () => {
       const req = createMockRequest(
         "POST",
         "http://localhost/api/auth/mobile/login",
-        {
-          method: "POST",
-          body: JSON.stringify(validLoginData),
-        }
+        validLoginData
       )
 
       await POST(req)
@@ -347,10 +311,7 @@ describe("/api/auth/mobile/login", () => {
       const req = createMockRequest(
         "POST",
         "http://localhost/api/auth/mobile/login",
-        {
-          method: "POST",
-          body: JSON.stringify(validLoginData),
-        }
+        validLoginData
       )
 
       const response = await POST(req)
