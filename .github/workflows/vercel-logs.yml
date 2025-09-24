@@ -17,6 +17,13 @@ jobs:
           > vercel.json
           cat vercel.json | jq .
 
+      - name: Upload full Vercel logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vercel-logs
+          path: vercel.json
+
       - name: Extract summary
         id: parse
         run: |
@@ -29,6 +36,7 @@ jobs:
           echo "error=$ERROR" >> $GITHUB_OUTPUT
 
       - name: Comment on PR with logs
+        if: ${{ github.event.check_suite.pull_requests[0].number != null }}
         uses: peter-evans/create-or-update-comment@v4
         with:
           issue-number: ${{ github.event.check_suite.pull_requests[0].number }}
@@ -40,3 +48,4 @@ jobs:
               ```
               ${{ steps.parse.outputs.error }}
               ```
+            🔎 Full Vercel logs are available in the uploaded artifact.
