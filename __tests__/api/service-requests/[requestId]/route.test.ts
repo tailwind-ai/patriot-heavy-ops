@@ -334,10 +334,16 @@ describe("/api/service-requests/[requestId]", () => {
           "http://localhost:3000/api/service-requests/test"
         )
         // Override the body with invalid JSON by creating a new request
-        const invalidRequest = new Request(request.url, {
-          method: request.method,
-          body: "invalid json",
-          headers: request.headers,
+        const invalidRequest = createMockRequest(
+          'PATCH',
+          request.url,
+          undefined,
+          Object.fromEntries(request.headers.entries())
+        )
+        // Manually set invalid body
+        Object.defineProperty(invalidRequest, 'json', {
+          value: () => Promise.reject(new SyntaxError('Unexpected token')),
+          writable: false,
         })
 
         const response = await PATCH(invalidRequest, mockContext)

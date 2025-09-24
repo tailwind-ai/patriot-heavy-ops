@@ -45,6 +45,23 @@ export type Permission =
 
 export type UserRole = 'USER' | 'OPERATOR' | 'MANAGER' | 'ADMIN'
 
+/**
+ * Type guard to check if a string is a valid UserRole
+ */
+export function isValidUserRole(role: string | undefined | null): role is UserRole {
+  return role !== undefined && role !== null && ['USER', 'OPERATOR', 'MANAGER', 'ADMIN'].includes(role)
+}
+
+/**
+ * Safe version of hasPermission that handles undefined/invalid roles
+ */
+export function hasPermissionSafe(userRole: string | undefined | null, permission: Permission): boolean {
+  if (!isValidUserRole(userRole)) {
+    return false
+  }
+  return hasPermission(userRole, permission)
+}
+
 export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
   USER: [
     'submit_requests',

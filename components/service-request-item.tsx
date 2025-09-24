@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { ServiceRequest } from "@prisma/client"
+import type { ServiceRequest } from "@prisma/client"
 
 import { formatDate } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"

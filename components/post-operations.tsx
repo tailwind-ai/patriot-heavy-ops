@@ -3,7 +3,7 @@
 import * as React from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { Post } from "@prisma/client"
+import type { Post } from "@prisma/client"
 
 import {
   AlertDialog,

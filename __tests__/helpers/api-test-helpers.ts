@@ -1,37 +1,70 @@
-import { NextRequest } from 'next/server'
-import { getServerSession } from 'next-auth/next'
-import { UserRole } from '@/lib/permissions'
+import { NextRequest } from "next/server"
+import { getServerSession } from "next-auth/next"
+import { UserRole } from "@/lib/permissions"
 
 // Extract getServerSession mock to avoid duplication
-const mockGetServerSession = getServerSession as jest.MockedFunction<typeof getServerSession>
+const mockGetServerSession = getServerSession as jest.MockedFunction<
+  typeof getServerSession
+>
 
 /**
  * Create a mock NextRequest for testing API routes
  */
 export function createMockRequest(
   method: string,
-  url: string = 'http://localhost:3000/api/test',
-  body?: any,
+  url: string = "http://localhost:3000/api/test",
+  body?: Record<string, unknown> | string,
   headers?: Record<string, string>
 ): NextRequest {
   const requestInit: RequestInit = {
     method,
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       ...headers,
     },
   }
 
-  if (body && (method === 'POST' || method === 'PATCH' || method === 'PUT')) {
+  if (body && (method === "POST" || method === "PATCH" || method === "PUT")) {
     requestInit.body = JSON.stringify(body)
   }
 
   // Create a mock NextRequest that extends Request
   const request = new Request(url, requestInit) as NextRequest
-  
+
   // Add NextRequest-specific properties
-  Object.defineProperty(request, 'nextUrl', {
+  Object.defineProperty(request, "nextUrl", {
     value: new URL(url),
+    writable: false,
+  })
+
+  Object.defineProperty(request, "cookies", {
+    value: {
+      get: jest.fn(),
+      set: jest.fn(),
+      delete: jest.fn(),
+      has: jest.fn(),
+      clear: jest.fn(),
+    },
+    writable: false,
+  })
+
+  Object.defineProperty(request, "geo", {
+    value: undefined,
+    writable: false,
+  })
+
+  Object.defineProperty(request, "ip", {
+    value: "127.0.0.1",
+    writable: false,
+  })
+
+  Object.defineProperty(request, "page", {
+    value: undefined,
+    writable: false,
+  })
+
+  Object.defineProperty(request, "ua", {
+    value: undefined,
     writable: false,
   })
 
@@ -50,9 +83,9 @@ export function mockSession(user: {
   mockGetServerSession.mockResolvedValue({
     user: {
       id: user.id,
-      name: user.name || 'Test User',
-      email: user.email || 'test@example.com',
-      role: user.role || 'USER',
+      name: user.name || "Test User",
+      email: user.email || "test@example.com",
+      role: user.role || "USER",
     },
     expires: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 24 hours from now
   })
@@ -109,9 +142,9 @@ export function assertResponse(
   expectedContentType?: string
 ) {
   expect(response.status).toBe(expectedStatus)
-  
+
   if (expectedContentType) {
-    expect(response.headers.get('content-type')).toContain(expectedContentType)
+    expect(response.headers.get("content-type")).toContain(expectedContentType)
   }
 }
 
@@ -120,30 +153,71 @@ export function assertResponse(
  */
 export const TEST_USERS = {
   USER: {
-    id: 'user-test-id',
-    name: 'Test User',
-    email: 'user@test.com',
-    role: 'USER' as UserRole,
+    id: "user-test-id",
+    name: "Test User",
+    email: "user@test.com",
+    role: "USER" as UserRole,
   },
   OPERATOR: {
-    id: 'operator-test-id',
-    name: 'Test Operator',
-    email: 'operator@test.com',
-    role: 'OPERATOR' as UserRole,
+    id: "operator-test-id",
+    name: "Test Operator",
+    email: "operator@test.com",
+    role: "OPERATOR" as UserRole,
   },
   MANAGER: {
-    id: 'manager-test-id',
-    name: 'Test Manager',
-    email: 'manager@test.com',
-    role: 'MANAGER' as UserRole,
+    id: "manager-test-id",
+    name: "Test Manager",
+    email: "manager@test.com",
+    role: "MANAGER" as UserRole,
   },
   ADMIN: {
-    id: 'admin-test-id',
-    name: 'Test Admin',
-    email: 'admin@test.com',
-    role: 'ADMIN' as UserRole,
+    id: "admin-test-id",
+    name: "Test Admin",
+    email: "admin@test.com",
+    role: "ADMIN" as UserRole,
   },
 } as const
+
+/**
+ * Create a mock NextRequest with malformed JSON for testing error handling
+ * Uses proper mocking instead of manual method overrides for better maintainability
+ */
+export function createMockRequestWithMalformedJSON(
+  method: string,
+  url: string = "http://localhost:3000/api/test",
+  headers?: Record<string, string>
+): NextRequest {
+  // Create a proper mock request that will naturally fail JSON parsing
+  const mockRequest = {
+    method,
+    url,
+    headers: new Headers({
+      "Content-Type": "application/json",
+      ...headers,
+    }),
+    // Mock the json method to simulate malformed JSON parsing error
+    json: jest
+      .fn()
+      .mockRejectedValue(
+        new SyntaxError("Unexpected token in JSON at position 0")
+      ),
+    // Mock other NextRequest properties
+    nextUrl: new URL(url),
+    cookies: {
+      get: jest.fn(),
+      set: jest.fn(),
+      delete: jest.fn(),
+      has: jest.fn(),
+      clear: jest.fn(),
+    },
+    geo: undefined,
+    ip: "127.0.0.1",
+    page: undefined,
+    ua: undefined,
+  } as unknown as NextRequest
+
+  return mockRequest
+}
 
 /**
  * Reset all mocks between tests

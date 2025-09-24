@@ -14,7 +14,7 @@
 import { BaseService, ServiceResult, ServiceLogger } from "./base-service"
 import { hashPassword, verifyPassword } from "../auth-utils"
 import { db } from "../db"
-import type { UserRole } from "@prisma/client"
+import { UserRole } from "@prisma/client"
 
 export interface AuthUser {
   id: string
@@ -157,7 +157,7 @@ export class AuthService extends BaseService {
             email: data.email.toLowerCase(),
             password: hashedPassword,
             name: data.name || null,
-            role: "USER" as UserRole,
+            role: UserRole.USER,
           },
           select: {
             id: true,
@@ -391,7 +391,7 @@ export class AuthService extends BaseService {
       typeof user.email === "string" &&
       (user.name === null || typeof user.name === "string") &&
       (user.image === null || typeof user.image === "string") &&
-      ["USER", "OPERATOR", "MANAGER", "ADMIN"].includes(user.role as string)
+      Object.values(UserRole).includes(user.role as UserRole)
     )
   }
 

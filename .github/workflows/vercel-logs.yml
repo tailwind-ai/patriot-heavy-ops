@@ -13,7 +13,7 @@ jobs:
       - name: Fetch latest deployment
         run: |
           curl -s -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
-          "https://api.vercel.com/v13/deployments?projectId=<YOUR_PROJECT_ID>&limit=1" \
+          "https://api.vercel.com/v13/deployments?projectId=pVL2Eh1elGVkCLNcOaSJVtsN&limit=1" \
           > vercel.json
           cat vercel.json | jq .
 
@@ -48,23 +48,11 @@ jobs:
 
             let body;
             if (state === "ERROR") {
-              body = `🚨 **Vercel Deployment Failed**
-- **State:** ${state}
-- **URL:** [Preview Deployment](${url})
-- **Error:**
-\`\`\`
-${error}
-\`\`\`
-🔎 Full logs are in the uploaded artifact.`;
+              body = `🚨 **Vercel Deployment Failed**\\n- **State:** ${state}\\n- **URL:** [Preview Deployment](${url})\\n- **Error:**\\n\\\`\\\`\\\`\\n${error}\\n\\\`\\\`\\\`\\n🔎 Full logs are in the uploaded artifact.`;
             } else if (state === "READY") {
-              body = `✅ **Vercel Deployment Succeeded**
-- **State:** ${state}
-- **URL:** [Preview Deployment](${url})`;
+              body = `✅ **Vercel Deployment Succeeded**\\n- **State:** ${state}\\n- **URL:** [Preview Deployment](${url})`;
             } else {
-              body = `⚪ **Vercel Deployment Skipped**
-- **State:** ${state}
-- **URL:** [Preview Deployment](${url})
-ℹ️ No build was attempted because this branch is excluded by Ignored Build Step.`;
+              body = `⚪ **Vercel Deployment Skipped**\\n- **State:** ${state}\\n- **URL:** [Preview Deployment](${url})\\nℹ️ No build was attempted because this branch is excluded by Ignored Build Step.`;
             }
 
             await github.rest.issues.createComment({
