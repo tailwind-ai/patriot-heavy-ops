@@ -132,7 +132,7 @@ export async function requireAuth(req: NextRequest): Promise<AuthResult['user']>
  */
 export function hasRole(user: AuthResult['user'], requiredRole: string): boolean {
   if (!user?.role) return false
-  return user.role === requiredRole || user.role === 'admin'
+  return user.role === requiredRole || user.role === 'ADMIN'
 }
 
 /**

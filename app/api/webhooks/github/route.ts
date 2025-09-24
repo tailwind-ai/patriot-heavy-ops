@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ success: true })
       } catch (error) {
         // Log error for debugging
-        // console.error("Error processing PR webhook:", error)
+        console.error("Error processing PR webhook:", error)
         return NextResponse.json(
           { error: "Failed to process webhook" },
           { status: 500 }
@@ -92,7 +92,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ success: true })
       } catch (error) {
         // Log error for debugging
-        // console.error("Error processing comment webhook:", error)
+        console.error("Error processing comment webhook:", error)
         return NextResponse.json(
           { error: "Failed to process webhook" },
           { status: 500 }

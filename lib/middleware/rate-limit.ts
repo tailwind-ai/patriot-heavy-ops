@@ -220,7 +220,7 @@ export const apiRateLimit = rateLimit({
 /**
  * Apply rate limiting to a request handler
  */
-export function withRateLimit<T extends any[]>(
+export function withRateLimit<T extends unknown[]>(
   rateLimiter: (req: NextRequest) => Promise<NextResponse | null>,
   handler: (req: NextRequest, ...args: T) => Promise<NextResponse>
 ) {

@@ -5,7 +5,8 @@
  * Abstracts Prisma operations behind a mobile-compatible interface.
  */
 
-import { PrismaClient, ServiceRequest, ServiceRequestStatus, UserRole } from "@prisma/client"
+import { PrismaClient } from "@prisma/client"
+import type { ServiceRequest, ServiceRequestStatus, UserRole } from "@prisma/client"
 import { 
   BaseRepository, 
   CrudRepository, 
@@ -88,7 +89,7 @@ export class ServiceRequestRepository extends BaseRepository implements CrudRepo
     if (!validation.success) {
       return {
         success: false,
-        error: validation.error!,
+        error: validation.error || 'Validation failed',
       };
     }
 
@@ -147,7 +148,7 @@ export class ServiceRequestRepository extends BaseRepository implements CrudRepo
     if (!validation.success) {
       return {
         success: false,
-        error: validation.error!,
+        error: validation.error || 'Validation failed',
       };
     }
 
@@ -250,7 +251,7 @@ export class ServiceRequestRepository extends BaseRepository implements CrudRepo
     if (!validation.success) {
       return {
         success: false,
-        error: validation.error!,
+        error: validation.error || 'Validation failed',
       };
     }
 
@@ -281,7 +282,7 @@ export class ServiceRequestRepository extends BaseRepository implements CrudRepo
     if (!validation.success) {
       return {
         success: false,
-        error: validation.error!,
+        error: validation.error || 'Validation failed',
       };
     }
 
@@ -307,7 +308,7 @@ export class ServiceRequestRepository extends BaseRepository implements CrudRepo
     if (!validation.success) {
       return {
         success: false,
-        error: validation.error!,
+        error: validation.error || 'Validation failed',
       };
     }
 
@@ -358,7 +359,7 @@ export class ServiceRequestRepository extends BaseRepository implements CrudRepo
     if (!validation.success) {
       return {
         success: false,
-        error: validation.error!,
+        error: validation.error || 'Validation failed',
       };
     }
 

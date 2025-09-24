@@ -5,23 +5,36 @@ import {
   hasRole,
   requireRole,
 } from "@/lib/middleware/mobile-auth"
-import { mockUser as mockDbUser, resetDbMocks } from "@/__mocks__/lib/db"
+import { resetDbMocks } from "@/__mocks__/lib/db"
 import { createMockRequest } from "@/__tests__/helpers/api-test-helpers"
-
+import { extractBearerToken, verifyToken } from "@/lib/auth-utils"
 // Mock dependencies
 jest.mock("next-auth/next")
 jest.mock("@/lib/db")
 jest.mock("@/lib/auth-utils")
 jest.mock("@/lib/auth")
 
+const mockExtractBearerToken = extractBearerToken as jest.MockedFunction<
+  typeof extractBearerToken
+>
+const mockVerifyToken = verifyToken as jest.MockedFunction<typeof verifyToken>
 const mockGetServerSession = getServerSession as jest.MockedFunction<
   typeof getServerSession
 >
+
+// Import the mocked db after mocking
+import { db } from "@/lib/db"
+const mockDb = db as jest.Mocked<typeof db>
 
 describe("Mobile Authentication Middleware", () => {
   beforeEach(() => {
     jest.clearAllMocks()
     resetDbMocks()
+    // Reset mock implementations to default state
+    mockExtractBearerToken.mockReturnValue(null)
+    mockVerifyToken.mockReturnValue(null)
+    mockGetServerSession.mockResolvedValue(null)
+    // Don't set a default for database mock - let each test set its own
   })
 
   describe("authenticateRequest", () => {
@@ -32,11 +45,23 @@ describe("Mobile Authentication Middleware", () => {
         role: "USER",
       }
 
-      // Mock database user lookup
-      mockDbUser.findUnique.mockResolvedValue(mockUser)
-
-      // Create a mock request with Bearer token
+      // Mock JWT authentication
       const token = "valid.jwt.token"
+      mockExtractBearerToken.mockReturnValue(token)
+      mockVerifyToken.mockReturnValue({
+        userId: mockUser.id,
+        email: mockUser.email,
+        role: mockUser.role,
+      })
+
+      // Set up database mock after reset
+      mockDb.user.findUnique.mockImplementation((args: any) => {
+        if (args.where.id === mockUser.id) {
+          return Promise.resolve(mockUser)
+        }
+        return Promise.resolve(null)
+      })
+
       const req = createMockRequest(
         "GET",
         "http://localhost/api/test",
@@ -45,16 +70,6 @@ describe("Mobile Authentication Middleware", () => {
           authorization: `Bearer ${token}`,
         }
       )
-
-      // Mock token verification (this would normally be done by verifyToken)
-      jest.doMock("@/lib/auth-utils", () => ({
-        ...jest.requireActual("@/lib/auth-utils"),
-        verifyToken: jest.fn().mockReturnValue({
-          userId: mockUser.id,
-          email: mockUser.email,
-          role: mockUser.role,
-        }),
-      }))
 
       const result = await authenticateRequest(req)
 
@@ -72,6 +87,8 @@ describe("Mobile Authentication Middleware", () => {
         },
       }
 
+      // Mock no Bearer token
+      mockExtractBearerToken.mockReturnValue(null)
       mockGetServerSession.mockResolvedValue(mockSession)
 
       const req = createMockRequest("GET", "http://localhost/api/test")
@@ -88,6 +105,8 @@ describe("Mobile Authentication Middleware", () => {
     })
 
     it("should return unauthenticated when no valid auth found", async () => {
+      // Mock no Bearer token and no session
+      mockExtractBearerToken.mockReturnValue(null)
       mockGetServerSession.mockResolvedValue(null)
 
       const req = createMockRequest("GET", "http://localhost/api/test")
@@ -100,19 +119,16 @@ describe("Mobile Authentication Middleware", () => {
     })
 
     it("should handle invalid JWT token gracefully", async () => {
+      // Mock invalid JWT token
+      mockExtractBearerToken.mockReturnValue("invalid.token")
+      mockVerifyToken.mockReturnValue(null)
+      mockGetServerSession.mockResolvedValue(null)
+
       const req = createMockRequest("GET", "http://localhost/api/test", {
         headers: {
           authorization: "Bearer invalid.token",
         },
       })
-
-      // Mock invalid token verification
-      jest.doMock("@/lib/auth-utils", () => ({
-        ...jest.requireActual("@/lib/auth-utils"),
-        verifyToken: jest.fn().mockReturnValue(null),
-      }))
-
-      mockGetServerSession.mockResolvedValue(null)
 
       const result = await authenticateRequest(req)
 
@@ -121,23 +137,21 @@ describe("Mobile Authentication Middleware", () => {
     })
 
     it("should handle database errors during JWT auth", async () => {
+      // Mock valid JWT token but database error
+      mockExtractBearerToken.mockReturnValue("valid.token")
+      mockVerifyToken.mockReturnValue({
+        userId: "user-123",
+        email: "test@example.com",
+      })
+      // Mock database error - this should cause JWT auth to fail and fallback to session
+      mockDb.user.findUnique.mockRejectedValue(new Error("Database error"))
+      mockGetServerSession.mockResolvedValue(null)
+
       const req = createMockRequest("GET", "http://localhost/api/test", {
         headers: {
           authorization: "Bearer valid.token",
         },
       })
-
-      // Mock token verification success but database error
-      jest.doMock("@/lib/auth-utils", () => ({
-        ...jest.requireActual("@/lib/auth-utils"),
-        verifyToken: jest.fn().mockReturnValue({
-          userId: "user-123",
-          email: "test@example.com",
-        }),
-      }))
-
-      mockDbUser.findUnique.mockRejectedValue(new Error("Database error"))
-      mockGetServerSession.mockResolvedValue(null)
 
       const result = await authenticateRequest(req)
 
@@ -146,22 +160,26 @@ describe("Mobile Authentication Middleware", () => {
     })
 
     it("should handle user not found in database", async () => {
+      // Mock valid JWT token but user not found
+      mockExtractBearerToken.mockReturnValue("valid.token")
+      mockVerifyToken.mockReturnValue({
+        userId: "nonexistent-user",
+        email: "test@example.com",
+      })
+      // Ensure database returns null for this specific user
+      mockDb.user.findUnique.mockImplementation((args: any) => {
+        if (args.where.id === "nonexistent-user") {
+          return Promise.resolve(null)
+        }
+        return Promise.resolve(null) // Default to null
+      })
+      mockGetServerSession.mockResolvedValue(null)
+
       const req = createMockRequest("GET", "http://localhost/api/test", {
         headers: {
           authorization: "Bearer valid.token",
         },
       })
-
-      jest.doMock("@/lib/auth-utils", () => ({
-        ...jest.requireActual("@/lib/auth-utils"),
-        verifyToken: jest.fn().mockReturnValue({
-          userId: "nonexistent-user",
-          email: "test@example.com",
-        }),
-      }))
-
-      mockDbUser.findUnique.mockResolvedValue(null)
-      mockGetServerSession.mockResolvedValue(null)
 
       const result = await authenticateRequest(req)
 
@@ -178,22 +196,20 @@ describe("Mobile Authentication Middleware", () => {
         role: "USER",
       }
 
-      mockDbUser.findUnique.mockResolvedValue(mockUser)
+      // Set up JWT authentication
+      mockExtractBearerToken.mockReturnValue("valid.token")
+      mockVerifyToken.mockReturnValue({
+        userId: mockUser.id,
+        email: mockUser.email,
+        role: mockUser.role,
+      })
+      mockDb.user.findUnique.mockResolvedValue(mockUser)
 
       const req = createMockRequest("GET", "http://localhost/api/test", {
         headers: {
           authorization: "Bearer valid.token",
         },
       })
-
-      jest.doMock("@/lib/auth-utils", () => ({
-        ...jest.requireActual("@/lib/auth-utils"),
-        verifyToken: jest.fn().mockReturnValue({
-          userId: mockUser.id,
-          email: mockUser.email,
-          role: mockUser.role,
-        }),
-      }))
 
       const user = await requireAuth(req)
 
@@ -202,9 +218,22 @@ describe("Mobile Authentication Middleware", () => {
 
     it("should throw 401 response when not authenticated", async () => {
       const req = createMockRequest("GET", "http://localhost/api/test")
+      // Ensure no authentication methods work
+      mockExtractBearerToken.mockReturnValue(null)
+      mockVerifyToken.mockReturnValue(null)
       mockGetServerSession.mockResolvedValue(null)
+      mockDb.user.findUnique.mockResolvedValue(null)
 
-      await expect(requireAuth(req)).rejects.toThrow()
+      try {
+        const result = await requireAuth(req)
+        fail(
+          "requireAuth should have thrown but returned: " +
+            JSON.stringify(result)
+        )
+      } catch (error) {
+        expect(error).toBeInstanceOf(Response)
+        expect((error as Response).status).toBe(401)
+      }
     })
   })
 
@@ -223,7 +252,7 @@ describe("Mobile Authentication Middleware", () => {
       const user = {
         id: "user-123",
         email: "admin@example.com",
-        role: "admin",
+        role: "ADMIN",
       }
 
       expect(hasRole(user, "USER")).toBe(true)
@@ -262,22 +291,20 @@ describe("Mobile Authentication Middleware", () => {
         role: "MANAGER",
       }
 
-      mockDbUser.findUnique.mockResolvedValue(mockUser)
+      // Set up JWT authentication
+      mockExtractBearerToken.mockReturnValue("valid.token")
+      mockVerifyToken.mockReturnValue({
+        userId: mockUser.id,
+        email: mockUser.email,
+        role: mockUser.role,
+      })
+      mockDb.user.findUnique.mockResolvedValue(mockUser)
 
       const req = createMockRequest("GET", "http://localhost/api/test", {
         headers: {
           authorization: "Bearer valid.token",
         },
       })
-
-      jest.doMock("@/lib/auth-utils", () => ({
-        ...jest.requireActual("@/lib/auth-utils"),
-        verifyToken: jest.fn().mockReturnValue({
-          userId: mockUser.id,
-          email: mockUser.email,
-          role: mockUser.role,
-        }),
-      }))
 
       const user = await requireRole(req, "MANAGER")
 
@@ -291,7 +318,14 @@ describe("Mobile Authentication Middleware", () => {
         role: "USER",
       }
 
-      mockDbUser.findUnique.mockResolvedValue(mockUser)
+      // Set up JWT authentication with insufficient role
+      mockExtractBearerToken.mockReturnValue("valid.token")
+      mockVerifyToken.mockReturnValue({
+        userId: mockUser.id,
+        email: mockUser.email,
+        role: mockUser.role,
+      })
+      mockDb.user.findUnique.mockResolvedValue(mockUser)
 
       const req = createMockRequest("GET", "http://localhost/api/test", {
         headers: {
@@ -299,41 +333,39 @@ describe("Mobile Authentication Middleware", () => {
         },
       })
 
-      jest.doMock("@/lib/auth-utils", () => ({
-        ...jest.requireActual("@/lib/auth-utils"),
-        verifyToken: jest.fn().mockReturnValue({
-          userId: mockUser.id,
-          email: mockUser.email,
-          role: mockUser.role,
-        }),
-      }))
-
-      await expect(requireRole(req, "MANAGER")).rejects.toThrow()
+      try {
+        const result = await requireRole(req, "MANAGER")
+        fail(
+          "requireRole should have thrown but returned: " +
+            JSON.stringify(result)
+        )
+      } catch (error) {
+        expect(error).toBeInstanceOf(Response)
+        expect((error as Response).status).toBe(403)
+      }
     })
 
     it("should allow admin role for any required role", async () => {
       const mockUser = {
         id: "user-123",
         email: "admin@example.com",
-        role: "admin",
+        role: "ADMIN",
       }
 
-      mockDbUser.findUnique.mockResolvedValue(mockUser)
+      // Set up JWT authentication with admin role
+      mockExtractBearerToken.mockReturnValue("valid.token")
+      mockVerifyToken.mockReturnValue({
+        userId: mockUser.id,
+        email: mockUser.email,
+        role: mockUser.role,
+      })
+      mockDb.user.findUnique.mockResolvedValue(mockUser)
 
       const req = createMockRequest("GET", "http://localhost/api/test", {
         headers: {
           authorization: "Bearer valid.token",
         },
       })
-
-      jest.doMock("@/lib/auth-utils", () => ({
-        ...jest.requireActual("@/lib/auth-utils"),
-        verifyToken: jest.fn().mockReturnValue({
-          userId: mockUser.id,
-          email: mockUser.email,
-          role: mockUser.role,
-        }),
-      }))
 
       const user = await requireRole(req, "MANAGER")
 
@@ -382,7 +414,14 @@ describe("Mobile Authentication Middleware", () => {
         },
       }
 
-      mockDbUser.findUnique.mockResolvedValue(mockJwtUser)
+      // Set up both JWT and session auth, JWT should take priority
+      mockExtractBearerToken.mockReturnValue("valid.token")
+      mockVerifyToken.mockReturnValue({
+        userId: mockJwtUser.id,
+        email: mockJwtUser.email,
+        role: mockJwtUser.role,
+      })
+      mockDb.user.findUnique.mockResolvedValue(mockJwtUser)
       mockGetServerSession.mockResolvedValue(mockSession)
 
       const req = createMockRequest("GET", "http://localhost/api/test", {
@@ -390,15 +429,6 @@ describe("Mobile Authentication Middleware", () => {
           authorization: "Bearer valid.token",
         },
       })
-
-      jest.doMock("@/lib/auth-utils", () => ({
-        ...jest.requireActual("@/lib/auth-utils"),
-        verifyToken: jest.fn().mockReturnValue({
-          userId: mockJwtUser.id,
-          email: mockJwtUser.email,
-          role: mockJwtUser.role,
-        }),
-      }))
 
       const result = await authenticateRequest(req)
 

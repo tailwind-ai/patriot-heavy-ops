@@ -5,7 +5,8 @@
  * Abstracts Prisma operations behind a mobile-compatible interface.
  */
 
-import { PrismaClient, User, UserRole } from "@prisma/client"
+import { PrismaClient } from "@prisma/client"
+import type { User, UserRole } from "@prisma/client"
 import { 
   BaseRepository, 
   CrudRepository, 
@@ -85,7 +86,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
     if (!validation.success) {
       return {
         success: false,
-        error: validation.error!,
+        error: validation.error || 'Validation failed',
       };
     }
 
@@ -115,7 +116,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
     if (!validation.success) {
       return {
         success: false,
-        error: validation.error!,
+        error: validation.error || 'Validation failed',
       };
     }
 
@@ -248,7 +249,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
     if (!validation.success) {
       return {
         success: false,
-        error: validation.error!,
+        error: validation.error || 'Validation failed',
       };
     }
 
@@ -280,7 +281,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
     if (!validation.success) {
       return {
         success: false,
-        error: validation.error!,
+        error: validation.error || 'Validation failed',
       };
     }
 
@@ -316,7 +317,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
     if (!validation.success) {
       return {
         success: false,
-        error: validation.error!,
+        error: validation.error || 'Validation failed',
       };
     }
 
@@ -367,7 +368,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
     if (!validation.success) {
       return {
         success: false,
-        error: validation.error!,
+        error: validation.error || 'Validation failed',
       };
     }
 
@@ -413,7 +414,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
     if (!validation.success) {
       return {
         success: false,
-        error: validation.error!,
+        error: validation.error || 'Validation failed',
       };
     }
 
@@ -471,7 +472,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
     if (!validation.success) {
       return {
         success: false,
-        error: validation.error!,
+        error: validation.error || 'Validation failed',
       };
     }
 
@@ -505,7 +506,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
     if (!validation.success) {
       return {
         success: false,
-        error: validation.error!,
+        error: validation.error || 'Validation failed',
       };
     }
 
@@ -548,7 +549,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
     if (!validation.success) {
       return {
         success: false,
-        error: validation.error!,
+        error: validation.error || 'Validation failed',
       };
     }
 

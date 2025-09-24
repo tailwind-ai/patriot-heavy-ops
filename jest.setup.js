@@ -158,6 +158,8 @@ jest.mock('next-auth/next', () => ({
   getServerSession: jest.fn(),
 }))
 
+// Note: auth-utils is mocked per test file to avoid conflicts
+
 // Note: Session utilities are not globally mocked to preserve existing tests
 // Individual API tests will mock these functions as needed
 

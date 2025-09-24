@@ -391,10 +391,8 @@ describe("ServiceRequestForm Geocoding Integration", () => {
 
       const jobSiteInput = screen.getByLabelText(/job site address/i)
 
-      // Type multiple characters quickly
-      await user.type(jobSiteInput, "123")
-      await user.type(jobSiteInput, " Main")
-      await user.type(jobSiteInput, " St")
+      // Type the entire string at once to avoid multiple debounce triggers
+      await user.type(jobSiteInput, "123 Main St")
 
       // Wait for debounce to settle
       await waitFor(

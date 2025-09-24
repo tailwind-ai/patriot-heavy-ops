@@ -96,19 +96,19 @@ export class GitOperations {
 
   private async createTreeItems(
     changes: FileChange[], 
-    existingTree: any[]
-  ): Promise<any[]> {
-    const treeItems: any[] = []
+    existingTree: Array<{ path: string; mode: string; type: string; sha?: string }>
+  ): Promise<Array<{ path: string; mode: string; type: string; sha?: string }>> {
+    const treeItems: Array<{ path: string; mode: string; type: string; sha?: string }> = []
 
     // Add all existing files except the ones being changed
     const changedPaths = new Set(changes.map(c => c.path))
     
     for (const item of existingTree) {
-      if (item.type === "blob" && !changedPaths.has(item.path)) {
+      if (item.type === "blob" && !changedPaths.has(item.path) && item.sha) {
         treeItems.push({
           path: item.path,
-          mode: item.mode,
-          type: item.type,
+          mode: item.mode as "100644",
+          type: item.type as "blob",
           sha: item.sha,
         })
       }
@@ -139,7 +139,6 @@ export class GitOperations {
   }
 
   private generateCommitMessage(issueType: string, changes: FileChange[]): string {
-    const fileCount = changes.length
     const fileList = changes.map(c => c.path).join(", ")
     
     // Map issue types to source descriptions
