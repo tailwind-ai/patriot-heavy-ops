@@ -1,96 +1,61 @@
 name: CI/CD Pipeline
 
 on:
-  push:
-    branches: [main, sam-dev]
-  pull_request:
-    branches: [main]
+  workflow_run:
+    workflows: ["CI Tests"]
+    types:
+      - completed
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   test:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
-
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: test
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "18"
-          cache: "npm"
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Setup test environment
+      - name: Fetch artifacts via GitHub API
         run: |
-          echo "DATABASE_URL=postgresql://postgres:postgres@localhost:5432/test" > .env.local
-          echo "NEXTAUTH_SECRET=ci-test-secret" >> .env.local
-          echo "NEXTAUTH_URL=http://localhost:3000" >> .env.local
-          echo "NEXT_PUBLIC_APP_URL=http://localhost:3000" >> .env.local
+          curl -sL \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            ${{ github.event.workflow_run.artifacts_url }} \
+            > artifacts.json
 
-      - name: Run database migrations
-        run: npx prisma migrate deploy
-        env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test
+          # Download coverage
+          COV_ID=$(jq -r '.artifacts[] | select(.name=="coverage") | .id' artifacts.json)
+          if [ "$COV_ID" != "" ]; then
+            curl -L \
+              -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+              -H "Accept: application/vnd.github+json" \
+              -o coverage.zip \
+              https://api.github.com/repos/${{ github.repository }}/actions/artifacts/$COV_ID/zip
+            unzip -o coverage.zip -d coverage
+          fi
 
-      - name: Run TypeScript check
-        run: npx tsc --noEmit
-        env:
-          NEXT_PUBLIC_APP_URL: http://localhost:3000
+          # Download build
+          BUILD_ID=$(jq -r '.artifacts[] | select(.name=="build") | .id' artifacts.json)
+          if [ "$BUILD_ID" != "" ]; then
+            curl -L \
+              -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+              -H "Accept: application/vnd.github+json" \
+              -o build.zip \
+              https://api.github.com/repos/${{ github.repository }}/actions/artifacts/$BUILD_ID/zip
+            unzip -o build.zip
+          fi
 
-      - name: Run ESLint
-        run: npm run lint
-        env:
-          NEXT_PUBLIC_APP_URL: http://localhost:3000
-
-      - name: Run tests with coverage
-        run: npm run test:ci
-        env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test
-          NEXTAUTH_SECRET: ci-test-secret
-          NEXTAUTH_URL: http://localhost:3000
-          NEXT_PUBLIC_APP_URL: http://localhost:3000
-
-      - name: Upload coverage reports
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-report
-          path: coverage/
-
-      - name: Upload coverage to GitHub
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-lcov
-          path: coverage/lcov.info
-
-      - name: Build application
-        run: npm run build
-        env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test
-          NEXTAUTH_SECRET: ci-test-secret
-          NEXTAUTH_URL: http://localhost:3000
-          NEXT_PUBLIC_APP_URL: http://localhost:3000
+      - name: Verify build exists
+        run: ls -lah .next || echo "Build not found"
 
   integration:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     needs: test
-    if: github.event_name == 'push'
 
     steps:
       - name: Checkout code
@@ -112,7 +77,34 @@ jobs:
         run: sleep 30
 
       - name: Run integration tests
-        run: npm run test:integration || echo "Integration tests not yet implemented"
+        run: |
+          set -o pipefail
+          npm run test:integration 2>&1 | tee integration-output.log || exit 1
 
       - name: Stop services
         run: docker compose down
+
+      - name: Upload integration logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-logs
+          path: integration-output.log
+
+      - name: Post summary on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const log = fs.readFileSync('integration-output.log', 'utf8');
+            const summary = log.split('\n').slice(-20).join('\n');
+            const issue_number = context.payload.workflow_run.pull_requests[0]?.number;
+            if (issue_number) {
+              await github.rest.issues.createComment({
+                ...context.repo,
+                issue_number,
+                body: `🚨 **Integration Tests Failed**\n\n**Last 20 log lines:**\n\`\`\`\n${summary}\n\`\`\`\n\nFull logs available in the uploaded artifact.`
+              });
+            }

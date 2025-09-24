@@ -1,0 +1,74 @@
+name: Vercel Logs to GitHub
+
+on:
+  check_suite:
+    types: [completed]
+
+jobs:
+  fetch-vercel-logs:
+    if: github.event.check_suite.app.name == 'Vercel'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Fetch latest deployment
+        run: |
+          curl -s -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
+          "https://api.vercel.com/v13/deployments?projectId=<YOUR_PROJECT_ID>&limit=1" \
+          > vercel.json
+          cat vercel.json | jq .
+
+      - name: Upload full Vercel logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vercel-logs
+          path: vercel.json
+
+      - name: Extract summary
+        id: parse
+        run: |
+          STATE=$(jq -r '.deployments[0].readyState // "UNKNOWN"' vercel.json)
+          URL=$(jq -r '.deployments[0].url // "N/A"' vercel.json)
+          ERROR=$(jq -r '.deployments[0].error.message // "No error message available"' vercel.json)
+
+          echo "state=$STATE" >> $GITHUB_OUTPUT
+          echo "url=https://$URL" >> $GITHUB_OUTPUT
+          echo "error=$ERROR" >> $GITHUB_OUTPUT
+
+      - name: Comment on PR with logs
+        if: ${{ github.event.check_suite.pull_requests[0].number != null }}
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const issue_number = context.payload.check_suite.pull_requests[0].number;
+            const state = "${{ steps.parse.outputs.state }}";
+            const url = "${{ steps.parse.outputs.url }}";
+            const error = "${{ steps.parse.outputs.error }}";
+
+            let body;
+            if (state === "ERROR") {
+              body = `🚨 **Vercel Deployment Failed**
+- **State:** ${state}
+- **URL:** [Preview Deployment](${url})
+- **Error:**
+\`\`\`
+${error}
+\`\`\`
+🔎 Full logs are in the uploaded artifact.`;
+            } else if (state === "READY") {
+              body = `✅ **Vercel Deployment Succeeded**
+- **State:** ${state}
+- **URL:** [Preview Deployment](${url})`;
+            } else {
+              body = `⚪ **Vercel Deployment Skipped**
+- **State:** ${state}
+- **URL:** [Preview Deployment](${url})
+ℹ️ No build was attempted because this branch is excluded by Ignored Build Step.`;
+            }
+
+            await github.rest.issues.createComment({
+              ...context.repo,
+              issue_number,
+              body
+            });
