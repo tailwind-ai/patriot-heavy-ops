@@ -30,6 +30,8 @@ jobs:
         run: |
           echo "GITHUB_ACCESS_TOKEN=${{ secrets.GITHUB_TOKEN }}" >> .env.local
           echo "NODE_ENV=production" >> .env.local
+        env:
+          GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Trigger Background Agent
         run: |
@@ -50,6 +52,8 @@ jobs:
 
           echo "Processing PR #$PR_NUMBER with Background Agent..."
           npx tsx scripts/todo-cli.ts github $PR_NUMBER
+        env:
+          GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Check for new todos
         run: |
@@ -59,6 +63,14 @@ jobs:
           else
             echo "No todos file found"
           fi
+
+      - name: Upload todos artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: todos-artifact
+          path: .todos.json
+          retention-days: 7
 
       - name: Comment on PR with results
         if: github.event.pull_request

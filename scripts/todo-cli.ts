@@ -31,6 +31,15 @@ async function main() {
       case "clear":
         await clearAllTodos()
         break
+      case "sync":
+        if (!prNumber) {
+          console.log(
+            "❌ Please provide a PR number: npm run todo sync <PR_NUMBER>"
+          )
+          process.exit(1)
+        }
+        await syncFromGitHubActions(parseInt(prNumber))
+        break
       case "list":
         await listTodos()
         break
@@ -131,6 +140,66 @@ async function clearAllTodos() {
   console.log("🧹 Clearing all todos...")
   enhancedTodoManager.clearAllTodos()
   console.log("✅ All todos cleared")
+}
+
+async function syncFromGitHubActions(prNumber: number) {
+  console.log(`🔄 Syncing todos from GitHub Actions for PR #${prNumber}...`)
+
+  try {
+    // Use GitHub CLI to get the latest workflow run for this PR
+    const { execSync } = await import("child_process")
+
+    // Get the latest workflow run ID for this PR
+    const workflowRunsOutput = execSync(
+      `gh run list --repo samuelhenry/patriot-heavy-ops --limit 10 --json databaseId,headBranch,conclusion,workflowName`,
+      { encoding: "utf8" }
+    )
+
+    const workflowRuns = JSON.parse(workflowRunsOutput)
+    const backgroundAgentRun = workflowRuns.find(
+      (run: Record<string, unknown>) =>
+        run.workflowName === "Background Agent" &&
+        (run.conclusion === "success" || run.conclusion === "failure")
+    )
+
+    if (!backgroundAgentRun) {
+      console.log("❌ No Background Agent workflow runs found")
+      return
+    }
+
+    console.log(
+      `📥 Found Background Agent run: ${backgroundAgentRun.databaseId}`
+    )
+
+    // Try to download artifacts (this might not work without proper permissions)
+    try {
+      execSync(
+        `gh run download ${backgroundAgentRun.databaseId} --repo samuelhenry/patriot-heavy-ops --name todos-artifact || true`,
+        { encoding: "utf8" }
+      )
+
+      // Check if we got a todos file
+      const fs = await import("fs")
+      if (fs.existsSync(".todos.json")) {
+        console.log("✅ Successfully synced todos from GitHub Actions")
+        await listTodos()
+      } else {
+        console.log(
+          "⚠️  No todos artifact found, falling back to direct GitHub API fetch"
+        )
+        await initializeFromGitHubPR(prNumber)
+      }
+    } catch {
+      console.log(
+        "⚠️  Could not download artifacts, falling back to direct GitHub API fetch"
+      )
+      await initializeFromGitHubPR(prNumber)
+    }
+  } catch (error) {
+    console.error("❌ Error syncing from GitHub Actions:", error)
+    console.log("⚠️  Falling back to direct GitHub API fetch")
+    await initializeFromGitHubPR(prNumber)
+  }
 }
 
 async function listTodos() {
@@ -311,6 +380,7 @@ function showHelp() {
   console.log(
     "github <PR>    - Fetch todos from GitHub PR comments (clears previous)"
   )
+  console.log("sync <PR>      - Sync todos from GitHub Actions workflow")
   console.log("clear          - Clear all todos")
   console.log("list           - List all todos")
   console.log("next           - Show next todo to work on")
