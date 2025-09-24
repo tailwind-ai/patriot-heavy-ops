@@ -19,18 +19,35 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Download coverage
-        uses: actions/download-artifact@v4
-        with:
-          name: coverage
+      - name: Fetch artifacts via GitHub API
+        run: |
+          curl -sL \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            ${{ github.event.workflow_run.artifacts_url }} \
+            > artifacts.json
 
-      - name: Download build
-        uses: actions/download-artifact@v4
-        with:
-          name: build
+          # Download coverage
+          COV_ID=$(jq -r '.artifacts[] | select(.name=="coverage") | .id' artifacts.json)
+          if [ "$COV_ID" != "" ]; then
+            curl -L \
+              -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+              -H "Accept: application/vnd.github+json" \
+              -o coverage.zip \
+              https://api.github.com/repos/${{ github.repository }}/actions/artifacts/$COV_ID/zip
+            unzip -o coverage.zip -d coverage
+          fi
 
-      - name: Extract build
-        run: tar -xzf build.tar.gz
+          # Download build
+          BUILD_ID=$(jq -r '.artifacts[] | select(.name=="build") | .id' artifacts.json)
+          if [ "$BUILD_ID" != "" ]; then
+            curl -L \
+              -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+              -H "Accept: application/vnd.github+json" \
+              -o build.zip \
+              https://api.github.com/repos/${{ github.repository }}/actions/artifacts/$BUILD_ID/zip
+            unzip -o build.zip
+          fi
 
       - name: Verify build exists
         run: ls -lah .next || echo "Build not found"
@@ -67,7 +84,6 @@ jobs:
       - name: Stop services
         run: docker compose down
 
-      # Always upload integration logs
       - name: Upload integration logs
         if: always()
         uses: actions/upload-artifact@v4
@@ -75,7 +91,6 @@ jobs:
           name: integration-logs
           path: integration-output.log
 
-      # Post summary to PR if integration tests failed
       - name: Post summary on failure
         if: failure()
         uses: actions/github-script@v7
@@ -84,7 +99,7 @@ jobs:
           script: |
             const fs = require('fs');
             const log = fs.readFileSync('integration-output.log', 'utf8');
-            const summary = log.split('\n').slice(-20).join('\n'); // last 20 lines
+            const summary = log.split('\n').slice(-20).join('\n');
             const issue_number = context.payload.workflow_run.pull_requests[0]?.number;
             if (issue_number) {
               await github.rest.issues.createComment({
