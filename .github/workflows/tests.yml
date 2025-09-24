@@ -34,5 +34,19 @@ jobs:
       - name: Run ESLint
         run: npm run lint
 
-      - name: Run unit tests
+      - name: Run unit tests with coverage
         run: npm run test:ci
+
+      - name: Upload coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage/
+
+      - name: Upload build output
+        run: npm run build && tar -czf build.tar.gz .next
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: build.tar.gz
