@@ -49,9 +49,7 @@ describe("ServiceRequestService", () => {
 
   beforeEach(() => {
     mockLogger = new MockLogger()
-    service = new ServiceRequestService()
-    // Replace logger with mock for testing
-    ;(service as any).logger = mockLogger
+    service = new ServiceRequestService(mockLogger)
   })
 
   describe("calculateTotalHours", () => {
