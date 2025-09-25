@@ -11,7 +11,7 @@
  * - Single responsibility for service request business rules
  */
 
-import { BaseService, ServiceResult } from "./base-service"
+import { BaseService, ServiceResult, ServiceLogger } from "./base-service"
 import { db } from "../db"
 import { hasPermissionSafe } from "../permissions"
 import { serviceRequestSchema, serviceRequestUpdateSchema } from "../validations/service-request"
@@ -159,8 +159,8 @@ export class ServiceRequestService extends BaseService {
     ["CLOSED", []], // Terminal state
   ])
 
-  constructor() {
-    super("ServiceRequestService")
+  constructor(logger?: ServiceLogger) {
+    super("ServiceRequestService", logger)
   }
 
   /**
@@ -563,8 +563,8 @@ export class ServiceRequestService extends BaseService {
     const startDate = new Date(data.startDate)
     const now = new Date()
 
-    // Start date must be in the future
-    if (startDate <= now) {
+    // Start date must be in the future (allow same day if time is later)
+    if (startDate.getTime() <= now.getTime()) {
       errors.push("Start date must be in the future")
     }
 
