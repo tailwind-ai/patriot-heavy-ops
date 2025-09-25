@@ -733,6 +733,7 @@ export class ServiceRequestService extends BaseService {
     }
 
     // Validate input data (exclude requestedTotalHours as it will be calculated)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { requestedTotalHours, ...inputForValidation } = input as any
     const validation = serviceRequestSchema.safeParse({
       ...inputForValidation,
@@ -909,7 +910,7 @@ export class ServiceRequestService extends BaseService {
           throw new Error("Access denied to this service request")
         }
 
-        const updateData: Partial<ServiceRequestUpdateInput> & { updatedAt: Date } = {
+        const updateData: any = {
           updatedAt: new Date(),
         }
         
