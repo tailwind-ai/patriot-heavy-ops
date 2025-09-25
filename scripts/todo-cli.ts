@@ -41,9 +41,6 @@ async function main() {
       case "clear":
         await clearAllTodos()
         break
-      case "auto-fix":
-        await autoFixTodos()
-        break
       case "sync":
         if (!prNumber) {
           console.log(
@@ -565,7 +562,6 @@ function showHelp() {
   console.log("sync <PR>      - Sync todos from GitHub Actions workflow")
   console.log("resolve <ID>   - Mark todo as resolved and comment on GitHub")
   console.log("clear          - Clear all todos")
-  console.log("auto-fix       - Automatically fix simple todos")
   console.log("list           - List all todos")
   console.log("next           - Show next todo to work on")
   console.log("ready          - Show todos ready to work on")
@@ -636,92 +632,6 @@ function getIssueTypeIcon(issueType: string): string {
   }
 }
 
-/**
- * Auto-fix simple todos that can be resolved programmatically
- */
-async function autoFixTodos(): Promise<void> {
-  console.log("🔧 Auto-fixing todos...")
-
-  const { todos } = enhancedTodoManager.getTodosWithDependencies()
-  const autoFixableTodos = todos.filter(isAutoFixable)
-
-  if (autoFixableTodos.length === 0) {
-    console.log("✅ No auto-fixable todos found")
-    return
-  }
-
-  console.log(`🎯 Found ${autoFixableTodos.length} auto-fixable todos`)
-
-  for (const todo of autoFixableTodos) {
-    console.log(`🔧 Auto-fixing: ${todo.content.substring(0, 60)}...`)
-
-    try {
-      const success = await applyAutoFix(todo)
-      if (success) {
-        enhancedTodoManager.updateTodoStatus(todo.id, "completed")
-        console.log(`✅ Fixed: ${todo.id}`)
-      } else {
-        console.log(`⚠️  Could not auto-fix: ${todo.id}`)
-      }
-    } catch (error) {
-      console.log(`❌ Error fixing ${todo.id}: ${(error as Error).message}`)
-    }
-  }
-}
-
-/**
- * Check if a todo can be auto-fixed
- */
-function isAutoFixable(todo: EnhancedTodoItem): boolean {
-  const content = todo.content.toLowerCase()
-
-  // Auto-fixable patterns
-  const autoFixPatterns = [
-    /date comparison.*<=.*gettime/i,
-    /type assertion.*\(.*as any\)/i,
-    /using.*any.*type.*defeats.*typescript/i,
-    /using.*any.*type.*reduces.*type.*safety/i,
-    /eslint.*no-console/i,
-    /eslint.*@typescript-eslint\/no-unused-vars/i,
-    /prettier.*formatting/i,
-  ]
-
-  return autoFixPatterns.some((pattern) => pattern.test(content))
-}
-
-/**
- * Apply automatic fix for a todo
- */
-async function applyAutoFix(todo: EnhancedTodoItem): Promise<boolean> {
-  const content = todo.content.toLowerCase()
-
-  // Date comparison fix (already applied manually, but this shows the pattern)
-  if (content.includes("date comparison") && content.includes("<=")) {
-    console.log("  📅 Date comparison fix already applied")
-    return true
-  }
-
-  // Type assertion fix (already applied manually)
-  if (content.includes("type assertion") && content.includes("as any")) {
-    console.log("  🔒 Type assertion fix already applied")
-    return true
-  }
-
-  // TypeScript 'any' type fixes
-  if (content.includes("using") && content.includes("any") && content.includes("type")) {
-    console.log("  🔒 TypeScript 'any' type fix needed - applying proper typing")
-    return true // Will be implemented
-  }
-
-  // ESLint fixes could be automated here
-  if (content.includes("eslint")) {
-    console.log("  🔍 ESLint fixes could be automated")
-    // Could run: npx eslint --fix
-    return false // Not implemented yet
-  }
-
-  return false
-}
 
 // Run if called directly
 if (require.main === module) {
