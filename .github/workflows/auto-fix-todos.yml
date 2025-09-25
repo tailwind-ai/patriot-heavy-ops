@@ -16,7 +16,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.SAM_PAT_EXP_09_04_2026 }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
 
       - name: Setup Node.js
@@ -31,14 +31,14 @@ jobs:
       - name: Initialize todos from PR (if PR context)
         if: github.event_name == 'pull_request'
         env:
-          GH_TOKEN: ${{ secrets.SAM_PAT_EXP_09_04_2026 }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "🔄 Initializing todos from PR #${{ github.event.number }}"
           npm run todo github-dod ${{ github.event.number }}
 
       - name: Run auto-fix
         env:
-          GH_TOKEN: ${{ secrets.SAM_PAT_EXP_09_04_2026 }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "🔧 Running auto-fix for todos..."
           npm run todo auto-fix
@@ -90,7 +90,7 @@ jobs:
             --base main \
             --head $BRANCH_NAME
         env:
-          GITHUB_TOKEN: ${{ secrets.SAM_PAT_EXP_09_04_2026 }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Show todo status
         run: |
