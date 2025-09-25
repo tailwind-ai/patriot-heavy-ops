@@ -127,7 +127,6 @@ describe("AuthService", () => {
           id: true,
           email: true,
           name: true,
-          image: true,
           role: true,
           password: true,
         },
@@ -225,7 +224,6 @@ describe("AuthService", () => {
           id: true,
           email: true,
           name: true,
-          image: true,
           role: true,
         },
       })
@@ -282,7 +280,6 @@ describe("AuthService", () => {
           id: true,
           email: true,
           name: true,
-          image: true,
           role: true,
         },
       })
@@ -319,7 +316,6 @@ describe("AuthService", () => {
           id: true,
           email: true,
           name: true,
-          image: true,
           role: true,
         },
       })
@@ -352,7 +348,6 @@ describe("AuthService", () => {
           id: true,
           email: true,
           name: true,
-          image: true,
           role: true,
         },
       })

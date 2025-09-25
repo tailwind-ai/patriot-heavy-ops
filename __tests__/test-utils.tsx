@@ -3,6 +3,8 @@ import { render, RenderOptions } from "@testing-library/react"
 import { SessionProvider } from "next-auth/react"
 import type { Session } from "next-auth"
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 // Type-safe mock interfaces
 interface MockResponse {
   ok: boolean

@@ -1,5 +1,4 @@
 import { userAuthSchema, userRegisterSchema, userLoginSchema } from '@/lib/validations/auth'
-import { z } from 'zod'
 
 describe('auth validations', () => {
   describe('userAuthSchema', () => {
@@ -124,6 +123,7 @@ describe('auth validations', () => {
 
       it('should reject missing name', () => {
         const { name, ...dataWithoutName } = validRegisterData
+        void name // Suppress unused variable warning
         
         const result = userRegisterSchema.safeParse(dataWithoutName)
         

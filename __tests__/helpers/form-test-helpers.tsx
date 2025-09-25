@@ -36,6 +36,8 @@ import userEvent from "@testing-library/user-event"
 import { SessionProvider } from "next-auth/react"
 import type { Session } from "next-auth"
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 // Type-safe mock Response interface
 interface MockResponse {
   ok: boolean

@@ -272,7 +272,7 @@ describe('Auth Utils', () => {
       expect(accessDecoded?.email).toBe(refreshDecoded?.email)
       
       // Refresh token should have longer expiry
-      expect(refreshDecoded?.exp).toBeGreaterThan(accessDecoded?.exp!)
+      expect(refreshDecoded?.exp).toBeGreaterThan(accessDecoded?.exp || 0)
     })
   })
 })
