@@ -29,6 +29,6 @@ jobs:
 
       - name: Run script
         env:
-          GITHUB_TOKEN: ${{ secrets.REPO_PAT || github.token }}
+          GITHUB_TOKEN: ${{ github.token }}
           GITHUB_REPOSITORY: ${{ github.repository }}
         run: python scripts/release_to_issues.py
