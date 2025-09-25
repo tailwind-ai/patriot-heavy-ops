@@ -19,6 +19,8 @@ export type MockTodoItem = {
     | "lint_error"
     | "test_failure"
     | "definition_of_done"
+    | "build_failure"
+    | "deployment_failure"
   files?: string[]
   lineNumbers?: number[]
   suggestedFix?: string
