@@ -1,127 +1,145 @@
-import { renderHook, act, waitFor } from '@testing-library/react'
-import { useRouter } from 'next/navigation'
-import { toast } from '@/components/ui/use-toast'
-import { useOperatorApplicationForm } from '@/hooks/use-operator-application-form'
-import { ServiceFactory } from '@/lib/services'
+import { renderHook, act, waitFor } from "@testing-library/react"
+import { useRouter } from "next/navigation"
+import { toast } from "@/components/ui/use-toast"
+import { useOperatorApplicationForm } from "@/hooks/use-operator-application-form"
+import { ServiceFactory } from "@/lib/services"
 
 // Mock dependencies
-jest.mock('next/navigation', () => ({
+jest.mock("next/navigation", () => ({
   useRouter: jest.fn(),
 }))
-jest.mock('@/components/ui/use-toast')
-jest.mock('@/lib/services')
+jest.mock("@/components/ui/use-toast")
+jest.mock("@/lib/services")
 
 const mockRouter = {
   refresh: jest.fn(),
 }
 
 const mockUser = {
-  id: 'user-1',
-  name: 'John Doe',
+  id: "user-1",
+  name: "John Doe",
 }
 
 const mockGeocodingService = {
   searchAddresses: jest.fn(),
 }
 
-describe('useOperatorApplicationForm', () => {
+describe("useOperatorApplicationForm", () => {
   beforeEach(() => {
     jest.clearAllMocks()
     ;(useRouter as jest.Mock).mockReturnValue(mockRouter)
-    ;(ServiceFactory.getGeocodingService as jest.Mock).mockReturnValue(mockGeocodingService)
+    ;(ServiceFactory.getGeocodingService as jest.Mock).mockReturnValue(
+      mockGeocodingService
+    )
   })
 
   afterEach(() => {
     jest.restoreAllMocks()
   })
 
-  it('should initialize with default form values', () => {
-    const { result } = renderHook(() => useOperatorApplicationForm({ user: mockUser }))
+  it("should initialize with default form values", () => {
+    const { result } = renderHook(() =>
+      useOperatorApplicationForm({ user: mockUser })
+    )
 
     expect(result.current.form.getValues()).toMatchObject({
-      location: '',
+      location: "",
     })
-    expect(result.current.inputValue).toBe('')
+    expect(result.current.inputValue).toBe("")
     expect(result.current.suggestions).toHaveLength(0)
     expect(result.current.isSaving).toBe(false)
     expect(result.current.isLoading).toBe(false)
   })
 
-  it('should handle input change and trigger address search', async () => {
+  it("should handle input change and trigger address search", async () => {
     mockGeocodingService.searchAddresses.mockResolvedValue({
       success: true,
       data: [
         {
-          placeId: 'place-1',
-          displayName: '123 Main St, City, State',
-          coordinates: { latitude: 40.7128, longitude: -74.0060 },
+          placeId: "place-1",
+          displayName: "123 Main St, City, State",
+          coordinates: { latitude: 40.7128, longitude: -74.006 },
           components: {
-            streetNumber: '123',
-            streetName: 'Main St',
-            city: 'City',
-            state: 'State',
-            postalCode: '12345',
-            country: 'USA',
+            streetNumber: "123",
+            streetName: "Main St",
+            city: "City",
+            state: "State",
+            postalCode: "12345",
+            country: "USA",
           },
         },
       ],
     })
 
-    const { result } = renderHook(() => useOperatorApplicationForm({ user: mockUser }))
+    const { result } = renderHook(() =>
+      useOperatorApplicationForm({ user: mockUser })
+    )
 
     act(() => {
-      result.current.handleInputChange('123 Main')
+      result.current.handleInputChange("123 Main")
     })
 
-    expect(result.current.inputValue).toBe('123 Main')
-    expect(result.current.form.getValues('location')).toBe('123 Main')
+    expect(result.current.inputValue).toBe("123 Main")
+    expect(result.current.form.getValues("location")).toBe("123 Main")
 
     // Wait for debounced search
-    await waitFor(() => {
-      expect(mockGeocodingService.searchAddresses).toHaveBeenCalledWith('123 Main')
-    }, { timeout: 500 })
+    await waitFor(
+      () => {
+        expect(mockGeocodingService.searchAddresses).toHaveBeenCalledWith(
+          "123 Main"
+        )
+      },
+      { timeout: 500 }
+    )
 
     await waitFor(() => {
       expect(result.current.suggestions).toHaveLength(1)
       expect(result.current.suggestions[0]).toMatchObject({
-        placeId: 'place-1',
-        displayName: '123 Main St, City, State',
+        placeId: "place-1",
+        displayName: "123 Main St, City, State",
       })
     })
   })
 
-  it('should not search for addresses with less than 3 characters', async () => {
-    const { result } = renderHook(() => useOperatorApplicationForm({ user: mockUser }))
+  it("should not search for addresses with less than 3 characters", async () => {
+    const { result } = renderHook(() =>
+      useOperatorApplicationForm({ user: mockUser })
+    )
 
     act(() => {
-      result.current.handleInputChange('12')
+      result.current.handleInputChange("12")
     })
 
-    expect(result.current.inputValue).toBe('12')
-    expect(result.current.form.getValues('location')).toBe('12')
+    expect(result.current.inputValue).toBe("12")
+    expect(result.current.form.getValues("location")).toBe("12")
 
     // Wait to ensure no search is triggered
-    await waitFor(() => {
-      expect(mockGeocodingService.searchAddresses).not.toHaveBeenCalled()
-    }, { timeout: 500 })
+    await waitFor(
+      () => {
+        expect(mockGeocodingService.searchAddresses).not.toHaveBeenCalled()
+      },
+      { timeout: 500 }
+    )
 
     expect(result.current.suggestions).toHaveLength(0)
   })
 
-  it('should handle address selection', () => {
-    const { result } = renderHook(() => useOperatorApplicationForm({ user: mockUser }))
+  it("should handle address selection", () => {
+    const { result } = renderHook(() =>
+      useOperatorApplicationForm({ user: mockUser })
+    )
 
     const suggestion = {
-      placeId: 'place-1',
-      displayName: '123 Main St, City, State',
-      coordinates: { latitude: 40.7128, longitude: -74.0060 },
+      placeId: "place-1",
+      displayName: "123 Main St, City, State",
+      coordinates: { latitude: 40.7128, longitude: -74.006 },
       components: {
-        streetNumber: '123',
-        streetName: 'Main St',
-        city: 'City',
-        state: 'State',
-        postalCode: '12345',
-        country: 'USA',
+        streetNumber: "123",
+        streetName: "Main St",
+        city: "City",
+        state: "State",
+        postalCode: "12345",
+        country: "USA",
       },
     }
 
@@ -129,27 +147,34 @@ describe('useOperatorApplicationForm', () => {
       result.current.handleAddressSelect(suggestion)
     })
 
-    expect(result.current.inputValue).toBe('123 Main St, City, State')
-    expect(result.current.form.getValues('location')).toBe('123 Main St, City, State')
+    expect(result.current.inputValue).toBe("123 Main St, City, State")
+    expect(result.current.form.getValues("location")).toBe(
+      "123 Main St, City, State"
+    )
     expect(result.current.suggestions).toHaveLength(0)
   })
 
-  it('should handle geocoding API errors gracefully', async () => {
+  it("should handle geocoding API errors gracefully", async () => {
     mockGeocodingService.searchAddresses.mockResolvedValue({
       success: false,
-      error: { code: 'NETWORK_ERROR', message: 'Network error' },
+      error: { code: "NETWORK_ERROR", message: "Network error" },
     })
 
-    const { result } = renderHook(() => useOperatorApplicationForm({ user: mockUser }))
+    const { result } = renderHook(() =>
+      useOperatorApplicationForm({ user: mockUser })
+    )
 
     act(() => {
-      result.current.handleInputChange('123 Main')
+      result.current.handleInputChange("123 Main")
     })
 
     // Wait for debounced search
-    await waitFor(() => {
-      expect(mockGeocodingService.searchAddresses).toHaveBeenCalled()
-    }, { timeout: 500 })
+    await waitFor(
+      () => {
+        expect(mockGeocodingService.searchAddresses).toHaveBeenCalled()
+      },
+      { timeout: 500 }
+    )
 
     await waitFor(() => {
       expect(result.current.suggestions).toHaveLength(0)
@@ -157,22 +182,31 @@ describe('useOperatorApplicationForm', () => {
     })
   })
 
-  it('should handle suggestions blur with delay', () => {
-    const { result } = renderHook(() => useOperatorApplicationForm({ user: mockUser }))
+  it("should handle suggestions blur with delay", () => {
+    const { result } = renderHook(() =>
+      useOperatorApplicationForm({ user: mockUser })
+    )
 
     // Set some suggestions first
     act(() => {
-      result.current.handleInputChange('123 Main St')
+      result.current.handleInputChange("123 Main St")
     })
 
     // Mock suggestions being set
     act(() => {
       // Simulate suggestions being set by the search
       result.current.suggestions.push({
-        place_id: 'place-1',
-        display_name: '123 Main St, City, State',
-        lat: '40.7128',
-        lon: '-74.0060',
+        placeId: "place-1",
+        displayName: "123 Main St, City, State",
+        coordinates: { latitude: 40.7128, longitude: -74.006 },
+        components: {
+          streetNumber: "123",
+          streetName: "Main St",
+          city: "City",
+          state: "State",
+          postalCode: "12345",
+          country: "USA",
+        },
       })
     })
 
@@ -189,49 +223,56 @@ describe('useOperatorApplicationForm', () => {
     }, 200)
   })
 
-  it('should submit form successfully', async () => {
+  it("should submit form successfully", async () => {
     ;(global.fetch as jest.Mock).mockResolvedValue({
       ok: true,
       json: async () => ({ success: true }),
     })
 
-    const { result } = renderHook(() => useOperatorApplicationForm({ user: mockUser }))
+    const { result } = renderHook(() =>
+      useOperatorApplicationForm({ user: mockUser })
+    )
 
     const formData = {
-      location: '123 Main St, City, State',
+      location: "123 Main St, City, State",
     }
 
     await act(async () => {
       await result.current.onSubmit(formData)
     })
 
-    expect(global.fetch).toHaveBeenCalledWith('/api/users/user-1/operator-application', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        location: '123 Main St, City, State',
-      }),
-    })
+    expect(global.fetch).toHaveBeenCalledWith(
+      "/api/users/user-1/operator-application",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          location: "123 Main St, City, State",
+        }),
+      }
+    )
 
     expect(toast).toHaveBeenCalledWith({
-      description: 'Your operator application has been submitted for review.',
+      description: "Your operator application has been submitted for review.",
     })
 
     expect(mockRouter.refresh).toHaveBeenCalled()
   })
 
-  it('should handle form submission errors', async () => {
+  it("should handle form submission errors", async () => {
     ;(global.fetch as jest.Mock).mockResolvedValue({
       ok: false,
       status: 400,
     })
 
-    const { result } = renderHook(() => useOperatorApplicationForm({ user: mockUser }))
+    const { result } = renderHook(() =>
+      useOperatorApplicationForm({ user: mockUser })
+    )
 
     const formData = {
-      location: '123 Main St, City, State',
+      location: "123 Main St, City, State",
     }
 
     await act(async () => {
@@ -239,19 +280,21 @@ describe('useOperatorApplicationForm', () => {
     })
 
     expect(toast).toHaveBeenCalledWith({
-      title: 'Something went wrong.',
-      description: 'Your application was not submitted. Please try again.',
-      variant: 'destructive',
+      title: "Something went wrong.",
+      description: "Your application was not submitted. Please try again.",
+      variant: "destructive",
     })
   })
 
-  it('should handle network errors during submission', async () => {
-    ;(global.fetch as jest.Mock).mockRejectedValue(new Error('Network error'))
+  it("should handle network errors during submission", async () => {
+    ;(global.fetch as jest.Mock).mockRejectedValue(new Error("Network error"))
 
-    const { result } = renderHook(() => useOperatorApplicationForm({ user: mockUser }))
+    const { result } = renderHook(() =>
+      useOperatorApplicationForm({ user: mockUser })
+    )
 
     const formData = {
-      location: '123 Main St, City, State',
+      location: "123 Main St, City, State",
     }
 
     await act(async () => {
@@ -259,13 +302,14 @@ describe('useOperatorApplicationForm', () => {
     })
 
     expect(toast).toHaveBeenCalledWith({
-      title: 'Network error',
-      description: 'Unable to connect to the server. Please check your internet connection and try again.',
-      variant: 'destructive',
+      title: "Network error",
+      description:
+        "Unable to connect to the server. Please check your internet connection and try again.",
+      variant: "destructive",
     })
   })
 
-  it('should set loading states correctly during submission', async () => {
+  it("should set loading states correctly during submission", async () => {
     let resolvePromise: (value: any) => void
     const promise = new Promise((resolve) => {
       resolvePromise = resolve
@@ -273,10 +317,12 @@ describe('useOperatorApplicationForm', () => {
 
     ;(global.fetch as jest.Mock).mockReturnValue(promise)
 
-    const { result } = renderHook(() => useOperatorApplicationForm({ user: mockUser }))
+    const { result } = renderHook(() =>
+      useOperatorApplicationForm({ user: mockUser })
+    )
 
     const formData = {
-      location: '123 Main St, City, State',
+      location: "123 Main St, City, State",
     }
 
     // Start submission
