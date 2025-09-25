@@ -13,8 +13,8 @@
       231
     ],
     "suggestedFix": "",
-    "createdAt": "2025-09-25T01:04:15.333Z",
-    "updatedAt": "2025-09-25T01:05:34.488Z",
+    "createdAt": "2025-09-25T01:06:53.258Z",
+    "updatedAt": "2025-09-25T01:06:53.722Z",
     "estimatedTime": "10-30 min",
     "tags": [
       "ci-failure",
@@ -25,116 +25,42 @@
   },
   {
     "id": "github-5",
-    "content": "CI Failure: auto-fix-todos - CI failure detected",
+    "content": "CI Failure: auto-fix-todos - Unable to analyze failure logs - check permissions",
     "status": "pending",
     "priority": "high",
     "dependencies": [],
     "issueType": "ci_failure",
-    "files": [
-      "//github.com/actions/runner-images/blob/ubuntu24/20250922.53/images/ubuntu/Ubuntu2404-Readme.md",
-      "scripts/todo-cli.ts",
-      "/home/runner/work/patriot-heavy-ops/patriot-heavy-ops/lib/background-agents/github-integration.ts",
-      "/home/runner/work/patriot-heavy-ops/patriot-heavy-ops/lib/background-agents/real-background-agent.ts",
-      "/home/runner/work/patriot-heavy-ops/patriot-heavy-ops/lib/background-agents/enhanced-todo-manager.ts",
-      "/home/runner/work/patriot-heavy-ops/patriot-heavy-ops/scripts/todo-cli.ts",
-      "lib/services/service-request-service.ts",
-      "/route.ts",
-      "app/api/auth/mobile/login/route.ts"
-    ],
+    "files": [],
     "lineNumbers": [],
-    "suggestedFix": "Review CI logs and fix the underlying issue",
-    "createdAt": "2025-09-25T01:04:15.333Z",
-    "updatedAt": "2025-09-25T01:04:15.333Z",
-    "estimatedTime": "20-30 min",
+    "suggestedFix": "Verify GitHub token has Actions:read permissions",
+    "createdAt": "2025-09-25T01:06:53.258Z",
+    "updatedAt": "2025-09-25T01:06:53.258Z",
+    "estimatedTime": "10-30 min",
     "tags": [
       "ci-failure",
-      "high",
-      "authentication",
-      "api"
+      "high"
     ],
-    "assignee": "auth-specialist",
+    "assignee": "general-developer",
     "relatedPR": "#243"
   },
   {
     "id": "github-6",
-    "content": "CI Failure: test - CI failure detected",
+    "content": "CI Failure: test - Unable to analyze failure logs - check permissions",
     "status": "pending",
     "priority": "high",
     "dependencies": [],
     "issueType": "ci_failure",
-    "files": [
-      "//github.com/actions/runner-images/blob/ubuntu24/20250907.24/images/ubuntu/Ubuntu2404-Readme.md",
-      "Next.js",
-      "./app/api/auth/mobile/login/route.ts",
-      "./app/api/auth/mobile/refresh/route.ts",
-      "./lib/background-agents/git-operations.ts",
-      "./lib/background-agents/github-integration.ts",
-      "./lib/background-agents/pr-monitor.ts",
-      "./lib/background-agents/real-background-agent.ts",
-      "./lib/background-agents/todo-persistence.ts",
-      "./lib/middleware/mobile-auth.ts",
-      "./lib/middleware/rate-limit.ts",
-      "./lib/repositories/index.ts",
-      "./lib/repositories/service-request-repository.ts",
-      "./lib/repositories/user-repository.ts",
-      "./lib/services/service-request-service.ts",
-      "/home/runner/work/_actions/actions/github-script/v7/dist/index.js",
-      "Module._extensions..js"
-    ],
+    "files": [],
     "lineNumbers": [],
-    "suggestedFix": "Review CI logs and fix the underlying issue",
-    "createdAt": "2025-09-25T01:04:15.333Z",
-    "updatedAt": "2025-09-25T01:04:15.333Z",
-    "estimatedTime": "20-30 min",
+    "suggestedFix": "Verify GitHub token has Actions:read permissions",
+    "createdAt": "2025-09-25T01:06:53.258Z",
+    "updatedAt": "2025-09-25T01:06:53.258Z",
+    "estimatedTime": "10-30 min",
     "tags": [
       "ci-failure",
-      "high",
-      "authentication",
-      "api",
-      "middleware"
+      "high"
     ],
-    "assignee": "auth-specialist",
-    "relatedPR": "#243"
-  },
-  {
-    "id": "github-7",
-    "content": "CI Failure: test - CI failure detected",
-    "status": "pending",
-    "priority": "high",
-    "dependencies": [],
-    "issueType": "ci_failure",
-    "files": [
-      "//github.com/actions/runner-images/blob/ubuntu24/20250922.53/images/ubuntu/Ubuntu2404-Readme.md",
-      "Next.js",
-      "./app/api/auth/mobile/login/route.ts",
-      "./app/api/auth/mobile/refresh/route.ts",
-      "./lib/background-agents/git-operations.ts",
-      "./lib/background-agents/github-integration.ts",
-      "./lib/background-agents/pr-monitor.ts",
-      "./lib/background-agents/real-background-agent.ts",
-      "./lib/background-agents/todo-persistence.ts",
-      "./lib/middleware/mobile-auth.ts",
-      "./lib/middleware/rate-limit.ts",
-      "./lib/repositories/index.ts",
-      "./lib/repositories/service-request-repository.ts",
-      "./lib/repositories/user-repository.ts",
-      "./lib/services/service-request-service.ts",
-      "/home/runner/work/_actions/actions/github-script/v7/dist/index.js",
-      "Module._extensions..js"
-    ],
-    "lineNumbers": [],
-    "suggestedFix": "Review CI logs and fix the underlying issue",
-    "createdAt": "2025-09-25T01:04:15.333Z",
-    "updatedAt": "2025-09-25T01:04:15.333Z",
-    "estimatedTime": "20-30 min",
-    "tags": [
-      "ci-failure",
-      "high",
-      "authentication",
-      "api",
-      "middleware"
-    ],
-    "assignee": "auth-specialist",
+    "assignee": "general-developer",
     "relatedPR": "#243"
   },
   {
@@ -148,11 +74,11 @@
       "lib/services/service-request-service.ts"
     ],
     "lineNumbers": [
-      407
+      1
     ],
     "suggestedFix": "",
-    "createdAt": "2025-09-25T01:04:15.333Z",
-    "updatedAt": "2025-09-25T01:05:34.489Z",
+    "createdAt": "2025-09-25T01:06:53.258Z",
+    "updatedAt": "2025-09-25T01:06:53.723Z",
     "estimatedTime": "5-15 min",
     "tags": [
       "copilot-comment",
@@ -175,8 +101,8 @@
       92
     ],
     "suggestedFix": "",
-    "createdAt": "2025-09-25T01:04:15.333Z",
-    "updatedAt": "2025-09-25T01:04:15.333Z",
+    "createdAt": "2025-09-25T01:06:53.258Z",
+    "updatedAt": "2025-09-25T01:06:53.258Z",
     "estimatedTime": "5-15 min",
     "tags": [
       "copilot-comment",
@@ -197,11 +123,11 @@
       "app/api/auth/mobile/login/route.ts"
     ],
     "lineNumbers": [
-      56
+      1
     ],
     "suggestedFix": "",
-    "createdAt": "2025-09-25T01:04:15.333Z",
-    "updatedAt": "2025-09-25T01:04:15.333Z",
+    "createdAt": "2025-09-25T01:06:53.258Z",
+    "updatedAt": "2025-09-25T01:06:53.258Z",
     "estimatedTime": "5-15 min",
     "tags": [
       "copilot-comment",
