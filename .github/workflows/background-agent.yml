@@ -89,6 +89,9 @@ jobs:
           echo "Run ID: ${{ github.event.workflow_run.id }}"
           echo "Conclusion: ${{ github.event.workflow_run.conclusion }}"
 
+          # Set up GitHub CLI authentication
+          echo "${{ github.token }}" | gh auth login --with-token
+
           # Find associated PR for this workflow run
           PR_NUMBER=$(gh pr list --state open --json number,headRefName --jq '.[] | select(.headRefName == "${{ github.event.workflow_run.head_branch }}") | .number' | head -1)
 
@@ -100,10 +103,7 @@ jobs:
           echo "Found PR #$PR_NUMBER for failed workflow"
 
           # Use enhanced log analysis
-          npx tsx scripts/todo-cli.ts analyze-workflow ${{ github.event.workflow_run.id }} $PR_NUMBER
-        env:
-          GITHUB_ACCESS_TOKEN: ${{ github.token }}
-          GH_TOKEN: ${{ github.token }}
+          GITHUB_ACCESS_TOKEN="${{ github.token }}" GH_TOKEN="${{ github.token }}" npx tsx scripts/todo-cli.ts analyze-workflow ${{ github.event.workflow_run.id }} $PR_NUMBER
 
       - name: Upload failure analysis
         if: always()
