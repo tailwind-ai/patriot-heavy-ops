@@ -6,7 +6,7 @@
  */
 
 import React from "react"
-import { render, screen, waitFor } from "@testing-library/react"
+import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { ServiceRequestForm } from "@/components/service-request-form"
 import { useServiceRequestForm } from "@/hooks/use-service-request-form"
@@ -83,21 +83,27 @@ describe("ServiceRequestForm Component", () => {
       expect(screen.getByLabelText(/end date/i)).toBeInTheDocument()
 
       // Equipment Requirements
-      expect(screen.getByLabelText(/equipment category/i)).toBeInTheDocument()
+      expect(screen.getByText("Equipment Category")).toBeInTheDocument()
       expect(screen.getByLabelText(/equipment details/i)).toBeInTheDocument()
 
       // Duration & Pricing
-      expect(screen.getByLabelText(/duration type/i)).toBeInTheDocument()
+      expect(screen.getByText("Duration Type")).toBeInTheDocument()
       expect(screen.getByLabelText(/duration value/i)).toBeInTheDocument()
       expect(screen.getByLabelText(/total hours/i)).toBeInTheDocument()
-      expect(screen.getByLabelText(/rate type/i)).toBeInTheDocument()
+      expect(screen.getByText("Rate Type")).toBeInTheDocument()
       expect(screen.getByLabelText(/base rate/i)).toBeInTheDocument()
+
+      // Verify all 4 comboboxes exist (Equipment Category, Equipment Transport, Duration Type, Rate Type)
+      const comboboxes = screen.getAllByRole("combobox")
+      expect(comboboxes).toHaveLength(4)
     })
 
     it("should render submit button", () => {
       render(<ServiceRequestForm user={mockUser} />)
 
-      const submitButton = screen.getByRole("button", { name: /submit service request/i })
+      const submitButton = screen.getByRole("button", {
+        name: /submit service request/i,
+      })
       expect(submitButton).toBeInTheDocument()
       expect(submitButton).toHaveAttribute("type", "submit")
     })
@@ -118,7 +124,9 @@ describe("ServiceRequestForm Component", () => {
       const user = userEvent.setup()
       render(<ServiceRequestForm user={mockUser} />)
 
-      const submitButton = screen.getByRole("button", { name: /submit service request/i })
+      const submitButton = screen.getByRole("button", {
+        name: /submit service request/i,
+      })
       await user.click(submitButton)
 
       expect(mockHookReturn.form.handleSubmit).toHaveBeenCalled()
@@ -133,7 +141,9 @@ describe("ServiceRequestForm Component", () => {
 
       render(<ServiceRequestForm user={mockUser} />)
 
-      const submitButton = screen.getByRole("button", { name: /submit service request/i })
+      const submitButton = screen.getByRole("button", {
+        name: /submit service request/i,
+      })
       expect(submitButton).toBeDisabled()
       expect(screen.getByText("Submit Service Request")).toBeInTheDocument()
     })
@@ -161,12 +171,14 @@ describe("ServiceRequestForm Component", () => {
             displayName: "123 Main St, City, State",
           },
           {
-            placeId: "place-2", 
+            placeId: "place-2",
             displayName: "456 Oak Ave, City, State",
           },
         ],
       }
-      ;(useServiceRequestForm as jest.Mock).mockReturnValue(suggestionsHookReturn)
+      ;(useServiceRequestForm as jest.Mock).mockReturnValue(
+        suggestionsHookReturn
+      )
 
       render(<ServiceRequestForm user={mockUser} />)
 
@@ -185,7 +197,9 @@ describe("ServiceRequestForm Component", () => {
           },
         ],
       }
-      ;(useServiceRequestForm as jest.Mock).mockReturnValue(suggestionsHookReturn)
+      ;(useServiceRequestForm as jest.Mock).mockReturnValue(
+        suggestionsHookReturn
+      )
 
       render(<ServiceRequestForm user={mockUser} />)
 
@@ -211,7 +225,6 @@ describe("ServiceRequestForm Component", () => {
     })
 
     it("should handle keyboard navigation for suggestions", async () => {
-      const user = userEvent.setup()
       const suggestionsHookReturn = {
         ...mockHookReturn,
         jobSiteSuggestions: [
@@ -221,15 +234,17 @@ describe("ServiceRequestForm Component", () => {
           },
         ],
       }
-      ;(useServiceRequestForm as jest.Mock).mockReturnValue(suggestionsHookReturn)
+      ;(useServiceRequestForm as jest.Mock).mockReturnValue(
+        suggestionsHookReturn
+      )
 
       render(<ServiceRequestForm user={mockUser} />)
 
       const suggestionButtons = screen.getAllByRole("button")
-      const addressSuggestion = suggestionButtons.find(button => 
+      const addressSuggestion = suggestionButtons.find((button) =>
         button.textContent?.includes("123 Main St")
       )
-      
+
       expect(addressSuggestion).toBeDefined()
       expect(addressSuggestion).toHaveAttribute("tabIndex", "0")
     })
