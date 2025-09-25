@@ -2,12 +2,14 @@ import { renderHook, act, waitFor } from '@testing-library/react'
 import { useRouter } from 'next/navigation'
 import { toast } from '@/components/ui/use-toast'
 import { useOperatorApplicationForm } from '@/hooks/use-operator-application-form'
+import { ServiceFactory } from '@/lib/services'
 
 // Mock dependencies
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn(),
 }))
 jest.mock('@/components/ui/use-toast')
+jest.mock('@/lib/services')
 
 const mockRouter = {
   refresh: jest.fn(),
@@ -18,13 +20,15 @@ const mockUser = {
   name: 'John Doe',
 }
 
-// Mock fetch
-global.fetch = jest.fn()
+const mockGeocodingService = {
+  searchAddresses: jest.fn(),
+}
 
 describe('useOperatorApplicationForm', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     ;(useRouter as jest.Mock).mockReturnValue(mockRouter)
+    ;(ServiceFactory.getGeocodingService as jest.Mock).mockReturnValue(mockGeocodingService)
   })
 
   afterEach(() => {
@@ -44,14 +48,21 @@ describe('useOperatorApplicationForm', () => {
   })
 
   it('should handle input change and trigger address search', async () => {
-    ;(global.fetch as jest.Mock).mockResolvedValue({
-      ok: true,
-      json: async () => [
+    mockGeocodingService.searchAddresses.mockResolvedValue({
+      success: true,
+      data: [
         {
-          place_id: 'place-1',
-          display_name: '123 Main St, City, State',
-          lat: '40.7128',
-          lon: '-74.0060',
+          placeId: 'place-1',
+          displayName: '123 Main St, City, State',
+          coordinates: { latitude: 40.7128, longitude: -74.0060 },
+          components: {
+            streetNumber: '123',
+            streetName: 'Main St',
+            city: 'City',
+            state: 'State',
+            postalCode: '12345',
+            country: 'USA',
+          },
         },
       ],
     })
@@ -67,14 +78,14 @@ describe('useOperatorApplicationForm', () => {
 
     // Wait for debounced search
     await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledWith('/api/geocoding?q=123%20Main')
+      expect(mockGeocodingService.searchAddresses).toHaveBeenCalledWith('123 Main')
     }, { timeout: 500 })
 
     await waitFor(() => {
       expect(result.current.suggestions).toHaveLength(1)
       expect(result.current.suggestions[0]).toMatchObject({
-        place_id: 'place-1',
-        display_name: '123 Main St, City, State',
+        placeId: 'place-1',
+        displayName: '123 Main St, City, State',
       })
     })
   })
@@ -91,7 +102,7 @@ describe('useOperatorApplicationForm', () => {
 
     // Wait to ensure no search is triggered
     await waitFor(() => {
-      expect(global.fetch).not.toHaveBeenCalled()
+      expect(mockGeocodingService.searchAddresses).not.toHaveBeenCalled()
     }, { timeout: 500 })
 
     expect(result.current.suggestions).toHaveLength(0)
@@ -101,10 +112,17 @@ describe('useOperatorApplicationForm', () => {
     const { result } = renderHook(() => useOperatorApplicationForm({ user: mockUser }))
 
     const suggestion = {
-      place_id: 'place-1',
-      display_name: '123 Main St, City, State',
-      lat: '40.7128',
-      lon: '-74.0060',
+      placeId: 'place-1',
+      displayName: '123 Main St, City, State',
+      coordinates: { latitude: 40.7128, longitude: -74.0060 },
+      components: {
+        streetNumber: '123',
+        streetName: 'Main St',
+        city: 'City',
+        state: 'State',
+        postalCode: '12345',
+        country: 'USA',
+      },
     }
 
     act(() => {
@@ -117,7 +135,10 @@ describe('useOperatorApplicationForm', () => {
   })
 
   it('should handle geocoding API errors gracefully', async () => {
-    ;(global.fetch as jest.Mock).mockRejectedValue(new Error('Network error'))
+    mockGeocodingService.searchAddresses.mockResolvedValue({
+      success: false,
+      error: { code: 'NETWORK_ERROR', message: 'Network error' },
+    })
 
     const { result } = renderHook(() => useOperatorApplicationForm({ user: mockUser }))
 
@@ -127,7 +148,7 @@ describe('useOperatorApplicationForm', () => {
 
     // Wait for debounced search
     await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalled()
+      expect(mockGeocodingService.searchAddresses).toHaveBeenCalled()
     }, { timeout: 500 })
 
     await waitFor(() => {

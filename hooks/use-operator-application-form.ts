@@ -8,6 +8,7 @@ import { useForm } from "react-hook-form"
 import * as z from "zod"
 
 import { operatorApplicationSchema } from "@/lib/validations/user"
+import { ServiceFactory, type GeocodingAddress } from "@/lib/services"
 import { toast } from "@/components/ui/use-toast"
 
 type FormData = z.infer<typeof operatorApplicationSchema>
@@ -16,15 +17,9 @@ interface UseOperatorApplicationFormProps {
   user: Pick<User, "id" | "name">
 }
 
-interface AddressSuggestion {
-  display_name: string
-  lat: string
-  lon: string
-  place_id: string
-}
-
 export function useOperatorApplicationForm({ user }: UseOperatorApplicationFormProps) {
   const router = useRouter()
+  const geocodingService = React.useMemo(() => ServiceFactory.getGeocodingService(), [])
 
   // Form state
   const form = useForm<FormData>({
@@ -37,7 +32,7 @@ export function useOperatorApplicationForm({ user }: UseOperatorApplicationFormP
   // Component state
   const [isSaving, setIsSaving] = React.useState<boolean>(false)
   const [inputValue, setInputValue] = React.useState("")
-  const [suggestions, setSuggestions] = React.useState<AddressSuggestion[]>([])
+  const [suggestions, setSuggestions] = React.useState<GeocodingAddress[]>([])
   const [isLoading, setIsLoading] = React.useState(false)
   const debounceRef = React.useRef<NodeJS.Timeout | null>(null)
 
@@ -50,16 +45,18 @@ export function useOperatorApplicationForm({ user }: UseOperatorApplicationFormP
 
     setIsLoading(true)
     try {
-      const url = `/api/geocoding?q=${encodeURIComponent(query)}`
-      const response = await fetch(url)
-      const data = await response.json()
-      setSuggestions(data || [])
+      const result = await geocodingService.searchAddresses(query)
+      if (result.success && result.data) {
+        setSuggestions(result.data)
+      } else {
+        setSuggestions([])
+      }
     } catch {
       setSuggestions([])
     } finally {
       setIsLoading(false)
     }
-  }, [])
+  }, [geocodingService])
 
   // Handle input change with debouncing
   const handleInputChange = React.useCallback((value: string) => {
@@ -76,8 +73,8 @@ export function useOperatorApplicationForm({ user }: UseOperatorApplicationFormP
   }, [form, searchAddresses])
 
   // Handle address selection
-  const handleAddressSelect = React.useCallback((suggestion: AddressSuggestion) => {
-    const formattedAddress = suggestion.display_name
+  const handleAddressSelect = React.useCallback((suggestion: GeocodingAddress) => {
+    const formattedAddress = suggestion.displayName
     setInputValue(formattedAddress)
     form.setValue("location", formattedAddress)
     setSuggestions([]) // Clear suggestions to hide dropdown

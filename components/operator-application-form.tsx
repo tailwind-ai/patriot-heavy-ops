@@ -77,7 +77,7 @@ export function OperatorApplicationForm({
                 <div className="absolute z-50 mt-1 max-h-60 w-[400px] overflow-auto rounded-md border border-gray-200 bg-white shadow-lg">
                   {suggestions.map((suggestion) => (
                     <div
-                      key={suggestion.place_id}
+                      key={suggestion.placeId}
                       role="button"
                       tabIndex={0}
                       onClick={() => handleAddressSelect(suggestion)}
@@ -90,10 +90,10 @@ export function OperatorApplicationForm({
                       className="cursor-pointer border-b border-gray-100 px-3 py-2 last:border-b-0 hover:bg-gray-100"
                     >
                       <div className="text-sm font-medium">
-                        {suggestion.display_name.split(",")[0]}
+                        {suggestion.displayName.split(",")[0]}
                       </div>
                       <div className="truncate text-xs text-gray-500">
-                        {suggestion.display_name}
+                        {suggestion.displayName}
                       </div>
                     </div>
                   ))}

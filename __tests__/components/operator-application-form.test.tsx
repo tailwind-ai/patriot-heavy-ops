@@ -189,16 +189,30 @@ describe("OperatorApplicationForm Component", () => {
         ...mockHookReturn,
         suggestions: [
           {
-            place_id: "place-1",
-            display_name: "Austin, TX, USA",
-            lat: "30.2672",
-            lon: "-97.7431",
+            placeId: "place-1",
+            displayName: "Austin, TX, USA",
+            coordinates: { latitude: 30.2672, longitude: -97.7431 },
+            components: {
+              streetNumber: "",
+              streetName: "",
+              city: "Austin",
+              state: "TX",
+              postalCode: "",
+              country: "USA",
+            },
           },
           {
-            place_id: "place-2",
-            display_name: "Austin, MN, USA",
-            lat: "43.6667",
-            lon: "-92.9735",
+            placeId: "place-2",
+            displayName: "Austin, MN, USA",
+            coordinates: { latitude: 43.6667, longitude: -92.9735 },
+            components: {
+              streetNumber: "",
+              streetName: "",
+              city: "Austin",
+              state: "MN",
+              postalCode: "",
+              country: "USA",
+            },
           },
         ],
       }
@@ -219,10 +233,17 @@ describe("OperatorApplicationForm Component", () => {
         ...mockHookReturn,
         suggestions: [
           {
-            place_id: "place-1",
-            display_name: "Austin, TX, USA",
-            lat: "30.2672",
-            lon: "-97.7431",
+            placeId: "place-1",
+            displayName: "Austin, TX, USA",
+            coordinates: { latitude: 30.2672, longitude: -97.7431 },
+            components: {
+              streetNumber: "",
+              streetName: "",
+              city: "Austin",
+              state: "TX",
+              postalCode: "",
+              country: "USA",
+            },
           },
         ],
       }
@@ -236,10 +257,17 @@ describe("OperatorApplicationForm Component", () => {
       await user.click(suggestion)
 
       expect(mockHookReturn.handleAddressSelect).toHaveBeenCalledWith({
-        place_id: "place-1",
-        display_name: "Austin, TX, USA",
-        lat: "30.2672",
-        lon: "-97.7431",
+        placeId: "place-1",
+        displayName: "Austin, TX, USA",
+        coordinates: { latitude: 30.2672, longitude: -97.7431 },
+        components: {
+          streetNumber: "",
+          streetName: "",
+          city: "Austin",
+          state: "TX",
+          postalCode: "",
+          country: "USA",
+        },
       })
     })
 
@@ -248,10 +276,17 @@ describe("OperatorApplicationForm Component", () => {
         ...mockHookReturn,
         suggestions: [
           {
-            place_id: "place-1",
-            display_name: "Austin, TX, USA",
-            lat: "30.2672",
-            lon: "-97.7431",
+            placeId: "place-1",
+            displayName: "Austin, TX, USA",
+            coordinates: { latitude: 30.2672, longitude: -97.7431 },
+            components: {
+              streetNumber: "",
+              streetName: "",
+              city: "Austin",
+              state: "TX",
+              postalCode: "",
+              country: "USA",
+            },
           },
         ],
       }
