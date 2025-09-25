@@ -41,7 +41,7 @@ jobs:
         id: check-comments
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.REPO_PAT || github.token }}
           script: |
             // Find associated PR for this workflow run
             const { data: prs } = await github.rest.pulls.list({
