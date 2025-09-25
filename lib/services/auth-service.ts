@@ -15,6 +15,7 @@ import { BaseService, ServiceResult, ServiceLogger } from "./base-service"
 import { hashPassword, verifyPassword } from "../auth-utils"
 import { db } from "../db"
 import { UserRole } from "@prisma/client"
+import { userNameSchema } from "../validations/user"
 
 export interface AuthUser {
   id: string
@@ -392,6 +393,52 @@ export class AuthService extends BaseService {
       (user.name === null || typeof user.name === "string") &&
       (user.image === null || typeof user.image === "string") &&
       Object.values(UserRole).includes(user.role as UserRole)
+    )
+  }
+
+  /**
+   * Update user profile (name only for API route compatibility)
+   */
+  async updateUserProfile(
+    userId: string,
+    requestingUserId: string,
+    updates: { name: string }
+  ): Promise<ServiceResult<void>> {
+    this.logOperation("updateUserProfile", { userId, requestingUserId })
+
+    // Ensure user can only update their own profile
+    if (userId !== requestingUserId) {
+      return this.createError(
+        "ACCESS_DENIED",
+        "You can only update your own profile"
+      )
+    }
+
+    // Validate the update data
+    const validation = userNameSchema.safeParse(updates)
+    if (!validation.success) {
+      return this.createError(
+        "VALIDATION_ERROR",
+        "Invalid profile data",
+        { issues: validation.error.issues }
+      )
+    }
+
+    return this.handleAsync(
+      async () => {
+        await db.user.update({
+          where: {
+            id: userId,
+          },
+          data: {
+            name: updates.name,
+          },
+        })
+
+        return undefined
+      },
+      "UPDATE_FAILED",
+      "Failed to update user profile"
     )
   }
 
