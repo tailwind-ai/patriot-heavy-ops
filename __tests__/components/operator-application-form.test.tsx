@@ -1,52 +1,55 @@
-// Mock the toast hook at the top level
+/**
+ * OperatorApplicationForm Component Tests
+ *
+ * Tests the presentation layer and user interactions of OperatorApplicationForm.
+ * Business logic is tested separately in the hook tests.
+ */
+
+import { render, screen } from "@testing-library/react"
+import userEvent from "@testing-library/user-event"
+import { OperatorApplicationForm } from "@/components/operator-application-form"
+import { useOperatorApplicationForm } from "@/hooks/use-operator-application-form"
+
+// Mock the custom hook
+jest.mock("@/hooks/use-operator-application-form", () => ({
+  useOperatorApplicationForm: jest.fn(),
+}))
+
+// Mock the toast hook
 jest.mock("@/components/ui/use-toast", () => ({
   toast: jest.fn(),
 }))
 
-// Mock next/navigation
-const mockRouter = {
-  push: jest.fn(),
-  replace: jest.fn(),
-  refresh: jest.fn(),
-}
-
-jest.mock("next/navigation", () => ({
-  useRouter: () => mockRouter,
-}))
-
-import { render, screen, waitFor, fireEvent } from "@testing-library/react"
-import userEvent from "@testing-library/user-event"
-import { toast } from "@/components/ui/use-toast"
-import { OperatorApplicationForm } from "@/components/operator-application-form"
-import {
-  FormTester,
-  mockGeocodingResponse,
-  mockFetchSuccess,
-  mockFetchError,
-} from "../helpers/form-test-helpers"
-
-// Cast mocked functions
-const mockToast = toast as jest.MockedFunction<typeof toast>
-
-describe("OperatorApplicationForm", () => {
+describe("OperatorApplicationForm Component", () => {
   const mockUser = {
     id: "test-user-id",
     name: "Test User",
   }
 
-  let formTester: FormTester
+  const mockHookReturn = {
+    form: {
+      handleSubmit: jest.fn((fn) => (e: any) => {
+        e.preventDefault()
+        fn({})
+      }),
+      formState: { errors: {} },
+    },
+    onSubmit: jest.fn(),
+    isSaving: false,
+    isLoading: false,
+    inputValue: "",
+    suggestions: [],
+    handleInputChange: jest.fn(),
+    handleAddressSelect: jest.fn(),
+    handleSuggestionsBlur: jest.fn(),
+  }
 
   beforeEach(() => {
     jest.clearAllMocks()
-    global.fetch = jest.fn()
-    formTester = new FormTester()
+    ;(useOperatorApplicationForm as jest.Mock).mockReturnValue(mockHookReturn)
   })
 
-  afterEach(() => {
-    jest.restoreAllMocks()
-  })
-
-  describe("Form Rendering", () => {
+  describe("Component Rendering", () => {
     it("should render the operator application form", () => {
       render(<OperatorApplicationForm user={mockUser} />)
 
@@ -95,623 +98,218 @@ describe("OperatorApplicationForm", () => {
     })
   })
 
-  describe("Address Autocomplete", () => {
-    it("should not search for addresses with less than 3 characters", async () => {
+  describe("User Interactions", () => {
+    it("should call hook's handleInputChange when location input changes", async () => {
+      const user = userEvent.setup()
       render(<OperatorApplicationForm user={mockUser} />)
 
       const locationInput = screen.getByPlaceholderText(
         "Enter city, state, or address..."
       )
 
-      await userEvent.type(locationInput, "Au")
+      await user.type(locationInput, "Austin")
 
-      // Wait for debounce
-      await waitFor(() => {
-        expect(global.fetch).not.toHaveBeenCalled()
-      })
+      expect(mockHookReturn.handleInputChange).toHaveBeenCalled()
     })
 
-    it("should search for addresses when typing 3 or more characters", async () => {
-      const mockSuggestions = [
-        {
-          display_name: "Austin, TX, USA",
-          lat: "30.2672",
-          lon: "-97.7431",
-          place_id: "1",
-        },
-      ]
-
-      mockGeocodingResponse(mockSuggestions)
-
+    it("should call form submission handler when form is submitted", async () => {
+      const user = userEvent.setup()
       render(<OperatorApplicationForm user={mockUser} />)
 
-      const locationInput = screen.getByPlaceholderText(
-        "Enter city, state, or address..."
-      )
+      const submitButton = screen.getByRole("button", { name: /apply now/i })
+      await user.click(submitButton)
 
-      await userEvent.type(locationInput, "Austin")
-
-      // Wait for debounce and API call
-      await waitFor(() => {
-        expect(global.fetch).toHaveBeenCalledWith("/api/geocoding?q=Austin")
-      })
+      expect(mockHookReturn.form.handleSubmit).toHaveBeenCalled()
     })
 
-    it("should display address suggestions", async () => {
-      const mockSuggestions = [
-        {
-          display_name: "Austin, TX, USA",
-          lat: "30.2672",
-          lon: "-97.7431",
-          place_id: "1",
-        },
-        {
-          display_name: "Austin, MN, USA",
-          lat: "43.6667",
-          lon: "-92.9735",
-          place_id: "2",
-        },
-      ]
-
-      mockGeocodingResponse(mockSuggestions)
-
+    it("should call handleSuggestionsBlur when input loses focus", async () => {
+      const user = userEvent.setup()
       render(<OperatorApplicationForm user={mockUser} />)
 
       const locationInput = screen.getByPlaceholderText(
         "Enter city, state, or address..."
       )
 
-      await userEvent.type(locationInput, "Austin")
+      await user.click(locationInput)
+      await user.tab() // Move focus away
 
-      await waitFor(() => {
-        expect(screen.getAllByText("Austin")).toHaveLength(2) // Two Austin entries
-        expect(screen.getByText("Austin, TX, USA")).toBeInTheDocument()
-        expect(screen.getByText("Austin, MN, USA")).toBeInTheDocument()
-      })
+      expect(mockHookReturn.handleSuggestionsBlur).toHaveBeenCalled()
     })
+  })
 
-    it("should select an address from suggestions", async () => {
-      const mockSuggestions = [
-        {
-          display_name: "Austin, TX, USA",
-          lat: "30.2672",
-          lon: "-97.7431",
-          place_id: "1",
-        },
-      ]
-
-      mockGeocodingResponse(mockSuggestions)
-
-      render(<OperatorApplicationForm user={mockUser} />)
-
-      const locationInput = screen.getByPlaceholderText(
-        "Enter city, state, or address..."
-      )
-
-      await userEvent.type(locationInput, "Austin")
-
-      await waitFor(() => {
-        expect(screen.getByText("Austin, TX, USA")).toBeInTheDocument()
-      })
-
-      // Click on the suggestion
-      await userEvent.click(screen.getByText("Austin, TX, USA"))
-
-      expect(locationInput).toHaveValue("Austin, TX, USA")
-    })
-
-    it("should show loading spinner during address search", async () => {
-      // Mock a delayed response
-      const mockFetch = global.fetch as jest.MockedFunction<typeof fetch>
-      mockFetch.mockImplementation(
-        () =>
-          new Promise((resolve) =>
-            setTimeout(
-              () =>
-                resolve({
-                  ok: true,
-                  json: () => Promise.resolve([]),
-                } as any),
-              100
-            )
-          )
-      )
-
-      render(<OperatorApplicationForm user={mockUser} />)
-
-      const locationInput = screen.getByPlaceholderText(
-        "Enter city, state, or address..."
-      )
-
-      await userEvent.type(locationInput, "Austin")
-
-      // Should show loading spinner
-      await waitFor(() => {
-        expect(document.querySelector(".animate-spin")).toBeInTheDocument()
-      })
-    })
-
-    it("should handle geocoding API errors gracefully", async () => {
-      mockFetchError("Network error", 500)
-
-      render(<OperatorApplicationForm user={mockUser} />)
-
-      const locationInput = screen.getByPlaceholderText(
-        "Enter city, state, or address..."
-      )
-
-      await userEvent.type(locationInput, "Austin")
-
-      await waitFor(() => {
-        // Error handling should not show suggestions
-        expect(screen.queryByText("Austin, TX, USA")).not.toBeInTheDocument()
-      })
-    })
-
-    it("should debounce address searches", async () => {
-      mockGeocodingResponse([])
-
-      render(<OperatorApplicationForm user={mockUser} />)
-
-      const locationInput = screen.getByPlaceholderText(
-        "Enter city, state, or address..."
-      )
-
-      // Type multiple characters quickly
-      await userEvent.type(locationInput, "Austin", { delay: 50 })
-
-      // Should only make one API call due to debouncing
-      await waitFor(() => {
-        expect(global.fetch).toHaveBeenCalledTimes(1)
-      })
-    })
-
-    it("should hide suggestions on input blur", async () => {
-      const mockSuggestions = [
-        {
-          display_name: "Austin, TX, USA",
-          lat: "30.2672",
-          lon: "-97.7431",
-          place_id: "1",
-        },
-      ]
-
-      mockGeocodingResponse(mockSuggestions)
-
-      render(<OperatorApplicationForm user={mockUser} />)
-
-      const locationInput = screen.getByPlaceholderText(
-        "Enter city, state, or address..."
-      )
-
-      await userEvent.type(locationInput, "Austin")
-
-      // Wait for API call to be made
-      await waitFor(() => {
-        expect(global.fetch).toHaveBeenCalledWith("/api/geocoding?q=Austin")
-      })
-
-      // Check if suggestions appear (they might not due to component logic)
-      const suggestion = screen.queryByText("Austin, TX, USA")
-      if (suggestion) {
-        // Blur the input
-        fireEvent.blur(locationInput)
-
-        // Suggestions should disappear after delay
-        await waitFor(
-          () => {
-            expect(
-              screen.queryByText("Austin, TX, USA")
-            ).not.toBeInTheDocument()
-          },
-          { timeout: 200 }
-        )
-      } else {
-        // If suggestions don't appear, just verify the API was called
-        expect(global.fetch).toHaveBeenCalledWith("/api/geocoding?q=Austin")
+  describe("Loading States", () => {
+    it("should display loading state when saving", () => {
+      const loadingHookReturn = {
+        ...mockHookReturn,
+        isSaving: true,
       }
+      ;(useOperatorApplicationForm as jest.Mock).mockReturnValue(
+        loadingHookReturn
+      )
+
+      render(<OperatorApplicationForm user={mockUser} />)
+
+      const submitButton = screen.getByRole("button", { name: /apply now/i })
+      expect(submitButton).toBeDisabled()
+      expect(screen.getByText("Apply Now")).toBeInTheDocument()
+    })
+
+    it("should display loading spinner when saving", () => {
+      const loadingHookReturn = {
+        ...mockHookReturn,
+        isSaving: true,
+      }
+      ;(useOperatorApplicationForm as jest.Mock).mockReturnValue(
+        loadingHookReturn
+      )
+
+      render(<OperatorApplicationForm user={mockUser} />)
+
+      expect(document.querySelector(".animate-spin")).toBeInTheDocument()
+    })
+
+    it("should show loading spinner when searching addresses", () => {
+      const loadingHookReturn = {
+        ...mockHookReturn,
+        isLoading: true,
+      }
+      ;(useOperatorApplicationForm as jest.Mock).mockReturnValue(
+        loadingHookReturn
+      )
+
+      render(<OperatorApplicationForm user={mockUser} />)
+
+      expect(document.querySelector(".animate-spin")).toBeInTheDocument()
+    })
+  })
+
+  describe("Address Suggestions", () => {
+    it("should display address suggestions when provided by hook", () => {
+      const suggestionsHookReturn = {
+        ...mockHookReturn,
+        suggestions: [
+          {
+            place_id: "place-1",
+            display_name: "Austin, TX, USA",
+            lat: "30.2672",
+            lon: "-97.7431",
+          },
+          {
+            place_id: "place-2",
+            display_name: "Austin, MN, USA",
+            lat: "43.6667",
+            lon: "-92.9735",
+          },
+        ],
+      }
+      ;(useOperatorApplicationForm as jest.Mock).mockReturnValue(
+        suggestionsHookReturn
+      )
+
+      render(<OperatorApplicationForm user={mockUser} />)
+
+      expect(screen.getAllByText("Austin")).toHaveLength(2) // Two Austin entries
+      expect(screen.getByText("Austin, TX, USA")).toBeInTheDocument()
+      expect(screen.getByText("Austin, MN, USA")).toBeInTheDocument()
+    })
+
+    it("should call handleAddressSelect when suggestion is clicked", async () => {
+      const user = userEvent.setup()
+      const suggestionsHookReturn = {
+        ...mockHookReturn,
+        suggestions: [
+          {
+            place_id: "place-1",
+            display_name: "Austin, TX, USA",
+            lat: "30.2672",
+            lon: "-97.7431",
+          },
+        ],
+      }
+      ;(useOperatorApplicationForm as jest.Mock).mockReturnValue(
+        suggestionsHookReturn
+      )
+
+      render(<OperatorApplicationForm user={mockUser} />)
+
+      const suggestion = screen.getByText("Austin, TX, USA")
+      await user.click(suggestion)
+
+      expect(mockHookReturn.handleAddressSelect).toHaveBeenCalledWith({
+        place_id: "place-1",
+        display_name: "Austin, TX, USA",
+        lat: "30.2672",
+        lon: "-97.7431",
+      })
+    })
+
+    it("should handle keyboard navigation for suggestions", async () => {
+      const suggestionsHookReturn = {
+        ...mockHookReturn,
+        suggestions: [
+          {
+            place_id: "place-1",
+            display_name: "Austin, TX, USA",
+            lat: "30.2672",
+            lon: "-97.7431",
+          },
+        ],
+      }
+      ;(useOperatorApplicationForm as jest.Mock).mockReturnValue(
+        suggestionsHookReturn
+      )
+
+      render(<OperatorApplicationForm user={mockUser} />)
+
+      const suggestionButtons = screen.getAllByRole("button")
+      const addressSuggestion = suggestionButtons.find((button) =>
+        button.textContent?.includes("Austin")
+      )
+
+      expect(addressSuggestion).toBeDefined()
+      expect(addressSuggestion).toHaveAttribute("tabIndex", "0")
+    })
+  })
+
+  describe("Form Input Values", () => {
+    it("should display input value from hook", () => {
+      const valueHookReturn = {
+        ...mockHookReturn,
+        inputValue: "Austin, TX",
+      }
+      ;(useOperatorApplicationForm as jest.Mock).mockReturnValue(
+        valueHookReturn
+      )
+
+      render(<OperatorApplicationForm user={mockUser} />)
+
+      const locationInput = screen.getByPlaceholderText(
+        "Enter city, state, or address..."
+      )
+      expect(locationInput).toHaveValue("Austin, TX")
     })
   })
 
   describe("Form Validation", () => {
-    it("should show validation error for empty location", async () => {
-      render(<OperatorApplicationForm user={mockUser} />)
-
-      const submitButton = screen.getByRole("button", { name: /apply now/i })
-
-      await userEvent.click(submitButton)
-
-      await waitFor(() => {
-        expect(screen.getByText("Please select a location")).toBeInTheDocument()
-      })
-    })
-
-    it("should not submit form with invalid data", async () => {
-      render(<OperatorApplicationForm user={mockUser} />)
-
-      const submitButton = screen.getByRole("button", { name: /apply now/i })
-
-      await userEvent.click(submitButton)
-
-      // Should not call the operator-application API (only geocoding API might be called)
-      expect(global.fetch).not.toHaveBeenCalledWith(
-        expect.stringContaining("/api/users/"),
-        expect.any(Object)
-      )
-    })
-
-    it("should validate location field correctly", async () => {
-      render(<OperatorApplicationForm user={mockUser} />)
-
-      const locationInput = screen.getByPlaceholderText(
-        "Enter city, state, or address..."
-      )
-
-      // Enter valid location
-      await userEvent.type(locationInput, "Austin, TX")
-
-      const submitButton = screen.getByRole("button", { name: /apply now/i })
-      await userEvent.click(submitButton)
-
-      // Should not show validation error
-      expect(
-        screen.queryByText("Please select a location")
-      ).not.toBeInTheDocument()
-    })
-  })
-
-  describe("Form Submission", () => {
-    it("should submit form with valid data", async () => {
-      mockFetchSuccess({ message: "Application submitted successfully" })
-
-      render(<OperatorApplicationForm user={mockUser} />)
-
-      await formTester.fillInput(
-        "Enter city, state, or address...",
-        "Austin, TX"
-      )
-      await formTester.submitForm()
-
-      await waitFor(() => {
-        expect(global.fetch).toHaveBeenCalledWith(
-          "/api/users/test-user-id/operator-application",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
+    it("should display validation errors from hook", () => {
+      const errorHookReturn = {
+        ...mockHookReturn,
+        form: {
+          ...mockHookReturn.form,
+          formState: {
+            errors: {
+              location: { message: "Please select a location" },
             },
-            body: JSON.stringify({
-              location: "Austin, TX",
-            }),
-          }
-        )
-      })
-    })
-
-    it("should show loading state during submission", async () => {
-      // Mock delayed response
-      const mockFetch = global.fetch as jest.MockedFunction<typeof fetch>
-      mockFetch.mockImplementation(
-        () =>
-          new Promise((resolve) =>
-            setTimeout(
-              () =>
-                resolve({
-                  ok: true,
-                  json: () => Promise.resolve({ message: "Success" }),
-                } as any),
-              100
-            )
-          )
-      )
-
-      render(<OperatorApplicationForm user={mockUser} />)
-
-      await formTester.fillInput(
-        "Enter city, state, or address...",
-        "Austin, TX"
-      )
-
-      const submitButton = screen.getByRole("button", { name: /apply now/i })
-      await userEvent.click(submitButton)
-
-      // Should show loading state
-      expect(submitButton).toBeDisabled()
-      expect(document.querySelector(".animate-spin")).toBeInTheDocument()
-      expect(screen.getByText("Apply Now")).toBeInTheDocument()
-    })
-
-    it("should show success toast on successful submission", async () => {
-      mockFetchSuccess({ message: "Application submitted successfully" })
-
-      render(<OperatorApplicationForm user={mockUser} />)
-
-      await formTester.fillInput(
-        "Enter city, state, or address...",
-        "Austin, TX"
-      )
-      await formTester.submitForm()
-
-      await waitFor(() => {
-        expect(mockToast).toHaveBeenCalledWith({
-          description:
-            "Your operator application has been submitted for review.",
-        })
-      })
-    })
-
-    it("should refresh router on successful submission", async () => {
-      const mf = global.fetch as jest.MockedFunction<typeof fetch>
-      mf.mockImplementation((url) => {
-        if (
-          typeof url === "string" &&
-          url.includes("/api/users/") &&
-          url.includes("/operator-application")
-        ) {
-          const response = new Response(
-            JSON.stringify({ message: "Application submitted successfully" }),
-            {
-              status: 200,
-              headers: { "Content-Type": "application/json" },
-            }
-          )
-          return Promise.resolve(response)
-        }
-        if (typeof url === "string" && url.includes("/api/geocoding")) {
-          const response = new Response(JSON.stringify([]), {
-            status: 200,
-            headers: { "Content-Type": "application/json" },
-          })
-          return Promise.resolve(response)
-        }
-        const response = new Response(JSON.stringify({}), {
-          status: 200,
-          headers: { "Content-Type": "application/json" },
-        })
-        return Promise.resolve(response)
-      })
-
-      render(<OperatorApplicationForm user={mockUser} />)
-
-      // Fill the form directly using the input
-      const locationInput = screen.getByPlaceholderText(
-        "Enter city, state, or address..."
-      )
-      await userEvent.clear(locationInput)
-      await userEvent.type(locationInput, "Austin, TX")
-
-      // Submit the form
-      const submitButton = screen.getByRole("button", { name: /apply now/i })
-      await userEvent.click(submitButton)
-
-      // Check that the API was called
-      await waitFor(() => {
-        expect(global.fetch).toHaveBeenCalledWith(
-          `/api/users/${mockUser.id}/operator-application`,
-          expect.objectContaining({
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ location: "Austin, TX" }),
-          })
-        )
-      })
-
-      // Check the success actions
-      await waitFor(() => {
-        expect(mockToast).toHaveBeenCalledWith({
-          description:
-            "Your operator application has been submitted for review.",
-        })
-        expect(mockRouter.refresh).toHaveBeenCalled()
-      })
-    })
-
-    it("should show error toast on submission failure", async () => {
-      mockFetchError("Submission failed", 400)
-
-      render(<OperatorApplicationForm user={mockUser} />)
-
-      await formTester.fillInput(
-        "Enter city, state, or address...",
-        "Austin, TX"
-      )
-      await formTester.submitForm()
-
-      await waitFor(() => {
-        expect(mockToast).toHaveBeenCalledWith({
-          title: "Something went wrong.",
-          description: "Your application was not submitted. Please try again.",
-          variant: "destructive",
-        })
-      })
-    })
-
-    it("should not refresh router on submission failure", async () => {
-      mockFetchError("Submission failed", 400)
-
-      render(<OperatorApplicationForm user={mockUser} />)
-
-      await formTester.fillInput(
-        "Enter city, state, or address...",
-        "Austin, TX"
-      )
-      await formTester.submitForm()
-
-      await waitFor(() => {
-        expect(mockToast).toHaveBeenCalled()
-      })
-
-      expect(mockRouter.refresh).not.toHaveBeenCalled()
-    })
-  })
-
-  describe("Edge Cases", () => {
-    it("should handle special characters in location", async () => {
-      mockFetchSuccess({ message: "Success" })
-
-      render(<OperatorApplicationForm user={mockUser} />)
-
-      const specialLocation = "São Paulo, Brazil"
-      await formTester.fillInput(
-        "Enter city, state, or address...",
-        specialLocation
-      )
-      await formTester.submitForm()
-
-      await waitFor(() => {
-        expect(global.fetch).toHaveBeenCalledWith(
-          expect.any(String),
-          expect.objectContaining({
-            body: JSON.stringify({
-              location: specialLocation,
-            }),
-          })
-        )
-      })
-    })
-
-    it("should handle very long location names", async () => {
-      mockFetchSuccess({ message: "Success" })
-
-      render(<OperatorApplicationForm user={mockUser} />)
-
-      const longLocation = "A".repeat(200) + ", TX"
-      await formTester.fillInput(
-        "Enter city, state, or address...",
-        longLocation
-      )
-      await formTester.submitForm()
-
-      await waitFor(() => {
-        expect(global.fetch).toHaveBeenCalled()
-      })
-    })
-
-    it("should handle empty geocoding response", async () => {
-      mockGeocodingResponse([])
-
-      render(<OperatorApplicationForm user={mockUser} />)
-
-      const locationInput = screen.getByPlaceholderText(
-        "Enter city, state, or address..."
-      )
-
-      await userEvent.type(locationInput, "NonexistentPlace")
-
-      await waitFor(() => {
-        expect(global.fetch).toHaveBeenCalled()
-      })
-
-      // Should not show any suggestions
-      expect(screen.queryByRole("option")).not.toBeInTheDocument()
-    })
-
-    it("should handle malformed geocoding response", async () => {
-      const mockFetch = global.fetch as jest.MockedFunction<typeof fetch>
-      mockFetch.mockResolvedValue({
-        ok: true,
-        json: () => Promise.reject(new Error("Invalid JSON")),
-      } as any)
-
-      render(<OperatorApplicationForm user={mockUser} />)
-
-      const locationInput = screen.getByPlaceholderText(
-        "Enter city, state, or address..."
-      )
-
-      await userEvent.type(locationInput, "Austin")
-
-      await waitFor(() => {
-        // Error handling should not show suggestions
-        expect(screen.queryByText("Austin, TX, USA")).not.toBeInTheDocument()
-      })
-    })
-  })
-
-  describe("User Interaction", () => {
-    it("should clear suggestions when an address is selected", async () => {
-      const mockSuggestions = [
-        {
-          display_name: "Austin, TX, USA",
-          lat: "30.2672",
-          lon: "-97.7431",
-          place_id: "1",
+          },
         },
-      ]
-
-      mockGeocodingResponse(mockSuggestions)
-
-      render(<OperatorApplicationForm user={mockUser} />)
-
-      const locationInput = screen.getByPlaceholderText(
-        "Enter city, state, or address..."
-      )
-
-      await userEvent.type(locationInput, "Austin")
-
-      // Wait for API call to be made
-      await waitFor(() => {
-        expect(global.fetch).toHaveBeenCalledWith("/api/geocoding?q=Austin")
-      })
-
-      // Check if suggestions appear and interact with them if they do
-      const suggestion = screen.queryByText("Austin, TX, USA")
-      if (suggestion) {
-        await userEvent.click(suggestion)
-        // Suggestions should be cleared after selection
-        expect(screen.queryByText("Austin, TX, USA")).not.toBeInTheDocument()
-      } else {
-        // If suggestions don't appear, just verify the API was called
-        expect(global.fetch).toHaveBeenCalledWith("/api/geocoding?q=Austin")
       }
-    })
-
-    it("should handle keyboard navigation in suggestions", async () => {
-      const mockSuggestions = [
-        {
-          display_name: "Austin, TX, USA",
-          lat: "30.2672",
-          lon: "-97.7431",
-          place_id: "1",
-        },
-      ]
-
-      mockGeocodingResponse(mockSuggestions)
+      ;(useOperatorApplicationForm as jest.Mock).mockReturnValue(
+        errorHookReturn
+      )
 
       render(<OperatorApplicationForm user={mockUser} />)
 
-      const locationInput = screen.getByPlaceholderText(
-        "Enter city, state, or address..."
-      )
-
-      await userEvent.type(locationInput, "Austin")
-
-      // Wait for API call to be made
-      await waitFor(() => {
-        expect(global.fetch).toHaveBeenCalledWith("/api/geocoding?q=Austin")
-      })
-
-      // Check if suggestions appear and test keyboard navigation if they do
-      const suggestion = screen.queryByText("Austin, TX, USA")
-      if (suggestion) {
-        const suggestionContainer = suggestion.closest('[role="button"]')
-        expect(suggestionContainer).toHaveClass("cursor-pointer")
-      } else {
-        // If suggestions don't appear, just verify the API was called
-        expect(global.fetch).toHaveBeenCalledWith("/api/geocoding?q=Austin")
-      }
-    })
-
-    it("should update input value when typing", async () => {
-      render(<OperatorApplicationForm user={mockUser} />)
-
-      const locationInput = screen.getByPlaceholderText(
-        "Enter city, state, or address..."
-      )
-
-      await userEvent.type(locationInput, "Test Location")
-
-      expect(locationInput).toHaveValue("Test Location")
+      expect(screen.getByText("Please select a location")).toBeInTheDocument()
     })
   })
 
@@ -730,6 +328,14 @@ describe("OperatorApplicationForm", () => {
       expect(form).toHaveAttribute("aria-label", "Operator Application")
     })
 
+    it("should pass user prop to hook", () => {
+      render(<OperatorApplicationForm user={mockUser} />)
+
+      expect(useOperatorApplicationForm).toHaveBeenCalledWith({
+        user: mockUser,
+      })
+    })
+
     it("should work with different user objects", () => {
       const differentUser = {
         id: "different-user-id",
@@ -741,6 +347,9 @@ describe("OperatorApplicationForm", () => {
       expect(
         screen.getByText("Apply to Become an Operator")
       ).toBeInTheDocument()
+      expect(useOperatorApplicationForm).toHaveBeenCalledWith({
+        user: differentUser,
+      })
     })
   })
 })

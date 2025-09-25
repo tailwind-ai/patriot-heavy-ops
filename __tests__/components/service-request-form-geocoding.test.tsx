@@ -1,21 +1,19 @@
 /**
- * ServiceRequestForm Geocoding Integration Tests
+ * ServiceRequestForm Component Tests
  *
- * Tests the integration between ServiceRequestForm and the new GeocodingService
- * to ensure the refactoring maintains existing functionality.
+ * Tests the presentation layer and user interactions of ServiceRequestForm.
+ * Business logic is tested separately in the hook tests.
  */
 
 import React from "react"
 import { render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { ServiceRequestForm } from "@/components/service-request-form"
-import { ServiceFactory, type GeocodingAddress } from "@/lib/services"
+import { useServiceRequestForm } from "@/hooks/use-service-request-form"
 
-// Mock the service factory
-jest.mock("@/lib/services", () => ({
-  ServiceFactory: {
-    getGeocodingService: jest.fn(),
-  },
+// Mock the custom hook
+jest.mock("@/hooks/use-service-request-form", () => ({
+  useServiceRequestForm: jest.fn(),
 }))
 
 // Mock toast
@@ -23,391 +21,257 @@ jest.mock("@/components/ui/use-toast", () => ({
   toast: jest.fn(),
 }))
 
-// Mock router
-const mockPush = jest.fn()
-const mockRefresh = jest.fn()
-jest.mock("next/navigation", () => ({
-  useRouter: () => ({
-    push: mockPush,
-    refresh: mockRefresh,
-  }),
-}))
-
-describe("ServiceRequestForm Geocoding Integration", () => {
+describe("ServiceRequestForm Component", () => {
   const mockUser = {
     id: "user-1",
     name: "John Doe",
     email: "john@example.com",
   }
 
-  const mockGeocodingService = {
-    searchAddresses: jest.fn(),
-    reverseGeocode: jest.fn(),
-    clearCache: jest.fn(),
-    getCacheStats: jest.fn(),
-    getServiceName: jest.fn().mockReturnValue("GeocodingService"),
+  const mockHookReturn = {
+    form: {
+      register: jest.fn(() => ({})),
+      handleSubmit: jest.fn((fn) => (e: any) => {
+        e.preventDefault()
+        fn({})
+      }),
+      setValue: jest.fn(),
+      formState: { errors: {} },
+    },
+    onSubmit: jest.fn(),
+    isSaving: false,
+    isLoadingAddresses: false,
+    jobSiteInput: "",
+    jobSiteSuggestions: [],
+    handleJobSiteInputChange: jest.fn(),
+    handleAddressSelect: jest.fn(),
   }
-
-  const mockAddresses: GeocodingAddress[] = [
-    {
-      displayName: "123 Main St, Anytown, NY 10001, USA",
-      coordinates: { latitude: 40.7128, longitude: -74.006 },
-      placeId: "12345",
-      components: {
-        streetNumber: "123",
-        streetName: "Main St",
-        city: "Anytown",
-        state: "NY",
-        postalCode: "10001",
-        country: "USA",
-      },
-    },
-    {
-      displayName: "456 Oak Ave, Somewhere, NY 10002, USA",
-      coordinates: { latitude: 40.7589, longitude: -73.9851 },
-      placeId: "67890",
-      components: {
-        streetNumber: "456",
-        streetName: "Oak Ave",
-        city: "Somewhere",
-        state: "NY",
-        postalCode: "10002",
-        country: "USA",
-      },
-    },
-  ]
 
   beforeEach(() => {
     jest.clearAllMocks()
-    ;(ServiceFactory.getGeocodingService as jest.Mock).mockReturnValue(
-      mockGeocodingService
-    )
-    mockGeocodingService.searchAddresses.mockResolvedValue({
-      success: true,
-      data: mockAddresses,
+    ;(useServiceRequestForm as jest.Mock).mockReturnValue(mockHookReturn)
+  })
+
+  describe("Component Rendering", () => {
+    it("should render all form sections", () => {
+      render(<ServiceRequestForm user={mockUser} />)
+
+      expect(screen.getByText("Contact Information")).toBeInTheDocument()
+      expect(screen.getByText("Service Request Details")).toBeInTheDocument()
+      expect(screen.getByText("Job Site Information")).toBeInTheDocument()
+      expect(screen.getByText("Equipment Requirements")).toBeInTheDocument()
+      expect(screen.getByText("Duration & Pricing")).toBeInTheDocument()
+    })
+
+    it("should render all form fields", () => {
+      render(<ServiceRequestForm user={mockUser} />)
+
+      // Contact Information
+      expect(screen.getByLabelText(/contact name/i)).toBeInTheDocument()
+      expect(screen.getByLabelText(/email/i)).toBeInTheDocument()
+      expect(screen.getByLabelText(/phone/i)).toBeInTheDocument()
+      expect(screen.getByLabelText(/company/i)).toBeInTheDocument()
+
+      // Service Request Details
+      expect(screen.getByLabelText(/request title/i)).toBeInTheDocument()
+      expect(screen.getByLabelText(/description/i)).toBeInTheDocument()
+
+      // Job Site Information
+      expect(screen.getByLabelText(/job site address/i)).toBeInTheDocument()
+      expect(screen.getByText(/equipment transport/i)).toBeInTheDocument()
+      expect(screen.getByLabelText(/start date/i)).toBeInTheDocument()
+      expect(screen.getByLabelText(/end date/i)).toBeInTheDocument()
+
+      // Equipment Requirements
+      expect(screen.getByLabelText(/equipment category/i)).toBeInTheDocument()
+      expect(screen.getByLabelText(/equipment details/i)).toBeInTheDocument()
+
+      // Duration & Pricing
+      expect(screen.getByLabelText(/duration type/i)).toBeInTheDocument()
+      expect(screen.getByLabelText(/duration value/i)).toBeInTheDocument()
+      expect(screen.getByLabelText(/total hours/i)).toBeInTheDocument()
+      expect(screen.getByLabelText(/rate type/i)).toBeInTheDocument()
+      expect(screen.getByLabelText(/base rate/i)).toBeInTheDocument()
+    })
+
+    it("should render submit button", () => {
+      render(<ServiceRequestForm user={mockUser} />)
+
+      const submitButton = screen.getByRole("button", { name: /submit service request/i })
+      expect(submitButton).toBeInTheDocument()
+      expect(submitButton).toHaveAttribute("type", "submit")
     })
   })
 
-  describe("Address Search Integration", () => {
-    it("should use geocoding service for address search", async () => {
+  describe("User Interactions", () => {
+    it("should call hook's handleJobSiteInputChange when job site input changes", async () => {
       const user = userEvent.setup()
-
       render(<ServiceRequestForm user={mockUser} />)
 
       const jobSiteInput = screen.getByLabelText(/job site address/i)
-
-      // Type in the address field
-      await user.type(jobSiteInput, "123 Main")
-
-      // Wait for debounced search
-      await waitFor(
-        () => {
-          expect(mockGeocodingService.searchAddresses).toHaveBeenCalledWith(
-            "123 Main",
-            {
-              limit: 5,
-              countryCode: "us",
-            }
-          )
-        },
-        { timeout: 1000 }
-      )
-    })
-
-    it("should display address suggestions from geocoding service", async () => {
-      const user = userEvent.setup()
-
-      render(<ServiceRequestForm user={mockUser} />)
-
-      const jobSiteInput = screen.getByLabelText(/job site address/i)
-
-      // Type in the address field
-      await user.type(jobSiteInput, "123 Main")
-
-      // Wait for suggestions to appear
-      await waitFor(() => {
-        expect(screen.getByText("123 Main St")).toBeInTheDocument()
-        expect(screen.getByText("456 Oak Ave")).toBeInTheDocument()
-      })
-
-      // Check that full addresses are shown in the details
-      expect(
-        screen.getByText("123 Main St, Anytown, NY 10001, USA")
-      ).toBeInTheDocument()
-      expect(
-        screen.getByText("456 Oak Ave, Somewhere, NY 10002, USA")
-      ).toBeInTheDocument()
-    })
-
-    it("should select address suggestion and update form", async () => {
-      const user = userEvent.setup()
-
-      render(<ServiceRequestForm user={mockUser} />)
-
-      const jobSiteInput = screen.getByLabelText(/job site address/i)
-
-      // Type in the address field
-      await user.type(jobSiteInput, "123 Main")
-
-      // Wait for suggestions to appear
-      await waitFor(() => {
-        expect(screen.getByText("123 Main St")).toBeInTheDocument()
-      })
-
-      // Click on the first suggestion
-      await user.click(screen.getByText("123 Main St"))
-
-      // Check that the input value was updated
-      expect(jobSiteInput).toHaveValue("123 Main St, Anytown, NY 10001, USA")
-
-      // Check that suggestions are hidden
-      expect(screen.queryByText("456 Oak Ave")).not.toBeInTheDocument()
-    })
-
-    it("should handle keyboard navigation for address selection", async () => {
-      const user = userEvent.setup()
-
-      render(<ServiceRequestForm user={mockUser} />)
-
-      const jobSiteInput = screen.getByLabelText(/job site address/i)
-
-      // Type in the address field
-      await user.type(jobSiteInput, "123 Main")
-
-      // Wait for suggestions to appear
-      await waitFor(() => {
-        expect(screen.getByText("123 Main St")).toBeInTheDocument()
-      })
-
-      // Use keyboard to select suggestion
-      const firstSuggestion = screen.getByRole("button", {
-        name: /123 Main St/,
-      })
-      firstSuggestion.focus()
-      await user.keyboard("{Enter}")
-
-      // Check that the input value was updated
-      expect(jobSiteInput).toHaveValue("123 Main St, Anytown, NY 10001, USA")
-    })
-
-    it("should not search for queries less than 3 characters", async () => {
-      const user = userEvent.setup()
-
-      render(<ServiceRequestForm user={mockUser} />)
-
-      const jobSiteInput = screen.getByLabelText(/job site address/i)
-
-      // Type short query
-      await user.type(jobSiteInput, "12")
-
-      // Wait a bit to ensure debounce would have triggered
-      await waitFor(
-        () => {
-          expect(mockGeocodingService.searchAddresses).not.toHaveBeenCalled()
-        },
-        { timeout: 500 }
-      )
-    })
-
-    it("should show loading indicator during search", async () => {
-      const user = userEvent.setup()
-
-      // Make the service take some time to respond
-      mockGeocodingService.searchAddresses.mockImplementation(
-        () =>
-          new Promise((resolve) =>
-            setTimeout(() => resolve({ success: true, data: [] }), 100)
-          )
-      )
-
-      render(<ServiceRequestForm user={mockUser} />)
-
-      const jobSiteInput = screen.getByLabelText(/job site address/i)
-
-      // Type in the address field
-      await user.type(jobSiteInput, "123 Main")
-
-      // Check for loading spinner by class name since it doesn't have role="status"
-      await waitFor(() => {
-        expect(document.querySelector(".animate-spin")).toBeInTheDocument()
-      })
-    })
-  })
-
-  describe("Error Handling", () => {
-    it("should handle geocoding service errors gracefully", async () => {
-      const user = userEvent.setup()
-      const mockToast = jest.requireMock("@/components/ui/use-toast")
-
-      // Mock service error
-      mockGeocodingService.searchAddresses.mockResolvedValue({
-        success: false,
-        error: {
-          code: "ALL_PROVIDERS_FAILED",
-          message: "Unable to search for addresses at the moment.",
-          timestamp: new Date(),
-        },
-      })
-
-      render(<ServiceRequestForm user={mockUser} />)
-
-      const jobSiteInput = screen.getByLabelText(/job site address/i)
-
-      // Type in the address field
-      await user.type(jobSiteInput, "123 Main")
-
-      // Wait for error handling
-      await waitFor(() => {
-        expect(mockToast.toast).toHaveBeenCalledWith({
-          title: "Address search unavailable",
-          description: "Unable to search for addresses at the moment.",
-          variant: "destructive",
-        })
-      })
-    })
-
-    it("should handle unexpected errors gracefully", async () => {
-      const user = userEvent.setup()
-      const mockToast = jest.requireMock("@/components/ui/use-toast")
-
-      // Mock service throwing an error
-      mockGeocodingService.searchAddresses.mockRejectedValue(
-        new Error("Network error")
-      )
-
-      render(<ServiceRequestForm user={mockUser} />)
-
-      const jobSiteInput = screen.getByLabelText(/job site address/i)
-
-      // Type in the address field
-      await user.type(jobSiteInput, "123 Main")
-
-      // Wait for error handling
-      await waitFor(() => {
-        expect(mockToast.toast).toHaveBeenCalledWith({
-          title: "Address search unavailable",
-          description:
-            "Unable to search for addresses at the moment. Please enter the address manually.",
-          variant: "destructive",
-        })
-      })
-    })
-
-    it("should handle rate limiting errors", async () => {
-      const user = userEvent.setup()
-      const mockToast = jest.requireMock("@/components/ui/use-toast")
-
-      // Mock rate limiting error
-      mockGeocodingService.searchAddresses.mockResolvedValue({
-        success: false,
-        error: {
-          code: "RATE_LIMIT_EXCEEDED",
-          message:
-            "Too many geocoding requests. Please wait before trying again.",
-          timestamp: new Date(),
-        },
-      })
-
-      render(<ServiceRequestForm user={mockUser} />)
-
-      const jobSiteInput = screen.getByLabelText(/job site address/i)
-
-      // Type in the address field
-      await user.type(jobSiteInput, "123 Main")
-
-      // Wait for error handling
-      await waitFor(() => {
-        expect(mockToast.toast).toHaveBeenCalledWith({
-          title: "Address search unavailable",
-          description:
-            "Too many geocoding requests. Please wait before trying again.",
-          variant: "destructive",
-        })
-      })
-    })
-  })
-
-  describe("Service Integration", () => {
-    it("should get geocoding service from ServiceFactory", () => {
-      render(<ServiceRequestForm user={mockUser} />)
-
-      expect(ServiceFactory.getGeocodingService).toHaveBeenCalled()
-    })
-
-    it("should pass correct options to geocoding service", async () => {
-      const user = userEvent.setup()
-
-      render(<ServiceRequestForm user={mockUser} />)
-
-      const jobSiteInput = screen.getByLabelText(/job site address/i)
-
-      // Type in the address field
-      await user.type(jobSiteInput, "123 Main Street")
-
-      // Wait for debounced search
-      await waitFor(() => {
-        expect(mockGeocodingService.searchAddresses).toHaveBeenCalledWith(
-          "123 Main Street",
-          {
-            limit: 5,
-            countryCode: "us",
-          }
-        )
-      })
-    })
-
-    it("should handle empty results from service", async () => {
-      const user = userEvent.setup()
-
-      // Mock empty results
-      mockGeocodingService.searchAddresses.mockResolvedValue({
-        success: true,
-        data: [],
-      })
-
-      render(<ServiceRequestForm user={mockUser} />)
-
-      const jobSiteInput = screen.getByLabelText(/job site address/i)
-
-      // Type in the address field
-      await user.type(jobSiteInput, "nonexistent address")
-
-      // Wait for search to complete
-      await waitFor(() => {
-        expect(mockGeocodingService.searchAddresses).toHaveBeenCalled()
-      })
-
-      // Should not show any address suggestion buttons (but submit button will still be there)
-      expect(screen.queryByText(/123 Main St/)).not.toBeInTheDocument()
-      expect(screen.queryByText(/456 Oak Ave/)).not.toBeInTheDocument()
-    })
-  })
-
-  describe("Debouncing", () => {
-    it("should debounce address search requests", async () => {
-      const user = userEvent.setup()
-
-      render(<ServiceRequestForm user={mockUser} />)
-
-      const jobSiteInput = screen.getByLabelText(/job site address/i)
-
-      // Type the entire string at once to avoid multiple debounce triggers
       await user.type(jobSiteInput, "123 Main St")
 
-      // Wait for debounce to settle
-      await waitFor(
-        () => {
-          expect(mockGeocodingService.searchAddresses).toHaveBeenCalledTimes(1)
-          expect(mockGeocodingService.searchAddresses).toHaveBeenCalledWith(
-            "123 Main St",
-            {
-              limit: 5,
-              countryCode: "us",
-            }
-          )
-        },
-        { timeout: 1000 }
+      expect(mockHookReturn.handleJobSiteInputChange).toHaveBeenCalled()
+    })
+
+    it("should call form submission handler when form is submitted", async () => {
+      const user = userEvent.setup()
+      render(<ServiceRequestForm user={mockUser} />)
+
+      const submitButton = screen.getByRole("button", { name: /submit service request/i })
+      await user.click(submitButton)
+
+      expect(mockHookReturn.form.handleSubmit).toHaveBeenCalled()
+    })
+
+    it("should display loading state when saving", () => {
+      const loadingHookReturn = {
+        ...mockHookReturn,
+        isSaving: true,
+      }
+      ;(useServiceRequestForm as jest.Mock).mockReturnValue(loadingHookReturn)
+
+      render(<ServiceRequestForm user={mockUser} />)
+
+      const submitButton = screen.getByRole("button", { name: /submit service request/i })
+      expect(submitButton).toBeDisabled()
+      expect(screen.getByText("Submit Service Request")).toBeInTheDocument()
+    })
+
+    it("should display loading spinner when saving", () => {
+      const loadingHookReturn = {
+        ...mockHookReturn,
+        isSaving: true,
+      }
+      ;(useServiceRequestForm as jest.Mock).mockReturnValue(loadingHookReturn)
+
+      render(<ServiceRequestForm user={mockUser} />)
+
+      expect(document.querySelector(".animate-spin")).toBeInTheDocument()
+    })
+  })
+
+  describe("Address Suggestions", () => {
+    it("should display address suggestions when provided by hook", () => {
+      const suggestionsHookReturn = {
+        ...mockHookReturn,
+        jobSiteSuggestions: [
+          {
+            placeId: "place-1",
+            displayName: "123 Main St, City, State",
+          },
+          {
+            placeId: "place-2", 
+            displayName: "456 Oak Ave, City, State",
+          },
+        ],
+      }
+      ;(useServiceRequestForm as jest.Mock).mockReturnValue(suggestionsHookReturn)
+
+      render(<ServiceRequestForm user={mockUser} />)
+
+      expect(screen.getByText("123 Main St")).toBeInTheDocument()
+      expect(screen.getByText("456 Oak Ave")).toBeInTheDocument()
+    })
+
+    it("should call handleAddressSelect when suggestion is clicked", async () => {
+      const user = userEvent.setup()
+      const suggestionsHookReturn = {
+        ...mockHookReturn,
+        jobSiteSuggestions: [
+          {
+            placeId: "place-1",
+            displayName: "123 Main St, City, State",
+          },
+        ],
+      }
+      ;(useServiceRequestForm as jest.Mock).mockReturnValue(suggestionsHookReturn)
+
+      render(<ServiceRequestForm user={mockUser} />)
+
+      const suggestion = screen.getByText("123 Main St")
+      await user.click(suggestion)
+
+      expect(mockHookReturn.handleAddressSelect).toHaveBeenCalledWith({
+        placeId: "place-1",
+        displayName: "123 Main St, City, State",
+      })
+    })
+
+    it("should show loading spinner when addresses are loading", () => {
+      const loadingHookReturn = {
+        ...mockHookReturn,
+        isLoadingAddresses: true,
+      }
+      ;(useServiceRequestForm as jest.Mock).mockReturnValue(loadingHookReturn)
+
+      render(<ServiceRequestForm user={mockUser} />)
+
+      expect(document.querySelector(".animate-spin")).toBeInTheDocument()
+    })
+
+    it("should handle keyboard navigation for suggestions", async () => {
+      const user = userEvent.setup()
+      const suggestionsHookReturn = {
+        ...mockHookReturn,
+        jobSiteSuggestions: [
+          {
+            placeId: "place-1",
+            displayName: "123 Main St, City, State",
+          },
+        ],
+      }
+      ;(useServiceRequestForm as jest.Mock).mockReturnValue(suggestionsHookReturn)
+
+      render(<ServiceRequestForm user={mockUser} />)
+
+      const suggestionButtons = screen.getAllByRole("button")
+      const addressSuggestion = suggestionButtons.find(button => 
+        button.textContent?.includes("123 Main St")
       )
+      
+      expect(addressSuggestion).toBeDefined()
+      expect(addressSuggestion).toHaveAttribute("tabIndex", "0")
+    })
+  })
+
+  describe("Form Validation", () => {
+    it("should display validation errors from hook", () => {
+      const errorHookReturn = {
+        ...mockHookReturn,
+        form: {
+          ...mockHookReturn.form,
+          formState: {
+            errors: {
+              contactName: { message: "Contact name is required" },
+              jobSite: { message: "Job site is required" },
+            },
+          },
+        },
+      }
+      ;(useServiceRequestForm as jest.Mock).mockReturnValue(errorHookReturn)
+
+      render(<ServiceRequestForm user={mockUser} />)
+
+      expect(screen.getByText("Contact name is required")).toBeInTheDocument()
+      expect(screen.getByText("Job site is required")).toBeInTheDocument()
+    })
+  })
+
+  describe("Component Props", () => {
+    it("should accept custom className", () => {
+      const { container } = render(
+        <ServiceRequestForm user={mockUser} className="custom-class" />
+      )
+
+      const form = container.querySelector("form")
+      expect(form).toHaveClass("custom-class")
+    })
+
+    it("should pass user prop to hook", () => {
+      render(<ServiceRequestForm user={mockUser} />)
+
+      expect(useServiceRequestForm).toHaveBeenCalledWith({ user: mockUser })
     })
   })
 })
