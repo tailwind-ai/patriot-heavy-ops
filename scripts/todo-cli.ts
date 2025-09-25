@@ -726,7 +726,17 @@ async function applyAutoFix(todo: EnhancedTodoItem): Promise<boolean> {
 // Run if called directly
 if (require.main === module) {
   main().catch((error) => {
-    console.error("❌ Error:", error instanceof Error ? error.message : String(error))
+    if (error instanceof Error) {
+      console.error("❌ Error:", error.message)
+      if (error.stack) {
+        console.error("Stack trace:", error.stack)
+      }
+      if (error.cause) {
+        console.error("Caused by:", error.cause)
+      }
+    } else {
+      console.error("❌ Unknown error:", error)
+    }
     process.exit(1)
   })
 }

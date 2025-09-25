@@ -1,12 +1,13 @@
 /**
  * Repository Factory Tests
- * 
+ *
  * Tests for the RepositoryFactory dependency injection system
  */
 
-import { RepositoryFactory } from "@/lib/repositories"
+import { RepositoryFactory, repositories } from "@/lib/repositories"
 import { ServiceRequestRepository } from "@/lib/repositories/service-request-repository"
 import { UserRepository } from "@/lib/repositories/user-repository"
+import { db } from "@/lib/db"
 
 // Mock the default db import
 jest.mock("@/lib/db", () => ({
@@ -17,7 +18,7 @@ jest.mock("@/lib/db", () => ({
 }))
 
 // Get reference to the mocked db for testing
-const mockDatabase = require("@/lib/db").db // eslint-disable-line @typescript-eslint/no-require-imports
+const mockDatabase = db as jest.Mocked<typeof db>
 
 describe("RepositoryFactory", () => {
   beforeEach(() => {
@@ -72,10 +73,10 @@ describe("RepositoryFactory", () => {
 
     it("should reset repositories when database changes", () => {
       const repo1 = RepositoryFactory.getServiceRequestRepository()
-      
+
       const customDb = { custom: true } as any
       RepositoryFactory.setDatabase(customDb)
-      
+
       const repo2 = RepositoryFactory.getServiceRequestRepository()
       expect(repo1).not.toBe(repo2)
     })
@@ -84,7 +85,7 @@ describe("RepositoryFactory", () => {
   describe("factory methods", () => {
     it("should create new ServiceRequestRepository with default database", () => {
       const repo = RepositoryFactory.createServiceRequestRepository()
-      
+
       expect(repo).toBeInstanceOf(ServiceRequestRepository)
       expect(repo).not.toBe(RepositoryFactory.getServiceRequestRepository())
     })
@@ -92,13 +93,13 @@ describe("RepositoryFactory", () => {
     it("should create new ServiceRequestRepository with custom database", () => {
       const customDb = { custom: true } as any
       const repo = RepositoryFactory.createServiceRequestRepository(customDb)
-      
+
       expect(repo).toBeInstanceOf(ServiceRequestRepository)
     })
 
     it("should create new UserRepository with default database", () => {
       const repo = RepositoryFactory.createUserRepository()
-      
+
       expect(repo).toBeInstanceOf(UserRepository)
       expect(repo).not.toBe(RepositoryFactory.getUserRepository())
     })
@@ -106,14 +107,17 @@ describe("RepositoryFactory", () => {
     it("should create new UserRepository with custom database", () => {
       const customDb = { custom: true } as any
       const repo = RepositoryFactory.createUserRepository(customDb)
-      
+
       expect(repo).toBeInstanceOf(UserRepository)
     })
 
     it("should create repositories with custom options", () => {
       const options = { enableCaching: true, offlineMode: true }
-      const repo = RepositoryFactory.createServiceRequestRepository(undefined, options)
-      
+      const repo = RepositoryFactory.createServiceRequestRepository(
+        undefined,
+        options
+      )
+
       expect(repo).toBeInstanceOf(ServiceRequestRepository)
       expect(repo.isOfflineMode()).toBe(true)
     })
@@ -131,7 +135,7 @@ describe("RepositoryFactory", () => {
       await RepositoryFactory.initialize()
 
       expect(mockDb.$connect).toHaveBeenCalled()
-      
+
       // Verify repositories are created
       const serviceRepo = RepositoryFactory.getServiceRequestRepository()
       const userRepo = RepositoryFactory.getUserRepository()
@@ -148,7 +152,9 @@ describe("RepositoryFactory", () => {
       }
       RepositoryFactory.setDatabase(mockDb as any)
 
-      await expect(RepositoryFactory.initialize()).rejects.toThrow("Connection failed")
+      await expect(RepositoryFactory.initialize()).rejects.toThrow(
+        "Connection failed"
+      )
     })
   })
 
@@ -168,11 +174,11 @@ describe("RepositoryFactory", () => {
       await RepositoryFactory.cleanup()
 
       expect(mockDb.$disconnect).toHaveBeenCalled()
-      
+
       // Verify repositories are reset (new instances created)
       const newServiceRepo = RepositoryFactory.getServiceRequestRepository()
       const newUserRepo = RepositoryFactory.getUserRepository()
-      
+
       expect(newServiceRepo).not.toBe(serviceRepo)
       expect(newUserRepo).not.toBe(userRepo)
     })
@@ -204,9 +210,11 @@ describe("RepositoryFactory", () => {
       } as any
 
       // Mock the factory method
-      jest.spyOn(RepositoryFactory, 'getServiceRequestRepository').mockReturnValue(mockRepo)
+      jest
+        .spyOn(RepositoryFactory, "getServiceRequestRepository")
+        .mockReturnValue(mockRepo)
 
-      const { repositories } = require("@/lib/repositories") // eslint-disable-line @typescript-eslint/no-require-imports
+      // Using imported repositories
       repositories.getServiceRequests("user123", "USER")
 
       expect(mockRepo.findManyWithRoleAccess).toHaveBeenCalledWith({
@@ -220,9 +228,11 @@ describe("RepositoryFactory", () => {
         create: jest.fn(),
       } as any
 
-      jest.spyOn(RepositoryFactory, 'getServiceRequestRepository').mockReturnValue(mockRepo)
+      jest
+        .spyOn(RepositoryFactory, "getServiceRequestRepository")
+        .mockReturnValue(mockRepo)
 
-      const { repositories } = require("@/lib/repositories") // eslint-disable-line @typescript-eslint/no-require-imports
+      // Using imported repositories
       const createData = { title: "Test", userId: "user123" } as any
       repositories.createServiceRequest(createData)
 
@@ -234,9 +244,11 @@ describe("RepositoryFactory", () => {
         findById: jest.fn(),
       } as any
 
-      jest.spyOn(RepositoryFactory, 'getUserRepository').mockReturnValue(mockRepo)
+      jest
+        .spyOn(RepositoryFactory, "getUserRepository")
+        .mockReturnValue(mockRepo)
 
-      const { repositories } = require("@/lib/repositories") // eslint-disable-line @typescript-eslint/no-require-imports
+      // Using imported repositories
       repositories.getUserById("user123")
 
       expect(mockRepo.findById).toHaveBeenCalledWith("user123")
@@ -247,9 +259,11 @@ describe("RepositoryFactory", () => {
         findByEmail: jest.fn(),
       } as any
 
-      jest.spyOn(RepositoryFactory, 'getUserRepository').mockReturnValue(mockRepo)
+      jest
+        .spyOn(RepositoryFactory, "getUserRepository")
+        .mockReturnValue(mockRepo)
 
-      const { repositories } = require("@/lib/repositories") // eslint-disable-line @typescript-eslint/no-require-imports
+      // Using imported repositories
       repositories.getUserByEmail("user@example.com")
 
       expect(mockRepo.findByEmail).toHaveBeenCalledWith("user@example.com")
@@ -260,9 +274,11 @@ describe("RepositoryFactory", () => {
         create: jest.fn(),
       } as any
 
-      jest.spyOn(RepositoryFactory, 'getUserRepository').mockReturnValue(mockRepo)
+      jest
+        .spyOn(RepositoryFactory, "getUserRepository")
+        .mockReturnValue(mockRepo)
 
-      const { repositories } = require("@/lib/repositories") // eslint-disable-line @typescript-eslint/no-require-imports
+      // Using imported repositories
       const userData = { email: "user@example.com" } as any
       repositories.createUser(userData)
 
@@ -274,9 +290,11 @@ describe("RepositoryFactory", () => {
         update: jest.fn(),
       } as any
 
-      jest.spyOn(RepositoryFactory, 'getUserRepository').mockReturnValue(mockRepo)
+      jest
+        .spyOn(RepositoryFactory, "getUserRepository")
+        .mockReturnValue(mockRepo)
 
-      const { repositories } = require("@/lib/repositories") // eslint-disable-line @typescript-eslint/no-require-imports
+      // Using imported repositories
       const updateData = { name: "Updated Name" } as any
       repositories.updateUser("user123", updateData)
 
@@ -288,9 +306,11 @@ describe("RepositoryFactory", () => {
         findAvailableOperators: jest.fn(),
       } as any
 
-      jest.spyOn(RepositoryFactory, 'getUserRepository').mockReturnValue(mockRepo)
+      jest
+        .spyOn(RepositoryFactory, "getUserRepository")
+        .mockReturnValue(mockRepo)
 
-      const { repositories } = require("@/lib/repositories") // eslint-disable-line @typescript-eslint/no-require-imports
+      // Using imported repositories
       const filters = { preferredLocations: ["Texas"] }
       repositories.getAvailableOperators(filters)
 

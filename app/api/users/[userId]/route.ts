@@ -66,8 +66,13 @@ export async function PATCH(
         // Extract issues from the details object to match expected format
         // Ensure details.issues is always present and is an array
         const details = result.error.details || {}
-        const issues = Array.isArray(details.issues) ? details.issues : 
-                      Array.isArray(details) ? details : []
+        let issues: unknown[] = []
+        
+        if (Array.isArray(details.issues)) {
+          issues = details.issues
+        } else if (Array.isArray(details)) {
+          issues = details
+        }
         return new Response(JSON.stringify(issues), { status: 422 })
       }
       return new Response(null, { status: 500 })
