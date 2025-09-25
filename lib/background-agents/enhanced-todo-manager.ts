@@ -15,11 +15,11 @@ import { TodoPersistence } from "./todo-persistence"
 
 export interface CursorHints {
   /** Primary file to open when working on this todo */
-  fileToOpen?: string
+  fileToOpen?: string | undefined
   /** Line number to jump to in the primary file */
-  lineToJump?: number
+  lineToJump?: number | undefined
   /** Additional files that provide context */
-  contextFiles?: string[]
+  contextFiles?: string[] | undefined
   /** Suggested action type for Cursor to understand the task */
   suggestedAction?:
     | "fix_test"
@@ -28,12 +28,13 @@ export interface CursorHints {
     | "fix_deployment"
     | "implement_feature"
     | "refactor_code"
+    | undefined
   /** Search terms to help locate the issue quickly */
-  contextSearch?: string
+  contextSearch?: string | undefined
   /** Related symbols, functions, or classes */
-  relatedSymbols?: string[]
+  relatedSymbols?: string[] | undefined
   /** Estimated focus area (e.g., "function validateUserPermissions") */
-  focusArea?: string
+  focusArea?: string | undefined
 }
 
 export interface FailureDetails {
@@ -60,9 +61,9 @@ export interface EnhancedTodoItem extends MockTodoItem {
 
   // NEW: Cursor IDE Integration
   /** Primary file for Cursor to open (standardized field) */
-  file?: string
+  file?: string | undefined
   /** Primary line number for Cursor to jump to (standardized field) */
-  line?: number
+  line?: number | undefined
   /** Cursor-specific hints for intelligent assistance */
   cursorHints?: CursorHints
   /** Detailed failure analysis for better context */
@@ -633,14 +634,14 @@ export class EnhancedTodoManager {
       const testNameMatch = todo.content.match(
         /test[:\s]+["']?([^"'\n]+)["']?/i
       )
-      if (testNameMatch) {
+      if (testNameMatch?.[1]) {
         details.testName = testNameMatch[1]
       }
     }
 
     // Extract error message from content
     const errorMatch = todo.content.match(/error[:\s]+(.+?)(?:\n|$)/i)
-    if (errorMatch) {
+    if (errorMatch?.[1]) {
       details.errorMessage = errorMatch[1].trim()
     }
 
@@ -668,6 +669,8 @@ export class EnhancedTodoManager {
       vercel_failure: "fix_deployment",
       copilot_comment: "refactor_code",
       definition_of_done: "fix_build",
+      build_failure: "fix_build",
+      deployment_failure: "fix_deployment",
     }
 
     return actionMap[issueType] || "fix_build"
@@ -688,7 +691,7 @@ export class EnhancedTodoManager {
 
     // Look for class names
     const classMatch = content.match(/class\s+(\w+)/i)
-    if (classMatch) {
+    if (classMatch?.[1]) {
       return classMatch[1]
     }
 
@@ -839,21 +842,26 @@ export class EnhancedTodoManager {
     let match
 
     while ((match = testFailureRegex.exec(logs)) !== null) {
-      const testFile = match[1].trim()
+      const testFile = match[1]?.trim()
       const failureContent = match[2]
+
+      if (!testFile || !failureContent) continue
 
       // Extract specific error message
       const errorMatch = failureContent.match(
         /●\s+(.+?)\n\s+(.+?)(?=\n\s*●|\n\s*at\s|$)/s
       )
-      if (errorMatch) {
+      if (errorMatch?.[1] && errorMatch[2]) {
         const testName = errorMatch[1].trim()
         const errorMessage = errorMatch[2].trim()
 
         // Extract line numbers
         const lineMatch = failureContent.match(/:(\d+):\d+/g)
         const lineNumbers = lineMatch
-          ? lineMatch.map((l) => parseInt(l.split(":")[1]))
+          ? lineMatch.map((l) => {
+              const parts = l.split(":")
+              return parts[1] ? parseInt(parts[1]) : 0
+            })
           : []
 
         failures.push({
@@ -896,17 +904,19 @@ export class EnhancedTodoManager {
 
     while ((match = tsErrorRegex.exec(logs)) !== null) {
       const file = match[1]
-      const lineNumber = parseInt(match[2])
-      const errorMessage = match[3].trim()
+      const lineNumber = match[2] ? parseInt(match[2]) : 0
+      const errorMessage = match[3]?.trim()
 
-      failures.push({
-        type: "build_failure",
-        errorMessage: `TypeScript error: ${errorMessage}`,
-        files: [file],
-        lineNumbers: [lineNumber],
-        logSnippet: match[0],
-        suggestedFix: this.generateBuildFixSuggestion(errorMessage),
-      })
+      if (file && errorMessage) {
+        failures.push({
+          type: "build_failure",
+          errorMessage: `TypeScript error: ${errorMessage}`,
+          files: [file],
+          lineNumbers: [lineNumber],
+          logSnippet: match[0],
+          suggestedFix: this.generateBuildFixSuggestion(errorMessage),
+        })
+      }
     }
 
     return failures
@@ -938,18 +948,20 @@ export class EnhancedTodoManager {
 
     while ((match = eslintRegex.exec(logs)) !== null) {
       const file = match[1]
-      const lineNumber = parseInt(match[2])
-      const errorMessage = match[3].trim()
-      const rule = match[4].trim()
+      const lineNumber = match[2] ? parseInt(match[2]) : 0
+      const errorMessage = match[3]?.trim()
+      const rule = match[4]?.trim()
 
-      failures.push({
-        type: "lint_error",
-        errorMessage: `ESLint error (${rule}): ${errorMessage}`,
-        files: [file],
-        lineNumbers: [lineNumber],
-        logSnippet: match[0],
-        suggestedFix: this.generateLintFixSuggestion(errorMessage, rule),
-      })
+      if (file && errorMessage && rule) {
+        failures.push({
+          type: "lint_error",
+          errorMessage: `ESLint error (${rule}): ${errorMessage}`,
+          files: [file],
+          lineNumbers: [lineNumber],
+          logSnippet: match[0],
+          suggestedFix: this.generateLintFixSuggestion(errorMessage, rule),
+        })
+      }
     }
 
     return failures
@@ -982,19 +994,55 @@ export class EnhancedTodoManager {
 
     while ((match = deployErrorRegex.exec(logs)) !== null) {
       const errorType = match[1]
-      const errorMessage = match[2].trim()
+      const errorMessage = match[2]?.trim()
 
-      failures.push({
-        type: "deployment_failure",
-        errorMessage: `${errorType}: ${errorMessage}`,
-        files: [],
-        lineNumbers: [],
-        logSnippet: match[0].slice(0, 200) + "...",
-        suggestedFix: this.generateDeploymentFixSuggestion(errorMessage),
-      })
+      if (errorType && errorMessage) {
+        failures.push({
+          type: "deployment_failure",
+          errorMessage: `${errorType}: ${errorMessage}`,
+          files: [],
+          lineNumbers: [],
+          logSnippet: match[0].slice(0, 200) + "...",
+          suggestedFix: this.generateDeploymentFixSuggestion(errorMessage),
+        })
+      }
     }
 
     return failures
+  }
+
+  /**
+   * Create a base todo object from failure data
+   */
+  private createBaseTodoFromFailure(
+    failure: {
+      type:
+        | "test_failure"
+        | "build_failure"
+        | "lint_error"
+        | "deployment_failure"
+      errorMessage: string
+      files: string[]
+      lineNumbers: number[]
+      logSnippet: string
+      suggestedFix: string
+    },
+    prNumber: number,
+    workflowRunId: string
+  ): MockTodoItem {
+    return {
+      id: `workflow-${workflowRunId}-${Date.now()}-${Math.random()
+        .toString(36)
+        .substr(2, 9)}`,
+      content: failure.errorMessage,
+      status: "pending",
+      priority: this.determinePriority(failure.type),
+      dependencies: [],
+      issueType: failure.type,
+      files: failure.files,
+      lineNumbers: failure.lineNumbers,
+      suggestedFix: failure.suggestedFix,
+    }
   }
 
   /**
@@ -1016,88 +1064,24 @@ export class EnhancedTodoManager {
     prNumber: number,
     workflowRunId: string
   ): EnhancedTodoItem {
+    const baseTodo = this.createBaseTodoFromFailure(
+      failure,
+      prNumber,
+      workflowRunId
+    )
+
     const todo: EnhancedTodoItem = {
-      id: `workflow-${workflowRunId}-${Date.now()}-${Math.random()
-        .toString(36)
-        .substr(2, 9)}`,
-      content: failure.errorMessage,
-      status: "pending",
-      priority: this.determinePriority(failure.type),
-      dependencies: [],
-      issueType: failure.type,
-      files: failure.files,
-      lineNumbers: failure.lineNumbers,
-      suggestedFix: failure.suggestedFix,
+      ...baseTodo,
       createdAt: new Date(),
       updatedAt: new Date(),
-      estimatedTime: this.estimateTime({
-        id: "",
-        content: failure.errorMessage,
-        status: "pending",
-        priority: this.determinePriority(failure.type),
-        dependencies: [],
-        issueType: failure.type,
-        files: failure.files,
-        lineNumbers: failure.lineNumbers,
-        suggestedFix: failure.suggestedFix,
-      }),
-      tags: this.generateTags({
-        id: "",
-        content: failure.errorMessage,
-        status: "pending",
-        priority: this.determinePriority(failure.type),
-        dependencies: [],
-        issueType: failure.type,
-        files: failure.files,
-        lineNumbers: failure.lineNumbers,
-        suggestedFix: failure.suggestedFix,
-      }),
-      assignee: this.suggestAssignee({
-        id: "",
-        content: failure.errorMessage,
-        status: "pending",
-        priority: this.determinePriority(failure.type),
-        dependencies: [],
-        issueType: failure.type,
-        files: failure.files,
-        lineNumbers: failure.lineNumbers,
-        suggestedFix: failure.suggestedFix,
-      }),
+      estimatedTime: this.estimateTime(baseTodo),
+      tags: this.generateTags(baseTodo),
+      assignee: this.suggestAssignee(baseTodo),
       relatedPR: `#${prNumber}`,
       // Cursor Integration Fields
-      file: this.extractPrimaryFile({
-        id: "",
-        content: failure.errorMessage,
-        status: "pending",
-        priority: this.determinePriority(failure.type),
-        dependencies: [],
-        issueType: failure.type,
-        files: failure.files,
-        lineNumbers: failure.lineNumbers,
-        suggestedFix: failure.suggestedFix,
-      }),
-      line: this.extractPrimaryLine({
-        id: "",
-        content: failure.errorMessage,
-        status: "pending",
-        priority: this.determinePriority(failure.type),
-        dependencies: [],
-        issueType: failure.type,
-        files: failure.files,
-        lineNumbers: failure.lineNumbers,
-        suggestedFix: failure.suggestedFix,
-      }),
-      cursorHints: this.generateCursorHints({
-        id: "",
-        content: failure.errorMessage,
-        status: "pending",
-        priority: this.determinePriority(failure.type),
-        dependencies: [],
-        issueType: failure.type,
-        files: failure.files,
-        lineNumbers: failure.lineNumbers,
-        suggestedFix: failure.suggestedFix,
-      }),
+      file: this.extractPrimaryFile(baseTodo),
+      line: this.extractPrimaryLine(baseTodo),
+      cursorHints: this.generateCursorHints(baseTodo),
       failureDetails: {
         errorMessage: failure.errorMessage,
         logSnippet: failure.logSnippet,
@@ -1150,6 +1134,14 @@ export class EnhancedTodoManager {
         return "medium"
       case "deployment_failure":
         return "critical"
+      case "ci_failure":
+        return "high"
+      case "vercel_failure":
+        return "critical"
+      case "copilot_comment":
+        return "medium"
+      case "definition_of_done":
+        return "high"
       default:
         return "medium"
     }
@@ -1233,6 +1225,8 @@ export class EnhancedTodoManager {
       lint_error: "5-20 min",
       test_failure: "15-60 min",
       definition_of_done: "2-5 min",
+      build_failure: "20-60 min",
+      deployment_failure: "30-90 min",
     }
 
     const complexity = todo.files?.length || 1
