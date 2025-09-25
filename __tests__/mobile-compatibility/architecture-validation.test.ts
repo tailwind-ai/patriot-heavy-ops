@@ -32,9 +32,17 @@ describe("Architecture Validation Tests", () => {
         // Services should not directly import repositories (should use factory)
         repositoryFiles.forEach((repoFile) => {
           const repoName = path.basename(repoFile, ".ts")
-          const directImportPattern = new RegExp(`from.*/${repoName}"`, "g")
+          // Escape special regex characters in repository name
+          const escapedRepoName = repoName.replace(
+            /[.*+?^${}()|[\]\\]/g,
+            "\\$&"
+          )
+          const directImportPattern = new RegExp(
+            `from\\s+["'].*/${escapedRepoName}["']`,
+            "g"
+          )
           const relativeImportPattern = new RegExp(
-            `from "\\.\\.?/.*repositories.*${repoName}"`,
+            `from\\s+["']\\.\\.?/.*repositories.*${escapedRepoName}["']`,
             "g"
           )
 
@@ -59,8 +67,12 @@ describe("Architecture Validation Tests", () => {
           const serviceName = path.basename(serviceFile, ".ts")
 
           // Components should not directly import services
+          const escapedServiceName = serviceName.replace(
+            /[.*+?^${}()|[\]\\]/g,
+            "\\$&"
+          )
           const directServiceImport = new RegExp(
-            `from.*lib/services.*${serviceName}"`,
+            `from\\s+["'].*lib/services.*${escapedServiceName}["']`,
             "g"
           )
           expect(content).not.toMatch(directServiceImport)
@@ -155,7 +167,14 @@ describe("Architecture Validation Tests", () => {
           // Allow base-service import in repositories
           if (serviceName === "base-service") return
 
-          const serviceImportPattern = new RegExp(`from.*${serviceName}`, "g")
+          const escapedServiceName = serviceName.replace(
+            /[.*+?^${}()|[\]\\]/g,
+            "\\$&"
+          )
+          const serviceImportPattern = new RegExp(
+            `from\\s+["'].*${escapedServiceName}["']`,
+            "g"
+          )
           expect(content).not.toMatch(serviceImportPattern)
         })
       })
@@ -294,7 +313,11 @@ describe("Architecture Validation Tests", () => {
 
       requiredExports.forEach((exportName) => {
         expect(content).toContain(`export`)
-        expect(content).toMatch(new RegExp(`${exportName}`))
+        const escapedExportName = exportName.replace(
+          /[.*+?^${}()|[\]\\]/g,
+          "\\$&"
+        )
+        expect(content).toMatch(new RegExp(`\\b${escapedExportName}\\b`))
       })
     })
 
@@ -315,7 +338,11 @@ describe("Architecture Validation Tests", () => {
 
       requiredExports.forEach((exportName) => {
         expect(content).toContain(`export`)
-        expect(content).toMatch(new RegExp(`${exportName}`))
+        const escapedExportName = exportName.replace(
+          /[.*+?^${}()|[\]\\]/g,
+          "\\$&"
+        )
+        expect(content).toMatch(new RegExp(`\\b${escapedExportName}\\b`))
       })
     })
 
@@ -505,12 +532,22 @@ function findCircularDependencies(
 }
 
 function isInString(line: string, searchTerm: string): boolean {
-  const stringRegex = /["'`]([^"'`\\]|\\.)*["'`]/g
-  let match
+  // More robust string detection that handles nested quotes and template literals
+  const patterns = [
+    // Double quoted strings with proper escape handling
+    /"(?:[^"\\]|\\.)*"/g,
+    // Single quoted strings with proper escape handling
+    /'(?:[^'\\]|\\.)*'/g,
+    // Template literals with proper escape handling
+    /`(?:[^`\\]|\\.)*`/g,
+  ]
 
-  while ((match = stringRegex.exec(line)) !== null) {
-    if (match[0].includes(searchTerm)) {
-      return true
+  for (const pattern of patterns) {
+    let match
+    while ((match = pattern.exec(line)) !== null) {
+      if (match[0].includes(searchTerm)) {
+        return true
+      }
     }
   }
 
