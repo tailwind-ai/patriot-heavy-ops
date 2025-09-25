@@ -38,16 +38,16 @@ jobs:
 
       - name: Setup environment
         run: |
-          echo "GITHUB_ACCESS_TOKEN=${{ secrets.SAM_PAT_EXP_09_04_2026 || github.token }}" >> .env.local
+          echo "GITHUB_ACCESS_TOKEN=${{ github.token }}" >> .env.local
           echo "NODE_ENV=production" >> .env.local
         env:
-          GITHUB_ACCESS_TOKEN: ${{ secrets.SAM_PAT_EXP_09_04_2026 }}
+          GITHUB_ACCESS_TOKEN: ${{ github.token }}
 
       - name: Check for unresolved review comments
         id: check-comments
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ github.token }}
           script: |
             // Find associated PR for this workflow run
             const { data: prs } = await github.rest.pulls.list({
@@ -133,10 +133,10 @@ jobs:
 
       - name: Setup environment
         run: |
-          echo "GITHUB_ACCESS_TOKEN=${{ secrets.SAM_PAT_EXP_09_04_2026 || github.token }}" >> .env.local
+          echo "GITHUB_ACCESS_TOKEN=${{ github.token }}" >> .env.local
           echo "NODE_ENV=production" >> .env.local
         env:
-          GITHUB_ACCESS_TOKEN: ${{ secrets.SAM_PAT_EXP_09_04_2026 || github.token }}
+          GITHUB_ACCESS_TOKEN: ${{ github.token }}
 
       - name: Trigger Background Agent
         run: |
@@ -168,8 +168,8 @@ jobs:
             npx tsx scripts/todo-cli.ts github $PR_NUMBER
           fi
         env:
-          GITHUB_ACCESS_TOKEN: ${{ secrets.SAM_PAT_EXP_09_04_2026 || github.token }}
-          GH_TOKEN: ${{ secrets.SAM_PAT_EXP_09_04_2026 || github.token }}
+          GITHUB_ACCESS_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ github.token }}
 
       - name: Check for new todos
         run: |
@@ -192,6 +192,7 @@ jobs:
         if: github.event.pull_request || github.event_name == 'issue_comment' || github.event_name == 'status' || github.event_name == 'check_run'
         uses: actions/github-script@v7
         with:
+          github-token: ${{ github.token }}
           script: |
             const fs = require('fs');
             let comment = '## 🤖 Background Agent Analysis\n\n';
