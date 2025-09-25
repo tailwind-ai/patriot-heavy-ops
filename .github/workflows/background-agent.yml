@@ -1,6 +1,16 @@
 name: Background Agent
 
 on:
+  pull_request:
+    types:
+      [
+        opened,
+        synchronize,
+        reopened,
+        edited,
+        review_requested,
+        review_request_removed,
+      ]
   pull_request_review:
     types: [submitted]
   issue_comment:
@@ -14,6 +24,33 @@ on:
     types: [completed]
 
 jobs:
+  # Check for unresolved PR comments
+  check-comment-resolution:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Check for unresolved review comments
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const prNumber = context.payload.pull_request.number;
+            const { data: reviews } = await github.rest.pulls.listReviewComments({
+              ...context.repo,
+              pull_number: prNumber,
+              per_page: 100
+            });
+
+            // GitHub marks comments as "in_reply_to_id" when resolved; keep only root unresolved
+            const unresolved = reviews.filter(r => r.in_reply_to_id === null);
+
+            if (unresolved.length > 0) {
+              core.setFailed(`❌ ${unresolved.length} unresolved comments remain.`);
+            } else {
+              core.info("✅ All review comments resolved.");
+            }
+
   # Analyze CI/CD workflow failures
   analyze-failures:
     runs-on: ubuntu-latest
