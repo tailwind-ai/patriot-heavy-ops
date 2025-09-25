@@ -19,6 +19,7 @@ import {
   GeocodingService,
 } from "@/lib/services"
 import { RepositoryFactory } from "@/lib/repositories"
+import { db } from "@/lib/db"
 import * as fs from "fs"
 import * as path from "path"
 
@@ -341,8 +342,7 @@ describe("Platform-Agnostic Validation Tests", () => {
     it("should handle async operations consistently", async () => {
       const authService = new AuthService()
 
-      // Mock successful database responses using dynamic import
-      const { db } = await import("@/lib/db")
+      // Mock successful database responses
       const mockDb = db as any
       mockDb.user.findUnique.mockResolvedValue({
         id: "user-123",
@@ -410,8 +410,7 @@ describe("Platform-Agnostic Validation Tests", () => {
     it("should handle network failures gracefully for mobile apps", async () => {
       const authService = new AuthService()
 
-      // Mock network failure using dynamic import
-      const { db } = await import("@/lib/db")
+      // Mock network failure
       const mockDb = db as any
       mockDb.user.findUnique.mockRejectedValue(
         new Error("Network request failed")
@@ -554,8 +553,7 @@ describe("Platform-Agnostic Validation Tests", () => {
     it("should provide consistent error codes for mobile error handling", async () => {
       const authService = new AuthService()
 
-      // Mock various error scenarios using dynamic import
-      const { db } = await import("@/lib/db")
+      // Mock various error scenarios
       const mockDb = db as any
 
       // Test validation error
