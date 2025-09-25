@@ -9,11 +9,9 @@ import {
   GeocodingService,
   NominatimProvider,
   MobileLocationProvider,
-  type GeocodingAddress,
   type GeocodingCoordinates,
   type GeocodingProvider,
 } from "@/lib/services/geocoding-service"
-import { ConsoleLogger } from "@/lib/services/base-service"
 
 // Mock fetch globally
 global.fetch = jest.fn()
@@ -62,21 +60,21 @@ describe("GeocodingService", () => {
   })
 
   describe("Address Search", () => {
-    const mockAddressResults: GeocodingAddress[] = [
-      {
-        displayName: "123 Main St, Anytown, USA",
-        coordinates: { latitude: 40.7128, longitude: -74.0060 },
-        placeId: "12345",
-        components: {
-          streetNumber: "123",
-          streetName: "Main St",
-          city: "Anytown",
-          state: "NY",
-          postalCode: "10001",
-          country: "USA",
-        },
-      },
-    ]
+    // const mockAddressResults: GeocodingAddress[] = [
+    //   {
+    //     displayName: "123 Main St, Anytown, USA",
+    //     coordinates: { latitude: 40.7128, longitude: -74.0060 },
+    //     placeId: "12345",
+    //     components: {
+    //       streetNumber: "123",
+    //       streetName: "Main St",
+    //       city: "Anytown",
+    //       state: "NY",
+    //       postalCode: "10001",
+    //       country: "USA",
+    //     },
+    //   },
+    // ]
 
     it("should return empty array for queries less than 3 characters", async () => {
       const result = await service.searchAddresses("ab")

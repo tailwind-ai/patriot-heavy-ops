@@ -112,7 +112,7 @@ async function createWebhook(octokit: Octokit) {
 }
 
 function generateWebhookSecret(): string {
-  const crypto = require("crypto")
+  const crypto = require("crypto") // eslint-disable-line @typescript-eslint/no-require-imports
   return crypto.randomBytes(32).toString("hex")
 }
 
@@ -122,7 +122,7 @@ function updateEnvironmentFile(webhookSecret: string) {
   
   try {
     envContent = readFileSync(envPath, "utf-8")
-  } catch (error) {
+  } catch {
     // File doesn't exist, create it
     envContent = ""
   }
