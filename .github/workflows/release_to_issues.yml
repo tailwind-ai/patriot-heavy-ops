@@ -29,6 +29,6 @@ jobs:
 
       - name: Run script
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+          GITHUB_TOKEN: ${{ secrets.SAM_PAT_EXP_09_04_2026 }}
           GITHUB_REPOSITORY: ${{ github.repository }}
         run: python scripts/release_to_issues.py
