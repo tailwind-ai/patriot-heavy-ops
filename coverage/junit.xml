@@ -1,43 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="16" failures="1" errors="0" time="0.345">
-  <testsuite name="Service Request Flow Integration Tests" errors="0" failures="1" skipped="0" timestamp="2025-09-25T19:49:25" time="0.153" tests="16">
-    <testcase classname="Service Request Flow Integration Tests Mobile-First Architecture Validation should work in pure Node.js environment without Next.js dependencies" name="Service Request Flow Integration Tests Mobile-First Architecture Validation should work in pure Node.js environment without Next.js dependencies" time="0.001">
+<testsuites name="jest tests" tests="18" failures="0" errors="0" time="1.017">
+  <testsuite name="Platform-Agnostic Validation Tests" errors="0" failures="0" skipped="0" timestamp="2025-09-25T23:02:00" time="0.584" tests="18">
+    <testcase classname="Platform-Agnostic Validation Tests Framework Independence should instantiate all services without Next.js dependencies" name="Platform-Agnostic Validation Tests Framework Independence should instantiate all services without Next.js dependencies" time="0.002">
     </testcase>
-    <testcase classname="Service Request Flow Integration Tests Mobile-First Architecture Validation should provide platform-agnostic business logic" name="Service Request Flow Integration Tests Mobile-First Architecture Validation should provide platform-agnostic business logic" time="0.001">
+    <testcase classname="Platform-Agnostic Validation Tests Framework Independence should work without browser globals" name="Platform-Agnostic Validation Tests Framework Independence should work without browser globals" time="0.027">
     </testcase>
-    <testcase classname="Service Request Flow Integration Tests Mobile-First Architecture Validation should validate business rules without UI context" name="Service Request Flow Integration Tests Mobile-First Architecture Validation should validate business rules without UI context" time="0">
+    <testcase classname="Platform-Agnostic Validation Tests Framework Independence should not import Next.js specific modules" name="Platform-Agnostic Validation Tests Framework Independence should not import Next.js specific modules" time="0.005">
     </testcase>
-    <testcase classname="Service Request Flow Integration Tests End-to-End Service Request Workflow should create service request with calculated hours" name="Service Request Flow Integration Tests End-to-End Service Request Workflow should create service request with calculated hours" time="0.001">
+    <testcase classname="Platform-Agnostic Validation Tests Framework Independence should not import React dependencies" name="Platform-Agnostic Validation Tests Framework Independence should not import React dependencies" time="0.002">
     </testcase>
-    <testcase classname="Service Request Flow Integration Tests End-to-End Service Request Workflow should retrieve service requests with role-based access" name="Service Request Flow Integration Tests End-to-End Service Request Workflow should retrieve service requests with role-based access" time="0">
+    <testcase classname="Platform-Agnostic Validation Tests React Native Environment Simulation should work in React Native-like environment" name="Platform-Agnostic Validation Tests React Native Environment Simulation should work in React Native-like environment" time="0.003">
     </testcase>
-    <testcase classname="Service Request Flow Integration Tests End-to-End Service Request Workflow should validate status transitions in workflow" name="Service Request Flow Integration Tests End-to-End Service Request Workflow should validate status transitions in workflow" time="0">
+    <testcase classname="Platform-Agnostic Validation Tests React Native Environment Simulation should handle mobile-specific data serialization" name="Platform-Agnostic Validation Tests React Native Environment Simulation should handle mobile-specific data serialization" time="0.005">
     </testcase>
-    <testcase classname="Service Request Flow Integration Tests End-to-End Service Request Workflow should update service request with validation" name="Service Request Flow Integration Tests End-to-End Service Request Workflow should update service request with validation" time="0">
+    <testcase classname="Platform-Agnostic Validation Tests React Native Environment Simulation should provide consistent error handling for mobile apps" name="Platform-Agnostic Validation Tests React Native Environment Simulation should provide consistent error handling for mobile apps" time="0.003">
     </testcase>
-    <testcase classname="Service Request Flow Integration Tests End-to-End Service Request Workflow should handle access control for service requests" name="Service Request Flow Integration Tests End-to-End Service Request Workflow should handle access control for service requests" time="0.01">
-      <failure>Error: expect(received).toBe(expected) // Object.is equality
-
-Expected: &quot;DATABASE_ERROR&quot;
-Received: &quot;ACCESS_DENIED&quot;
-    at Object.toBe (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/services/integration/service-request-flow.test.ts:260:34)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
+    <testcase classname="Platform-Agnostic Validation Tests Cross-Platform API Consistency should provide consistent ServiceResult format across all operations" name="Platform-Agnostic Validation Tests Cross-Platform API Consistency should provide consistent ServiceResult format across all operations" time="0.002">
     </testcase>
-    <testcase classname="Service Request Flow Integration Tests Service Layer Independence should operate without external framework dependencies" name="Service Request Flow Integration Tests Service Layer Independence should operate without external framework dependencies" time="0">
+    <testcase classname="Platform-Agnostic Validation Tests Cross-Platform API Consistency should handle async operations consistently" name="Platform-Agnostic Validation Tests Cross-Platform API Consistency should handle async operations consistently" time="0.003">
     </testcase>
-    <testcase classname="Service Request Flow Integration Tests Service Layer Independence should provide consistent API across platforms" name="Service Request Flow Integration Tests Service Layer Independence should provide consistent API across platforms" time="0.003">
+    <testcase classname="Platform-Agnostic Validation Tests Cross-Platform API Consistency should provide mobile-friendly type definitions" name="Platform-Agnostic Validation Tests Cross-Platform API Consistency should provide mobile-friendly type definitions" time="0">
     </testcase>
-    <testcase classname="Service Request Flow Integration Tests Service Layer Independence should handle errors consistently across all operations" name="Service Request Flow Integration Tests Service Layer Independence should handle errors consistently across all operations" time="0">
+    <testcase classname="Platform-Agnostic Validation Tests Mobile SDK Integration Patterns should support dependency injection for mobile testing" name="Platform-Agnostic Validation Tests Mobile SDK Integration Patterns should support dependency injection for mobile testing" time="0.002">
     </testcase>
-    <testcase classname="Service Request Flow Integration Tests Mobile SDK Compatibility should support React Native environment simulation" name="Service Request Flow Integration Tests Mobile SDK Compatibility should support React Native environment simulation" time="0">
+    <testcase classname="Platform-Agnostic Validation Tests Mobile SDK Integration Patterns should handle network failures gracefully for mobile apps" name="Platform-Agnostic Validation Tests Mobile SDK Integration Patterns should handle network failures gracefully for mobile apps" time="0.008">
     </testcase>
-    <testcase classname="Service Request Flow Integration Tests Mobile SDK Compatibility should provide serializable data structures" name="Service Request Flow Integration Tests Mobile SDK Compatibility should provide serializable data structures" time="0">
+    <testcase classname="Platform-Agnostic Validation Tests Mobile SDK Integration Patterns should provide offline-capable business logic" name="Platform-Agnostic Validation Tests Mobile SDK Integration Patterns should provide offline-capable business logic" time="0.004">
     </testcase>
-    <testcase classname="Service Request Flow Integration Tests Mobile SDK Compatibility should handle async operations with proper error boundaries" name="Service Request Flow Integration Tests Mobile SDK Compatibility should handle async operations with proper error boundaries" time="0.001">
+    <testcase classname="Platform-Agnostic Validation Tests Performance for Mobile Devices should perform calculations efficiently on mobile hardware" name="Platform-Agnostic Validation Tests Performance for Mobile Devices should perform calculations efficiently on mobile hardware" time="0.224">
     </testcase>
-    <testcase classname="Service Request Flow Integration Tests Performance and Scalability should handle large calculation inputs efficiently" name="Service Request Flow Integration Tests Performance and Scalability should handle large calculation inputs efficiently" time="0">
+    <testcase classname="Platform-Agnostic Validation Tests Performance for Mobile Devices should minimize memory usage for mobile apps" name="Platform-Agnostic Validation Tests Performance for Mobile Devices should minimize memory usage for mobile apps" time="0.005">
     </testcase>
-    <testcase classname="Service Request Flow Integration Tests Performance and Scalability should validate business rules efficiently" name="Service Request Flow Integration Tests Performance and Scalability should validate business rules efficiently" time="0">
+    <testcase classname="Platform-Agnostic Validation Tests Mobile Authentication Patterns should support token-based authentication for mobile apps" name="Platform-Agnostic Validation Tests Mobile Authentication Patterns should support token-based authentication for mobile apps" time="0.001">
+    </testcase>
+    <testcase classname="Platform-Agnostic Validation Tests Mobile Authentication Patterns should handle session data for hybrid authentication" name="Platform-Agnostic Validation Tests Mobile Authentication Patterns should handle session data for hybrid authentication" time="0">
+    </testcase>
+    <testcase classname="Platform-Agnostic Validation Tests Mobile Authentication Patterns should provide consistent error codes for mobile error handling" name="Platform-Agnostic Validation Tests Mobile Authentication Patterns should provide consistent error codes for mobile error handling" time="0.005">
     </testcase>
   </testsuite>
 </testsuites>
