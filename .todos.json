@@ -1,1 +1,148 @@
-[]
+[
+  {
+    "id": "github-5",
+    "content": "Using `as any` type assertion bypasses TypeScript's type safety. Consider defining a proper interface or type that excludes `requestedTotalHours` from the input type, or use a more specific type assertion.",
+    "status": "pending",
+    "priority": "high",
+    "dependencies": [],
+    "issueType": "ci_failure",
+    "files": [
+      "lib/services/service-request-service.ts"
+    ],
+    "lineNumbers": [
+      232
+    ],
+    "suggestedFix": "",
+    "createdAt": "2025-09-25T01:49:50.305Z",
+    "updatedAt": "2025-09-25T01:49:50.305Z",
+    "estimatedTime": "10-30 min",
+    "tags": [
+      "ci-failure",
+      "high"
+    ],
+    "assignee": "general-developer",
+    "relatedPR": "#244"
+  },
+  {
+    "id": "github-1",
+    "content": "if (startDate.getTime() < now.getTime()) {",
+    "status": "pending",
+    "priority": "medium",
+    "dependencies": [],
+    "issueType": "copilot_comment",
+    "files": [
+      "lib/services/service-request-service.ts"
+    ],
+    "lineNumbers": [
+      87
+    ],
+    "suggestedFix": "",
+    "createdAt": "2025-09-25T01:49:50.305Z",
+    "updatedAt": "2025-09-25T01:49:50.305Z",
+    "estimatedTime": "5-15 min",
+    "tags": [
+      "copilot-comment",
+      "medium"
+    ],
+    "assignee": "general-developer",
+    "relatedPR": "#244"
+  },
+  {
+    "id": "github-2",
+    "content": "Using `as any` defeats TypeScript's type safety. Define a proper type for the input parameter or use destructuring without type assertion.",
+    "status": "pending",
+    "priority": "medium",
+    "dependencies": [],
+    "issueType": "copilot_comment",
+    "files": [
+      "lib/services/service-request-service.ts"
+    ],
+    "lineNumbers": [
+      232
+    ],
+    "suggestedFix": "",
+    "createdAt": "2025-09-25T01:49:50.305Z",
+    "updatedAt": "2025-09-25T01:49:50.305Z",
+    "estimatedTime": "5-15 min",
+    "tags": [
+      "copilot-comment",
+      "medium"
+    ],
+    "assignee": "general-developer",
+    "relatedPR": "#244"
+  },
+  {
+    "id": "github-3",
+    "content": "// Expect standardized error structure: details.issues is always present",
+    "status": "pending",
+    "priority": "medium",
+    "dependencies": [],
+    "issueType": "copilot_comment",
+    "files": [
+      "app/api/users/[userId]/route.ts"
+    ],
+    "lineNumbers": [
+      92
+    ],
+    "suggestedFix": "",
+    "createdAt": "2025-09-25T01:49:50.305Z",
+    "updatedAt": "2025-09-25T01:49:50.305Z",
+    "estimatedTime": "5-15 min",
+    "tags": [
+      "copilot-comment",
+      "medium",
+      "api"
+    ],
+    "assignee": "api-specialist",
+    "relatedPR": "#244"
+  },
+  {
+    "id": "github-4",
+    "content": "Accessing `error.message` assumes the error is an Error object, but the catch block could receive any type. Add type checking or use safe property access to prevent potential runtime errors.",
+    "status": "pending",
+    "priority": "medium",
+    "dependencies": [],
+    "issueType": "copilot_comment",
+    "files": [
+      "scripts/todo-cli.ts"
+    ],
+    "lineNumbers": [
+      257
+    ],
+    "suggestedFix": "",
+    "createdAt": "2025-09-25T01:49:50.305Z",
+    "updatedAt": "2025-09-25T01:49:50.305Z",
+    "estimatedTime": "5-15 min",
+    "tags": [
+      "copilot-comment",
+      "medium"
+    ],
+    "assignee": "general-developer",
+    "relatedPR": "#244"
+  },
+  {
+    "id": "github-6",
+    "content": "// Normalize issues to always be an array",
+    "status": "pending",
+    "priority": "medium",
+    "dependencies": [],
+    "issueType": "copilot_comment",
+    "files": [
+      "app/api/users/[userId]/route.ts"
+    ],
+    "lineNumbers": [
+      92
+    ],
+    "suggestedFix": "",
+    "createdAt": "2025-09-25T01:49:50.305Z",
+    "updatedAt": "2025-09-25T01:49:50.305Z",
+    "estimatedTime": "5-15 min",
+    "tags": [
+      "copilot-comment",
+      "medium",
+      "api"
+    ],
+    "assignee": "api-specialist",
+    "relatedPR": "#244"
+  }
+]
