@@ -30,11 +30,15 @@ jobs:
 
       - name: Initialize todos from PR (if PR context)
         if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "🔄 Initializing todos from PR #${{ github.event.number }}"
           npm run todo github-dod ${{ github.event.number }}
 
       - name: Run auto-fix
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "🔧 Running auto-fix for todos..."
           npm run todo auto-fix
