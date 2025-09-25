@@ -14,52 +14,10 @@ on:
     types: [completed]
 
 jobs:
-  # Check for unresolved PR comments after CI Tests complete
-  check-comment-resolution:
-    runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_run'
-
-    steps:
-      - name: Find associated PR
-        id: find-pr
-        run: |
-          PR_NUMBER=$(gh pr list --state open --json number,headRefName --jq '.[] | select(.headRefName == "${{ github.event.workflow_run.head_branch }}") | .number' | head -1)
-          if [ -z "$PR_NUMBER" ]; then
-            echo "No open PR found for branch ${{ github.event.workflow_run.head_branch }}, skipping"
-            echo "skip=true" >> $GITHUB_OUTPUT
-          else
-            echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
-            echo "skip=false" >> $GITHUB_OUTPUT
-          fi
-        env:
-          GH_TOKEN: ${{ secrets.SAM_PAT_EXP_09_04_2026 }}
-
-      - name: Check for unresolved review comments
-        if: steps.find-pr.outputs.skip == 'false'
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const prNumber = ${{ steps.find-pr.outputs.pr_number }};
-            const { data: reviews } = await github.rest.pulls.listReviewComments({
-              ...context.repo,
-              pull_number: prNumber,
-              per_page: 100
-            });
-
-            // GitHub marks comments as "in_reply_to_id" when resolved; keep only root unresolved
-            const unresolved = reviews.filter(r => r.in_reply_to_id === null);
-
-            if (unresolved.length > 0) {
-              core.setFailed(`❌ ${unresolved.length} unresolved comments remain.`);
-            } else {
-              core.info("✅ All review comments resolved.");
-            }
-
-  # Analyze CI/CD workflow failures
+  # Analyze CI/CD workflow failures and check comment resolution
   analyze-failures:
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'failure'
+    if: github.event_name == 'workflow_run'
 
     steps:
       - name: Checkout code
@@ -81,20 +39,53 @@ jobs:
         env:
           GITHUB_ACCESS_TOKEN: ${{ secrets.SAM_PAT_EXP_09_04_2026 }}
 
+      - name: Check for unresolved review comments
+        id: check-comments
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            // Find associated PR for this workflow run
+            const { data: prs } = await github.rest.pulls.list({
+              ...context.repo,
+              state: 'open',
+              head: `${context.repo.owner}:${{ github.event.workflow_run.head_branch }}`
+            });
+
+            if (prs.length === 0) {
+              console.log("No open PR found for branch ${{ github.event.workflow_run.head_branch }}, skipping comment check");
+              return { skip: true };
+            }
+
+            const prNumber = prs[0].number;
+            console.log(`Found PR #${prNumber} for workflow run`);
+
+            // Check for unresolved review comments
+            const { data: reviews } = await github.rest.pulls.listReviewComments({
+              ...context.repo,
+              pull_number: prNumber,
+              per_page: 100
+            });
+
+            // GitHub marks comments as "in_reply_to_id" when resolved; keep only root unresolved
+            const unresolved = reviews.filter(r => r.in_reply_to_id === null);
+
+            if (unresolved.length > 0) {
+              core.setFailed(`❌ ${unresolved.length} unresolved comments remain.`);
+              return { skip: true, pr_number: prNumber, unresolved_comments: unresolved.length };
+            } else {
+              console.log("✅ All review comments resolved.");
+              return { skip: false, pr_number: prNumber };
+            }
+
       - name: Analyze workflow failure logs
+        if: steps.check-comments.outputs.result && fromJSON(steps.check-comments.outputs.result).skip == false && github.event.workflow_run.conclusion == 'failure'
         run: |
           echo "🔍 Analyzing failed workflow: ${{ github.event.workflow_run.name }}"
           echo "Run ID: ${{ github.event.workflow_run.id }}"
           echo "Conclusion: ${{ github.event.workflow_run.conclusion }}"
 
-          # Find associated PR for this workflow run
-          PR_NUMBER=$(gh pr list --state open --json number,headRefName --jq '.[] | select(.headRefName == "${{ github.event.workflow_run.head_branch }}") | .number' | head -1)
-
-          if [ -z "$PR_NUMBER" ]; then
-            echo "No open PR found for branch ${{ github.event.workflow_run.head_branch }}, skipping"
-            exit 0
-          fi
-
+          PR_NUMBER=$(echo '${{ steps.check-comments.outputs.result }}' | jq -r '.pr_number')
           echo "Found PR #$PR_NUMBER for failed workflow"
 
           # Use enhanced log analysis
