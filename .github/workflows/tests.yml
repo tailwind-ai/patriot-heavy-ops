@@ -2,9 +2,9 @@ name: CI Tests
 
 on:
   pull_request:
-    branches: [main, sam-dev]
+    branches: [main, dev]
   push:
-    branches: [sam-dev]
+    branches: [dev]
 
 concurrency:
   group: tests-${{ github.workflow }}-${{ github.ref }}

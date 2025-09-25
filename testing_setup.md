@@ -76,7 +76,7 @@ Create `.github/workflows/ci.yml`:
 name: CI/CD Pipeline
 on:
   push:
-    branches: [main, sam-dev]
+    branches: [main, dev]
   pull_request:
     branches: [main]
 
@@ -294,7 +294,7 @@ npx prisma db seed
 # Quick rollback options
 git reset --hard HEAD~1              # Full rollback
 git checkout HEAD -- package.json    # Rollback dependencies
-git checkout sam-dev                  # Switch back to stable branch
+git checkout dev                      # Switch back to stable branch
 ```
 
 Start with Phase 1 and proceed systematically through each phase, verifying success criteria before moving forward.

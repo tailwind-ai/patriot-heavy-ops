@@ -61,7 +61,7 @@ async function setupBackgroundAgent() {
     console.log("1. Add the webhook secret to your environment variables:")
     console.log(`   GITHUB_WEBHOOK_SECRET=${webhookSecret}`)
     console.log("2. Deploy your application to make the webhook accessible")
-    console.log("3. Test by creating a PR to sam-dev or main branch")
+    console.log("3. Test by creating a PR to dev or main branch")
     
   } catch (error) {
     console.error("❌ Setup failed:", error)

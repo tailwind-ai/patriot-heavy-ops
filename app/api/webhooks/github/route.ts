@@ -35,15 +35,15 @@ export async function POST(req: NextRequest) {
   const event = headersList.get("X-GitHub-Event")
   const payload = JSON.parse(body)
 
-  // Only process PR events for sam-dev and main branches
+  // Only process PR events for dev and main branches
   if (event === "pull_request" && payload.pull_request) {
     const pr = payload.pull_request
     const baseBranch = pr.base?.ref
     const action = payload.action
 
-    // Monitor PRs on sam-dev and main branches
+    // Monitor PRs on dev and main branches
     if (
-      (baseBranch === "sam-dev" || baseBranch === "main") &&
+      (baseBranch === "dev" || baseBranch === "main") &&
       (action === "opened" ||
         action === "synchronize" ||
         action === "review_requested")
