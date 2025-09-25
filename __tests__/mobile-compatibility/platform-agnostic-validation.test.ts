@@ -14,6 +14,8 @@
 
 import { ServiceFactory, AuthService, ServiceRequestService, GeocodingService } from "@/lib/services"
 import { RepositoryFactory } from "@/lib/repositories"
+import * as fs from "fs"
+import * as path from "path"
 
 // Mock all external dependencies to test in isolation
 jest.mock("@/lib/db", () => ({
@@ -108,10 +110,9 @@ describe("Platform-Agnostic Validation Tests", () => {
       ]
 
       serviceModules.forEach(modulePath => {
-        const moduleCode = require("fs").readFileSync(
-          require.resolve(modulePath.replace("@/", "../../") + ".ts"),
-          "utf8"
-        )
+        // Use path.resolve for robust path resolution
+        const resolvedPath = path.resolve(__dirname, "../../", modulePath.replace("@/", "") + ".ts")
+        const moduleCode = fs.readFileSync(resolvedPath, "utf8")
 
         // Check for Next.js specific imports
         const nextjsImports = [
@@ -140,10 +141,9 @@ describe("Platform-Agnostic Validation Tests", () => {
       ]
 
       serviceModules.forEach(modulePath => {
-        const moduleCode = require("fs").readFileSync(
-          require.resolve(modulePath.replace("@/", "../../") + ".ts"),
-          "utf8"
-        )
+        // Use path.resolve for robust path resolution
+        const resolvedPath = path.resolve(__dirname, "../../", modulePath.replace("@/", "") + ".ts")
+        const moduleCode = fs.readFileSync(resolvedPath, "utf8")
 
         // Check for React specific imports
         const reactImports = [
@@ -304,8 +304,9 @@ describe("Platform-Agnostic Validation Tests", () => {
     it("should handle async operations consistently", async () => {
       const authService = new AuthService()
 
-      // Mock successful database responses
-      const mockDb = require("@/lib/db").db
+      // Mock successful database responses using dynamic import
+      const { db } = await import("@/lib/db")
+      const mockDb = db as any
       mockDb.user.findUnique.mockResolvedValue({
         id: "user-123",
         email: "test@example.com",
@@ -330,13 +331,13 @@ describe("Platform-Agnostic Validation Tests", () => {
       })
     })
 
-    it("should provide mobile-friendly type definitions", () => {
+    it("should provide mobile-friendly type definitions", async () => {
       // Verify all exported types are available and properly structured
-      const { 
+      const {
         AuthService,
         ServiceRequestService,
         GeocodingService,
-      } = require("@/lib/services")
+      } = await import("@/lib/services")
 
       // Test type instantiation
       const authService = new AuthService()
@@ -372,8 +373,9 @@ describe("Platform-Agnostic Validation Tests", () => {
     it("should handle network failures gracefully for mobile apps", async () => {
       const authService = new AuthService()
 
-      // Mock network failure
-      const mockDb = require("@/lib/db").db
+      // Mock network failure using dynamic import
+      const { db } = await import("@/lib/db")
+      const mockDb = db as any
       mockDb.user.findUnique.mockRejectedValue(new Error("Network request failed"))
 
       const result = await authService.getUserById("user-123")
@@ -508,8 +510,9 @@ describe("Platform-Agnostic Validation Tests", () => {
     it("should provide consistent error codes for mobile error handling", async () => {
       const authService = new AuthService()
 
-      // Mock various error scenarios
-      const mockDb = require("@/lib/db").db
+      // Mock various error scenarios using dynamic import
+      const { db } = await import("@/lib/db")
+      const mockDb = db as any
 
       // Test validation error
       const validationResult = await authService.authenticate({

@@ -34,7 +34,15 @@ jest.mock("@/lib/auth-utils", () => ({
   verifyToken: jest.fn(),
 }))
 
-const mockDb = db as jest.Mocked<typeof db>
+// Properly typed mocks
+const mockDb = {
+  user: {
+    findUnique: jest.fn(),
+    create: jest.fn(),
+    update: jest.fn(),
+  },
+} as any
+
 const mockAuthUtils = {
   hashPassword: hashPassword as jest.MockedFunction<typeof hashPassword>,
   verifyPassword: verifyPassword as jest.MockedFunction<typeof verifyPassword>,

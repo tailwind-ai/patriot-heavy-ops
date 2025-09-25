@@ -6,20 +6,13 @@
     "priority": "high",
     "dependencies": [],
     "issueType": "ci_failure",
-    "files": [
-      "lib/services/service-request-service.ts"
-    ],
-    "lineNumbers": [
-      240
-    ],
+    "files": ["lib/services/service-request-service.ts"],
+    "lineNumbers": [240],
     "suggestedFix": "",
     "createdAt": "2025-09-25T05:12:29.798Z",
     "updatedAt": "2025-09-25T05:20:57.970Z",
     "estimatedTime": "10-30 min",
-    "tags": [
-      "ci-failure",
-      "high"
-    ],
+    "tags": ["ci-failure", "high"],
     "assignee": "general-developer",
     "relatedPR": "#245",
     "file": "lib/services/service-request-service.ts",
@@ -30,10 +23,7 @@
       "lineToJump": 240,
       "suggestedAction": "fix_build",
       "contextSearch": "[nitpick]",
-      "relatedSymbols": [
-        "The",
-        "Consider"
-      ],
+      "relatedSymbols": ["The", "Consider"],
       "focusArea": "ci failure"
     },
     "failureDetails": {}
@@ -45,20 +35,13 @@
     "priority": "high",
     "dependencies": [],
     "issueType": "ci_failure",
-    "files": [
-      "lib/services/service-request-service.ts"
-    ],
-    "lineNumbers": [
-      240
-    ],
+    "files": ["lib/services/service-request-service.ts"],
+    "lineNumbers": [240],
     "suggestedFix": "",
     "createdAt": "2025-09-25T05:12:29.799Z",
     "updatedAt": "2025-09-25T05:20:57.970Z",
     "estimatedTime": "10-30 min",
-    "tags": [
-      "ci-failure",
-      "high"
-    ],
+    "tags": ["ci-failure", "high"],
     "assignee": "general-developer",
     "relatedPR": "#245",
     "file": "lib/services/service-request-service.ts",
@@ -69,10 +52,7 @@
       "lineToJump": 240,
       "suggestedAction": "fix_build",
       "contextSearch": "[nitpick]",
-      "relatedSymbols": [
-        "The",
-        "Consider"
-      ],
+      "relatedSymbols": ["The", "Consider"],
       "focusArea": "ci failure"
     },
     "failureDetails": {}
@@ -84,20 +64,13 @@
     "priority": "high",
     "dependencies": [],
     "issueType": "ci_failure",
-    "files": [
-      "lib/services/service-request-service.ts"
-    ],
-    "lineNumbers": [
-      94
-    ],
+    "files": ["lib/services/service-request-service.ts"],
+    "lineNumbers": [94],
     "suggestedFix": "",
     "createdAt": "2025-09-25T05:12:29.799Z",
     "updatedAt": "2025-09-25T05:20:57.970Z",
     "estimatedTime": "10-30 min",
-    "tags": [
-      "ci-failure",
-      "high"
-    ],
+    "tags": ["ci-failure", "high"],
     "assignee": "general-developer",
     "relatedPR": "#245",
     "file": "lib/services/service-request-service.ts",
@@ -108,9 +81,7 @@
       "lineToJump": 94,
       "suggestedAction": "fix_build",
       "contextSearch": "date",
-      "relatedSymbols": [
-        "The"
-      ],
+      "relatedSymbols": ["The"],
       "focusArea": "ci failure"
     },
     "failureDetails": {}
@@ -122,20 +93,13 @@
     "priority": "medium",
     "dependencies": [],
     "issueType": "copilot_comment",
-    "files": [
-      "scripts/todo-cli.ts"
-    ],
-    "lineNumbers": [
-      1
-    ],
+    "files": ["scripts/todo-cli.ts"],
+    "lineNumbers": [1],
     "suggestedFix": "",
     "createdAt": "2025-09-25T05:12:29.799Z",
     "updatedAt": "2025-09-25T05:20:57.970Z",
     "estimatedTime": "5-15 min",
-    "tags": [
-      "copilot-comment",
-      "medium"
-    ],
+    "tags": ["copilot-comment", "medium"],
     "assignee": "general-developer",
     "relatedPR": "#245",
     "file": "scripts/todo-cli.ts",
@@ -146,9 +110,7 @@
       "lineToJump": 1,
       "suggestedAction": "refactor_code",
       "contextSearch": "error",
-      "relatedSymbols": [
-        "The"
-      ],
+      "relatedSymbols": ["The"],
       "focusArea": "copilot comment"
     },
     "failureDetails": {
@@ -162,21 +124,13 @@
     "priority": "medium",
     "dependencies": [],
     "issueType": "copilot_comment",
-    "files": [
-      "app/api/users/[userId]/route.ts"
-    ],
-    "lineNumbers": [
-      1
-    ],
+    "files": ["app/api/users/[userId]/route.ts"],
+    "lineNumbers": [1],
     "suggestedFix": "",
     "createdAt": "2025-09-25T05:12:29.799Z",
     "updatedAt": "2025-09-25T05:20:57.970Z",
     "estimatedTime": "5-15 min",
-    "tags": [
-      "copilot-comment",
-      "medium",
-      "api"
-    ],
+    "tags": ["copilot-comment", "medium", "api"],
     "assignee": "api-specialist",
     "relatedPR": "#245",
     "file": "app/api/users/[userId]/route.ts",
@@ -187,10 +141,7 @@
       "lineToJump": 1,
       "suggestedAction": "refactor_code",
       "contextSearch": "for",
-      "relatedSymbols": [
-        "The",
-        "Consider"
-      ],
+      "relatedSymbols": ["The", "Consider"],
       "focusArea": "function for"
     },
     "failureDetails": {}
@@ -202,21 +153,13 @@
     "priority": "medium",
     "dependencies": [],
     "issueType": "lint_error",
-    "files": [
-      "__tests__/lib/repositories/repository-factory.test.ts"
-    ],
-    "lineNumbers": [
-      1
-    ],
+    "files": ["__tests__/lib/repositories/repository-factory.test.ts"],
+    "lineNumbers": [1],
     "suggestedFix": "",
     "createdAt": "2025-09-25T05:12:29.799Z",
     "updatedAt": "2025-09-25T05:20:57.970Z",
     "estimatedTime": "5-20 min",
-    "tags": [
-      "lint-error",
-      "medium",
-      "testing"
-    ],
+    "tags": ["lint-error", "medium", "testing"],
     "assignee": "test-specialist",
     "relatedPR": "#245",
     "file": "__tests__/lib/repositories/repository-factory.test.ts",
@@ -245,20 +188,13 @@
     "priority": "medium",
     "dependencies": [],
     "issueType": "lint_error",
-    "files": [
-      "scripts/todo-cli.ts"
-    ],
-    "lineNumbers": [
-      165
-    ],
+    "files": ["scripts/todo-cli.ts"],
+    "lineNumbers": [165],
     "suggestedFix": "",
     "createdAt": "2025-09-25T05:12:29.800Z",
     "updatedAt": "2025-09-25T05:20:57.970Z",
     "estimatedTime": "5-20 min",
-    "tags": [
-      "lint-error",
-      "medium"
-    ],
+    "tags": ["lint-error", "medium"],
     "assignee": "general-developer",
     "relatedPR": "#245",
     "file": "scripts/todo-cli.ts",
@@ -269,14 +205,1005 @@
       "lineToJump": 165,
       "suggestedAction": "fix_lint",
       "contextSearch": "[nitpick]",
-      "relatedSymbols": [
-        "The",
-        "Consider"
-      ],
+      "relatedSymbols": ["The", "Consider"],
       "focusArea": "lint error"
     },
     "failureDetails": {
       "errorMessage": "handling converts all errors to strings which may lose important debugging information like stack traces for non-Error objects. Consider using a more robust error logging approach that preserves object structure for unknown error types."
+    }
+  },
+  {
+    "id": "workflow-18022373960-1758839573414-y5xka1jop",
+    "content": "TypeScript error: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.",
+    "status": "pending",
+    "priority": "critical",
+    "dependencies": [],
+    "issueType": "build_failure",
+    "files": [
+      "2025-09-25T22:29:30.0867526Z ##[error]__tests__/mobile-compatibility/architecture-validation.test.ts"
+    ],
+    "lineNumbers": [458],
+    "suggestedFix": "Fix TypeScript compilation error",
+    "createdAt": "2025-09-25T22:32:53.414Z",
+    "updatedAt": "2025-09-25T22:32:53.414Z",
+    "estimatedTime": "20-60 min",
+    "tags": ["build-failure", "critical", "testing"],
+    "assignee": "test-specialist",
+    "relatedPR": "#253",
+    "file": "2025-09-25T22:29:30.0867526Z ##[error]__tests__/mobile-compatibility/architecture-validation.test.ts",
+    "line": 458,
+    "cursorHints": {
+      "fileToOpen": "2025-09-25T22:29:30.0867526Z ##[error]__tests__/mobile-compatibility/architecture-validation.test.ts",
+      "contextFiles": [],
+      "lineToJump": 458,
+      "suggestedAction": "fix_build",
+      "contextSearch": "string | undefined",
+      "relatedSymbols": ["TypeScript", "Argument"],
+      "focusArea": "build failure"
+    },
+    "failureDetails": {
+      "errorMessage": "TypeScript error: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.",
+      "logSnippet": "2025-09-25T22:29:30.0867526Z ##[error]__tests__/mobile-compatibility/architecture-validation.test.ts(458,19): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'."
+    }
+  },
+  {
+    "id": "workflow-18022373960-1758839573415-h18qw5vr4",
+    "content": "TypeScript error: Property 'mockResolvedValue' does not exist on type '<T extends UserFindUniqueArgs>(args: SelectSubset<T, UserFindUniqueArgs<DefaultArgs>>) => Prisma__UserClient<GetFindResult<$UserPayload<DefaultArgs>, T, PrismaClientOptions> | null, null, DefaultArgs, PrismaClientOptions>'.",
+    "status": "pending",
+    "priority": "critical",
+    "dependencies": [],
+    "issueType": "build_failure",
+    "files": [
+      "2025-09-25T22:29:30.0877684Z ##[error]__tests__/services/integration/auth-service-integration.test.ts"
+    ],
+    "lineNumbers": [104],
+    "suggestedFix": "Add missing property or update interface definition",
+    "createdAt": "2025-09-25T22:32:53.415Z",
+    "updatedAt": "2025-09-25T22:32:53.415Z",
+    "estimatedTime": "20-60 min",
+    "tags": ["build-failure", "critical", "testing", "authentication"],
+    "assignee": "test-specialist",
+    "relatedPR": "#253",
+    "file": "2025-09-25T22:29:30.0877684Z ##[error]__tests__/services/integration/auth-service-integration.test.ts",
+    "line": 104,
+    "cursorHints": {
+      "fileToOpen": "2025-09-25T22:29:30.0877684Z ##[error]__tests__/services/integration/auth-service-integration.test.ts",
+      "contextFiles": [],
+      "lineToJump": 104,
+      "suggestedAction": "fix_build",
+      "contextSearch": "mockresolvedvalue",
+      "relatedSymbols": [
+        "TypeScript",
+        "Property",
+        "UserFindUniqueArgs",
+        "SelectSubset",
+        "DefaultArgs"
+      ],
+      "focusArea": "build failure"
+    },
+    "failureDetails": {
+      "errorMessage": "TypeScript error: Property 'mockResolvedValue' does not exist on type '<T extends UserFindUniqueArgs>(args: SelectSubset<T, UserFindUniqueArgs<DefaultArgs>>) => Prisma__UserClient<GetFindResult<$UserPayload<DefaultArgs>, T, PrismaClientOptions> | null, null, DefaultArgs, PrismaClientOptions>'.",
+      "logSnippet": "2025-09-25T22:29:30.0877684Z ##[error]__tests__/services/integration/auth-service-integration.test.ts(104,32): error TS2339: Property 'mockResolvedValue' does not exist on type '<T extends UserFindUniqueArgs>(args: SelectSubset<T, UserFindUniqueArgs<DefaultArgs>>) => Prisma__UserClient<GetFindResult<$UserPayload<DefaultArgs>, T, PrismaClientOptions> | null, null, DefaultArgs, PrismaClientOptions>'."
+    }
+  },
+  {
+    "id": "workflow-18022373960-1758839573416-tmrolgvs0",
+    "content": "TypeScript error: Property 'mockResolvedValue' does not exist on type '<T extends UserFindUniqueArgs>(args: SelectSubset<T, UserFindUniqueArgs<DefaultArgs>>) => Prisma__UserClient<GetFindResult<$UserPayload<DefaultArgs>, T, PrismaClientOptions> | null, null, DefaultArgs, PrismaClientOptions>'.",
+    "status": "pending",
+    "priority": "critical",
+    "dependencies": [],
+    "issueType": "build_failure",
+    "files": [
+      "2025-09-25T22:29:30.0882022Z ##[error]__tests__/services/integration/auth-service-integration.test.ts"
+    ],
+    "lineNumbers": [132],
+    "suggestedFix": "Add missing property or update interface definition",
+    "createdAt": "2025-09-25T22:32:53.416Z",
+    "updatedAt": "2025-09-25T22:32:53.416Z",
+    "estimatedTime": "20-60 min",
+    "tags": ["build-failure", "critical", "testing", "authentication"],
+    "assignee": "test-specialist",
+    "relatedPR": "#253",
+    "file": "2025-09-25T22:29:30.0882022Z ##[error]__tests__/services/integration/auth-service-integration.test.ts",
+    "line": 132,
+    "cursorHints": {
+      "fileToOpen": "2025-09-25T22:29:30.0882022Z ##[error]__tests__/services/integration/auth-service-integration.test.ts",
+      "contextFiles": [],
+      "lineToJump": 132,
+      "suggestedAction": "fix_build",
+      "contextSearch": "mockresolvedvalue",
+      "relatedSymbols": [
+        "TypeScript",
+        "Property",
+        "UserFindUniqueArgs",
+        "SelectSubset",
+        "DefaultArgs"
+      ],
+      "focusArea": "build failure"
+    },
+    "failureDetails": {
+      "errorMessage": "TypeScript error: Property 'mockResolvedValue' does not exist on type '<T extends UserFindUniqueArgs>(args: SelectSubset<T, UserFindUniqueArgs<DefaultArgs>>) => Prisma__UserClient<GetFindResult<$UserPayload<DefaultArgs>, T, PrismaClientOptions> | null, null, DefaultArgs, PrismaClientOptions>'.",
+      "logSnippet": "2025-09-25T22:29:30.0882022Z ##[error]__tests__/services/integration/auth-service-integration.test.ts(132,30): error TS2339: Property 'mockResolvedValue' does not exist on type '<T extends UserFindUniqueArgs>(args: SelectSubset<T, UserFindUniqueArgs<DefaultArgs>>) => Prisma__UserClient<GetFindResult<$UserPayload<DefaultArgs>, T, PrismaClientOptions> | null, null, DefaultArgs, PrismaClientOptions>'."
+    }
+  },
+  {
+    "id": "workflow-18022373960-1758839573416-55fwdkvq7",
+    "content": "TypeScript error: Property 'mockResolvedValue' does not exist on type '<T extends UserFindUniqueArgs>(args: SelectSubset<T, UserFindUniqueArgs<DefaultArgs>>) => Prisma__UserClient<GetFindResult<$UserPayload<DefaultArgs>, T, PrismaClientOptions> | null, null, DefaultArgs, PrismaClientOptions>'.",
+    "status": "pending",
+    "priority": "critical",
+    "dependencies": [],
+    "issueType": "build_failure",
+    "files": [
+      "2025-09-25T22:29:30.0886042Z ##[error]__tests__/services/integration/auth-service-integration.test.ts"
+    ],
+    "lineNumbers": [175],
+    "suggestedFix": "Add missing property or update interface definition",
+    "createdAt": "2025-09-25T22:32:53.416Z",
+    "updatedAt": "2025-09-25T22:32:53.416Z",
+    "estimatedTime": "20-60 min",
+    "tags": ["build-failure", "critical", "testing", "authentication"],
+    "assignee": "test-specialist",
+    "relatedPR": "#253",
+    "file": "2025-09-25T22:29:30.0886042Z ##[error]__tests__/services/integration/auth-service-integration.test.ts",
+    "line": 175,
+    "cursorHints": {
+      "fileToOpen": "2025-09-25T22:29:30.0886042Z ##[error]__tests__/services/integration/auth-service-integration.test.ts",
+      "contextFiles": [],
+      "lineToJump": 175,
+      "suggestedAction": "fix_build",
+      "contextSearch": "mockresolvedvalue",
+      "relatedSymbols": [
+        "TypeScript",
+        "Property",
+        "UserFindUniqueArgs",
+        "SelectSubset",
+        "DefaultArgs"
+      ],
+      "focusArea": "build failure"
+    },
+    "failureDetails": {
+      "errorMessage": "TypeScript error: Property 'mockResolvedValue' does not exist on type '<T extends UserFindUniqueArgs>(args: SelectSubset<T, UserFindUniqueArgs<DefaultArgs>>) => Prisma__UserClient<GetFindResult<$UserPayload<DefaultArgs>, T, PrismaClientOptions> | null, null, DefaultArgs, PrismaClientOptions>'.",
+      "logSnippet": "2025-09-25T22:29:30.0886042Z ##[error]__tests__/services/integration/auth-service-integration.test.ts(175,30): error TS2339: Property 'mockResolvedValue' does not exist on type '<T extends UserFindUniqueArgs>(args: SelectSubset<T, UserFindUniqueArgs<DefaultArgs>>) => Prisma__UserClient<GetFindResult<$UserPayload<DefaultArgs>, T, PrismaClientOptions> | null, null, DefaultArgs, PrismaClientOptions>'."
+    }
+  },
+  {
+    "id": "workflow-18022373960-1758839573416-446oshh1l",
+    "content": "TypeScript error: Property 'mockResolvedValue' does not exist on type '<T extends UserFindUniqueArgs>(args: SelectSubset<T, UserFindUniqueArgs<DefaultArgs>>) => Prisma__UserClient<GetFindResult<$UserPayload<DefaultArgs>, T, PrismaClientOptions> | null, null, DefaultArgs, PrismaClientOptions>'.",
+    "status": "pending",
+    "priority": "critical",
+    "dependencies": [],
+    "issueType": "build_failure",
+    "files": [
+      "2025-09-25T22:29:30.0889961Z ##[error]__tests__/services/integration/auth-service-integration.test.ts"
+    ],
+    "lineNumbers": [187],
+    "suggestedFix": "Add missing property or update interface definition",
+    "createdAt": "2025-09-25T22:32:53.416Z",
+    "updatedAt": "2025-09-25T22:32:53.416Z",
+    "estimatedTime": "20-60 min",
+    "tags": ["build-failure", "critical", "testing", "authentication"],
+    "assignee": "test-specialist",
+    "relatedPR": "#253",
+    "file": "2025-09-25T22:29:30.0889961Z ##[error]__tests__/services/integration/auth-service-integration.test.ts",
+    "line": 187,
+    "cursorHints": {
+      "fileToOpen": "2025-09-25T22:29:30.0889961Z ##[error]__tests__/services/integration/auth-service-integration.test.ts",
+      "contextFiles": [],
+      "lineToJump": 187,
+      "suggestedAction": "fix_build",
+      "contextSearch": "mockresolvedvalue",
+      "relatedSymbols": [
+        "TypeScript",
+        "Property",
+        "UserFindUniqueArgs",
+        "SelectSubset",
+        "DefaultArgs"
+      ],
+      "focusArea": "build failure"
+    },
+    "failureDetails": {
+      "errorMessage": "TypeScript error: Property 'mockResolvedValue' does not exist on type '<T extends UserFindUniqueArgs>(args: SelectSubset<T, UserFindUniqueArgs<DefaultArgs>>) => Prisma__UserClient<GetFindResult<$UserPayload<DefaultArgs>, T, PrismaClientOptions> | null, null, DefaultArgs, PrismaClientOptions>'.",
+      "logSnippet": "2025-09-25T22:29:30.0889961Z ##[error]__tests__/services/integration/auth-service-integration.test.ts(187,30): error TS2339: Property 'mockResolvedValue' does not exist on type '<T extends UserFindUniqueArgs>(args: SelectSubset<T, UserFindUniqueArgs<DefaultArgs>>) => Prisma__UserClient<GetFindResult<$UserPayload<DefaultArgs>, T, PrismaClientOptions> | null, null, DefaultArgs, PrismaClientOptions>'."
+    }
+  },
+  {
+    "id": "workflow-18022373960-1758839573416-dsmqm1q9g",
+    "content": "TypeScript error: Property 'mockResolvedValue' does not exist on type '<T extends UserFindUniqueArgs>(args: SelectSubset<T, UserFindUniqueArgs<DefaultArgs>>) => Prisma__UserClient<GetFindResult<$UserPayload<DefaultArgs>, T, PrismaClientOptions> | null, null, DefaultArgs, PrismaClientOptions>'.",
+    "status": "pending",
+    "priority": "critical",
+    "dependencies": [],
+    "issueType": "build_failure",
+    "files": [
+      "2025-09-25T22:29:30.0894070Z ##[error]__tests__/services/integration/auth-service-integration.test.ts"
+    ],
+    "lineNumbers": [204],
+    "suggestedFix": "Add missing property or update interface definition",
+    "createdAt": "2025-09-25T22:32:53.416Z",
+    "updatedAt": "2025-09-25T22:32:53.416Z",
+    "estimatedTime": "20-60 min",
+    "tags": ["build-failure", "critical", "testing", "authentication"],
+    "assignee": "test-specialist",
+    "relatedPR": "#253",
+    "file": "2025-09-25T22:29:30.0894070Z ##[error]__tests__/services/integration/auth-service-integration.test.ts",
+    "line": 204,
+    "cursorHints": {
+      "fileToOpen": "2025-09-25T22:29:30.0894070Z ##[error]__tests__/services/integration/auth-service-integration.test.ts",
+      "contextFiles": [],
+      "lineToJump": 204,
+      "suggestedAction": "fix_build",
+      "contextSearch": "mockresolvedvalue",
+      "relatedSymbols": [
+        "TypeScript",
+        "Property",
+        "UserFindUniqueArgs",
+        "SelectSubset",
+        "DefaultArgs"
+      ],
+      "focusArea": "build failure"
+    },
+    "failureDetails": {
+      "errorMessage": "TypeScript error: Property 'mockResolvedValue' does not exist on type '<T extends UserFindUniqueArgs>(args: SelectSubset<T, UserFindUniqueArgs<DefaultArgs>>) => Prisma__UserClient<GetFindResult<$UserPayload<DefaultArgs>, T, PrismaClientOptions> | null, null, DefaultArgs, PrismaClientOptions>'.",
+      "logSnippet": "2025-09-25T22:29:30.0894070Z ##[error]__tests__/services/integration/auth-service-integration.test.ts(204,30): error TS2339: Property 'mockResolvedValue' does not exist on type '<T extends UserFindUniqueArgs>(args: SelectSubset<T, UserFindUniqueArgs<DefaultArgs>>) => Prisma__UserClient<GetFindResult<$UserPayload<DefaultArgs>, T, PrismaClientOptions> | null, null, DefaultArgs, PrismaClientOptions>'."
+    }
+  },
+  {
+    "id": "workflow-18022373960-1758839573417-xubjke0y4",
+    "content": "TypeScript error: Property 'mockResolvedValue' does not exist on type '<T extends UserCreateArgs>(args: SelectSubset<T, UserCreateArgs<DefaultArgs>>) => Prisma__UserClient<GetFindResult<$UserPayload<DefaultArgs>, T, PrismaClientOptions>, never, DefaultArgs, PrismaClientOptions>'.",
+    "status": "pending",
+    "priority": "critical",
+    "dependencies": [],
+    "issueType": "build_failure",
+    "files": [
+      "2025-09-25T22:29:30.0897899Z ##[error]__tests__/services/integration/auth-service-integration.test.ts"
+    ],
+    "lineNumbers": [216],
+    "suggestedFix": "Add missing property or update interface definition",
+    "createdAt": "2025-09-25T22:32:53.417Z",
+    "updatedAt": "2025-09-25T22:32:53.417Z",
+    "estimatedTime": "20-60 min",
+    "tags": ["build-failure", "critical", "testing", "authentication"],
+    "assignee": "test-specialist",
+    "relatedPR": "#253",
+    "file": "2025-09-25T22:29:30.0897899Z ##[error]__tests__/services/integration/auth-service-integration.test.ts",
+    "line": 216,
+    "cursorHints": {
+      "fileToOpen": "2025-09-25T22:29:30.0897899Z ##[error]__tests__/services/integration/auth-service-integration.test.ts",
+      "contextFiles": [],
+      "lineToJump": 216,
+      "suggestedAction": "fix_build",
+      "contextSearch": "mockresolvedvalue",
+      "relatedSymbols": [
+        "TypeScript",
+        "Property",
+        "UserCreateArgs",
+        "SelectSubset",
+        "DefaultArgs"
+      ],
+      "focusArea": "build failure"
+    },
+    "failureDetails": {
+      "errorMessage": "TypeScript error: Property 'mockResolvedValue' does not exist on type '<T extends UserCreateArgs>(args: SelectSubset<T, UserCreateArgs<DefaultArgs>>) => Prisma__UserClient<GetFindResult<$UserPayload<DefaultArgs>, T, PrismaClientOptions>, never, DefaultArgs, PrismaClientOptions>'.",
+      "logSnippet": "2025-09-25T22:29:30.0897899Z ##[error]__tests__/services/integration/auth-service-integration.test.ts(216,26): error TS2339: Property 'mockResolvedValue' does not exist on type '<T extends UserCreateArgs>(args: SelectSubset<T, UserCreateArgs<DefaultArgs>>) => Prisma__UserClient<GetFindResult<$UserPayload<DefaultArgs>, T, PrismaClientOptions>, never, DefaultArgs, PrismaClientOptions>'."
+    }
+  },
+  {
+    "id": "workflow-18022373960-1758839573417-i3108ncpp",
+    "content": "TypeScript error: Property 'mockResolvedValue' does not exist on type '<T extends UserFindUniqueArgs>(args: SelectSubset<T, UserFindUniqueArgs<DefaultArgs>>) => Prisma__UserClient<GetFindResult<$UserPayload<DefaultArgs>, T, PrismaClientOptions> | null, null, DefaultArgs, PrismaClientOptions>'.",
+    "status": "pending",
+    "priority": "critical",
+    "dependencies": [],
+    "issueType": "build_failure",
+    "files": [
+      "2025-09-25T22:29:30.0902314Z ##[error]__tests__/services/integration/auth-service-integration.test.ts"
+    ],
+    "lineNumbers": [241],
+    "suggestedFix": "Add missing property or update interface definition",
+    "createdAt": "2025-09-25T22:32:53.417Z",
+    "updatedAt": "2025-09-25T22:32:53.417Z",
+    "estimatedTime": "20-60 min",
+    "tags": ["build-failure", "critical", "testing", "authentication"],
+    "assignee": "test-specialist",
+    "relatedPR": "#253",
+    "file": "2025-09-25T22:29:30.0902314Z ##[error]__tests__/services/integration/auth-service-integration.test.ts",
+    "line": 241,
+    "cursorHints": {
+      "fileToOpen": "2025-09-25T22:29:30.0902314Z ##[error]__tests__/services/integration/auth-service-integration.test.ts",
+      "contextFiles": [],
+      "lineToJump": 241,
+      "suggestedAction": "fix_build",
+      "contextSearch": "mockresolvedvalue",
+      "relatedSymbols": [
+        "TypeScript",
+        "Property",
+        "UserFindUniqueArgs",
+        "SelectSubset",
+        "DefaultArgs"
+      ],
+      "focusArea": "build failure"
+    },
+    "failureDetails": {
+      "errorMessage": "TypeScript error: Property 'mockResolvedValue' does not exist on type '<T extends UserFindUniqueArgs>(args: SelectSubset<T, UserFindUniqueArgs<DefaultArgs>>) => Prisma__UserClient<GetFindResult<$UserPayload<DefaultArgs>, T, PrismaClientOptions> | null, null, DefaultArgs, PrismaClientOptions>'.",
+      "logSnippet": "2025-09-25T22:29:30.0902314Z ##[error]__tests__/services/integration/auth-service-integration.test.ts(241,30): error TS2339: Property 'mockResolvedValue' does not exist on type '<T extends UserFindUniqueArgs>(args: SelectSubset<T, UserFindUniqueArgs<DefaultArgs>>) => Prisma__UserClient<GetFindResult<$UserPayload<DefaultArgs>, T, PrismaClientOptions> | null, null, DefaultArgs, PrismaClientOptions>'."
+    }
+  },
+  {
+    "id": "workflow-18022373960-1758839573417-40l4ty6km",
+    "content": "TypeScript error: Property 'mockResolvedValue' does not exist on type '<T extends UserCreateArgs>(args: SelectSubset<T, UserCreateArgs<DefaultArgs>>) => Prisma__UserClient<GetFindResult<$UserPayload<DefaultArgs>, T, PrismaClientOptions>, never, DefaultArgs, PrismaClientOptions>'.",
+    "status": "pending",
+    "priority": "critical",
+    "dependencies": [],
+    "issueType": "build_failure",
+    "files": [
+      "2025-09-25T22:29:30.0906131Z ##[error]__tests__/services/integration/auth-service-integration.test.ts"
+    ],
+    "lineNumbers": [263],
+    "suggestedFix": "Add missing property or update interface definition",
+    "createdAt": "2025-09-25T22:32:53.417Z",
+    "updatedAt": "2025-09-25T22:32:53.417Z",
+    "estimatedTime": "20-60 min",
+    "tags": ["build-failure", "critical", "testing", "authentication"],
+    "assignee": "test-specialist",
+    "relatedPR": "#253",
+    "file": "2025-09-25T22:29:30.0906131Z ##[error]__tests__/services/integration/auth-service-integration.test.ts",
+    "line": 263,
+    "cursorHints": {
+      "fileToOpen": "2025-09-25T22:29:30.0906131Z ##[error]__tests__/services/integration/auth-service-integration.test.ts",
+      "contextFiles": [],
+      "lineToJump": 263,
+      "suggestedAction": "fix_build",
+      "contextSearch": "mockresolvedvalue",
+      "relatedSymbols": [
+        "TypeScript",
+        "Property",
+        "UserCreateArgs",
+        "SelectSubset",
+        "DefaultArgs"
+      ],
+      "focusArea": "build failure"
+    },
+    "failureDetails": {
+      "errorMessage": "TypeScript error: Property 'mockResolvedValue' does not exist on type '<T extends UserCreateArgs>(args: SelectSubset<T, UserCreateArgs<DefaultArgs>>) => Prisma__UserClient<GetFindResult<$UserPayload<DefaultArgs>, T, PrismaClientOptions>, never, DefaultArgs, PrismaClientOptions>'.",
+      "logSnippet": "2025-09-25T22:29:30.0906131Z ##[error]__tests__/services/integration/auth-service-integration.test.ts(263,26): error TS2339: Property 'mockResolvedValue' does not exist on type '<T extends UserCreateArgs>(args: SelectSubset<T, UserCreateArgs<DefaultArgs>>) => Prisma__UserClient<GetFindResult<$UserPayload<DefaultArgs>, T, PrismaClientOptions>, never, DefaultArgs, PrismaClientOptions>'."
+    }
+  },
+  {
+    "id": "workflow-18022373960-1758839573417-7a7r0wblu",
+    "content": "TypeScript error: Property 'mockResolvedValue' does not exist on type '<T extends UserFindUniqueArgs>(args: SelectSubset<T, UserFindUniqueArgs<DefaultArgs>>) => Prisma__UserClient<GetFindResult<$UserPayload<DefaultArgs>, T, PrismaClientOptions> | null, null, DefaultArgs, PrismaClientOptions>'.",
+    "status": "pending",
+    "priority": "critical",
+    "dependencies": [],
+    "issueType": "build_failure",
+    "files": [
+      "2025-09-25T22:29:30.0910266Z ##[error]__tests__/services/integration/auth-service-integration.test.ts"
+    ],
+    "lineNumbers": [289],
+    "suggestedFix": "Add missing property or update interface definition",
+    "createdAt": "2025-09-25T22:32:53.417Z",
+    "updatedAt": "2025-09-25T22:32:53.417Z",
+    "estimatedTime": "20-60 min",
+    "tags": ["build-failure", "critical", "testing", "authentication"],
+    "assignee": "test-specialist",
+    "relatedPR": "#253",
+    "file": "2025-09-25T22:29:30.0910266Z ##[error]__tests__/services/integration/auth-service-integration.test.ts",
+    "line": 289,
+    "cursorHints": {
+      "fileToOpen": "2025-09-25T22:29:30.0910266Z ##[error]__tests__/services/integration/auth-service-integration.test.ts",
+      "contextFiles": [],
+      "lineToJump": 289,
+      "suggestedAction": "fix_build",
+      "contextSearch": "mockresolvedvalue",
+      "relatedSymbols": [
+        "TypeScript",
+        "Property",
+        "UserFindUniqueArgs",
+        "SelectSubset",
+        "DefaultArgs"
+      ],
+      "focusArea": "build failure"
+    },
+    "failureDetails": {
+      "errorMessage": "TypeScript error: Property 'mockResolvedValue' does not exist on type '<T extends UserFindUniqueArgs>(args: SelectSubset<T, UserFindUniqueArgs<DefaultArgs>>) => Prisma__UserClient<GetFindResult<$UserPayload<DefaultArgs>, T, PrismaClientOptions> | null, null, DefaultArgs, PrismaClientOptions>'.",
+      "logSnippet": "2025-09-25T22:29:30.0910266Z ##[error]__tests__/services/integration/auth-service-integration.test.ts(289,30): error TS2339: Property 'mockResolvedValue' does not exist on type '<T extends UserFindUniqueArgs>(args: SelectSubset<T, UserFindUniqueArgs<DefaultArgs>>) => Prisma__UserClient<GetFindResult<$UserPayload<DefaultArgs>, T, PrismaClientOptions> | null, null, DefaultArgs, PrismaClientOptions>'."
+    }
+  },
+  {
+    "id": "workflow-18022373960-1758839573417-vat1vhmea",
+    "content": "TypeScript error: Property 'mockResolvedValue' does not exist on type '<T extends UserUpdateArgs>(args: SelectSubset<T, UserUpdateArgs<DefaultArgs>>) => Prisma__UserClient<GetFindResult<$UserPayload<DefaultArgs>, T, PrismaClientOptions>, never, DefaultArgs, PrismaClientOptions>'.",
+    "status": "pending",
+    "priority": "critical",
+    "dependencies": [],
+    "issueType": "build_failure",
+    "files": [
+      "2025-09-25T22:29:30.0914373Z ##[error]__tests__/services/integration/auth-service-integration.test.ts"
+    ],
+    "lineNumbers": [320],
+    "suggestedFix": "Add missing property or update interface definition",
+    "createdAt": "2025-09-25T22:32:53.417Z",
+    "updatedAt": "2025-09-25T22:32:53.417Z",
+    "estimatedTime": "20-60 min",
+    "tags": ["build-failure", "critical", "testing", "authentication"],
+    "assignee": "test-specialist",
+    "relatedPR": "#253",
+    "file": "2025-09-25T22:29:30.0914373Z ##[error]__tests__/services/integration/auth-service-integration.test.ts",
+    "line": 320,
+    "cursorHints": {
+      "fileToOpen": "2025-09-25T22:29:30.0914373Z ##[error]__tests__/services/integration/auth-service-integration.test.ts",
+      "contextFiles": [],
+      "lineToJump": 320,
+      "suggestedAction": "fix_build",
+      "contextSearch": "mockresolvedvalue",
+      "relatedSymbols": [
+        "TypeScript",
+        "Property",
+        "UserUpdateArgs",
+        "SelectSubset",
+        "DefaultArgs"
+      ],
+      "focusArea": "build failure"
+    },
+    "failureDetails": {
+      "errorMessage": "TypeScript error: Property 'mockResolvedValue' does not exist on type '<T extends UserUpdateArgs>(args: SelectSubset<T, UserUpdateArgs<DefaultArgs>>) => Prisma__UserClient<GetFindResult<$UserPayload<DefaultArgs>, T, PrismaClientOptions>, never, DefaultArgs, PrismaClientOptions>'.",
+      "logSnippet": "2025-09-25T22:29:30.0914373Z ##[error]__tests__/services/integration/auth-service-integration.test.ts(320,26): error TS2339: Property 'mockResolvedValue' does not exist on type '<T extends UserUpdateArgs>(args: SelectSubset<T, UserUpdateArgs<DefaultArgs>>) => Prisma__UserClient<GetFindResult<$UserPayload<DefaultArgs>, T, PrismaClientOptions>, never, DefaultArgs, PrismaClientOptions>'."
+    }
+  },
+  {
+    "id": "workflow-18022373960-1758839573418-hnu2qcg4l",
+    "content": "TypeScript error: Property 'mockResolvedValue' does not exist on type '<T extends UserFindUniqueArgs>(args: SelectSubset<T, UserFindUniqueArgs<DefaultArgs>>) => Prisma__UserClient<GetFindResult<$UserPayload<DefaultArgs>, T, PrismaClientOptions> | null, null, DefaultArgs, PrismaClientOptions>'.",
+    "status": "pending",
+    "priority": "critical",
+    "dependencies": [],
+    "issueType": "build_failure",
+    "files": [
+      "2025-09-25T22:29:30.0918322Z ##[error]__tests__/services/integration/auth-service-integration.test.ts"
+    ],
+    "lineNumbers": [336],
+    "suggestedFix": "Add missing property or update interface definition",
+    "createdAt": "2025-09-25T22:32:53.418Z",
+    "updatedAt": "2025-09-25T22:32:53.418Z",
+    "estimatedTime": "20-60 min",
+    "tags": ["build-failure", "critical", "testing", "authentication"],
+    "assignee": "test-specialist",
+    "relatedPR": "#253",
+    "file": "2025-09-25T22:29:30.0918322Z ##[error]__tests__/services/integration/auth-service-integration.test.ts",
+    "line": 336,
+    "cursorHints": {
+      "fileToOpen": "2025-09-25T22:29:30.0918322Z ##[error]__tests__/services/integration/auth-service-integration.test.ts",
+      "contextFiles": [],
+      "lineToJump": 336,
+      "suggestedAction": "fix_build",
+      "contextSearch": "mockresolvedvalue",
+      "relatedSymbols": [
+        "TypeScript",
+        "Property",
+        "UserFindUniqueArgs",
+        "SelectSubset",
+        "DefaultArgs"
+      ],
+      "focusArea": "build failure"
+    },
+    "failureDetails": {
+      "errorMessage": "TypeScript error: Property 'mockResolvedValue' does not exist on type '<T extends UserFindUniqueArgs>(args: SelectSubset<T, UserFindUniqueArgs<DefaultArgs>>) => Prisma__UserClient<GetFindResult<$UserPayload<DefaultArgs>, T, PrismaClientOptions> | null, null, DefaultArgs, PrismaClientOptions>'.",
+      "logSnippet": "2025-09-25T22:29:30.0918322Z ##[error]__tests__/services/integration/auth-service-integration.test.ts(336,30): error TS2339: Property 'mockResolvedValue' does not exist on type '<T extends UserFindUniqueArgs>(args: SelectSubset<T, UserFindUniqueArgs<DefaultArgs>>) => Prisma__UserClient<GetFindResult<$UserPayload<DefaultArgs>, T, PrismaClientOptions> | null, null, DefaultArgs, PrismaClientOptions>'."
+    }
+  },
+  {
+    "id": "workflow-18022373960-1758839573418-v9cqnqvic",
+    "content": "TypeScript error: Property 'mockResolvedValue' does not exist on type '<T extends UserFindUniqueArgs>(args: SelectSubset<T, UserFindUniqueArgs<DefaultArgs>>) => Prisma__UserClient<GetFindResult<$UserPayload<DefaultArgs>, T, PrismaClientOptions> | null, null, DefaultArgs, PrismaClientOptions>'.",
+    "status": "pending",
+    "priority": "critical",
+    "dependencies": [],
+    "issueType": "build_failure",
+    "files": [
+      "2025-09-25T22:29:30.0922532Z ##[error]__tests__/services/integration/auth-service-integration.test.ts"
+    ],
+    "lineNumbers": [352],
+    "suggestedFix": "Add missing property or update interface definition",
+    "createdAt": "2025-09-25T22:32:53.418Z",
+    "updatedAt": "2025-09-25T22:32:53.418Z",
+    "estimatedTime": "20-60 min",
+    "tags": ["build-failure", "critical", "testing", "authentication"],
+    "assignee": "test-specialist",
+    "relatedPR": "#253",
+    "file": "2025-09-25T22:29:30.0922532Z ##[error]__tests__/services/integration/auth-service-integration.test.ts",
+    "line": 352,
+    "cursorHints": {
+      "fileToOpen": "2025-09-25T22:29:30.0922532Z ##[error]__tests__/services/integration/auth-service-integration.test.ts",
+      "contextFiles": [],
+      "lineToJump": 352,
+      "suggestedAction": "fix_build",
+      "contextSearch": "mockresolvedvalue",
+      "relatedSymbols": [
+        "TypeScript",
+        "Property",
+        "UserFindUniqueArgs",
+        "SelectSubset",
+        "DefaultArgs"
+      ],
+      "focusArea": "build failure"
+    },
+    "failureDetails": {
+      "errorMessage": "TypeScript error: Property 'mockResolvedValue' does not exist on type '<T extends UserFindUniqueArgs>(args: SelectSubset<T, UserFindUniqueArgs<DefaultArgs>>) => Prisma__UserClient<GetFindResult<$UserPayload<DefaultArgs>, T, PrismaClientOptions> | null, null, DefaultArgs, PrismaClientOptions>'.",
+      "logSnippet": "2025-09-25T22:29:30.0922532Z ##[error]__tests__/services/integration/auth-service-integration.test.ts(352,30): error TS2339: Property 'mockResolvedValue' does not exist on type '<T extends UserFindUniqueArgs>(args: SelectSubset<T, UserFindUniqueArgs<DefaultArgs>>) => Prisma__UserClient<GetFindResult<$UserPayload<DefaultArgs>, T, PrismaClientOptions> | null, null, DefaultArgs, PrismaClientOptions>'."
+    }
+  },
+  {
+    "id": "workflow-18022373960-1758839573418-simxcgub7",
+    "content": "TypeScript error: Property 'mockResolvedValue' does not exist on type '<T extends UserFindUniqueArgs>(args: SelectSubset<T, UserFindUniqueArgs<DefaultArgs>>) => Prisma__UserClient<GetFindResult<$UserPayload<DefaultArgs>, T, PrismaClientOptions> | null, null, DefaultArgs, PrismaClientOptions>'.",
+    "status": "pending",
+    "priority": "critical",
+    "dependencies": [],
+    "issueType": "build_failure",
+    "files": [
+      "2025-09-25T22:29:30.0926462Z ##[error]__tests__/services/integration/auth-service-integration.test.ts"
+    ],
+    "lineNumbers": [390],
+    "suggestedFix": "Add missing property or update interface definition",
+    "createdAt": "2025-09-25T22:32:53.418Z",
+    "updatedAt": "2025-09-25T22:32:53.418Z",
+    "estimatedTime": "20-60 min",
+    "tags": ["build-failure", "critical", "testing", "authentication"],
+    "assignee": "test-specialist",
+    "relatedPR": "#253",
+    "file": "2025-09-25T22:29:30.0926462Z ##[error]__tests__/services/integration/auth-service-integration.test.ts",
+    "line": 390,
+    "cursorHints": {
+      "fileToOpen": "2025-09-25T22:29:30.0926462Z ##[error]__tests__/services/integration/auth-service-integration.test.ts",
+      "contextFiles": [],
+      "lineToJump": 390,
+      "suggestedAction": "fix_build",
+      "contextSearch": "mockresolvedvalue",
+      "relatedSymbols": [
+        "TypeScript",
+        "Property",
+        "UserFindUniqueArgs",
+        "SelectSubset",
+        "DefaultArgs"
+      ],
+      "focusArea": "build failure"
+    },
+    "failureDetails": {
+      "errorMessage": "TypeScript error: Property 'mockResolvedValue' does not exist on type '<T extends UserFindUniqueArgs>(args: SelectSubset<T, UserFindUniqueArgs<DefaultArgs>>) => Prisma__UserClient<GetFindResult<$UserPayload<DefaultArgs>, T, PrismaClientOptions> | null, null, DefaultArgs, PrismaClientOptions>'.",
+      "logSnippet": "2025-09-25T22:29:30.0926462Z ##[error]__tests__/services/integration/auth-service-integration.test.ts(390,30): error TS2339: Property 'mockResolvedValue' does not exist on type '<T extends UserFindUniqueArgs>(args: SelectSubset<T, UserFindUniqueArgs<DefaultArgs>>) => Prisma__UserClient<GetFindResult<$UserPayload<DefaultArgs>, T, PrismaClientOptions> | null, null, DefaultArgs, PrismaClientOptions>'."
+    }
+  },
+  {
+    "id": "workflow-18022373960-1758839573418-6om2k1zr1",
+    "content": "TypeScript error: Property 'mockResolvedValue' does not exist on type '<T extends UserFindUniqueArgs>(args: SelectSubset<T, UserFindUniqueArgs<DefaultArgs>>) => Prisma__UserClient<GetFindResult<$UserPayload<DefaultArgs>, T, PrismaClientOptions> | null, null, DefaultArgs, PrismaClientOptions>'.",
+    "status": "pending",
+    "priority": "critical",
+    "dependencies": [],
+    "issueType": "build_failure",
+    "files": [
+      "2025-09-25T22:29:30.0930294Z ##[error]__tests__/services/integration/auth-service-integration.test.ts"
+    ],
+    "lineNumbers": [471],
+    "suggestedFix": "Add missing property or update interface definition",
+    "createdAt": "2025-09-25T22:32:53.418Z",
+    "updatedAt": "2025-09-25T22:32:53.418Z",
+    "estimatedTime": "20-60 min",
+    "tags": ["build-failure", "critical", "testing", "authentication"],
+    "assignee": "test-specialist",
+    "relatedPR": "#253",
+    "file": "2025-09-25T22:29:30.0930294Z ##[error]__tests__/services/integration/auth-service-integration.test.ts",
+    "line": 471,
+    "cursorHints": {
+      "fileToOpen": "2025-09-25T22:29:30.0930294Z ##[error]__tests__/services/integration/auth-service-integration.test.ts",
+      "contextFiles": [],
+      "lineToJump": 471,
+      "suggestedAction": "fix_build",
+      "contextSearch": "mockresolvedvalue",
+      "relatedSymbols": [
+        "TypeScript",
+        "Property",
+        "UserFindUniqueArgs",
+        "SelectSubset",
+        "DefaultArgs"
+      ],
+      "focusArea": "build failure"
+    },
+    "failureDetails": {
+      "errorMessage": "TypeScript error: Property 'mockResolvedValue' does not exist on type '<T extends UserFindUniqueArgs>(args: SelectSubset<T, UserFindUniqueArgs<DefaultArgs>>) => Prisma__UserClient<GetFindResult<$UserPayload<DefaultArgs>, T, PrismaClientOptions> | null, null, DefaultArgs, PrismaClientOptions>'.",
+      "logSnippet": "2025-09-25T22:29:30.0930294Z ##[error]__tests__/services/integration/auth-service-integration.test.ts(471,30): error TS2339: Property 'mockResolvedValue' does not exist on type '<T extends UserFindUniqueArgs>(args: SelectSubset<T, UserFindUniqueArgs<DefaultArgs>>) => Prisma__UserClient<GetFindResult<$UserPayload<DefaultArgs>, T, PrismaClientOptions> | null, null, DefaultArgs, PrismaClientOptions>'."
+    }
+  },
+  {
+    "id": "workflow-18022373960-1758839573418-htftqd49w",
+    "content": "TypeScript error: Property 'mockRejectedValue' does not exist on type '<T extends UserFindUniqueArgs>(args: SelectSubset<T, UserFindUniqueArgs<DefaultArgs>>) => Prisma__UserClient<GetFindResult<$UserPayload<DefaultArgs>, T, PrismaClientOptions> | null, null, DefaultArgs, PrismaClientOptions>'.",
+    "status": "pending",
+    "priority": "critical",
+    "dependencies": [],
+    "issueType": "build_failure",
+    "files": [
+      "2025-09-25T22:29:30.0934406Z ##[error]__tests__/services/integration/auth-service-integration.test.ts"
+    ],
+    "lineNumbers": [490],
+    "suggestedFix": "Add missing property or update interface definition",
+    "createdAt": "2025-09-25T22:32:53.418Z",
+    "updatedAt": "2025-09-25T22:32:53.418Z",
+    "estimatedTime": "20-60 min",
+    "tags": ["build-failure", "critical", "testing", "authentication"],
+    "assignee": "test-specialist",
+    "relatedPR": "#253",
+    "file": "2025-09-25T22:29:30.0934406Z ##[error]__tests__/services/integration/auth-service-integration.test.ts",
+    "line": 490,
+    "cursorHints": {
+      "fileToOpen": "2025-09-25T22:29:30.0934406Z ##[error]__tests__/services/integration/auth-service-integration.test.ts",
+      "contextFiles": [],
+      "lineToJump": 490,
+      "suggestedAction": "fix_build",
+      "contextSearch": "mockrejectedvalue",
+      "relatedSymbols": [
+        "TypeScript",
+        "Property",
+        "UserFindUniqueArgs",
+        "SelectSubset",
+        "DefaultArgs"
+      ],
+      "focusArea": "build failure"
+    },
+    "failureDetails": {
+      "errorMessage": "TypeScript error: Property 'mockRejectedValue' does not exist on type '<T extends UserFindUniqueArgs>(args: SelectSubset<T, UserFindUniqueArgs<DefaultArgs>>) => Prisma__UserClient<GetFindResult<$UserPayload<DefaultArgs>, T, PrismaClientOptions> | null, null, DefaultArgs, PrismaClientOptions>'.",
+      "logSnippet": "2025-09-25T22:29:30.0934406Z ##[error]__tests__/services/integration/auth-service-integration.test.ts(490,30): error TS2339: Property 'mockRejectedValue' does not exist on type '<T extends UserFindUniqueArgs>(args: SelectSubset<T, UserFindUniqueArgs<DefaultArgs>>) => Prisma__UserClient<GetFindResult<$UserPayload<DefaultArgs>, T, PrismaClientOptions> | null, null, DefaultArgs, PrismaClientOptions>'."
+    }
+  },
+  {
+    "id": "workflow-18022373960-1758839573418-tbnis2ov3",
+    "content": "TypeScript error: Property 'mockResolvedValue' does not exist on type '<T extends UserFindUniqueArgs>(args: SelectSubset<T, UserFindUniqueArgs<DefaultArgs>>) => Prisma__UserClient<GetFindResult<$UserPayload<DefaultArgs>, T, PrismaClientOptions> | null, null, DefaultArgs, PrismaClientOptions>'.",
+    "status": "pending",
+    "priority": "critical",
+    "dependencies": [],
+    "issueType": "build_failure",
+    "files": [
+      "2025-09-25T22:29:30.0938331Z ##[error]__tests__/services/integration/auth-service-integration.test.ts"
+    ],
+    "lineNumbers": [575],
+    "suggestedFix": "Add missing property or update interface definition",
+    "createdAt": "2025-09-25T22:32:53.418Z",
+    "updatedAt": "2025-09-25T22:32:53.418Z",
+    "estimatedTime": "20-60 min",
+    "tags": ["build-failure", "critical", "testing", "authentication"],
+    "assignee": "test-specialist",
+    "relatedPR": "#253",
+    "file": "2025-09-25T22:29:30.0938331Z ##[error]__tests__/services/integration/auth-service-integration.test.ts",
+    "line": 575,
+    "cursorHints": {
+      "fileToOpen": "2025-09-25T22:29:30.0938331Z ##[error]__tests__/services/integration/auth-service-integration.test.ts",
+      "contextFiles": [],
+      "lineToJump": 575,
+      "suggestedAction": "fix_build",
+      "contextSearch": "mockresolvedvalue",
+      "relatedSymbols": [
+        "TypeScript",
+        "Property",
+        "UserFindUniqueArgs",
+        "SelectSubset",
+        "DefaultArgs"
+      ],
+      "focusArea": "build failure"
+    },
+    "failureDetails": {
+      "errorMessage": "TypeScript error: Property 'mockResolvedValue' does not exist on type '<T extends UserFindUniqueArgs>(args: SelectSubset<T, UserFindUniqueArgs<DefaultArgs>>) => Prisma__UserClient<GetFindResult<$UserPayload<DefaultArgs>, T, PrismaClientOptions> | null, null, DefaultArgs, PrismaClientOptions>'.",
+      "logSnippet": "2025-09-25T22:29:30.0938331Z ##[error]__tests__/services/integration/auth-service-integration.test.ts(575,30): error TS2339: Property 'mockResolvedValue' does not exist on type '<T extends UserFindUniqueArgs>(args: SelectSubset<T, UserFindUniqueArgs<DefaultArgs>>) => Prisma__UserClient<GetFindResult<$UserPayload<DefaultArgs>, T, PrismaClientOptions> | null, null, DefaultArgs, PrismaClientOptions>'."
+    }
+  },
+  {
+    "id": "workflow-18022373960-1758839573418-8c2mqpt4q",
+    "content": "TypeScript error: Property 'mockResolvedValue' does not exist on type '<T extends UserFindUniqueArgs>(args: SelectSubset<T, UserFindUniqueArgs<DefaultArgs>>) => Prisma__UserClient<GetFindResult<$UserPayload<DefaultArgs>, T, PrismaClientOptions> | null, null, DefaultArgs, PrismaClientOptions>'.",
+    "status": "pending",
+    "priority": "critical",
+    "dependencies": [],
+    "issueType": "build_failure",
+    "files": [
+      "2025-09-25T22:29:30.0942368Z ##[error]__tests__/services/integration/auth-service-integration.test.ts"
+    ],
+    "lineNumbers": [600],
+    "suggestedFix": "Add missing property or update interface definition",
+    "createdAt": "2025-09-25T22:32:53.418Z",
+    "updatedAt": "2025-09-25T22:32:53.418Z",
+    "estimatedTime": "20-60 min",
+    "tags": ["build-failure", "critical", "testing", "authentication"],
+    "assignee": "test-specialist",
+    "relatedPR": "#253",
+    "file": "2025-09-25T22:29:30.0942368Z ##[error]__tests__/services/integration/auth-service-integration.test.ts",
+    "line": 600,
+    "cursorHints": {
+      "fileToOpen": "2025-09-25T22:29:30.0942368Z ##[error]__tests__/services/integration/auth-service-integration.test.ts",
+      "contextFiles": [],
+      "lineToJump": 600,
+      "suggestedAction": "fix_build",
+      "contextSearch": "mockresolvedvalue",
+      "relatedSymbols": [
+        "TypeScript",
+        "Property",
+        "UserFindUniqueArgs",
+        "SelectSubset",
+        "DefaultArgs"
+      ],
+      "focusArea": "build failure"
+    },
+    "failureDetails": {
+      "errorMessage": "TypeScript error: Property 'mockResolvedValue' does not exist on type '<T extends UserFindUniqueArgs>(args: SelectSubset<T, UserFindUniqueArgs<DefaultArgs>>) => Prisma__UserClient<GetFindResult<$UserPayload<DefaultArgs>, T, PrismaClientOptions> | null, null, DefaultArgs, PrismaClientOptions>'.",
+      "logSnippet": "2025-09-25T22:29:30.0942368Z ##[error]__tests__/services/integration/auth-service-integration.test.ts(600,30): error TS2339: Property 'mockResolvedValue' does not exist on type '<T extends UserFindUniqueArgs>(args: SelectSubset<T, UserFindUniqueArgs<DefaultArgs>>) => Prisma__UserClient<GetFindResult<$UserPayload<DefaultArgs>, T, PrismaClientOptions> | null, null, DefaultArgs, PrismaClientOptions>'."
+    }
+  },
+  {
+    "id": "workflow-18022373960-1758839573418-k7szxk0dc",
+    "content": "TypeScript error: Property 'mockResolvedValue' does not exist on type '<T extends ServiceRequestCreateArgs>(args: SelectSubset<T, ServiceRequestCreateArgs<DefaultArgs>>) => Prisma__ServiceRequestClient<GetFindResult<$ServiceRequestPayload<DefaultArgs>, T, PrismaClientOptions>, never, DefaultArgs, PrismaClientOptions>'.",
+    "status": "pending",
+    "priority": "critical",
+    "dependencies": [],
+    "issueType": "build_failure",
+    "files": [
+      "2025-09-25T22:29:30.0946933Z ##[error]__tests__/services/integration/service-request-flow.test.ts"
+    ],
+    "lineNumbers": [141],
+    "suggestedFix": "Add missing property or update interface definition",
+    "createdAt": "2025-09-25T22:32:53.418Z",
+    "updatedAt": "2025-09-25T22:32:53.418Z",
+    "estimatedTime": "20-60 min",
+    "tags": ["build-failure", "critical", "testing"],
+    "assignee": "test-specialist",
+    "relatedPR": "#253",
+    "file": "2025-09-25T22:29:30.0946933Z ##[error]__tests__/services/integration/service-request-flow.test.ts",
+    "line": 141,
+    "cursorHints": {
+      "fileToOpen": "2025-09-25T22:29:30.0946933Z ##[error]__tests__/services/integration/service-request-flow.test.ts",
+      "contextFiles": [],
+      "lineToJump": 141,
+      "suggestedAction": "fix_build",
+      "contextSearch": "mockresolvedvalue",
+      "relatedSymbols": [
+        "TypeScript",
+        "Property",
+        "ServiceRequestCreateArgs",
+        "SelectSubset",
+        "DefaultArgs"
+      ],
+      "focusArea": "build failure"
+    },
+    "failureDetails": {
+      "errorMessage": "TypeScript error: Property 'mockResolvedValue' does not exist on type '<T extends ServiceRequestCreateArgs>(args: SelectSubset<T, ServiceRequestCreateArgs<DefaultArgs>>) => Prisma__ServiceRequestClient<GetFindResult<$ServiceRequestPayload<DefaultArgs>, T, PrismaClientOptions>, never, DefaultArgs, PrismaClientOptions>'.",
+      "logSnippet": "2025-09-25T22:29:30.0946933Z ##[error]__tests__/services/integration/service-request-flow.test.ts(141,36): error TS2339: Property 'mockResolvedValue' does not exist on type '<T extends ServiceRequestCreateArgs>(args: SelectSubset<T, ServiceRequestCreateArgs<DefaultArgs>>) => Prisma__ServiceRequestClient<GetFindResult<$ServiceRequestPayload<DefaultArgs>, T, PrismaClientOptions>, never, DefaultArgs, PrismaClientOptions>'."
+    }
+  },
+  {
+    "id": "workflow-18022373960-1758839573419-3jppf316g",
+    "content": "TypeScript error: Property 'mockResolvedValue' does not exist on type '<T extends ServiceRequestFindManyArgs>(args?: SelectSubset<T, ServiceRequestFindManyArgs<DefaultArgs>> | undefined) => PrismaPromise<...>'.",
+    "status": "pending",
+    "priority": "critical",
+    "dependencies": [],
+    "issueType": "build_failure",
+    "files": [
+      "2025-09-25T22:29:30.0950311Z ##[error]__tests__/services/integration/service-request-flow.test.ts"
+    ],
+    "lineNumbers": [142],
+    "suggestedFix": "Add missing property or update interface definition",
+    "createdAt": "2025-09-25T22:32:53.419Z",
+    "updatedAt": "2025-09-25T22:32:53.419Z",
+    "estimatedTime": "20-60 min",
+    "tags": ["build-failure", "critical", "testing"],
+    "assignee": "test-specialist",
+    "relatedPR": "#253",
+    "file": "2025-09-25T22:29:30.0950311Z ##[error]__tests__/services/integration/service-request-flow.test.ts",
+    "line": 142,
+    "cursorHints": {
+      "fileToOpen": "2025-09-25T22:29:30.0950311Z ##[error]__tests__/services/integration/service-request-flow.test.ts",
+      "contextFiles": [],
+      "lineToJump": 142,
+      "suggestedAction": "fix_build",
+      "contextSearch": "mockresolvedvalue",
+      "relatedSymbols": [
+        "TypeScript",
+        "Property",
+        "ServiceRequestFindManyArgs",
+        "SelectSubset",
+        "DefaultArgs"
+      ],
+      "focusArea": "build failure"
+    },
+    "failureDetails": {
+      "errorMessage": "TypeScript error: Property 'mockResolvedValue' does not exist on type '<T extends ServiceRequestFindManyArgs>(args?: SelectSubset<T, ServiceRequestFindManyArgs<DefaultArgs>> | undefined) => PrismaPromise<...>'.",
+      "logSnippet": "2025-09-25T22:29:30.0950311Z ##[error]__tests__/services/integration/service-request-flow.test.ts(142,38): error TS2339: Property 'mockResolvedValue' does not exist on type '<T extends ServiceRequestFindManyArgs>(args?: SelectSubset<T, ServiceRequestFindManyArgs<DefaultArgs>> | undefined) => PrismaPromise<...>'."
+    }
+  },
+  {
+    "id": "workflow-18022373960-1758839573419-ikawhpqhc",
+    "content": "TypeScript error: Property 'mockResolvedValue' does not exist on type '<T extends ServiceRequestFindUniqueArgs>(args: SelectSubset<T, ServiceRequestFindUniqueArgs<DefaultArgs>>) => Prisma__ServiceRequestClient<GetFindResult<...> | null, null, DefaultArgs, PrismaClientOptions>'.",
+    "status": "pending",
+    "priority": "critical",
+    "dependencies": [],
+    "issueType": "build_failure",
+    "files": [
+      "2025-09-25T22:29:30.0954234Z ##[error]__tests__/services/integration/service-request-flow.test.ts"
+    ],
+    "lineNumbers": [143],
+    "suggestedFix": "Add missing property or update interface definition",
+    "createdAt": "2025-09-25T22:32:53.419Z",
+    "updatedAt": "2025-09-25T22:32:53.419Z",
+    "estimatedTime": "20-60 min",
+    "tags": ["build-failure", "critical", "testing"],
+    "assignee": "test-specialist",
+    "relatedPR": "#253",
+    "file": "2025-09-25T22:29:30.0954234Z ##[error]__tests__/services/integration/service-request-flow.test.ts",
+    "line": 143,
+    "cursorHints": {
+      "fileToOpen": "2025-09-25T22:29:30.0954234Z ##[error]__tests__/services/integration/service-request-flow.test.ts",
+      "contextFiles": [],
+      "lineToJump": 143,
+      "suggestedAction": "fix_build",
+      "contextSearch": "mockresolvedvalue",
+      "relatedSymbols": [
+        "TypeScript",
+        "Property",
+        "ServiceRequestFindUniqueArgs",
+        "SelectSubset",
+        "DefaultArgs"
+      ],
+      "focusArea": "build failure"
+    },
+    "failureDetails": {
+      "errorMessage": "TypeScript error: Property 'mockResolvedValue' does not exist on type '<T extends ServiceRequestFindUniqueArgs>(args: SelectSubset<T, ServiceRequestFindUniqueArgs<DefaultArgs>>) => Prisma__ServiceRequestClient<GetFindResult<...> | null, null, DefaultArgs, PrismaClientOptions>'.",
+      "logSnippet": "2025-09-25T22:29:30.0954234Z ##[error]__tests__/services/integration/service-request-flow.test.ts(143,40): error TS2339: Property 'mockResolvedValue' does not exist on type '<T extends ServiceRequestFindUniqueArgs>(args: SelectSubset<T, ServiceRequestFindUniqueArgs<DefaultArgs>>) => Prisma__ServiceRequestClient<GetFindResult<...> | null, null, DefaultArgs, PrismaClientOptions>'."
+    }
+  },
+  {
+    "id": "workflow-18022373960-1758839573419-s6lbxba4l",
+    "content": "TypeScript error: Property 'mockResolvedValue' does not exist on type '<T extends ServiceRequestCountArgs>(args?: Subset<T, ServiceRequestCountArgs<DefaultArgs>> | undefined) => PrismaPromise<T extends Record_2<...> ? T[\"select\"] extends true ? number : { [P in keyof T[\"select\"]]: P extends keyof ServiceRequestCountAggregateOutputType ? ServiceRequestCountAggregateOutputType[P] : never...'.",
+    "status": "pending",
+    "priority": "critical",
+    "dependencies": [],
+    "issueType": "build_failure",
+    "files": [
+      "2025-09-25T22:29:30.0958825Z ##[error]__tests__/services/integration/service-request-flow.test.ts"
+    ],
+    "lineNumbers": [144],
+    "suggestedFix": "Add missing property or update interface definition",
+    "createdAt": "2025-09-25T22:32:53.419Z",
+    "updatedAt": "2025-09-25T22:32:53.419Z",
+    "estimatedTime": "20-60 min",
+    "tags": ["build-failure", "critical", "testing"],
+    "assignee": "test-specialist",
+    "relatedPR": "#253",
+    "file": "2025-09-25T22:29:30.0958825Z ##[error]__tests__/services/integration/service-request-flow.test.ts",
+    "line": 144,
+    "cursorHints": {
+      "fileToOpen": "2025-09-25T22:29:30.0958825Z ##[error]__tests__/services/integration/service-request-flow.test.ts",
+      "contextFiles": [],
+      "lineToJump": 144,
+      "suggestedAction": "fix_build",
+      "contextSearch": "mockresolvedvalue",
+      "relatedSymbols": [
+        "TypeScript",
+        "Property",
+        "ServiceRequestCountArgs",
+        "Subset",
+        "DefaultArgs"
+      ],
+      "focusArea": "build failure"
+    },
+    "failureDetails": {
+      "errorMessage": "TypeScript error: Property 'mockResolvedValue' does not exist on type '<T extends ServiceRequestCountArgs>(args?: Subset<T, ServiceRequestCountArgs<DefaultArgs>> | undefined) => PrismaPromise<T extends Record_2<...> ? T[\"select\"] extends true ? number : { [P in keyof T[\"select\"]]: P extends keyof ServiceRequestCountAggregateOutputType ? ServiceRequestCountAggregateOutputType[P] : never...'.",
+      "logSnippet": "2025-09-25T22:29:30.0958825Z ##[error]__tests__/services/integration/service-request-flow.test.ts(144,35): error TS2339: Property 'mockResolvedValue' does not exist on type '<T extends ServiceRequestCountArgs>(args?: Subset<T, ServiceRequestCountArgs<DefaultArgs>> | undefined) => PrismaPromise<T extends Record_2<...> ? T[\"select\"] extends true ? number : { [P in keyof T[\"select\"]]: P extends keyof ServiceRequestCountAggregateOutputType ? ServiceRequestCountAggregateOutputType[P] : never...'."
+    }
+  },
+  {
+    "id": "workflow-18022373960-1758839573419-sr7hw5svi",
+    "content": "TypeScript error: Property 'mockResolvedValue' does not exist on type '<T extends ServiceRequestUpdateArgs>(args: SelectSubset<T, ServiceRequestUpdateArgs<DefaultArgs>>) => Prisma__ServiceRequestClient<GetFindResult<$ServiceRequestPayload<DefaultArgs>, T, PrismaClientOptions>, never, DefaultArgs, PrismaClientOptions>'.",
+    "status": "pending",
+    "priority": "critical",
+    "dependencies": [],
+    "issueType": "build_failure",
+    "files": [
+      "2025-09-25T22:29:30.0963422Z ##[error]__tests__/services/integration/service-request-flow.test.ts"
+    ],
+    "lineNumbers": [225],
+    "suggestedFix": "Add missing property or update interface definition",
+    "createdAt": "2025-09-25T22:32:53.419Z",
+    "updatedAt": "2025-09-25T22:32:53.419Z",
+    "estimatedTime": "20-60 min",
+    "tags": ["build-failure", "critical", "testing"],
+    "assignee": "test-specialist",
+    "relatedPR": "#253",
+    "file": "2025-09-25T22:29:30.0963422Z ##[error]__tests__/services/integration/service-request-flow.test.ts",
+    "line": 225,
+    "cursorHints": {
+      "fileToOpen": "2025-09-25T22:29:30.0963422Z ##[error]__tests__/services/integration/service-request-flow.test.ts",
+      "contextFiles": [],
+      "lineToJump": 225,
+      "suggestedAction": "fix_build",
+      "contextSearch": "mockresolvedvalue",
+      "relatedSymbols": [
+        "TypeScript",
+        "Property",
+        "ServiceRequestUpdateArgs",
+        "SelectSubset",
+        "DefaultArgs"
+      ],
+      "focusArea": "build failure"
+    },
+    "failureDetails": {
+      "errorMessage": "TypeScript error: Property 'mockResolvedValue' does not exist on type '<T extends ServiceRequestUpdateArgs>(args: SelectSubset<T, ServiceRequestUpdateArgs<DefaultArgs>>) => Prisma__ServiceRequestClient<GetFindResult<$ServiceRequestPayload<DefaultArgs>, T, PrismaClientOptions>, never, DefaultArgs, PrismaClientOptions>'.",
+      "logSnippet": "2025-09-25T22:29:30.0963422Z ##[error]__tests__/services/integration/service-request-flow.test.ts(225,36): error TS2339: Property 'mockResolvedValue' does not exist on type '<T extends ServiceRequestUpdateArgs>(args: SelectSubset<T, ServiceRequestUpdateArgs<DefaultArgs>>) => Prisma__ServiceRequestClient<GetFindResult<$ServiceRequestPayload<DefaultArgs>, T, PrismaClientOptions>, never, DefaultArgs, PrismaClientOptions>'."
+    }
+  },
+  {
+    "id": "workflow-18022373960-1758839573419-5g6nzvoev",
+    "content": "TypeScript error: Property 'mockResolvedValue' does not exist on type '<T extends ServiceRequestCountArgs>(args?: Subset<T, ServiceRequestCountArgs<DefaultArgs>> | undefined) => PrismaPromise<T extends Record_2<...> ? T[\"select\"] extends true ? number : { [P in keyof T[\"select\"]]: P extends keyof ServiceRequestCountAggregateOutputType ? ServiceRequestCountAggregateOutputType[P] : never...'.",
+    "status": "pending",
+    "priority": "critical",
+    "dependencies": [],
+    "issueType": "build_failure",
+    "files": [
+      "2025-09-25T22:29:30.0968076Z ##[error]__tests__/services/integration/service-request-flow.test.ts"
+    ],
+    "lineNumbers": [252],
+    "suggestedFix": "Add missing property or update interface definition",
+    "createdAt": "2025-09-25T22:32:53.419Z",
+    "updatedAt": "2025-09-25T22:32:53.419Z",
+    "estimatedTime": "20-60 min",
+    "tags": ["build-failure", "critical", "testing"],
+    "assignee": "test-specialist",
+    "relatedPR": "#253",
+    "file": "2025-09-25T22:29:30.0968076Z ##[error]__tests__/services/integration/service-request-flow.test.ts",
+    "line": 252,
+    "cursorHints": {
+      "fileToOpen": "2025-09-25T22:29:30.0968076Z ##[error]__tests__/services/integration/service-request-flow.test.ts",
+      "contextFiles": [],
+      "lineToJump": 252,
+      "suggestedAction": "fix_build",
+      "contextSearch": "mockresolvedvalue",
+      "relatedSymbols": [
+        "TypeScript",
+        "Property",
+        "ServiceRequestCountArgs",
+        "Subset",
+        "DefaultArgs"
+      ],
+      "focusArea": "build failure"
+    },
+    "failureDetails": {
+      "errorMessage": "TypeScript error: Property 'mockResolvedValue' does not exist on type '<T extends ServiceRequestCountArgs>(args?: Subset<T, ServiceRequestCountArgs<DefaultArgs>> | undefined) => PrismaPromise<T extends Record_2<...> ? T[\"select\"] extends true ? number : { [P in keyof T[\"select\"]]: P extends keyof ServiceRequestCountAggregateOutputType ? ServiceRequestCountAggregateOutputType[P] : never...'.",
+      "logSnippet": "2025-09-25T22:29:30.0968076Z ##[error]__tests__/services/integration/service-request-flow.test.ts(252,35): error TS2339: Property 'mockResolvedValue' does not exist on type '<T extends ServiceRequestCountArgs>(args?: Subset<T, ServiceRequestCountArgs<DefaultArgs>> | undefined) => PrismaPromise<T extends Record_2<...> ? T[\"select\"] extends true ? number : { [P in keyof T[\"select\"]]: P extends keyof ServiceRequestCountAggregateOutputType ? ServiceRequestCountAggregateOutputType[P] : never...'."
+    }
+  },
+  {
+    "id": "workflow-18022373960-1758839573419-a09kjo6q9",
+    "content": "TypeScript error: Property 'mockRejectedValue' does not exist on type '<T extends ServiceRequestFindManyArgs>(args?: SelectSubset<T, ServiceRequestFindManyArgs<DefaultArgs>> | undefined) => PrismaPromise<...>'.",
+    "status": "pending",
+    "priority": "critical",
+    "dependencies": [],
+    "issueType": "build_failure",
+    "files": [
+      "2025-09-25T22:29:30.0971854Z ##[error]__tests__/services/integration/service-request-flow.test.ts"
+    ],
+    "lineNumbers": [358],
+    "suggestedFix": "Add missing property or update interface definition",
+    "createdAt": "2025-09-25T22:32:53.419Z",
+    "updatedAt": "2025-09-25T22:32:53.419Z",
+    "estimatedTime": "20-60 min",
+    "tags": ["build-failure", "critical", "testing"],
+    "assignee": "test-specialist",
+    "relatedPR": "#253",
+    "file": "2025-09-25T22:29:30.0971854Z ##[error]__tests__/services/integration/service-request-flow.test.ts",
+    "line": 358,
+    "cursorHints": {
+      "fileToOpen": "2025-09-25T22:29:30.0971854Z ##[error]__tests__/services/integration/service-request-flow.test.ts",
+      "contextFiles": [],
+      "lineToJump": 358,
+      "suggestedAction": "fix_build",
+      "contextSearch": "mockrejectedvalue",
+      "relatedSymbols": [
+        "TypeScript",
+        "Property",
+        "ServiceRequestFindManyArgs",
+        "SelectSubset",
+        "DefaultArgs"
+      ],
+      "focusArea": "build failure"
+    },
+    "failureDetails": {
+      "errorMessage": "TypeScript error: Property 'mockRejectedValue' does not exist on type '<T extends ServiceRequestFindManyArgs>(args?: SelectSubset<T, ServiceRequestFindManyArgs<DefaultArgs>> | undefined) => PrismaPromise<...>'.",
+      "logSnippet": "2025-09-25T22:29:30.0971854Z ##[error]__tests__/services/integration/service-request-flow.test.ts(358,38): error TS2339: Property 'mockRejectedValue' does not exist on type '<T extends ServiceRequestFindManyArgs>(args?: SelectSubset<T, ServiceRequestFindManyArgs<DefaultArgs>> | undefined) => PrismaPromise<...>'."
     }
   }
 ]

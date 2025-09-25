@@ -454,7 +454,7 @@ function analyzeDependencies(dir: string): Map<string, string[]> {
     const importMatches = content.match(/from\s+["']\.\/([^"']+)["']/g) || []
     importMatches.forEach((match) => {
       const depMatch = match.match(/from\s+["']\.\/([^"']+)["']/)
-      if (depMatch) {
+      if (depMatch?.[1]) {
         deps.push(depMatch[1])
       }
     })

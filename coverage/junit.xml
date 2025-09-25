@@ -1,43 +1,266 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="16" failures="1" errors="0" time="0.345">
-  <testsuite name="Service Request Flow Integration Tests" errors="0" failures="1" skipped="0" timestamp="2025-09-25T19:49:25" time="0.153" tests="16">
-    <testcase classname="Service Request Flow Integration Tests Mobile-First Architecture Validation should work in pure Node.js environment without Next.js dependencies" name="Service Request Flow Integration Tests Mobile-First Architecture Validation should work in pure Node.js environment without Next.js dependencies" time="0.001">
+<testsuites name="jest tests" tests="80" failures="17" errors="0" time="1.529">
+  <testsuite name="Service Request Flow Integration Tests" errors="0" failures="5" skipped="0" timestamp="2025-09-25T22:40:39" time="0.43" tests="16">
+    <testcase classname="Service Request Flow Integration Tests Mobile-First Architecture Validation should work in pure Node.js environment without Next.js dependencies" name="Service Request Flow Integration Tests Mobile-First Architecture Validation should work in pure Node.js environment without Next.js dependencies" time="0.002">
     </testcase>
-    <testcase classname="Service Request Flow Integration Tests Mobile-First Architecture Validation should provide platform-agnostic business logic" name="Service Request Flow Integration Tests Mobile-First Architecture Validation should provide platform-agnostic business logic" time="0.001">
+    <testcase classname="Service Request Flow Integration Tests Mobile-First Architecture Validation should provide platform-agnostic business logic" name="Service Request Flow Integration Tests Mobile-First Architecture Validation should provide platform-agnostic business logic" time="0.027">
     </testcase>
-    <testcase classname="Service Request Flow Integration Tests Mobile-First Architecture Validation should validate business rules without UI context" name="Service Request Flow Integration Tests Mobile-First Architecture Validation should validate business rules without UI context" time="0">
+    <testcase classname="Service Request Flow Integration Tests Mobile-First Architecture Validation should validate business rules without UI context" name="Service Request Flow Integration Tests Mobile-First Architecture Validation should validate business rules without UI context" time="0.001">
     </testcase>
-    <testcase classname="Service Request Flow Integration Tests End-to-End Service Request Workflow should create service request with calculated hours" name="Service Request Flow Integration Tests End-to-End Service Request Workflow should create service request with calculated hours" time="0.001">
+    <testcase classname="Service Request Flow Integration Tests End-to-End Service Request Workflow should create service request with calculated hours" name="Service Request Flow Integration Tests End-to-End Service Request Workflow should create service request with calculated hours" time="0.006">
+      <failure>Error: expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+Expected: {&quot;data&quot;: ObjectContaining {&quot;requestedTotalHours&quot;: 24, &quot;status&quot;: &quot;SUBMITTED&quot;, &quot;title&quot;: &quot;Equipment Rental Request&quot;, &quot;userId&quot;: &quot;user-123&quot;}, &quot;select&quot;: Any&lt;Object&gt;}
+
+Number of calls: 0
+    at Object.toHaveBeenCalledWith (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/services/integration/service-request-flow.test.ts:187:44)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
     </testcase>
-    <testcase classname="Service Request Flow Integration Tests End-to-End Service Request Workflow should retrieve service requests with role-based access" name="Service Request Flow Integration Tests End-to-End Service Request Workflow should retrieve service requests with role-based access" time="0">
+    <testcase classname="Service Request Flow Integration Tests End-to-End Service Request Workflow should retrieve service requests with role-based access" name="Service Request Flow Integration Tests End-to-End Service Request Workflow should retrieve service requests with role-based access" time="0.002">
+      <failure>Error: expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+Expected: ObjectContaining {&quot;orderBy&quot;: {&quot;createdAt&quot;: &quot;desc&quot;}}
+
+Number of calls: 0
+    at Object.toHaveBeenCalledWith (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/services/integration/service-request-flow.test.ts:207:46)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
     </testcase>
-    <testcase classname="Service Request Flow Integration Tests End-to-End Service Request Workflow should validate status transitions in workflow" name="Service Request Flow Integration Tests End-to-End Service Request Workflow should validate status transitions in workflow" time="0">
+    <testcase classname="Service Request Flow Integration Tests End-to-End Service Request Workflow should validate status transitions in workflow" name="Service Request Flow Integration Tests End-to-End Service Request Workflow should validate status transitions in workflow" time="0.003">
     </testcase>
-    <testcase classname="Service Request Flow Integration Tests End-to-End Service Request Workflow should update service request with validation" name="Service Request Flow Integration Tests End-to-End Service Request Workflow should update service request with validation" time="0">
+    <testcase classname="Service Request Flow Integration Tests End-to-End Service Request Workflow should update service request with validation" name="Service Request Flow Integration Tests End-to-End Service Request Workflow should update service request with validation" time="0.009">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: true
+Received: false
+    at Object.toBe (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/services/integration/service-request-flow.test.ts:253:30)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
     </testcase>
-    <testcase classname="Service Request Flow Integration Tests End-to-End Service Request Workflow should handle access control for service requests" name="Service Request Flow Integration Tests End-to-End Service Request Workflow should handle access control for service requests" time="0.01">
+    <testcase classname="Service Request Flow Integration Tests End-to-End Service Request Workflow should handle access control for service requests" name="Service Request Flow Integration Tests End-to-End Service Request Workflow should handle access control for service requests" time="0.004">
       <failure>Error: expect(received).toBe(expected) // Object.is equality
 
 Expected: &quot;DATABASE_ERROR&quot;
 Received: &quot;ACCESS_DENIED&quot;
-    at Object.toBe (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/services/integration/service-request-flow.test.ts:260:34)
+    at Object.toBe (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/services/integration/service-request-flow.test.ts:276:34)
     at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
     </testcase>
-    <testcase classname="Service Request Flow Integration Tests Service Layer Independence should operate without external framework dependencies" name="Service Request Flow Integration Tests Service Layer Independence should operate without external framework dependencies" time="0">
+    <testcase classname="Service Request Flow Integration Tests Service Layer Independence should operate without external framework dependencies" name="Service Request Flow Integration Tests Service Layer Independence should operate without external framework dependencies" time="0.001">
     </testcase>
-    <testcase classname="Service Request Flow Integration Tests Service Layer Independence should provide consistent API across platforms" name="Service Request Flow Integration Tests Service Layer Independence should provide consistent API across platforms" time="0.003">
+    <testcase classname="Service Request Flow Integration Tests Service Layer Independence should provide consistent API across platforms" name="Service Request Flow Integration Tests Service Layer Independence should provide consistent API across platforms" time="0.001">
     </testcase>
-    <testcase classname="Service Request Flow Integration Tests Service Layer Independence should handle errors consistently across all operations" name="Service Request Flow Integration Tests Service Layer Independence should handle errors consistently across all operations" time="0">
+    <testcase classname="Service Request Flow Integration Tests Service Layer Independence should handle errors consistently across all operations" name="Service Request Flow Integration Tests Service Layer Independence should handle errors consistently across all operations" time="0.003">
     </testcase>
-    <testcase classname="Service Request Flow Integration Tests Mobile SDK Compatibility should support React Native environment simulation" name="Service Request Flow Integration Tests Mobile SDK Compatibility should support React Native environment simulation" time="0">
+    <testcase classname="Service Request Flow Integration Tests Mobile SDK Compatibility should support React Native environment simulation" name="Service Request Flow Integration Tests Mobile SDK Compatibility should support React Native environment simulation" time="0.001">
     </testcase>
-    <testcase classname="Service Request Flow Integration Tests Mobile SDK Compatibility should provide serializable data structures" name="Service Request Flow Integration Tests Mobile SDK Compatibility should provide serializable data structures" time="0">
+    <testcase classname="Service Request Flow Integration Tests Mobile SDK Compatibility should provide serializable data structures" name="Service Request Flow Integration Tests Mobile SDK Compatibility should provide serializable data structures" time="0.003">
     </testcase>
     <testcase classname="Service Request Flow Integration Tests Mobile SDK Compatibility should handle async operations with proper error boundaries" name="Service Request Flow Integration Tests Mobile SDK Compatibility should handle async operations with proper error boundaries" time="0.001">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: false
+Received: true
+    at Object.toBe (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/services/integration/service-request-flow.test.ts:381:30)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
     </testcase>
-    <testcase classname="Service Request Flow Integration Tests Performance and Scalability should handle large calculation inputs efficiently" name="Service Request Flow Integration Tests Performance and Scalability should handle large calculation inputs efficiently" time="0">
+    <testcase classname="Service Request Flow Integration Tests Performance and Scalability should handle large calculation inputs efficiently" name="Service Request Flow Integration Tests Performance and Scalability should handle large calculation inputs efficiently" time="0.005">
     </testcase>
-    <testcase classname="Service Request Flow Integration Tests Performance and Scalability should validate business rules efficiently" name="Service Request Flow Integration Tests Performance and Scalability should validate business rules efficiently" time="0">
+    <testcase classname="Service Request Flow Integration Tests Performance and Scalability should validate business rules efficiently" name="Service Request Flow Integration Tests Performance and Scalability should validate business rules efficiently" time="0.002">
+    </testcase>
+  </testsuite>
+  <testsuite name="Architecture Validation Tests" errors="0" failures="0" skipped="0" timestamp="2025-09-25T22:40:40" time="0.074" tests="17">
+    <testcase classname="Architecture Validation Tests Layer Separation Validation should maintain clear separation between service and repository layers" name="Architecture Validation Tests Layer Separation Validation should maintain clear separation between service and repository layers" time="0.005">
+    </testcase>
+    <testcase classname="Architecture Validation Tests Layer Separation Validation should prevent UI components from importing service layer directly" name="Architecture Validation Tests Layer Separation Validation should prevent UI components from importing service layer directly" time="0.014">
+    </testcase>
+    <testcase classname="Architecture Validation Tests Layer Separation Validation should ensure API routes use service layer properly" name="Architecture Validation Tests Layer Separation Validation should ensure API routes use service layer properly" time="0.003">
+    </testcase>
+    <testcase classname="Architecture Validation Tests Layer Separation Validation should validate repository layer independence" name="Architecture Validation Tests Layer Separation Validation should validate repository layer independence" time="0.001">
+    </testcase>
+    <testcase classname="Architecture Validation Tests Circular Dependency Detection should detect circular dependencies in service layer" name="Architecture Validation Tests Circular Dependency Detection should detect circular dependencies in service layer" time="0.001">
+    </testcase>
+    <testcase classname="Architecture Validation Tests Circular Dependency Detection should detect circular dependencies in repository layer" name="Architecture Validation Tests Circular Dependency Detection should detect circular dependencies in repository layer" time="0">
+    </testcase>
+    <testcase classname="Architecture Validation Tests Circular Dependency Detection should validate cross-layer dependency direction" name="Architecture Validation Tests Circular Dependency Detection should validate cross-layer dependency direction" time="0.001">
+    </testcase>
+    <testcase classname="Architecture Validation Tests Framework Coupling Prevention should prevent Next.js coupling in service layer" name="Architecture Validation Tests Framework Coupling Prevention should prevent Next.js coupling in service layer" time="0.002">
+    </testcase>
+    <testcase classname="Architecture Validation Tests Framework Coupling Prevention should prevent React coupling in service layer" name="Architecture Validation Tests Framework Coupling Prevention should prevent React coupling in service layer" time="0.002">
+    </testcase>
+    <testcase classname="Architecture Validation Tests Framework Coupling Prevention should prevent browser API usage in service layer" name="Architecture Validation Tests Framework Coupling Prevention should prevent browser API usage in service layer" time="0.001">
+    </testcase>
+    <testcase classname="Architecture Validation Tests Framework Coupling Prevention should prevent DOM manipulation in service layer" name="Architecture Validation Tests Framework Coupling Prevention should prevent DOM manipulation in service layer" time="0.002">
+    </testcase>
+    <testcase classname="Architecture Validation Tests Mobile-Ready Architecture Validation should validate service layer exports for mobile SDK" name="Architecture Validation Tests Mobile-Ready Architecture Validation should validate service layer exports for mobile SDK" time="0">
+    </testcase>
+    <testcase classname="Architecture Validation Tests Mobile-Ready Architecture Validation should validate repository layer exports for mobile SDK" name="Architecture Validation Tests Mobile-Ready Architecture Validation should validate repository layer exports for mobile SDK" time="0">
+    </testcase>
+    <testcase classname="Architecture Validation Tests Mobile-Ready Architecture Validation should ensure consistent error handling patterns" name="Architecture Validation Tests Mobile-Ready Architecture Validation should ensure consistent error handling patterns" time="0">
+    </testcase>
+    <testcase classname="Architecture Validation Tests Mobile-Ready Architecture Validation should validate type safety for mobile development" name="Architecture Validation Tests Mobile-Ready Architecture Validation should validate type safety for mobile development" time="0.001">
+    </testcase>
+    <testcase classname="Architecture Validation Tests Performance Architecture Validation should validate efficient import patterns" name="Architecture Validation Tests Performance Architecture Validation should validate efficient import patterns" time="0.001">
+    </testcase>
+    <testcase classname="Architecture Validation Tests Performance Architecture Validation should validate memory-efficient patterns" name="Architecture Validation Tests Performance Architecture Validation should validate memory-efficient patterns" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="Platform-Agnostic Validation Tests" errors="0" failures="0" skipped="0" timestamp="2025-09-25T22:40:40" time="0.445" tests="18">
+    <testcase classname="Platform-Agnostic Validation Tests Framework Independence should instantiate all services without Next.js dependencies" name="Platform-Agnostic Validation Tests Framework Independence should instantiate all services without Next.js dependencies" time="0.001">
+    </testcase>
+    <testcase classname="Platform-Agnostic Validation Tests Framework Independence should work without browser globals" name="Platform-Agnostic Validation Tests Framework Independence should work without browser globals" time="0.006">
+    </testcase>
+    <testcase classname="Platform-Agnostic Validation Tests Framework Independence should not import Next.js specific modules" name="Platform-Agnostic Validation Tests Framework Independence should not import Next.js specific modules" time="0.004">
+    </testcase>
+    <testcase classname="Platform-Agnostic Validation Tests Framework Independence should not import React dependencies" name="Platform-Agnostic Validation Tests Framework Independence should not import React dependencies" time="0.002">
+    </testcase>
+    <testcase classname="Platform-Agnostic Validation Tests React Native Environment Simulation should work in React Native-like environment" name="Platform-Agnostic Validation Tests React Native Environment Simulation should work in React Native-like environment" time="0.002">
+    </testcase>
+    <testcase classname="Platform-Agnostic Validation Tests React Native Environment Simulation should handle mobile-specific data serialization" name="Platform-Agnostic Validation Tests React Native Environment Simulation should handle mobile-specific data serialization" time="0.004">
+    </testcase>
+    <testcase classname="Platform-Agnostic Validation Tests React Native Environment Simulation should provide consistent error handling for mobile apps" name="Platform-Agnostic Validation Tests React Native Environment Simulation should provide consistent error handling for mobile apps" time="0.002">
+    </testcase>
+    <testcase classname="Platform-Agnostic Validation Tests Cross-Platform API Consistency should provide consistent ServiceResult format across all operations" name="Platform-Agnostic Validation Tests Cross-Platform API Consistency should provide consistent ServiceResult format across all operations" time="0.002">
+    </testcase>
+    <testcase classname="Platform-Agnostic Validation Tests Cross-Platform API Consistency should handle async operations consistently" name="Platform-Agnostic Validation Tests Cross-Platform API Consistency should handle async operations consistently" time="0.003">
+    </testcase>
+    <testcase classname="Platform-Agnostic Validation Tests Cross-Platform API Consistency should provide mobile-friendly type definitions" name="Platform-Agnostic Validation Tests Cross-Platform API Consistency should provide mobile-friendly type definitions" time="0.002">
+    </testcase>
+    <testcase classname="Platform-Agnostic Validation Tests Mobile SDK Integration Patterns should support dependency injection for mobile testing" name="Platform-Agnostic Validation Tests Mobile SDK Integration Patterns should support dependency injection for mobile testing" time="0">
+    </testcase>
+    <testcase classname="Platform-Agnostic Validation Tests Mobile SDK Integration Patterns should handle network failures gracefully for mobile apps" name="Platform-Agnostic Validation Tests Mobile SDK Integration Patterns should handle network failures gracefully for mobile apps" time="0.006">
+    </testcase>
+    <testcase classname="Platform-Agnostic Validation Tests Mobile SDK Integration Patterns should provide offline-capable business logic" name="Platform-Agnostic Validation Tests Mobile SDK Integration Patterns should provide offline-capable business logic" time="0.004">
+    </testcase>
+    <testcase classname="Platform-Agnostic Validation Tests Performance for Mobile Devices should perform calculations efficiently on mobile hardware" name="Platform-Agnostic Validation Tests Performance for Mobile Devices should perform calculations efficiently on mobile hardware" time="0.353">
+    </testcase>
+    <testcase classname="Platform-Agnostic Validation Tests Performance for Mobile Devices should minimize memory usage for mobile apps" name="Platform-Agnostic Validation Tests Performance for Mobile Devices should minimize memory usage for mobile apps" time="0.004">
+    </testcase>
+    <testcase classname="Platform-Agnostic Validation Tests Mobile Authentication Patterns should support token-based authentication for mobile apps" name="Platform-Agnostic Validation Tests Mobile Authentication Patterns should support token-based authentication for mobile apps" time="0">
+    </testcase>
+    <testcase classname="Platform-Agnostic Validation Tests Mobile Authentication Patterns should handle session data for hybrid authentication" name="Platform-Agnostic Validation Tests Mobile Authentication Patterns should handle session data for hybrid authentication" time="0">
+    </testcase>
+    <testcase classname="Platform-Agnostic Validation Tests Mobile Authentication Patterns should provide consistent error codes for mobile error handling" name="Platform-Agnostic Validation Tests Mobile Authentication Patterns should provide consistent error codes for mobile error handling" time="0.007">
+    </testcase>
+  </testsuite>
+  <testsuite name="Auth Service Integration Tests" errors="0" failures="12" skipped="0" timestamp="2025-09-25T22:40:40" time="0.08" tests="29">
+    <testcase classname="Auth Service Integration Tests Mobile-First Authentication Architecture should work in pure Node.js environment without Next.js dependencies" name="Auth Service Integration Tests Mobile-First Authentication Architecture should work in pure Node.js environment without Next.js dependencies" time="0.001">
+    </testcase>
+    <testcase classname="Auth Service Integration Tests Mobile-First Authentication Architecture should provide platform-agnostic authentication methods" name="Auth Service Integration Tests Mobile-First Authentication Architecture should provide platform-agnostic authentication methods" time="0.003">
+    </testcase>
+    <testcase classname="Auth Service Integration Tests Mobile-First Authentication Architecture should handle authentication without browser context" name="Auth Service Integration Tests Mobile-First Authentication Architecture should handle authentication without browser context" time="0.007">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: true
+Received: false
+    at Object.toBe (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/services/integration/auth-service-integration.test.ts:120:32)</failure>
+    </testcase>
+    <testcase classname="Auth Service Integration Tests User Authentication Flow should authenticate user with valid credentials" name="Auth Service Integration Tests User Authentication Flow should authenticate user with valid credentials" time="0.001">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: true
+Received: false
+    at Object.toBe (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/services/integration/auth-service-integration.test.ts:152:30)</failure>
+    </testcase>
+    <testcase classname="Auth Service Integration Tests User Authentication Flow should reject authentication with invalid credentials" name="Auth Service Integration Tests User Authentication Flow should reject authentication with invalid credentials" time="0.001">
+    </testcase>
+    <testcase classname="Auth Service Integration Tests User Authentication Flow should handle user not found scenario" name="Auth Service Integration Tests User Authentication Flow should handle user not found scenario" time="0.001">
+    </testcase>
+    <testcase classname="Auth Service Integration Tests User Authentication Flow should handle user without password" name="Auth Service Integration Tests User Authentication Flow should handle user without password" time="0.001">
+    </testcase>
+    <testcase classname="Auth Service Integration Tests User Registration Flow should register new user successfully" name="Auth Service Integration Tests User Registration Flow should register new user successfully" time="0">
+      <failure>Error: expect(received).toEqual(expected) // deep equality
+
+Expected: {&quot;email&quot;: &quot;newuser@example.com&quot;, &quot;id&quot;: &quot;user-456&quot;, &quot;name&quot;: &quot;New User&quot;, &quot;role&quot;: &quot;USER&quot;}
+Received: undefined
+    at Object.toEqual (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/services/integration/auth-service-integration.test.ts:235:27)</failure>
+    </testcase>
+    <testcase classname="Auth Service Integration Tests User Registration Flow should prevent duplicate user registration" name="Auth Service Integration Tests User Registration Flow should prevent duplicate user registration" time="0.001">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: false
+Received: true
+    at Object.toBe (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/services/integration/auth-service-integration.test.ts:259:30)</failure>
+    </testcase>
+    <testcase classname="Auth Service Integration Tests User Registration Flow should normalize email during registration" name="Auth Service Integration Tests User Registration Flow should normalize email during registration" time="0.001">
+      <failure>Error: expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+Expected: {&quot;data&quot;: ObjectContaining {&quot;email&quot;: &quot;test@example.com&quot;}, &quot;select&quot;: Any&lt;Object&gt;}
+
+Number of calls: 0
+    at Object.toHaveBeenCalledWith (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/services/integration/auth-service-integration.test.ts:279:34)</failure>
+    </testcase>
+    <testcase classname="Auth Service Integration Tests User Management Operations should retrieve user by ID" name="Auth Service Integration Tests User Management Operations should retrieve user by ID" time="0.001">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: true
+Received: false
+    at Object.toBe (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/services/integration/auth-service-integration.test.ts:303:30)</failure>
+    </testcase>
+    <testcase classname="Auth Service Integration Tests User Management Operations should retrieve user by email" name="Auth Service Integration Tests User Management Operations should retrieve user by email" time="0.001">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: true
+Received: false
+    at Object.toBe (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/services/integration/auth-service-integration.test.ts:314:30)</failure>
+    </testcase>
+    <testcase classname="Auth Service Integration Tests User Management Operations should update user profile" name="Auth Service Integration Tests User Management Operations should update user profile" time="0.001">
+      <failure>Error: expect(received).toEqual(expected) // deep equality
+
+Expected: {&quot;email&quot;: &quot;test@example.com&quot;, &quot;id&quot;: &quot;user-123&quot;, &quot;name&quot;: &quot;Updated Name&quot;, &quot;role&quot;: &quot;USER&quot;}
+Received: undefined
+    at Object.toEqual (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/services/integration/auth-service-integration.test.ts:335:27)</failure>
+    </testcase>
+    <testcase classname="Auth Service Integration Tests User Management Operations should handle user not found scenarios" name="Auth Service Integration Tests User Management Operations should handle user not found scenarios" time="0.001">
+    </testcase>
+    <testcase classname="Auth Service Integration Tests Password Management should change password with valid current password" name="Auth Service Integration Tests Password Management should change password with valid current password" time="0.004">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: true
+Received: false
+    at Object.toBe (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/services/integration/auth-service-integration.test.ts:372:30)</failure>
+    </testcase>
+    <testcase classname="Auth Service Integration Tests Password Management should reject password change with invalid current password" name="Auth Service Integration Tests Password Management should reject password change with invalid current password" time="0.001">
+    </testcase>
+    <testcase classname="Auth Service Integration Tests Password Management should handle user without password set" name="Auth Service Integration Tests Password Management should handle user without password set" time="0.001">
+    </testcase>
+    <testcase classname="Auth Service Integration Tests Data Validation and Type Safety should validate session data format" name="Auth Service Integration Tests Data Validation and Type Safety should validate session data format" time="0">
+    </testcase>
+    <testcase classname="Auth Service Integration Tests Data Validation and Type Safety should reject invalid session data" name="Auth Service Integration Tests Data Validation and Type Safety should reject invalid session data" time="0">
+    </testcase>
+    <testcase classname="Auth Service Integration Tests Data Validation and Type Safety should validate auth user data format" name="Auth Service Integration Tests Data Validation and Type Safety should validate auth user data format" time="0">
+    </testcase>
+    <testcase classname="Auth Service Integration Tests Data Validation and Type Safety should reject invalid auth user data" name="Auth Service Integration Tests Data Validation and Type Safety should reject invalid auth user data" time="0">
+    </testcase>
+    <testcase classname="Auth Service Integration Tests Mobile SDK Compatibility should provide serializable authentication results" name="Auth Service Integration Tests Mobile SDK Compatibility should provide serializable authentication results" time="0.001">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: true
+Received: false
+    at Object.toBe (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/services/integration/auth-service-integration.test.ts:487:30)</failure>
+    </testcase>
+    <testcase classname="Auth Service Integration Tests Mobile SDK Compatibility should handle async operations with proper error boundaries" name="Auth Service Integration Tests Mobile SDK Compatibility should handle async operations with proper error boundaries" time="0.001">
+    </testcase>
+    <testcase classname="Auth Service Integration Tests Mobile SDK Compatibility should support React Native environment simulation" name="Auth Service Integration Tests Mobile SDK Compatibility should support React Native environment simulation" time="0.001">
+    </testcase>
+    <testcase classname="Auth Service Integration Tests Security and Access Control should enforce profile update access control" name="Auth Service Integration Tests Security and Access Control should enforce profile update access control" time="0.001">
+    </testcase>
+    <testcase classname="Auth Service Integration Tests Security and Access Control should validate profile update data" name="Auth Service Integration Tests Security and Access Control should validate profile update data" time="0.001">
+    </testcase>
+    <testcase classname="Auth Service Integration Tests Security and Access Control should handle validation errors gracefully" name="Auth Service Integration Tests Security and Access Control should handle validation errors gracefully" time="0.001">
+    </testcase>
+    <testcase classname="Auth Service Integration Tests Performance and Reliability should handle authentication efficiently" name="Auth Service Integration Tests Performance and Reliability should handle authentication efficiently" time="0.001">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: true
+Received: false
+    at Object.toBe (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/services/integration/auth-service-integration.test.ts:595:30)</failure>
+    </testcase>
+    <testcase classname="Auth Service Integration Tests Performance and Reliability should handle concurrent authentication requests" name="Auth Service Integration Tests Performance and Reliability should handle concurrent authentication requests" time="0.004">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: true
+Received: false
+    at toBe (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/services/integration/auth-service-integration.test.ts:622:32)
+    at Array.forEach (&lt;anonymous&gt;)
+    at Object.forEach (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/services/integration/auth-service-integration.test.ts:621:15)</failure>
     </testcase>
   </testsuite>
 </testsuites>

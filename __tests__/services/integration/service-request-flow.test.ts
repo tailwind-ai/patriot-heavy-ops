@@ -35,6 +35,23 @@ jest.mock("@/lib/db", () => ({
   },
 }))
 
+// Properly typed mocks
+const mockDb = {
+  serviceRequest: {
+    findMany: jest.fn(),
+    findUnique: jest.fn(),
+    create: jest.fn(),
+    update: jest.fn(),
+    delete: jest.fn(),
+    count: jest.fn(),
+  },
+  user: {
+    findUnique: jest.fn(),
+    create: jest.fn(),
+    update: jest.fn(),
+  },
+} as any
+
 // Mock permissions
 jest.mock("@/lib/permissions", () => ({
   hasPermissionSafe: jest.fn().mockReturnValue(true),
@@ -52,7 +69,6 @@ jest.mock("@/lib/validations/service-request", () => ({
   },
 }))
 
-const mockDb = db as jest.Mocked<typeof db>
 
 describe("Service Request Flow Integration Tests", () => {
   let serviceRequestService: ServiceRequestService
@@ -263,9 +279,9 @@ describe("Service Request Flow Integration Tests", () => {
   })
 
   describe("Service Layer Independence", () => {
-    it("should operate without external framework dependencies", () => {
-      // Verify no Next.js imports
-      const serviceModule = require("@/lib/services/service-request-service")
+    it("should operate without external framework dependencies", async () => {
+      // Verify no Next.js imports using dynamic import
+      const serviceModule = await import("@/lib/services/service-request-service")
       expect(serviceModule.ServiceRequestService).toBeDefined()
       
       // Verify service can be instantiated independently
