@@ -64,6 +64,7 @@ jobs:
           npx tsx scripts/todo-cli.ts analyze-workflow ${{ github.event.workflow_run.id }} $PR_NUMBER
         env:
           GITHUB_ACCESS_TOKEN: ${{ secrets.SAM_PAT_EXP_09_04_2026 }}
+          GH_TOKEN: ${{ secrets.SAM_PAT_EXP_09_04_2026 }}
 
       - name: Upload failure analysis
         if: always()
@@ -133,6 +134,7 @@ jobs:
           fi
         env:
           GITHUB_ACCESS_TOKEN: ${{ secrets.SAM_PAT_EXP_09_04_2026 }}
+          GH_TOKEN: ${{ secrets.SAM_PAT_EXP_09_04_2026 }}
 
       - name: Upload updated todos
         if: always()
@@ -221,6 +223,7 @@ jobs:
           fi
         env:
           GITHUB_ACCESS_TOKEN: ${{ secrets.SAM_PAT_EXP_09_04_2026 }}
+          GH_TOKEN: ${{ secrets.SAM_PAT_EXP_09_04_2026 }}
 
       - name: Check for new todos
         run: |
