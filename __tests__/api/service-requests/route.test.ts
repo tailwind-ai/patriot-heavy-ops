@@ -282,7 +282,7 @@ describe("/api/service-requests", () => {
           "POST",
           "http://localhost:3000/api/service-requests",
           VALID_SERVICE_REQUEST_DATA
-        ) as NextRequest
+        )
         const response = await POST(request)
 
         assertResponse(response, 401)
@@ -306,7 +306,7 @@ describe("/api/service-requests", () => {
           "POST",
           "http://localhost:3000/api/service-requests",
           VALID_SERVICE_REQUEST_DATA
-        ) as NextRequest
+        )
         const response = await POST(request)
 
         assertResponse(response, 200)
@@ -337,7 +337,7 @@ describe("/api/service-requests", () => {
           "POST",
           "http://localhost:3000/api/service-requests",
           VALID_SERVICE_REQUEST_DATA
-        ) as NextRequest
+        )
         const response = await POST(request)
 
         assertResponse(response, 200)
@@ -359,7 +359,7 @@ describe("/api/service-requests", () => {
           "POST",
           "http://localhost:3000/api/service-requests",
           VALID_SERVICE_REQUEST_DATA
-        ) as NextRequest
+        )
         const response = await POST(request)
 
         assertResponse(response, 200)
@@ -381,7 +381,7 @@ describe("/api/service-requests", () => {
           "POST",
           "http://localhost:3000/api/service-requests",
           VALID_SERVICE_REQUEST_DATA
-        ) as NextRequest
+        )
         const response = await POST(request)
 
         assertResponse(response, 200)
@@ -397,7 +397,7 @@ describe("/api/service-requests", () => {
           "POST",
           "http://localhost:3000/api/service-requests",
           INVALID_SERVICE_REQUEST_DATA
-        ) as NextRequest
+        )
         const response = await POST(request)
 
         assertResponse(response, 422)
@@ -420,7 +420,7 @@ describe("/api/service-requests", () => {
           "POST",
           "http://localhost:3000/api/service-requests",
           invalidData
-        ) as NextRequest
+        )
         const response = await POST(request)
 
         assertResponse(response, 422)
@@ -439,7 +439,7 @@ describe("/api/service-requests", () => {
           "POST",
           "http://localhost:3000/api/service-requests",
           invalidData
-        ) as NextRequest
+        )
         const response = await POST(request)
 
         assertResponse(response, 422)
@@ -463,7 +463,7 @@ describe("/api/service-requests", () => {
           "POST",
           "http://localhost:3000/api/service-requests",
           VALID_SERVICE_REQUEST_DATA
-        ) as NextRequest
+        )
         const response = await POST(request)
 
         assertResponse(response, 200)
@@ -521,7 +521,7 @@ describe("/api/service-requests", () => {
           "POST",
           "http://localhost:3000/api/service-requests",
           VALID_SERVICE_REQUEST_DATA
-        ) as NextRequest
+        )
         const response = await POST(request)
 
         assertResponse(response, 500)

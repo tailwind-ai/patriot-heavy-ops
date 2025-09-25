@@ -726,7 +726,7 @@ async function applyAutoFix(todo: EnhancedTodoItem): Promise<boolean> {
 // Run if called directly
 if (require.main === module) {
   main().catch((error) => {
-    console.error("❌ Error:", error.message)
+    console.error("❌ Error:", error instanceof Error ? error.message : String(error))
     process.exit(1)
   })
 }

@@ -50,6 +50,18 @@ export async function POST(
     const result = await authService.authenticate({ email, password })
 
     if (!result.success) {
+      // Check if it's a database error vs authentication failure
+      const errorMessage = String(result.error?.details?.originalError || result.error?.message || "")
+      if (errorMessage.toLowerCase().includes("database") || errorMessage.toLowerCase().includes("connection")) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: "Authentication failed",
+          },
+          { status: 500 }
+        )
+      }
+      
       return NextResponse.json(
         {
           success: false,

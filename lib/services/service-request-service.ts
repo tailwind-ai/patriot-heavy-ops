@@ -563,9 +563,9 @@ export class ServiceRequestService extends BaseService {
     const startDate = new Date(data.startDate)
     const now = new Date()
 
-    // Start date must be in the future (allow same day if time is later)
-    if (startDate.getTime() <= now.getTime()) {
-      errors.push("Start date must be in the future")
+    // Start date must be in the future or current time (allow scheduling for now or later)
+    if (startDate.getTime() < now.getTime()) {
+      errors.push("Start date cannot be in the past")
     }
 
     // End date validation if provided
@@ -734,11 +734,8 @@ export class ServiceRequestService extends BaseService {
 
     // Validate input data (exclude requestedTotalHours as it will be calculated)
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { requestedTotalHours, ...inputForValidation } = input as any
-    const validation = serviceRequestSchema.safeParse({
-      ...inputForValidation,
-      requestedTotalHours: 0, // Will be calculated
-    })
+    const { requestedTotalHours, ...inputForValidation } = input as ServiceRequestCreateInput & { requestedTotalHours?: number }
+    const validation = serviceRequestSchema.omit({ requestedTotalHours: true }).safeParse(inputForValidation)
 
     if (!validation.success) {
       return this.createError(
@@ -825,8 +822,15 @@ export class ServiceRequestService extends BaseService {
           options.userId
         )
 
-        if (!hasAccess.success || !hasAccess.data) {
-          throw new Error("Access denied to this service request")
+        if (!hasAccess.success) {
+          // Database error in access verification
+          throw new Error(hasAccess.error?.message || "Database error")
+        }
+        if (!hasAccess.data) {
+          // No access (count = 0)
+          const error = new Error("Access denied to this service request")
+          error.name = "ACCESS_DENIED"
+          throw error
         }
 
         const serviceRequest = await db.serviceRequest.findUnique({
@@ -863,7 +867,9 @@ export class ServiceRequestService extends BaseService {
         })
 
         if (!serviceRequest) {
-          throw new Error("Service request not found")
+          const error = new Error("Service request not found")
+          error.name = "NOT_FOUND"
+          throw error
         }
 
         return serviceRequest
@@ -906,8 +912,15 @@ export class ServiceRequestService extends BaseService {
       async () => {
         // Check access
         const hasAccess = await this.verifyUserHasAccessToRequest(requestId, userId)
-        if (!hasAccess.success || !hasAccess.data) {
-          throw new Error("Access denied to this service request")
+        if (!hasAccess.success) {
+          // Database error in access verification
+          throw new Error(hasAccess.error?.message || "Database error")
+        }
+        if (!hasAccess.data) {
+          // No access (count = 0)
+          const error = new Error("Access denied to this service request")
+          error.name = "ACCESS_DENIED"
+          throw error
         }
 
         const updateData: any = {
@@ -918,8 +931,8 @@ export class ServiceRequestService extends BaseService {
         if (updates.title !== undefined) updateData.title = updates.title
         if (updates.description !== undefined) updateData.description = updates.description
         if (updates.transport !== undefined) updateData.transport = updates.transport
-        if (updates.startDate !== undefined) updateData.startDate = updates.startDate
-        if (updates.endDate !== undefined) updateData.endDate = updates.endDate
+        if (updates.startDate !== undefined) updateData.startDate = new Date(updates.startDate)
+        if (updates.endDate !== undefined) updateData.endDate = new Date(updates.endDate)
         if (updates.equipmentCategory !== undefined) updateData.equipmentCategory = updates.equipmentCategory
         if (updates.equipmentDetail !== undefined) updateData.equipmentDetail = updates.equipmentDetail
         if (updates.internalNotes !== undefined) updateData.internalNotes = updates.internalNotes
@@ -962,8 +975,15 @@ export class ServiceRequestService extends BaseService {
       async () => {
         // Check access
         const hasAccess = await this.verifyUserHasAccessToRequest(requestId, userId)
-        if (!hasAccess.success || !hasAccess.data) {
-          throw new Error("Access denied to this service request")
+        if (!hasAccess.success) {
+          // Database error in access verification
+          throw new Error(hasAccess.error?.message || "Database error")
+        }
+        if (!hasAccess.data) {
+          // No access (count = 0)
+          const error = new Error("Access denied to this service request")
+          error.name = "ACCESS_DENIED"
+          throw error
         }
 
         await db.serviceRequest.delete({
@@ -996,8 +1016,8 @@ export class ServiceRequestService extends BaseService {
         })
         return count > 0
       },
-      "ACCESS_DENIED",
-      "Access denied to this service request"
+      "DATABASE_ERROR",
+      "Failed to verify access to service request"
     )
   }
 }

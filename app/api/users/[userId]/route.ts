@@ -64,7 +64,10 @@ export async function PATCH(
       }
       if (result.error?.code === "VALIDATION_ERROR") {
         // Extract issues from the details object to match expected format
-        const issues = result.error.details?.issues || result.error.details || []
+        // Ensure details.issues is always present and is an array
+        const details = result.error.details || {}
+        const issues = Array.isArray(details.issues) ? details.issues : 
+                      Array.isArray(details) ? details : []
         return new Response(JSON.stringify(issues), { status: 422 })
       }
       return new Response(null, { status: 500 })

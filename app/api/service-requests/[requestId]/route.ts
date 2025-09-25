@@ -57,7 +57,7 @@ export async function GET(
       if (result.error?.code === "ACCESS_DENIED") {
         return new Response(null, { status: 403 })
       }
-      if (result.error?.message?.includes("not found")) {
+      if (result.error?.code === "NOT_FOUND") {
         return new Response(null, { status: 404 })
       }
       return new Response(null, { status: 500 })
@@ -96,7 +96,8 @@ export async function PATCH(
         return new Response(null, { status: 403 })
       }
       if (result.error?.code === "VALIDATION_ERROR") {
-        return new Response(JSON.stringify(result.error.details), { status: 422 })
+        const issues = result.error.details?.issues || result.error.details
+        return new Response(JSON.stringify(issues), { status: 422 })
       }
       return new Response(null, { status: 500 })
     }

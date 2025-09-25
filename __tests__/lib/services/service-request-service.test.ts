@@ -568,7 +568,7 @@ describe("ServiceRequestService", () => {
 
       expect(result.success).toBe(true)
       expect(result.data?.isValid).toBe(false)
-      expect(result.data?.errors).toContain("Start date must be in the future")
+      expect(result.data?.errors).toContain("Start date cannot be in the past")
     })
 
     it("should reject end date before start date", () => {

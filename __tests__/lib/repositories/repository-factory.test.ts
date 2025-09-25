@@ -17,7 +17,7 @@ jest.mock("@/lib/db", () => ({
 }))
 
 // Get reference to the mocked db for testing
-const mockDatabase = require("@/lib/db").db
+const mockDatabase = require("@/lib/db").db // eslint-disable-line @typescript-eslint/no-require-imports
 
 describe("RepositoryFactory", () => {
   beforeEach(() => {
@@ -206,7 +206,7 @@ describe("RepositoryFactory", () => {
       // Mock the factory method
       jest.spyOn(RepositoryFactory, 'getServiceRequestRepository').mockReturnValue(mockRepo)
 
-      const { repositories } = require("@/lib/repositories")
+      const { repositories } = require("@/lib/repositories") // eslint-disable-line @typescript-eslint/no-require-imports
       repositories.getServiceRequests("user123", "USER")
 
       expect(mockRepo.findManyWithRoleAccess).toHaveBeenCalledWith({
@@ -222,7 +222,7 @@ describe("RepositoryFactory", () => {
 
       jest.spyOn(RepositoryFactory, 'getServiceRequestRepository').mockReturnValue(mockRepo)
 
-      const { repositories } = require("@/lib/repositories")
+      const { repositories } = require("@/lib/repositories") // eslint-disable-line @typescript-eslint/no-require-imports
       const createData = { title: "Test", userId: "user123" } as any
       repositories.createServiceRequest(createData)
 
@@ -236,7 +236,7 @@ describe("RepositoryFactory", () => {
 
       jest.spyOn(RepositoryFactory, 'getUserRepository').mockReturnValue(mockRepo)
 
-      const { repositories } = require("@/lib/repositories")
+      const { repositories } = require("@/lib/repositories") // eslint-disable-line @typescript-eslint/no-require-imports
       repositories.getUserById("user123")
 
       expect(mockRepo.findById).toHaveBeenCalledWith("user123")
@@ -249,7 +249,7 @@ describe("RepositoryFactory", () => {
 
       jest.spyOn(RepositoryFactory, 'getUserRepository').mockReturnValue(mockRepo)
 
-      const { repositories } = require("@/lib/repositories")
+      const { repositories } = require("@/lib/repositories") // eslint-disable-line @typescript-eslint/no-require-imports
       repositories.getUserByEmail("user@example.com")
 
       expect(mockRepo.findByEmail).toHaveBeenCalledWith("user@example.com")
@@ -262,7 +262,7 @@ describe("RepositoryFactory", () => {
 
       jest.spyOn(RepositoryFactory, 'getUserRepository').mockReturnValue(mockRepo)
 
-      const { repositories } = require("@/lib/repositories")
+      const { repositories } = require("@/lib/repositories") // eslint-disable-line @typescript-eslint/no-require-imports
       const userData = { email: "user@example.com" } as any
       repositories.createUser(userData)
 
@@ -276,7 +276,7 @@ describe("RepositoryFactory", () => {
 
       jest.spyOn(RepositoryFactory, 'getUserRepository').mockReturnValue(mockRepo)
 
-      const { repositories } = require("@/lib/repositories")
+      const { repositories } = require("@/lib/repositories") // eslint-disable-line @typescript-eslint/no-require-imports
       const updateData = { name: "Updated Name" } as any
       repositories.updateUser("user123", updateData)
 
@@ -290,7 +290,7 @@ describe("RepositoryFactory", () => {
 
       jest.spyOn(RepositoryFactory, 'getUserRepository').mockReturnValue(mockRepo)
 
-      const { repositories } = require("@/lib/repositories")
+      const { repositories } = require("@/lib/repositories") // eslint-disable-line @typescript-eslint/no-require-imports
       const filters = { preferredLocations: ["Texas"] }
       repositories.getAvailableOperators(filters)
 

@@ -89,7 +89,8 @@ export async function POST(req: NextRequest) {
         )
       }
       if (result.error?.code === "VALIDATION_ERROR") {
-        return new Response(JSON.stringify(result.error.details), { status: 422 })
+        const issues = result.error.details?.issues || result.error.details
+        return new Response(JSON.stringify(issues), { status: 422 })
       }
       return new Response(null, { status: 500 })
     }

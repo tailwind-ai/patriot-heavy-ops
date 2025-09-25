@@ -86,7 +86,6 @@ export class AuthService extends BaseService {
             id: true,
             email: true,
             name: true,
-            image: true,
             role: true,
             password: true,
           },
@@ -164,7 +163,6 @@ export class AuthService extends BaseService {
             id: true,
             email: true,
             name: true,
-            image: true,
             role: true,
           },
         })
@@ -201,7 +199,6 @@ export class AuthService extends BaseService {
             id: true,
             email: true,
             name: true,
-            image: true,
             role: true,
           },
         })
@@ -242,7 +239,6 @@ export class AuthService extends BaseService {
             id: true,
             email: true,
             name: true,
-            image: true,
             role: true,
           },
         })
@@ -286,7 +282,6 @@ export class AuthService extends BaseService {
             id: true,
             email: true,
             name: true,
-            image: true,
             role: true,
           },
         })
