@@ -1,50 +1,6 @@
 [
   {
     "id": "github-1",
-    "content": "Using 'any' type defeats the purpose of TypeScript's type safety. Instead, define a proper type for the destructuring operation or use a more specific type assertion.",
-    "status": "completed",
-    "priority": "high",
-    "dependencies": [],
-    "issueType": "ci_failure",
-    "files": [
-      "lib/services/service-request-service.ts"
-    ],
-    "lineNumbers": [
-      231
-    ],
-    "suggestedFix": "",
-    "createdAt": "2025-09-25T01:06:53.258Z",
-    "updatedAt": "2025-09-25T01:06:53.722Z",
-    "estimatedTime": "10-30 min",
-    "tags": [
-      "ci-failure",
-      "high"
-    ],
-    "assignee": "general-developer",
-    "relatedPR": "#243"
-  },
-  {
-    "id": "github-5",
-    "content": "CI Failure: auto-fix-todos - Unable to analyze failure logs - check permissions",
-    "status": "pending",
-    "priority": "high",
-    "dependencies": [],
-    "issueType": "ci_failure",
-    "files": [],
-    "lineNumbers": [],
-    "suggestedFix": "Verify GitHub token has Actions:read permissions",
-    "createdAt": "2025-09-25T01:06:53.258Z",
-    "updatedAt": "2025-09-25T01:06:53.258Z",
-    "estimatedTime": "10-30 min",
-    "tags": [
-      "ci-failure",
-      "high"
-    ],
-    "assignee": "general-developer",
-    "relatedPR": "#243"
-  },
-  {
-    "id": "github-6",
     "content": "CI Failure: test - Unable to analyze failure logs - check permissions",
     "status": "pending",
     "priority": "high",
@@ -53,89 +9,14 @@
     "files": [],
     "lineNumbers": [],
     "suggestedFix": "Verify GitHub token has Actions:read permissions",
-    "createdAt": "2025-09-25T01:06:53.258Z",
-    "updatedAt": "2025-09-25T01:06:53.258Z",
+    "createdAt": "2025-09-25T01:32:51.302Z",
+    "updatedAt": "2025-09-25T01:32:51.302Z",
     "estimatedTime": "10-30 min",
     "tags": [
       "ci-failure",
       "high"
     ],
     "assignee": "general-developer",
-    "relatedPR": "#243"
-  },
-  {
-    "id": "github-2",
-    "content": "Using 'any' type for updateData reduces type safety. Consider defining a proper interface or using Partial<ServiceRequestUpdateInput> with proper date handling.",
-    "status": "completed",
-    "priority": "medium",
-    "dependencies": [],
-    "issueType": "copilot_comment",
-    "files": [
-      "lib/services/service-request-service.ts"
-    ],
-    "lineNumbers": [
-      1
-    ],
-    "suggestedFix": "",
-    "createdAt": "2025-09-25T01:06:53.258Z",
-    "updatedAt": "2025-09-25T01:06:53.723Z",
-    "estimatedTime": "5-15 min",
-    "tags": [
-      "copilot-comment",
-      "medium"
-    ],
-    "assignee": "general-developer",
-    "relatedPR": "#243"
-  },
-  {
-    "id": "github-3",
-    "content": "// Standardize extraction of validation issues",
-    "status": "pending",
-    "priority": "medium",
-    "dependencies": [],
-    "issueType": "copilot_comment",
-    "files": [
-      "app/api/users/[userId]/route.ts"
-    ],
-    "lineNumbers": [
-      92
-    ],
-    "suggestedFix": "",
-    "createdAt": "2025-09-25T01:06:53.258Z",
-    "updatedAt": "2025-09-25T01:06:53.258Z",
-    "estimatedTime": "5-15 min",
-    "tags": [
-      "copilot-comment",
-      "medium",
-      "api"
-    ],
-    "assignee": "api-specialist",
-    "relatedPR": "#243"
-  },
-  {
-    "id": "github-4",
-    "content": "If authentication succeeds but user data is missing, this should return a 401 status (authentication failed) rather than 500 (server error). The 500 status suggests an internal server error, which is misleading.",
-    "status": "pending",
-    "priority": "medium",
-    "dependencies": [],
-    "issueType": "copilot_comment",
-    "files": [
-      "app/api/auth/mobile/login/route.ts"
-    ],
-    "lineNumbers": [
-      1
-    ],
-    "suggestedFix": "",
-    "createdAt": "2025-09-25T01:06:53.258Z",
-    "updatedAt": "2025-09-25T01:06:53.258Z",
-    "estimatedTime": "5-15 min",
-    "tags": [
-      "copilot-comment",
-      "medium",
-      "authentication",
-      "api"
-    ],
-    "assignee": "auth-specialist",
-    "relatedPR": "#243"
+    "relatedPR": "#244"
   }
 ]
