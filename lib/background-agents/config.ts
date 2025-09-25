@@ -2,7 +2,7 @@ export const BACKGROUND_AGENT_CONFIG = {
   // GitHub configuration
   github: {
     // Branches to monitor
-    monitoredBranches: ["sam-dev", "main"],
+    monitoredBranches: ["dev", "main"],
 
     // Events to monitor
     monitoredEvents: [

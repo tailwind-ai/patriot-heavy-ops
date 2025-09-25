@@ -91,7 +91,7 @@ The agent is configured in `lib/background-agents/config.ts`:
 ```typescript
 export const BACKGROUND_AGENT_CONFIG = {
   github: {
-    monitoredBranches: ["sam-dev", "main"],
+    monitoredBranches: ["dev", "main"],
     monitoredEvents: [
       "pull_request.opened",
       "pull_request.synchronize",
@@ -124,7 +124,7 @@ You can customize the agent behavior by modifying:
 
 Once configured, the agent operates automatically:
 
-1. **PR Creation**: When a PR is created on `sam-dev` or `main`
+1. **PR Creation**: When a PR is created on `dev` or `main`
 2. **Comment Detection**: When Copilot or other tools post suggestions
 3. **CI Failure**: When GitHub Actions or Vercel deployments fail
 4. **Issue Analysis**: Agent analyzes the issue and determines appropriate fixes

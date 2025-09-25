@@ -153,7 +153,7 @@ This service layer foundation provides:
 
 ---
 
-**Branch**: `sam-dev`  
+**Branch**: `dev`  
 **Estimated Effort**: 6 hours completed  
 **Dependencies**: None  
 **Blocks**: Issues #2-8

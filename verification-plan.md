@@ -147,8 +147,8 @@ npx prisma db seed
 # Rollback to previous commit
 git reset --hard HEAD~1
 
-# Or switch back to sam-dev branch
-git checkout sam-dev
+# Or switch back to dev branch
+git checkout dev
 
 # Or rollback specific files
 git checkout HEAD~1 -- tsconfig.json .eslintrc.json
