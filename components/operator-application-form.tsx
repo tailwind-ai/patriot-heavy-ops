@@ -1,14 +1,9 @@
 "use client"
 
 import * as React from "react"
-import { useRouter } from "next/navigation"
-import { zodResolver } from "@hookform/resolvers/zod"
 import type { User } from "@prisma/client"
-import { useForm } from "react-hook-form"
-import * as z from "zod"
 
 import { cn } from "@/lib/utils"
-import { operatorApplicationSchema } from "@/lib/validations/user"
 import { buttonVariants } from "@/components/ui/button"
 import {
   Card,
@@ -20,21 +15,12 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { toast } from "@/components/ui/use-toast"
 import { Icons } from "@/components/icons"
+import { useOperatorApplicationForm } from "@/hooks/use-operator-application-form"
 
 interface OperatorApplicationFormProps
   extends React.HTMLAttributes<HTMLFormElement> {
   user: Pick<User, "id" | "name">
-}
-
-type FormData = z.infer<typeof operatorApplicationSchema>
-
-interface AddressSuggestion {
-  display_name: string
-  lat: string
-  lon: string
-  place_id: string
 }
 
 export function OperatorApplicationForm({
@@ -42,100 +28,22 @@ export function OperatorApplicationForm({
   className,
   ...props
 }: OperatorApplicationFormProps) {
-  const router = useRouter()
+  const {
+    form,
+    onSubmit,
+    isSaving,
+    isLoading,
+    inputValue,
+    suggestions,
+    handleInputChange,
+    handleAddressSelect,
+    handleSuggestionsBlur,
+  } = useOperatorApplicationForm({ user })
+
   const {
     handleSubmit,
-    setValue,
     formState: { errors },
-  } = useForm<FormData>({
-    resolver: zodResolver(operatorApplicationSchema),
-    defaultValues: {
-      location: "",
-    },
-  })
-  const [isSaving, setIsSaving] = React.useState<boolean>(false)
-  const [inputValue, setInputValue] = React.useState("")
-  const [suggestions, setSuggestions] = React.useState<AddressSuggestion[]>([])
-  const [isLoading, setIsLoading] = React.useState(false)
-  const debounceRef = React.useRef<NodeJS.Timeout | null>(null)
-
-  // const selectedLocation = watch("location")
-
-  // Debounced address search
-  const searchAddresses = React.useCallback(async (query: string) => {
-    if (query.length < 3) {
-      setSuggestions([])
-      return
-    }
-
-    setIsLoading(true)
-    try {
-      const url = `/api/geocoding?q=${encodeURIComponent(query)}`
-
-      const response = await fetch(url)
-      const data = await response.json()
-
-      setSuggestions(data || [])
-    } catch {
-      setSuggestions([])
-    } finally {
-      setIsLoading(false)
-    }
-  }, [])
-
-  // Handle input change with debouncing
-  const handleInputChange = (value: string) => {
-    setInputValue(value)
-    setValue("location", value) // Update form value as user types
-
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current)
-    }
-
-    debounceRef.current = setTimeout(() => {
-      searchAddresses(value)
-    }, 300)
-  }
-
-  // Handle address selection
-  const handleAddressSelect = (suggestion: AddressSuggestion) => {
-    const formattedAddress = suggestion.display_name
-    setInputValue(formattedAddress)
-    setValue("location", formattedAddress)
-    setSuggestions([]) // Clear suggestions to hide dropdown
-  }
-
-  async function onSubmit(data: FormData) {
-    setIsSaving(true)
-
-    const response = await fetch(`/api/users/${user.id}/operator-application`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        location: data.location,
-      }),
-    })
-
-    setIsSaving(false)
-
-    if (!response?.ok) {
-      toast({
-        title: "Something went wrong.",
-        description: "Your application was not submitted. Please try again.",
-        variant: "destructive",
-      })
-      return
-    }
-
-    toast({
-      description: "Your operator application has been submitted for review.",
-    })
-
-    router.refresh()
-    return
-  }
+  } = form
 
   return (
     <form
@@ -158,10 +66,7 @@ export function OperatorApplicationForm({
               <Input
                 value={inputValue}
                 onChange={(e) => handleInputChange(e.target.value)}
-                onBlur={() => {
-                  // Hide dropdown after a short delay to allow clicks on suggestions
-                  setTimeout(() => setSuggestions([]), 150)
-                }}
+                onBlur={handleSuggestionsBlur}
                 placeholder="Enter city, state, or address..."
                 className="w-[400px]"
               />
