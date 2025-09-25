@@ -1,8 +1,6 @@
 name: Background Agent
 
 on:
-  pull_request_review:
-    types: [submitted]
   issue_comment:
     types: [created]
   status:
@@ -12,6 +10,12 @@ on:
   workflow_run:
     workflows: ["CI Tests"]
     types: [completed]
+
+permissions:
+  actions: read
+  contents: read
+  issues: write
+  pull-requests: write
 
 jobs:
   # Analyze CI/CD workflow failures and check comment resolution
@@ -34,16 +38,16 @@ jobs:
 
       - name: Setup environment
         run: |
-          echo "GITHUB_ACCESS_TOKEN=${{ secrets.SAM_PAT_EXP_09_04_2026 }}" >> .env.local
+          echo "GITHUB_ACCESS_TOKEN=${{ github.token }}" >> .env.local
           echo "NODE_ENV=production" >> .env.local
         env:
-          GITHUB_ACCESS_TOKEN: ${{ secrets.SAM_PAT_EXP_09_04_2026 }}
+          GITHUB_ACCESS_TOKEN: ${{ github.token }}
 
       - name: Check for unresolved review comments
         id: check-comments
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ github.token }}
           script: |
             // Find associated PR for this workflow run
             const { data: prs } = await github.rest.pulls.list({
@@ -85,6 +89,9 @@ jobs:
           echo "Run ID: ${{ github.event.workflow_run.id }}"
           echo "Conclusion: ${{ github.event.workflow_run.conclusion }}"
 
+          # Set up GitHub CLI authentication
+          echo "${{ github.token }}" | gh auth login --with-token
+
           # Find associated PR for this workflow run
           PR_NUMBER=$(gh pr list --state open --json number,headRefName --jq '.[] | select(.headRefName == "${{ github.event.workflow_run.head_branch }}") | .number' | head -1)
 
@@ -96,10 +103,7 @@ jobs:
           echo "Found PR #$PR_NUMBER for failed workflow"
 
           # Use enhanced log analysis
-          npx tsx scripts/todo-cli.ts analyze-workflow ${{ github.event.workflow_run.id }} $PR_NUMBER
-        env:
-          GITHUB_ACCESS_TOKEN: ${{ secrets.SAM_PAT_EXP_09_04_2026 }}
-          GH_TOKEN: ${{ secrets.SAM_PAT_EXP_09_04_2026 }}
+          GITHUB_ACCESS_TOKEN="${{ github.token }}" GH_TOKEN="${{ github.token }}" npx tsx scripts/todo-cli.ts analyze-workflow ${{ github.event.workflow_run.id }} $PR_NUMBER
 
       - name: Upload failure analysis
         if: always()
@@ -112,7 +116,7 @@ jobs:
   # Monitor Copilot comments and PR events
   background-agent:
     runs-on: ubuntu-latest
-    if: github.event.issue.pull_request || github.event_name == 'pull_request_review' || github.event_name == 'issue_comment' || github.event_name == 'status' || github.event_name == 'check_run'
+    if: github.event.issue.pull_request || github.event_name == 'issue_comment' || github.event_name == 'status' || github.event_name == 'check_run'
 
     steps:
       - name: Checkout code
@@ -129,17 +133,15 @@ jobs:
 
       - name: Setup environment
         run: |
-          echo "GITHUB_ACCESS_TOKEN=${{ secrets.SAM_PAT_EXP_09_04_2026 }}" >> .env.local
+          echo "GITHUB_ACCESS_TOKEN=${{ github.token }}" >> .env.local
           echo "NODE_ENV=production" >> .env.local
         env:
-          GITHUB_ACCESS_TOKEN: ${{ secrets.SAM_PAT_EXP_09_04_2026 }}
+          GITHUB_ACCESS_TOKEN: ${{ github.token }}
 
       - name: Trigger Background Agent
         run: |
           # Get PR number from context
-          if [ "${{ github.event_name }}" = "pull_request_review" ]; then
-            PR_NUMBER=${{ github.event.pull_request.number }}
-          elif [ "${{ github.event_name }}" = "issue_comment" ]; then
+          if [ "${{ github.event_name }}" = "issue_comment" ]; then
             # Extract PR number from issue if it's a PR
             if [[ "${{ github.event.issue.pull_request }}" != "" ]]; then
               PR_NUMBER=${{ github.event.issue.number }}
@@ -166,8 +168,8 @@ jobs:
             npx tsx scripts/todo-cli.ts github $PR_NUMBER
           fi
         env:
-          GITHUB_ACCESS_TOKEN: ${{ secrets.SAM_PAT_EXP_09_04_2026 }}
-          GH_TOKEN: ${{ secrets.SAM_PAT_EXP_09_04_2026 }}
+          GITHUB_ACCESS_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ github.token }}
 
       - name: Check for new todos
         run: |
@@ -187,7 +189,7 @@ jobs:
           retention-days: 7
 
       - name: Comment on PR with results
-        if: github.event.pull_request || github.event_name == 'pull_request_review' || github.event_name == 'issue_comment' || github.event_name == 'status' || github.event_name == 'check_run'
+        if: github.event.pull_request || github.event_name == 'issue_comment' || github.event_name == 'status' || github.event_name == 'check_run'
         uses: actions/github-script@v7
         with:
           script: |
