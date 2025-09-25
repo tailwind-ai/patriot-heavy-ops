@@ -3,7 +3,7 @@ name: CI Tests
 on:
   pull_request:
     branches: [main, sam-dev]
-  push: 
+  push:
     branches: [sam-dev]
 
 concurrency:
@@ -58,7 +58,7 @@ jobs:
           path: build.tar.gz
 
       - name: Upload test logs
-        if: always()
+        if: always() && hashFiles('test-output.log') != ''
         uses: actions/upload-artifact@v4
         with:
           name: test-logs
@@ -71,8 +71,17 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const fs = require('fs');
-            const log = fs.readFileSync('test-output.log', 'utf8');
-            const summary = log.split('\n').slice(-20).join('\n');
+            let summary = 'Test logs not available';
+
+            try {
+              if (fs.existsSync('test-output.log')) {
+                const log = fs.readFileSync('test-output.log', 'utf8');
+                summary = log.split('\n').slice(-20).join('\n');
+              }
+            } catch (error) {
+              summary = `Error reading test logs: ${error.message}`;
+            }
+
             const issue_number = context.payload.pull_request.number;
             await github.rest.issues.createComment({
               ...context.repo,
