@@ -10,11 +10,70 @@ on:
   status:
   check_run:
     types: [completed]
+  # NEW: Monitor workflow completions for log analysis
+  workflow_run:
+    workflows: ["CI Tests", "CI/CD Pipeline"]
+    types: [completed]
 
 jobs:
+  # Analyze CI/CD workflow failures
+  analyze-failures:
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run && github.event.workflow_run.conclusion == 'failure'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup environment
+        run: |
+          echo "GITHUB_ACCESS_TOKEN=${{ secrets.SAM_PAT_EXP_09_04_2026 }}" >> .env.local
+          echo "NODE_ENV=production" >> .env.local
+        env:
+          GITHUB_ACCESS_TOKEN: ${{ secrets.SAM_PAT_EXP_09_04_2026 }}
+
+      - name: Analyze workflow failure logs
+        run: |
+          echo "🔍 Analyzing failed workflow: ${{ github.event.workflow_run.name }}"
+          echo "Run ID: ${{ github.event.workflow_run.id }}"
+          echo "Conclusion: ${{ github.event.workflow_run.conclusion }}"
+
+          # Find associated PR for this workflow run
+          PR_NUMBER=$(gh pr list --state open --json number,headRefName --jq '.[] | select(.headRefName == "${{ github.event.workflow_run.head_branch }}") | .number' | head -1)
+
+          if [ -z "$PR_NUMBER" ]; then
+            echo "No open PR found for branch ${{ github.event.workflow_run.head_branch }}, skipping"
+            exit 0
+          fi
+
+          echo "Found PR #$PR_NUMBER for failed workflow"
+
+          # Use enhanced log analysis
+          npx tsx scripts/todo-cli.ts analyze-workflow ${{ github.event.workflow_run.id }} $PR_NUMBER
+        env:
+          GITHUB_ACCESS_TOKEN: ${{ secrets.SAM_PAT_EXP_09_04_2026 }}
+
+      - name: Upload failure analysis
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: failure-analysis-${{ github.event.workflow_run.id }}
+          path: .todos.json
+          retention-days: 7
+
+  # Monitor Copilot comments and PR events
   background-agent:
     runs-on: ubuntu-latest
-    if: github.event.pull_request || github.event.issue.pull_request
+    if: github.event.pull_request || github.event.issue.pull_request || github.event_name == 'pull_request_review' || github.event_name == 'issue_comment'
 
     steps:
       - name: Checkout code

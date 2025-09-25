@@ -38,6 +38,17 @@ async function main() {
         }
         await initializeFromGitHubPRWithDoD(parseInt(prNumber))
         break
+      case "analyze-workflow":
+        const workflowRunId = process.argv[3]
+        const workflowPrNumber = process.argv[4]
+        if (!workflowRunId || !workflowPrNumber) {
+          console.log(
+            "❌ Please provide workflow run ID and PR number: npm run todo analyze-workflow <RUN_ID> <PR_NUMBER>"
+          )
+          process.exit(1)
+        }
+        await analyzeWorkflowFailure(workflowRunId, parseInt(workflowPrNumber))
+        break
       case "clear":
         await clearAllTodos()
         break
@@ -228,6 +239,52 @@ async function initializeFromGitHubPRWithDoD(prNumber: number) {
 
   if (todos.length === 0) {
     console.log("\n🎉 No issues found in GitHub PR #" + prNumber)
+  }
+}
+
+async function analyzeWorkflowFailure(workflowRunId: string, prNumber: number) {
+  console.log(`🔍 Analyzing workflow failure: Run ID ${workflowRunId} for PR #${prNumber}`)
+  
+  try {
+    // Use enhanced todo manager to analyze workflow logs
+    const todos = await enhancedTodoManager.analyzeWorkflowLogs(workflowRunId, prNumber)
+    console.log(`✅ Found ${todos.length} issues from workflow failure analysis`)
+
+    // Show summary
+    const summary = enhancedTodoManager.getProgressSummary()
+    console.log("\n📊 Summary:")
+    console.log(`  Total: ${summary.total}`)
+    console.log(`  Ready: ${summary.pending}`)
+    console.log(`  In Progress: ${summary.inProgress}`)
+    console.log(`  Completed: ${summary.completed}`)
+    console.log(`  Completion Rate: ${summary.completionRate.toFixed(1)}%`)
+
+    // Show the workflow failure todos
+    if (todos.length > 0) {
+      console.log("\n🚨 Workflow Failure Analysis:")
+      todos.forEach((todo, index) => {
+        const priority = getPriorityEmoji(todo.priority)
+        const status = getStatusEmoji(todo.status)
+        const typeIcon = getIssueTypeIcon(todo.issueType)
+        console.log(
+          `  ${index + 1}. ${status} ${priority} ${typeIcon} ${todo.content}`
+        )
+        if (todo.suggestedFix) {
+          console.log(`     💡 Fix: ${todo.suggestedFix}`)
+        }
+        if (todo.files && todo.files.length > 0) {
+          console.log(`     📁 Files: ${todo.files.join(", ")}`)
+        }
+        if (todo.failureDetails?.errorMessage) {
+          console.log(`     ❌ Error: ${todo.failureDetails.errorMessage}`)
+        }
+      })
+    } else {
+      console.log("\n🎉 No issues found in workflow failure analysis")
+    }
+  } catch (error) {
+    console.error("❌ Error analyzing workflow failure:", error)
+    process.exit(1)
   }
 }
 
@@ -559,6 +616,9 @@ function showHelp() {
   console.log(
     "github-dod <PR> - Fetch todos with Definition of Done checks (clears previous)"
   )
+  console.log(
+    "analyze-workflow <RUN_ID> <PR> - Analyze workflow failure logs and create todos"
+  )
   console.log("sync <PR>      - Sync todos from GitHub Actions workflow")
   console.log("resolve <ID>   - Mark todo as resolved and comment on GitHub")
   console.log("clear          - Clear all todos")
@@ -577,6 +637,7 @@ function showHelp() {
   console.log(
     "  npm run todo github-dod 242  # Include Definition of Done checks"
   )
+  console.log("  npm run todo analyze-workflow 12345678 245  # Analyze failed workflow")
   console.log("  npm run todo clear")
   console.log("  npm run todo next")
   console.log("  npm run todo update issue-1 completed")
