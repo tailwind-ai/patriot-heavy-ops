@@ -1,75 +1,22 @@
 [
   {
     "id": "github-1",
-    "content": "{",
+    "content": "CI Failure: test - Unable to analyze failure logs - check permissions",
     "status": "pending",
     "priority": "high",
     "dependencies": [],
     "issueType": "ci_failure",
-    "files": [
-      "lib/services/service-request-service.ts"
-    ],
-    "lineNumbers": [
-      354
-    ],
-    "suggestedFix": "",
-    "createdAt": "2025-09-24T23:35:03.022Z",
-    "updatedAt": "2025-09-24T23:35:03.022Z",
+    "files": [],
+    "lineNumbers": [],
+    "suggestedFix": "Verify GitHub token has Actions:read permissions",
+    "createdAt": "2025-09-25T01:32:51.302Z",
+    "updatedAt": "2025-09-25T01:32:51.302Z",
     "estimatedTime": "10-30 min",
     "tags": [
       "ci-failure",
       "high"
     ],
     "assignee": "general-developer",
-    "relatedPR": "#242"
-  },
-  {
-    "id": "github-2",
-    "content": "Date comparison using <= will reject requests scheduled for exactly the current time. Since dates include time components, this could incorrectly reject valid future times on the same day. Consider using `startDate.getTime() <= now.getTime()` for more explicit comparison or adding a small buffer for same-day scheduling.",
-    "status": "pending",
-    "priority": "high",
-    "dependencies": [],
-    "issueType": "ci_failure",
-    "files": [
-      "lib/services/service-request-service.ts"
-    ],
-    "lineNumbers": [
-      514
-    ],
-    "suggestedFix": "",
-    "createdAt": "2025-09-24T23:35:03.022Z",
-    "updatedAt": "2025-09-24T23:35:03.022Z",
-    "estimatedTime": "10-30 min",
-    "tags": [
-      "ci-failure",
-      "high"
-    ],
-    "assignee": "general-developer",
-    "relatedPR": "#242"
-  },
-  {
-    "id": "github-3",
-    "content": "Using type assertion `(service as any)` bypasses TypeScript's type safety. Consider making the logger property protected in the BaseService class or providing a setter method for dependency injection in tests.",
-    "status": "pending",
-    "priority": "medium",
-    "dependencies": [],
-    "issueType": "copilot_comment",
-    "files": [
-      "__tests__/lib/services/service-request-service.test.ts"
-    ],
-    "lineNumbers": [
-      54
-    ],
-    "suggestedFix": "",
-    "createdAt": "2025-09-24T23:35:03.022Z",
-    "updatedAt": "2025-09-24T23:35:03.022Z",
-    "estimatedTime": "5-15 min",
-    "tags": [
-      "copilot-comment",
-      "medium",
-      "testing"
-    ],
-    "assignee": "test-specialist",
-    "relatedPR": "#242"
+    "relatedPR": "#244"
   }
 ]
