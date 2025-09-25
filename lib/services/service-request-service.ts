@@ -11,7 +11,10 @@
  * - Single responsibility for service request business rules
  */
 
-import { BaseService, ServiceResult } from "./base-service"
+import { BaseService, ServiceResult, ServiceLogger } from "./base-service"
+import { db } from "../db"
+import { hasPermissionSafe } from "../permissions"
+import { serviceRequestSchema, serviceRequestUpdateSchema } from "../validations/service-request"
 
 // Type definitions for service request business logic
 export type DurationType = "HALF_DAY" | "FULL_DAY" | "MULTI_DAY" | "WEEKLY"
@@ -51,6 +54,56 @@ export interface StatusTransition {
   toStatus: string
   isValid: boolean
   reason: string | undefined
+}
+
+// CRUD operation types
+export interface AuthenticatedUser {
+  id: string
+  email: string
+  role: string
+}
+
+export interface ServiceRequestCreateInput {
+  title: string
+  description?: string
+  contactName: string
+  contactEmail: string
+  contactPhone: string
+  company?: string
+  jobSite: string
+  transport: TransportOption
+  startDate: string
+  endDate?: string
+  equipmentCategory: EquipmentCategory
+  equipmentDetail: string
+  requestedDurationType: DurationType
+  requestedDurationValue: number
+  rateType: RateType
+  baseRate: number
+  userId: string
+}
+
+export interface ServiceRequestUpdateInput {
+  title?: string
+  description?: string
+  transport?: TransportOption
+  startDate?: string
+  endDate?: string
+  equipmentCategory?: EquipmentCategory
+  equipmentDetail?: string
+  status?: string
+  internalNotes?: string
+}
+
+export interface ServiceRequestListOptions {
+  userId: string
+  userRole: string
+}
+
+export interface ServiceRequestAccessOptions {
+  requestId: string
+  userId: string
+  userRole?: string
 }
 
 /**
@@ -106,8 +159,8 @@ export class ServiceRequestService extends BaseService {
     ["CLOSED", []], // Terminal state
   ])
 
-  constructor() {
-    super("ServiceRequestService")
+  constructor(logger?: ServiceLogger) {
+    super("ServiceRequestService", logger)
   }
 
   /**
@@ -510,9 +563,9 @@ export class ServiceRequestService extends BaseService {
     const startDate = new Date(data.startDate)
     const now = new Date()
 
-    // Start date must be in the future
-    if (startDate <= now) {
-      errors.push("Start date must be in the future")
+    // Start date must be in the future or current time (allow scheduling for now or later)
+    if (startDate.getTime() < now.getTime()) {
+      errors.push("Start date cannot be in the past")
     }
 
     // End date validation if provided
@@ -543,5 +596,428 @@ export class ServiceRequestService extends BaseService {
       isValid: errors.length === 0,
       errors,
     })
+  }
+
+  /**
+   * Get service requests based on user role and permissions
+   */
+  async getServiceRequests(
+    options: ServiceRequestListOptions
+  ): Promise<ServiceResult<any[]>> {
+    this.logOperation("getServiceRequests", options as unknown as Record<string, unknown>)
+
+    const validation = this.validateRequired(options as unknown as Record<string, unknown>, ["userId", "userRole"])
+    if (!validation.success) {
+      return this.createError<any[]>(
+        validation.error!.code,
+        validation.error!.message,
+        validation.error!.details
+      )
+    }
+
+    return this.handleAsync(
+      async () => {
+        let serviceRequests
+
+        if (hasPermissionSafe(options.userRole, "view_all_requests")) {
+          // Managers and Admins can see all requests
+          serviceRequests = await db.serviceRequest.findMany({
+            select: {
+              id: true,
+              title: true,
+              status: true,
+              equipmentCategory: true,
+              jobSite: true,
+              startDate: true,
+              endDate: true,
+              requestedDurationType: true,
+              requestedDurationValue: true,
+              estimatedCost: true,
+              createdAt: true,
+              updatedAt: true,
+              user: {
+                select: {
+                  name: true,
+                  email: true,
+                  company: true,
+                },
+              },
+            },
+            orderBy: {
+              createdAt: "desc",
+            },
+          })
+        } else if (hasPermissionSafe(options.userRole, "view_assignments")) {
+          // Operators can see requests they're assigned to + their own requests
+          serviceRequests = await db.serviceRequest.findMany({
+            select: {
+              id: true,
+              title: true,
+              status: true,
+              equipmentCategory: true,
+              jobSite: true,
+              startDate: true,
+              endDate: true,
+              requestedDurationType: true,
+              requestedDurationValue: true,
+              estimatedCost: true,
+              createdAt: true,
+              updatedAt: true,
+            },
+            where: {
+              OR: [
+                { userId: options.userId }, // Their own requests
+                {
+                  userAssignments: {
+                    some: {
+                      operatorId: options.userId,
+                    },
+                  },
+                }, // Requests they're assigned to
+              ],
+            },
+            orderBy: {
+              createdAt: "desc",
+            },
+          })
+        } else if (hasPermissionSafe(options.userRole, "view_own_requests")) {
+          // Regular users can only see their own requests
+          serviceRequests = await db.serviceRequest.findMany({
+            select: {
+              id: true,
+              title: true,
+              status: true,
+              equipmentCategory: true,
+              jobSite: true,
+              startDate: true,
+              endDate: true,
+              requestedDurationType: true,
+              requestedDurationValue: true,
+              estimatedCost: true,
+              createdAt: true,
+              updatedAt: true,
+            },
+            where: {
+              userId: options.userId,
+            },
+            orderBy: {
+              createdAt: "desc",
+            },
+          })
+        } else {
+          throw new Error("Insufficient permissions to view service requests")
+        }
+
+        return serviceRequests
+      },
+      "DATABASE_ERROR",
+      "Failed to fetch service requests"
+    )
+  }
+
+  /**
+   * Create a new service request
+   */
+  async createServiceRequest(
+    input: ServiceRequestCreateInput,
+    userRole: string
+  ): Promise<ServiceResult<any>> {
+    this.logOperation("createServiceRequest", { ...input, userId: "[REDACTED]" })
+
+    // Check permissions
+    if (!hasPermissionSafe(userRole, "submit_requests")) {
+      return this.createError(
+        "INSUFFICIENT_PERMISSIONS",
+        "You don't have permission to submit service requests"
+      )
+    }
+
+    // Validate input data (exclude requestedTotalHours as it will be calculated)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { requestedTotalHours, ...inputForValidation } = input as ServiceRequestCreateInput & { requestedTotalHours?: number }
+    const validation = serviceRequestSchema.omit({ requestedTotalHours: true }).safeParse(inputForValidation)
+
+    if (!validation.success) {
+      return this.createError(
+        "VALIDATION_ERROR",
+        "Invalid service request data",
+        { issues: validation.error.issues }
+      )
+    }
+
+    // Calculate total hours
+    const hoursResult = this.calculateTotalHours(
+      input.requestedDurationType,
+      input.requestedDurationValue
+    )
+    if (!hoursResult.success) {
+      return this.createError<any>(
+        hoursResult.error!.code,
+        hoursResult.error!.message,
+        hoursResult.error!.details
+      )
+    }
+
+    return this.handleAsync(
+      async () => {
+        const serviceRequest = await db.serviceRequest.create({
+          data: {
+            title: input.title,
+            description: input.description ?? null,
+            contactName: input.contactName,
+            contactEmail: input.contactEmail,
+            contactPhone: input.contactPhone,
+            company: input.company ?? null,
+            jobSite: input.jobSite,
+            transport: input.transport,
+            startDate: new Date(input.startDate),
+            endDate: input.endDate ? new Date(input.endDate) : null,
+            equipmentCategory: input.equipmentCategory,
+            equipmentDetail: input.equipmentDetail,
+            requestedDurationType: input.requestedDurationType,
+            requestedDurationValue: input.requestedDurationValue,
+            requestedTotalHours: hoursResult.data!,
+            rateType: input.rateType,
+            baseRate: input.baseRate,
+            status: "SUBMITTED",
+            userId: input.userId,
+          },
+          select: {
+            id: true,
+            title: true,
+            status: true,
+            createdAt: true,
+          },
+        })
+
+        return serviceRequest
+      },
+      "DATABASE_ERROR",
+      "Failed to create service request"
+    )
+  }
+
+  /**
+   * Get a single service request by ID
+   */
+  async getServiceRequestById(
+    options: ServiceRequestAccessOptions
+  ): Promise<ServiceResult<any>> {
+    this.logOperation("getServiceRequestById", options as unknown as Record<string, unknown>)
+
+    const validation = this.validateRequired(options as unknown as Record<string, unknown>, ["requestId", "userId"])
+    if (!validation.success) {
+      return this.createError<any>(
+        validation.error!.code,
+        validation.error!.message,
+        validation.error!.details
+      )
+    }
+
+    return this.handleAsync(
+      async () => {
+        // First check if user has access to this request
+        const hasAccess = await this.verifyUserHasAccessToRequest(
+          options.requestId,
+          options.userId
+        )
+
+        if (!hasAccess.success) {
+          // Database error in access verification
+          throw new Error(hasAccess.error?.message || "Database error")
+        }
+        if (!hasAccess.data) {
+          // No access (count = 0)
+          const error = new Error("Access denied to this service request")
+          error.name = "ACCESS_DENIED"
+          throw error
+        }
+
+        const serviceRequest = await db.serviceRequest.findUnique({
+          where: {
+            id: options.requestId,
+          },
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+            assignedManager: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+            userAssignments: {
+              include: {
+                operator: {
+                  select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                  },
+                },
+              },
+            },
+          },
+        })
+
+        if (!serviceRequest) {
+          const error = new Error("Service request not found")
+          error.name = "NOT_FOUND"
+          throw error
+        }
+
+        return serviceRequest
+      },
+      "DATABASE_ERROR",
+      "Failed to fetch service request"
+    )
+  }
+
+  /**
+   * Update a service request
+   */
+  async updateServiceRequest(
+    requestId: string,
+    updates: ServiceRequestUpdateInput,
+    userId: string
+  ): Promise<ServiceResult<any>> {
+    this.logOperation("updateServiceRequest", { requestId, updates, userId: "[REDACTED]" })
+
+    const validation = this.validateRequired({ requestId, userId }, ["requestId", "userId"])
+    if (!validation.success) {
+      return this.createError<any>(
+        validation.error!.code,
+        validation.error!.message,
+        validation.error!.details
+      )
+    }
+
+    // Validate update data
+    const updateValidation = serviceRequestUpdateSchema.safeParse(updates)
+    if (!updateValidation.success) {
+      return this.createError(
+        "VALIDATION_ERROR",
+        "Invalid update data",
+        { issues: updateValidation.error.issues }
+      )
+    }
+
+    return this.handleAsync(
+      async () => {
+        // Check access
+        const hasAccess = await this.verifyUserHasAccessToRequest(requestId, userId)
+        if (!hasAccess.success) {
+          // Database error in access verification
+          throw new Error(hasAccess.error?.message || "Database error")
+        }
+        if (!hasAccess.data) {
+          // No access (count = 0)
+          const error = new Error("Access denied to this service request")
+          error.name = "ACCESS_DENIED"
+          throw error
+        }
+
+        const updateData: any = {
+          updatedAt: new Date(),
+        }
+        
+        if (updates.status !== undefined) updateData.status = updates.status
+        if (updates.title !== undefined) updateData.title = updates.title
+        if (updates.description !== undefined) updateData.description = updates.description
+        if (updates.transport !== undefined) updateData.transport = updates.transport
+        if (updates.startDate !== undefined) updateData.startDate = new Date(updates.startDate)
+        if (updates.endDate !== undefined) updateData.endDate = new Date(updates.endDate)
+        if (updates.equipmentCategory !== undefined) updateData.equipmentCategory = updates.equipmentCategory
+        if (updates.equipmentDetail !== undefined) updateData.equipmentDetail = updates.equipmentDetail
+        if (updates.internalNotes !== undefined) updateData.internalNotes = updates.internalNotes
+
+        const serviceRequest = await db.serviceRequest.update({
+          where: {
+            id: requestId,
+          },
+          data: updateData,
+          select: {
+            id: true,
+            title: true,
+            status: true,
+            updatedAt: true,
+          },
+        })
+
+        return serviceRequest
+      },
+      "DATABASE_ERROR",
+      "Failed to update service request"
+    )
+  }
+
+  /**
+   * Delete a service request
+   */
+  async deleteServiceRequest(
+    requestId: string,
+    userId: string
+  ): Promise<ServiceResult<void>> {
+    this.logOperation("deleteServiceRequest", { requestId, userId: "[REDACTED]" })
+
+    const validation = this.validateRequired({ requestId, userId }, ["requestId", "userId"])
+    if (!validation.success) {
+      return validation
+    }
+
+    return this.handleAsync(
+      async () => {
+        // Check access
+        const hasAccess = await this.verifyUserHasAccessToRequest(requestId, userId)
+        if (!hasAccess.success) {
+          // Database error in access verification
+          throw new Error(hasAccess.error?.message || "Database error")
+        }
+        if (!hasAccess.data) {
+          // No access (count = 0)
+          const error = new Error("Access denied to this service request")
+          error.name = "ACCESS_DENIED"
+          throw error
+        }
+
+        await db.serviceRequest.delete({
+          where: {
+            id: requestId,
+          },
+        })
+
+        return undefined
+      },
+      "DATABASE_ERROR",
+      "Failed to delete service request"
+    )
+  }
+
+  /**
+   * Verify user has access to a specific service request
+   */
+  private async verifyUserHasAccessToRequest(
+    requestId: string,
+    userId: string
+  ): Promise<ServiceResult<boolean>> {
+    return this.handleAsync(
+      async () => {
+        const count = await db.serviceRequest.count({
+          where: {
+            id: requestId,
+            userId: userId,
+          },
+        })
+        return count > 0
+      },
+      "DATABASE_ERROR",
+      "Failed to verify access to service request"
+    )
   }
 }

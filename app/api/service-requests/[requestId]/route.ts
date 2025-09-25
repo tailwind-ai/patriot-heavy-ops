@@ -3,39 +3,35 @@ import { getServerSession } from "next-auth"
 import { z } from "zod"
 
 import { authOptions } from "@/lib/auth"
-import { db } from "@/lib/db"
-import { serviceRequestUpdateSchema } from "@/lib/validations/service-request"
 import { authenticateRequest } from "@/lib/middleware/mobile-auth"
+import { ServiceFactory } from "@/lib/services"
 
-async function verifyCurrentUserHasAccessToRequest(requestId: string, req?: NextRequest) {
-  // Try mobile auth first if request is provided
-  if (req) {
-    const authResult = await authenticateRequest(req)
-    if (authResult.isAuthenticated && authResult.user) {
-      const count = await db.serviceRequest.count({
-        where: {
-          id: requestId,
-          userId: authResult.user.id,
-        },
-      })
-      return count > 0
+/**
+ * Helper function to get authenticated user from either JWT or session
+ */
+async function getAuthenticatedUser(
+  req: NextRequest
+): Promise<{ id: string; email: string; role: string } | null> {
+  // Try mobile auth first, fallback to session auth
+  const authResult = await authenticateRequest(req)
+
+  if (authResult.isAuthenticated && authResult.user) {
+    return {
+      id: authResult.user.id,
+      email: authResult.user.email,
+      role: authResult.user.role || "USER",
     }
   }
-  
-  // Fallback to session auth
+
+  // Fallback to session-based auth for backward compatibility
   const session = await getServerSession(authOptions)
-  if (!session?.user?.id) {
-    return null
+  if (!session?.user?.id) return null
+
+  return {
+    id: session.user.id,
+    email: session.user.email || "",
+    role: session.user.role || "USER",
   }
-
-  const count = await db.serviceRequest.count({
-    where: {
-      id: requestId,
-      userId: session.user.id,
-    },
-  })
-
-  return count > 0
 }
 
 export async function GET(
@@ -44,49 +40,30 @@ export async function GET(
 ) {
   try {
     const params = await context.params
+    const user = await getAuthenticatedUser(req)
 
-    if (!(await verifyCurrentUserHasAccessToRequest(params.requestId, req))) {
+    if (!user) {
       return new Response(null, { status: 403 })
     }
 
-    const serviceRequest = await db.serviceRequest.findUnique({
-      where: {
-        id: params.requestId,
-      },
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          },
-        },
-        assignedManager: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          },
-        },
-        userAssignments: {
-          include: {
-            operator: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
-              },
-            },
-          },
-        },
-      },
+    // Use service layer to get service request
+    const serviceRequestService = ServiceFactory.getServiceRequestService()
+    const result = await serviceRequestService.getServiceRequestById({
+      requestId: params.requestId,
+      userId: user.id,
     })
 
-    if (!serviceRequest) {
-      return new Response(null, { status: 404 })
+    if (!result.success) {
+      if (result.error?.code === "ACCESS_DENIED") {
+        return new Response(null, { status: 403 })
+      }
+      if (result.error?.code === "NOT_FOUND") {
+        return new Response(null, { status: 404 })
+      }
+      return new Response(null, { status: 500 })
     }
 
-    return new Response(JSON.stringify(serviceRequest))
+    return new Response(JSON.stringify(result.data))
   } catch {
     return new Response(null, { status: 500 })
   }
@@ -98,49 +75,34 @@ export async function PATCH(
 ) {
   try {
     const params = await context.params
+    const user = await getAuthenticatedUser(req)
 
-    if (!(await verifyCurrentUserHasAccessToRequest(params.requestId, req))) {
+    if (!user) {
       return new Response(null, { status: 403 })
     }
 
     const json = await req.json()
-    const body = serviceRequestUpdateSchema.parse(json)
 
-    const serviceRequest = await db.serviceRequest.update({
-      where: {
-        id: params.requestId,
-      },
-      data: {
-        ...(body.status !== undefined && { status: body.status }),
-        ...(body.title !== undefined && { title: body.title }),
-        ...(body.description !== undefined && {
-          description: body.description,
-        }),
-        ...(body.transport !== undefined && { transport: body.transport }),
-        ...(body.startDate !== undefined && {
-          startDate: new Date(body.startDate),
-        }),
-        ...(body.endDate !== undefined && { endDate: new Date(body.endDate) }),
-        ...(body.equipmentCategory !== undefined && {
-          equipmentCategory: body.equipmentCategory,
-        }),
-        ...(body.equipmentDetail !== undefined && {
-          equipmentDetail: body.equipmentDetail,
-        }),
-        ...(body.internalNotes !== undefined && {
-          internalNotes: body.internalNotes,
-        }),
-        updatedAt: new Date(),
-      },
-      select: {
-        id: true,
-        title: true,
-        status: true,
-        updatedAt: true,
-      },
-    })
+    // Use service layer to update service request
+    const serviceRequestService = ServiceFactory.getServiceRequestService()
+    const result = await serviceRequestService.updateServiceRequest(
+      params.requestId,
+      json,
+      user.id
+    )
 
-    return new Response(JSON.stringify(serviceRequest))
+    if (!result.success) {
+      if (result.error?.code === "ACCESS_DENIED") {
+        return new Response(null, { status: 403 })
+      }
+      if (result.error?.code === "VALIDATION_ERROR") {
+        const issues = result.error.details?.issues || result.error.details
+        return new Response(JSON.stringify(issues), { status: 422 })
+      }
+      return new Response(null, { status: 500 })
+    }
+
+    return new Response(JSON.stringify(result.data))
   } catch (error) {
     if (error instanceof z.ZodError) {
       return new Response(JSON.stringify(error.issues), { status: 422 })
@@ -156,16 +118,25 @@ export async function DELETE(
 ) {
   try {
     const params = await context.params
+    const user = await getAuthenticatedUser(req)
 
-    if (!(await verifyCurrentUserHasAccessToRequest(params.requestId, req))) {
+    if (!user) {
       return new Response(null, { status: 403 })
     }
 
-    await db.serviceRequest.delete({
-      where: {
-        id: params.requestId,
-      },
-    })
+    // Use service layer to delete service request
+    const serviceRequestService = ServiceFactory.getServiceRequestService()
+    const result = await serviceRequestService.deleteServiceRequest(
+      params.requestId,
+      user.id
+    )
+
+    if (!result.success) {
+      if (result.error?.code === "ACCESS_DENIED") {
+        return new Response(null, { status: 403 })
+      }
+      return new Response(null, { status: 500 })
+    }
 
     return new Response(null, { status: 204 })
   } catch (error) {
