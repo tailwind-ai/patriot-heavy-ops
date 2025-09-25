@@ -909,7 +909,7 @@ export class ServiceRequestService extends BaseService {
           throw new Error("Access denied to this service request")
         }
 
-        const updateData: any = {
+        const updateData: Partial<ServiceRequestUpdateInput> & { updatedAt: Date } = {
           updatedAt: new Date(),
         }
         
@@ -917,8 +917,8 @@ export class ServiceRequestService extends BaseService {
         if (updates.title !== undefined) updateData.title = updates.title
         if (updates.description !== undefined) updateData.description = updates.description
         if (updates.transport !== undefined) updateData.transport = updates.transport
-        if (updates.startDate !== undefined) updateData.startDate = new Date(updates.startDate)
-        if (updates.endDate !== undefined) updateData.endDate = new Date(updates.endDate)
+        if (updates.startDate !== undefined) updateData.startDate = updates.startDate
+        if (updates.endDate !== undefined) updateData.endDate = updates.endDate
         if (updates.equipmentCategory !== undefined) updateData.equipmentCategory = updates.equipmentCategory
         if (updates.equipmentDetail !== undefined) updateData.equipmentDetail = updates.equipmentDetail
         if (updates.internalNotes !== undefined) updateData.internalNotes = updates.internalNotes

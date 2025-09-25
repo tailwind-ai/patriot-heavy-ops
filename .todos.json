@@ -1,75 +1,215 @@
 [
   {
     "id": "github-1",
-    "content": "{",
+    "content": "Using 'any' type defeats the purpose of TypeScript's type safety. Instead, define a proper type for the destructuring operation or use a more specific type assertion.",
+    "status": "completed",
+    "priority": "high",
+    "dependencies": [],
+    "issueType": "ci_failure",
+    "files": [
+      "lib/services/service-request-service.ts"
+    ],
+    "lineNumbers": [
+      231
+    ],
+    "suggestedFix": "",
+    "createdAt": "2025-09-25T01:04:15.333Z",
+    "updatedAt": "2025-09-25T01:05:34.488Z",
+    "estimatedTime": "10-30 min",
+    "tags": [
+      "ci-failure",
+      "high"
+    ],
+    "assignee": "general-developer",
+    "relatedPR": "#243"
+  },
+  {
+    "id": "github-5",
+    "content": "CI Failure: auto-fix-todos - CI failure detected",
     "status": "pending",
     "priority": "high",
     "dependencies": [],
     "issueType": "ci_failure",
     "files": [
-      "lib/services/service-request-service.ts"
+      "//github.com/actions/runner-images/blob/ubuntu24/20250922.53/images/ubuntu/Ubuntu2404-Readme.md",
+      "scripts/todo-cli.ts",
+      "/home/runner/work/patriot-heavy-ops/patriot-heavy-ops/lib/background-agents/github-integration.ts",
+      "/home/runner/work/patriot-heavy-ops/patriot-heavy-ops/lib/background-agents/real-background-agent.ts",
+      "/home/runner/work/patriot-heavy-ops/patriot-heavy-ops/lib/background-agents/enhanced-todo-manager.ts",
+      "/home/runner/work/patriot-heavy-ops/patriot-heavy-ops/scripts/todo-cli.ts",
+      "lib/services/service-request-service.ts",
+      "/route.ts",
+      "app/api/auth/mobile/login/route.ts"
     ],
-    "lineNumbers": [
-      354
-    ],
-    "suggestedFix": "",
-    "createdAt": "2025-09-24T23:35:03.022Z",
-    "updatedAt": "2025-09-24T23:35:03.022Z",
-    "estimatedTime": "10-30 min",
+    "lineNumbers": [],
+    "suggestedFix": "Review CI logs and fix the underlying issue",
+    "createdAt": "2025-09-25T01:04:15.333Z",
+    "updatedAt": "2025-09-25T01:04:15.333Z",
+    "estimatedTime": "20-30 min",
     "tags": [
       "ci-failure",
-      "high"
+      "high",
+      "authentication",
+      "api"
     ],
-    "assignee": "general-developer",
-    "relatedPR": "#242"
+    "assignee": "auth-specialist",
+    "relatedPR": "#243"
   },
   {
-    "id": "github-2",
-    "content": "Date comparison using <= will reject requests scheduled for exactly the current time. Since dates include time components, this could incorrectly reject valid future times on the same day. Consider using `startDate.getTime() <= now.getTime()` for more explicit comparison or adding a small buffer for same-day scheduling.",
-    "status": "completed",
+    "id": "github-6",
+    "content": "CI Failure: test - CI failure detected",
+    "status": "pending",
     "priority": "high",
     "dependencies": [],
     "issueType": "ci_failure",
     "files": [
-      "lib/services/service-request-service.ts"
+      "//github.com/actions/runner-images/blob/ubuntu24/20250907.24/images/ubuntu/Ubuntu2404-Readme.md",
+      "Next.js",
+      "./app/api/auth/mobile/login/route.ts",
+      "./app/api/auth/mobile/refresh/route.ts",
+      "./lib/background-agents/git-operations.ts",
+      "./lib/background-agents/github-integration.ts",
+      "./lib/background-agents/pr-monitor.ts",
+      "./lib/background-agents/real-background-agent.ts",
+      "./lib/background-agents/todo-persistence.ts",
+      "./lib/middleware/mobile-auth.ts",
+      "./lib/middleware/rate-limit.ts",
+      "./lib/repositories/index.ts",
+      "./lib/repositories/service-request-repository.ts",
+      "./lib/repositories/user-repository.ts",
+      "./lib/services/service-request-service.ts",
+      "/home/runner/work/_actions/actions/github-script/v7/dist/index.js",
+      "Module._extensions..js"
     ],
-    "lineNumbers": [
-      514
-    ],
-    "suggestedFix": "",
-    "createdAt": "2025-09-24T23:35:03.022Z",
-    "updatedAt": "2025-09-25T00:58:47.344Z",
-    "estimatedTime": "10-30 min",
+    "lineNumbers": [],
+    "suggestedFix": "Review CI logs and fix the underlying issue",
+    "createdAt": "2025-09-25T01:04:15.333Z",
+    "updatedAt": "2025-09-25T01:04:15.333Z",
+    "estimatedTime": "20-30 min",
     "tags": [
       "ci-failure",
-      "high"
+      "high",
+      "authentication",
+      "api",
+      "middleware"
     ],
-    "assignee": "general-developer",
-    "relatedPR": "#242"
+    "assignee": "auth-specialist",
+    "relatedPR": "#243"
   },
   {
-    "id": "github-3",
-    "content": "Using type assertion `(service as any)` bypasses TypeScript's type safety. Consider making the logger property protected in the BaseService class or providing a setter method for dependency injection in tests.",
+    "id": "github-7",
+    "content": "CI Failure: test - CI failure detected",
+    "status": "pending",
+    "priority": "high",
+    "dependencies": [],
+    "issueType": "ci_failure",
+    "files": [
+      "//github.com/actions/runner-images/blob/ubuntu24/20250922.53/images/ubuntu/Ubuntu2404-Readme.md",
+      "Next.js",
+      "./app/api/auth/mobile/login/route.ts",
+      "./app/api/auth/mobile/refresh/route.ts",
+      "./lib/background-agents/git-operations.ts",
+      "./lib/background-agents/github-integration.ts",
+      "./lib/background-agents/pr-monitor.ts",
+      "./lib/background-agents/real-background-agent.ts",
+      "./lib/background-agents/todo-persistence.ts",
+      "./lib/middleware/mobile-auth.ts",
+      "./lib/middleware/rate-limit.ts",
+      "./lib/repositories/index.ts",
+      "./lib/repositories/service-request-repository.ts",
+      "./lib/repositories/user-repository.ts",
+      "./lib/services/service-request-service.ts",
+      "/home/runner/work/_actions/actions/github-script/v7/dist/index.js",
+      "Module._extensions..js"
+    ],
+    "lineNumbers": [],
+    "suggestedFix": "Review CI logs and fix the underlying issue",
+    "createdAt": "2025-09-25T01:04:15.333Z",
+    "updatedAt": "2025-09-25T01:04:15.333Z",
+    "estimatedTime": "20-30 min",
+    "tags": [
+      "ci-failure",
+      "high",
+      "authentication",
+      "api",
+      "middleware"
+    ],
+    "assignee": "auth-specialist",
+    "relatedPR": "#243"
+  },
+  {
+    "id": "github-2",
+    "content": "Using 'any' type for updateData reduces type safety. Consider defining a proper interface or using Partial<ServiceRequestUpdateInput> with proper date handling.",
     "status": "completed",
     "priority": "medium",
     "dependencies": [],
     "issueType": "copilot_comment",
     "files": [
-      "__tests__/lib/services/service-request-service.test.ts"
+      "lib/services/service-request-service.ts"
     ],
     "lineNumbers": [
-      54
+      407
     ],
     "suggestedFix": "",
-    "createdAt": "2025-09-24T23:35:03.022Z",
-    "updatedAt": "2025-09-25T00:58:47.348Z",
+    "createdAt": "2025-09-25T01:04:15.333Z",
+    "updatedAt": "2025-09-25T01:05:34.489Z",
+    "estimatedTime": "5-15 min",
+    "tags": [
+      "copilot-comment",
+      "medium"
+    ],
+    "assignee": "general-developer",
+    "relatedPR": "#243"
+  },
+  {
+    "id": "github-3",
+    "content": "// Standardize extraction of validation issues",
+    "status": "pending",
+    "priority": "medium",
+    "dependencies": [],
+    "issueType": "copilot_comment",
+    "files": [
+      "app/api/users/[userId]/route.ts"
+    ],
+    "lineNumbers": [
+      92
+    ],
+    "suggestedFix": "",
+    "createdAt": "2025-09-25T01:04:15.333Z",
+    "updatedAt": "2025-09-25T01:04:15.333Z",
     "estimatedTime": "5-15 min",
     "tags": [
       "copilot-comment",
       "medium",
-      "testing"
+      "api"
     ],
-    "assignee": "test-specialist",
-    "relatedPR": "#242"
+    "assignee": "api-specialist",
+    "relatedPR": "#243"
+  },
+  {
+    "id": "github-4",
+    "content": "If authentication succeeds but user data is missing, this should return a 401 status (authentication failed) rather than 500 (server error). The 500 status suggests an internal server error, which is misleading.",
+    "status": "pending",
+    "priority": "medium",
+    "dependencies": [],
+    "issueType": "copilot_comment",
+    "files": [
+      "app/api/auth/mobile/login/route.ts"
+    ],
+    "lineNumbers": [
+      56
+    ],
+    "suggestedFix": "",
+    "createdAt": "2025-09-25T01:04:15.333Z",
+    "updatedAt": "2025-09-25T01:04:15.333Z",
+    "estimatedTime": "5-15 min",
+    "tags": [
+      "copilot-comment",
+      "medium",
+      "authentication",
+      "api"
+    ],
+    "assignee": "auth-specialist",
+    "relatedPR": "#243"
   }
 ]

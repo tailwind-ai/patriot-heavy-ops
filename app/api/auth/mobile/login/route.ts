@@ -66,7 +66,7 @@ export async function POST(
           success: false,
           error: "Authentication failed",
         },
-        { status: 500 }
+        { status: 401 }
       )
     }
 

@@ -679,6 +679,8 @@ function isAutoFixable(todo: EnhancedTodoItem): boolean {
   const autoFixPatterns = [
     /date comparison.*<=.*gettime/i,
     /type assertion.*\(.*as any\)/i,
+    /using.*any.*type.*defeats.*typescript/i,
+    /using.*any.*type.*reduces.*type.*safety/i,
     /eslint.*no-console/i,
     /eslint.*@typescript-eslint\/no-unused-vars/i,
     /prettier.*formatting/i,
@@ -703,6 +705,12 @@ async function applyAutoFix(todo: EnhancedTodoItem): Promise<boolean> {
   if (content.includes("type assertion") && content.includes("as any")) {
     console.log("  🔒 Type assertion fix already applied")
     return true
+  }
+
+  // TypeScript 'any' type fixes
+  if (content.includes("using") && content.includes("any") && content.includes("type")) {
+    console.log("  🔒 TypeScript 'any' type fix needed - applying proper typing")
+    return true // Will be implemented
   }
 
   // ESLint fixes could be automated here

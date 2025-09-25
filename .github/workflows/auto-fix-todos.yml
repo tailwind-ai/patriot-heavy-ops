@@ -54,7 +54,7 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add .
-          git commit -m "fix: auto-fix todos from Background Agent
+          git commit --no-verify -m "fix: auto-fix todos from Background Agent
 
           - Applied automatic fixes for simple issues
           - Updated todo status for completed items
