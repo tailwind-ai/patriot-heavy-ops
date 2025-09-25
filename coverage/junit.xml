@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="17" failures="0" errors="0" time="0.557">
-  <testsuite name="Architecture Validation Tests" errors="0" failures="0" skipped="0" timestamp="2025-09-25T22:49:13" time="0.25" tests="17">
-    <testcase classname="Architecture Validation Tests Layer Separation Validation should maintain clear separation between service and repository layers" name="Architecture Validation Tests Layer Separation Validation should maintain clear separation between service and repository layers" time="0.011">
+<testsuites name="jest tests" tests="17" failures="0" errors="0" time="0.482">
+  <testsuite name="Architecture Validation Tests" errors="0" failures="0" skipped="0" timestamp="2025-09-25T22:54:09" time="0.233" tests="17">
+    <testcase classname="Architecture Validation Tests Layer Separation Validation should maintain clear separation between service and repository layers" name="Architecture Validation Tests Layer Separation Validation should maintain clear separation between service and repository layers" time="0.013">
     </testcase>
     <testcase classname="Architecture Validation Tests Layer Separation Validation should prevent UI components from importing service layer directly" name="Architecture Validation Tests Layer Separation Validation should prevent UI components from importing service layer directly" time="0.038">
     </testcase>
     <testcase classname="Architecture Validation Tests Layer Separation Validation should ensure API routes use service layer properly" name="Architecture Validation Tests Layer Separation Validation should ensure API routes use service layer properly" time="0.01">
     </testcase>
-    <testcase classname="Architecture Validation Tests Layer Separation Validation should validate repository layer independence" name="Architecture Validation Tests Layer Separation Validation should validate repository layer independence" time="0.002">
+    <testcase classname="Architecture Validation Tests Layer Separation Validation should validate repository layer independence" name="Architecture Validation Tests Layer Separation Validation should validate repository layer independence" time="0.003">
     </testcase>
-    <testcase classname="Architecture Validation Tests Circular Dependency Detection should detect circular dependencies in service layer" name="Architecture Validation Tests Circular Dependency Detection should detect circular dependencies in service layer" time="0.002">
+    <testcase classname="Architecture Validation Tests Circular Dependency Detection should detect circular dependencies in service layer" name="Architecture Validation Tests Circular Dependency Detection should detect circular dependencies in service layer" time="0.003">
     </testcase>
-    <testcase classname="Architecture Validation Tests Circular Dependency Detection should detect circular dependencies in repository layer" name="Architecture Validation Tests Circular Dependency Detection should detect circular dependencies in repository layer" time="0.001">
+    <testcase classname="Architecture Validation Tests Circular Dependency Detection should detect circular dependencies in repository layer" name="Architecture Validation Tests Circular Dependency Detection should detect circular dependencies in repository layer" time="0.002">
     </testcase>
-    <testcase classname="Architecture Validation Tests Circular Dependency Detection should validate cross-layer dependency direction" name="Architecture Validation Tests Circular Dependency Detection should validate cross-layer dependency direction" time="0.003">
+    <testcase classname="Architecture Validation Tests Circular Dependency Detection should validate cross-layer dependency direction" name="Architecture Validation Tests Circular Dependency Detection should validate cross-layer dependency direction" time="0.005">
     </testcase>
-    <testcase classname="Architecture Validation Tests Framework Coupling Prevention should prevent Next.js coupling in service layer" name="Architecture Validation Tests Framework Coupling Prevention should prevent Next.js coupling in service layer" time="0.004">
+    <testcase classname="Architecture Validation Tests Framework Coupling Prevention should prevent Next.js coupling in service layer" name="Architecture Validation Tests Framework Coupling Prevention should prevent Next.js coupling in service layer" time="0.006">
     </testcase>
-    <testcase classname="Architecture Validation Tests Framework Coupling Prevention should prevent React coupling in service layer" name="Architecture Validation Tests Framework Coupling Prevention should prevent React coupling in service layer" time="0.004">
+    <testcase classname="Architecture Validation Tests Framework Coupling Prevention should prevent React coupling in service layer" name="Architecture Validation Tests Framework Coupling Prevention should prevent React coupling in service layer" time="0.006">
     </testcase>
     <testcase classname="Architecture Validation Tests Framework Coupling Prevention should prevent browser API usage in service layer" name="Architecture Validation Tests Framework Coupling Prevention should prevent browser API usage in service layer" time="0.004">
     </testcase>
-    <testcase classname="Architecture Validation Tests Framework Coupling Prevention should prevent DOM manipulation in service layer" name="Architecture Validation Tests Framework Coupling Prevention should prevent DOM manipulation in service layer" time="0.004">
+    <testcase classname="Architecture Validation Tests Framework Coupling Prevention should prevent DOM manipulation in service layer" name="Architecture Validation Tests Framework Coupling Prevention should prevent DOM manipulation in service layer" time="0.005">
     </testcase>
-    <testcase classname="Architecture Validation Tests Mobile-Ready Architecture Validation should validate service layer exports for mobile SDK" name="Architecture Validation Tests Mobile-Ready Architecture Validation should validate service layer exports for mobile SDK" time="0.001">
+    <testcase classname="Architecture Validation Tests Mobile-Ready Architecture Validation should validate service layer exports for mobile SDK" name="Architecture Validation Tests Mobile-Ready Architecture Validation should validate service layer exports for mobile SDK" time="0.002">
     </testcase>
     <testcase classname="Architecture Validation Tests Mobile-Ready Architecture Validation should validate repository layer exports for mobile SDK" name="Architecture Validation Tests Mobile-Ready Architecture Validation should validate repository layer exports for mobile SDK" time="0.001">
     </testcase>
@@ -31,9 +31,9 @@
     </testcase>
     <testcase classname="Architecture Validation Tests Mobile-Ready Architecture Validation should validate type safety for mobile development" name="Architecture Validation Tests Mobile-Ready Architecture Validation should validate type safety for mobile development" time="0.002">
     </testcase>
-    <testcase classname="Architecture Validation Tests Performance Architecture Validation should validate efficient import patterns" name="Architecture Validation Tests Performance Architecture Validation should validate efficient import patterns" time="0.002">
+    <testcase classname="Architecture Validation Tests Performance Architecture Validation should validate efficient import patterns" name="Architecture Validation Tests Performance Architecture Validation should validate efficient import patterns" time="0.003">
     </testcase>
-    <testcase classname="Architecture Validation Tests Performance Architecture Validation should validate memory-efficient patterns" name="Architecture Validation Tests Performance Architecture Validation should validate memory-efficient patterns" time="0.002">
+    <testcase classname="Architecture Validation Tests Performance Architecture Validation should validate memory-efficient patterns" name="Architecture Validation Tests Performance Architecture Validation should validate memory-efficient patterns" time="0.003">
     </testcase>
   </testsuite>
 </testsuites>
