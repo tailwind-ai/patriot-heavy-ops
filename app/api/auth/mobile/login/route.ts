@@ -105,6 +105,7 @@ export async function POST(
       },
     })
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Mobile login error:", error)
 
     // Handle validation errors
