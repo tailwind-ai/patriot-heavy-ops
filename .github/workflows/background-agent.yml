@@ -1,16 +1,6 @@
 name: Background Agent
 
 on:
-  pull_request:
-    types:
-      [
-        opened,
-        synchronize,
-        reopened,
-        edited,
-        review_requested,
-        review_request_removed,
-      ]
   pull_request_review:
     types: [submitted]
   issue_comment:
@@ -24,18 +14,33 @@ on:
     types: [completed]
 
 jobs:
-  # Check for unresolved PR comments
+  # Check for unresolved PR comments after CI Tests complete
   check-comment-resolution:
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'workflow_run'
 
     steps:
+      - name: Find associated PR
+        id: find-pr
+        run: |
+          PR_NUMBER=$(gh pr list --state open --json number,headRefName --jq '.[] | select(.headRefName == "${{ github.event.workflow_run.head_branch }}") | .number' | head -1)
+          if [ -z "$PR_NUMBER" ]; then
+            echo "No open PR found for branch ${{ github.event.workflow_run.head_branch }}, skipping"
+            echo "skip=true" >> $GITHUB_OUTPUT
+          else
+            echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.SAM_PAT_EXP_09_04_2026 }}
+
       - name: Check for unresolved review comments
+        if: steps.find-pr.outputs.skip == 'false'
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const prNumber = context.payload.pull_request.number;
+            const prNumber = ${{ steps.find-pr.outputs.pr_number }};
             const { data: reviews } = await github.rest.pulls.listReviewComments({
               ...context.repo,
               pull_number: prNumber,
