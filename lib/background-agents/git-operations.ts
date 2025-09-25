@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { Octokit } from "@octokit/rest"
 import { FileChange } from "./automated-fixer"
 
