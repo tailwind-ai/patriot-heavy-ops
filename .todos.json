@@ -2,98 +2,68 @@
   {
     "id": "github-2",
     "content": "[nitpick] The type assertion and destructuring pattern is complex. Consider defining a separate type for input validation or making requestedTotalHours explicitly optional in the schema definition to avoid the need for this workaround.",
-    "status": "pending",
+    "status": "completed",
     "priority": "high",
     "dependencies": [],
     "issueType": "ci_failure",
-    "files": [
-      "lib/services/service-request-service.ts"
-    ],
-    "lineNumbers": [
-      240
-    ],
+    "files": ["lib/services/service-request-service.ts"],
+    "lineNumbers": [240],
     "suggestedFix": "",
     "createdAt": "2025-09-25T04:00:42.189Z",
-    "updatedAt": "2025-09-25T04:00:42.189Z",
+    "updatedAt": "2025-09-25T04:18:20.267Z",
     "estimatedTime": "10-30 min",
-    "tags": [
-      "ci-failure",
-      "high"
-    ],
+    "tags": ["ci-failure", "high"],
     "assignee": "general-developer",
     "relatedPR": "#245"
   },
   {
     "id": "github-1",
     "content": "The error handling converts all errors to strings which may lose important debugging information lik...",
-    "status": "pending",
+    "status": "completed",
     "priority": "medium",
     "dependencies": [],
     "issueType": "copilot_comment",
-    "files": [
-      "scripts/todo-cli.ts"
-    ],
-    "lineNumbers": [
-      1
-    ],
+    "files": ["scripts/todo-cli.ts"],
+    "lineNumbers": [1],
     "suggestedFix": "",
     "createdAt": "2025-09-25T04:00:42.189Z",
-    "updatedAt": "2025-09-25T04:00:42.189Z",
+    "updatedAt": "2025-09-25T04:18:50.116Z",
     "estimatedTime": "5-15 min",
-    "tags": [
-      "copilot-comment",
-      "medium"
-    ],
+    "tags": ["copilot-comment", "medium"],
     "assignee": "general-developer",
     "relatedPR": "#245"
   },
   {
     "id": "github-3",
     "content": "[nitpick] The nested ternary operator makes the logic hard to follow. Consider using if-else statements or extracting this logic into a helper function for better readability.",
-    "status": "pending",
+    "status": "completed",
     "priority": "medium",
     "dependencies": [],
     "issueType": "copilot_comment",
-    "files": [
-      "app/api/users/[userId]/route.ts"
-    ],
-    "lineNumbers": [
-      1
-    ],
+    "files": ["app/api/users/[userId]/route.ts"],
+    "lineNumbers": [1],
     "suggestedFix": "",
     "createdAt": "2025-09-25T04:00:42.189Z",
-    "updatedAt": "2025-09-25T04:00:42.189Z",
+    "updatedAt": "2025-09-25T04:18:26.034Z",
     "estimatedTime": "5-15 min",
-    "tags": [
-      "copilot-comment",
-      "medium",
-      "api"
-    ],
+    "tags": ["copilot-comment", "medium", "api"],
     "assignee": "api-specialist",
     "relatedPR": "#245"
   },
   {
     "id": "github-4",
     "content": "Using require() in TypeScript files is generally discouraged. Consider using dynamic imports with `await import()` or restructuring the test to use ES6 imports with proper mocking setup.",
-    "status": "pending",
+    "status": "completed",
     "priority": "medium",
     "dependencies": [],
     "issueType": "lint_error",
-    "files": [
-      "__tests__/lib/repositories/repository-factory.test.ts"
-    ],
-    "lineNumbers": [
-      1
-    ],
+    "files": ["__tests__/lib/repositories/repository-factory.test.ts"],
+    "lineNumbers": [1],
     "suggestedFix": "",
     "createdAt": "2025-09-25T04:00:42.189Z",
-    "updatedAt": "2025-09-25T04:00:42.189Z",
+    "updatedAt": "2025-09-25T04:18:26.318Z",
     "estimatedTime": "5-20 min",
-    "tags": [
-      "lint-error",
-      "medium",
-      "testing"
-    ],
+    "tags": ["lint-error", "medium", "testing"],
     "assignee": "test-specialist",
     "relatedPR": "#245"
   }
