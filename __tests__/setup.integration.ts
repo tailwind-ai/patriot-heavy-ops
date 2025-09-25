@@ -18,11 +18,13 @@ process.env.NEXTAUTH_URL = "http://localhost:3000"
 // Global setup for integration tests
 beforeAll(async () => {
   // Add any global setup needed for integration tests
+  // eslint-disable-next-line no-console
   console.log("🧪 Starting integration test suite")
 })
 
 afterAll(async () => {
   // Add any global cleanup needed for integration tests
+  // eslint-disable-next-line no-console
   console.log("✅ Integration test suite completed")
 })
 
