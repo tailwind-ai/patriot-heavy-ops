@@ -1,8 +1,6 @@
 name: Background Agent
 
 on:
-  pull_request:
-    types: [opened, synchronize, review_requested]
   pull_request_review:
     types: [submitted]
   issue_comment:
@@ -10,19 +8,16 @@ on:
   status:
   check_run:
     types: [completed]
-  # NEW: Monitor workflow completions for log analysis
+  # Monitor workflow completions for log analysis
   workflow_run:
-    workflows: ["CI Tests", "CI/CD Pipeline"]
+    workflows: ["CI Tests"]
     types: [completed]
-  # NEW: Continuous monitoring on push events
-  push:
-    branches: [sam-dev, main]
 
 jobs:
-  # Analyze CI/CD workflow failures
+  # Analyze CI/CD workflow failures and check comment resolution
   analyze-failures:
     runs-on: ubuntu-latest
-    if: github.event.workflow_run && github.event.workflow_run.conclusion == 'failure'
+    if: github.event_name == 'workflow_run'
 
     steps:
       - name: Checkout code
@@ -44,7 +39,47 @@ jobs:
         env:
           GITHUB_ACCESS_TOKEN: ${{ secrets.SAM_PAT_EXP_09_04_2026 }}
 
+      - name: Check for unresolved review comments
+        id: check-comments
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            // Find associated PR for this workflow run
+            const { data: prs } = await github.rest.pulls.list({
+              ...context.repo,
+              state: 'open',
+              head: `${context.repo.owner}:${{ github.event.workflow_run.head_branch }}`
+            });
+
+            if (prs.length === 0) {
+              console.log("No open PR found for branch ${{ github.event.workflow_run.head_branch }}, skipping comment check");
+              return { skip: true };
+            }
+
+            const prNumber = prs[0].number;
+            console.log(`Found PR #${prNumber} for workflow run`);
+
+            // Check for unresolved review comments
+            const { data: reviews } = await github.rest.pulls.listReviewComments({
+              ...context.repo,
+              pull_number: prNumber,
+              per_page: 100
+            });
+
+            // GitHub marks comments as "in_reply_to_id" when resolved; keep only root unresolved
+            const unresolved = reviews.filter(r => r.in_reply_to_id === null);
+
+            if (unresolved.length > 0) {
+              core.setFailed(`❌ ${unresolved.length} unresolved comments remain.`);
+              return { skip: true, pr_number: prNumber, unresolved_comments: unresolved.length };
+            } else {
+              console.log("✅ All review comments resolved.");
+              return { skip: false, pr_number: prNumber };
+            }
+
       - name: Analyze workflow failure logs
+        if: github.event.workflow_run.conclusion == 'failure'
         run: |
           echo "🔍 Analyzing failed workflow: ${{ github.event.workflow_run.name }}"
           echo "Run ID: ${{ github.event.workflow_run.id }}"
@@ -64,6 +99,7 @@ jobs:
           npx tsx scripts/todo-cli.ts analyze-workflow ${{ github.event.workflow_run.id }} $PR_NUMBER
         env:
           GITHUB_ACCESS_TOKEN: ${{ secrets.SAM_PAT_EXP_09_04_2026 }}
+          GH_TOKEN: ${{ secrets.SAM_PAT_EXP_09_04_2026 }}
 
       - name: Upload failure analysis
         if: always()
@@ -73,98 +109,10 @@ jobs:
           path: .todos.json
           retention-days: 7
 
-  # Continuous monitoring for push events
-  continuous-monitor:
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push'
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "18"
-          cache: "npm"
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Setup environment
-        run: |
-          echo "GITHUB_ACCESS_TOKEN=${{ secrets.SAM_PAT_EXP_09_04_2026 }}" >> .env.local
-          echo "NODE_ENV=production" >> .env.local
-        env:
-          GITHUB_ACCESS_TOKEN: ${{ secrets.SAM_PAT_EXP_09_04_2026 }}
-
-      - name: Check for existing todos and active PRs
-        run: |
-          echo "🔍 Checking for existing todos and active PRs..."
-
-          # Check if todos file exists and has pending items
-          if [ -f ".todos.json" ]; then
-            PENDING_TODOS=$(cat .todos.json | jq '[.[] | select(.status == "pending")] | length')
-            echo "📋 Found $PENDING_TODOS pending todos"
-            
-            if [ "$PENDING_TODOS" -gt 0 ]; then
-              echo "🔄 Pending todos exist, checking for associated PR..."
-              
-              # Find PR for current branch
-              BRANCH_NAME="${{ github.ref_name }}"
-              PR_NUMBER=$(gh pr list --state open --head "$BRANCH_NAME" --json number --jq '.[0].number' || echo "")
-              
-              if [ -n "$PR_NUMBER" ]; then
-                echo "🎯 Found PR #$PR_NUMBER for branch $BRANCH_NAME"
-                echo "🔍 Re-analyzing PR to update todos with latest changes..."
-                
-                # Use continuous monitoring to update todo statuses and detect new issues
-                npx tsx scripts/todo-cli.ts continuous-monitor $PR_NUMBER
-                
-                echo "✅ Continuous monitoring completed for PR #$PR_NUMBER"
-              else
-                echo "ℹ️ No open PR found for branch $BRANCH_NAME, skipping re-analysis"
-              fi
-            else
-              echo "✅ No pending todos found, continuous monitoring not needed"
-            fi
-          else
-            echo "ℹ️ No todos file found, continuous monitoring not needed"
-          fi
-        env:
-          GITHUB_ACCESS_TOKEN: ${{ secrets.SAM_PAT_EXP_09_04_2026 }}
-
-      - name: Upload updated todos
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: continuous-monitor-todos
-          path: .todos.json
-          retention-days: 7
-
-      - name: Check for completion and notify
-        run: |
-          if [ -f ".todos.json" ]; then
-            TOTAL_TODOS=$(cat .todos.json | jq 'length')
-            COMPLETED_TODOS=$(cat .todos.json | jq '[.[] | select(.status == "completed")] | length')
-            PENDING_TODOS=$(cat .todos.json | jq '[.[] | select(.status == "pending")] | length')
-            
-            if [ "$TOTAL_TODOS" -gt 0 ]; then
-              COMPLETION_RATE=$(echo "scale=1; $COMPLETED_TODOS * 100 / $TOTAL_TODOS" | bc -l)
-              echo "📊 Progress: $COMPLETED_TODOS/$TOTAL_TODOS completed (${COMPLETION_RATE}%)"
-              
-              if [ "$PENDING_TODOS" -eq 0 ] && [ "$COMPLETED_TODOS" -gt 0 ]; then
-                echo "🎉 All todos completed! Ready for review."
-              elif [ "$PENDING_TODOS" -gt 0 ]; then
-                echo "⚠️ $PENDING_TODOS todos still pending. Continue working on them."
-              fi
-            fi
-          fi
-
   # Monitor Copilot comments and PR events
   background-agent:
     runs-on: ubuntu-latest
-    if: github.event.pull_request || github.event.issue.pull_request || github.event_name == 'pull_request_review' || github.event_name == 'issue_comment'
+    if: github.event.issue.pull_request || github.event_name == 'pull_request_review' || github.event_name == 'issue_comment' || github.event_name == 'status' || github.event_name == 'check_run'
 
     steps:
       - name: Checkout code
@@ -189,9 +137,7 @@ jobs:
       - name: Trigger Background Agent
         run: |
           # Get PR number from context
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            PR_NUMBER=${{ github.event.pull_request.number }}
-          elif [ "${{ github.event_name }}" = "pull_request_review" ]; then
+          if [ "${{ github.event_name }}" = "pull_request_review" ]; then
             PR_NUMBER=${{ github.event.pull_request.number }}
           elif [ "${{ github.event_name }}" = "issue_comment" ]; then
             # Extract PR number from issue if it's a PR
@@ -221,6 +167,7 @@ jobs:
           fi
         env:
           GITHUB_ACCESS_TOKEN: ${{ secrets.SAM_PAT_EXP_09_04_2026 }}
+          GH_TOKEN: ${{ secrets.SAM_PAT_EXP_09_04_2026 }}
 
       - name: Check for new todos
         run: |
@@ -240,7 +187,7 @@ jobs:
           retention-days: 7
 
       - name: Comment on PR with results
-        if: github.event.pull_request
+        if: github.event.pull_request || github.event_name == 'pull_request_review' || github.event_name == 'issue_comment' || github.event_name == 'status' || github.event_name == 'check_run'
         uses: actions/github-script@v7
         with:
           script: |

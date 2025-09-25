@@ -1,14 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { useRouter } from "next/navigation"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import * as z from "zod"
 
 import { cn } from "@/lib/utils"
-import { serviceRequestSchema, calculateTotalHours } from "@/lib/validations/service-request"
-import { ServiceFactory, type GeocodingAddress } from "@/lib/services"
 import { buttonVariants } from "@/components/ui/button"
 import {
   Card,
@@ -22,8 +16,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { toast } from "@/components/ui/use-toast"
 import { Icons } from "@/components/icons"
+import { useServiceRequestForm } from "@/hooks/use-service-request-form"
 
 interface ServiceRequestFormProps extends React.HTMLAttributes<HTMLFormElement> {
   user: {
@@ -33,184 +27,24 @@ interface ServiceRequestFormProps extends React.HTMLAttributes<HTMLFormElement> 
   }
 }
 
-type FormData = z.infer<typeof serviceRequestSchema>
-
-// Using GeocodingAddress from service layer instead of local interface
-
 export function ServiceRequestForm({ user, className, ...props }: ServiceRequestFormProps) {
-  const router = useRouter()
+  const {
+    form,
+    onSubmit,
+    isSaving,
+    isLoadingAddresses,
+    jobSiteInput,
+    jobSiteSuggestions,
+    handleJobSiteInputChange,
+    handleAddressSelect,
+  } = useServiceRequestForm({ user })
+
   const {
     register,
     handleSubmit,
     setValue,
-    watch,
     formState: { errors },
-  } = useForm<FormData>({
-    resolver: zodResolver(serviceRequestSchema),
-    defaultValues: {
-      contactName: user.name || "",
-      contactEmail: user.email || "",
-      contactPhone: "",
-      company: "",
-      title: "",
-      description: "",
-      jobSite: "",
-      transport: "WE_HANDLE_IT",
-      startDate: "",
-      endDate: "",
-      equipmentCategory: "SKID_STEERS_TRACK_LOADERS",
-      equipmentDetail: "",
-      requestedDurationType: "FULL_DAY",
-      requestedDurationValue: 1,
-      requestedTotalHours: 8,
-      rateType: "DAILY",
-      baseRate: 500,
-    },
-  })
-
-  const [isSaving, setIsSaving] = React.useState<boolean>(false)
-  const [jobSiteInput, setJobSiteInput] = React.useState("")
-  const [jobSiteSuggestions, setJobSiteSuggestions] = React.useState<GeocodingAddress[]>([])
-  const [isLoadingAddresses, setIsLoadingAddresses] = React.useState(false)
-  const debounceRef = React.useRef<NodeJS.Timeout | null>(null)
-  const geocodingService = ServiceFactory.getGeocodingService()
-
-  const watchedDurationType = watch("requestedDurationType")
-  const watchedDurationValue = watch("requestedDurationValue")
-
-  // Update total hours when duration changes
-  React.useEffect(() => {
-    const totalHours = calculateTotalHours(watchedDurationType, watchedDurationValue)
-    setValue("requestedTotalHours", totalHours)
-  }, [watchedDurationType, watchedDurationValue, setValue])
-
-  // Debounced address search using geocoding service
-  const searchAddresses = React.useCallback(async (query: string) => {
-    if (query.length < 3) {
-      setJobSiteSuggestions([])
-      return
-    }
-
-    setIsLoadingAddresses(true)
-    try {
-      const result = await geocodingService.searchAddresses(query, {
-        limit: 5,
-        countryCode: "us",
-      })
-      
-      if (result.success) {
-        setJobSiteSuggestions(result.data || [])
-      } else {
-        // Service returned an error
-        setJobSiteSuggestions([])
-        toast({
-          title: "Address search unavailable",
-          description: result.error?.message || "Unable to search for addresses at the moment. Please enter the address manually.",
-          variant: "destructive",
-        })
-      }
-    } catch {
-      // Unexpected error - fallback to manual entry
-      setJobSiteSuggestions([])
-      toast({
-        title: "Address search unavailable",
-        description: "Unable to search for addresses at the moment. Please enter the address manually.",
-        variant: "destructive",
-      })
-    } finally {
-      setIsLoadingAddresses(false)
-    }
-  }, [geocodingService])
-
-  // Handle job site input change with debouncing
-  const handleJobSiteInputChange = (value: string) => {
-    setJobSiteInput(value)
-    setValue("jobSite", value)
-    
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current)
-    }
-    
-    debounceRef.current = setTimeout(() => {
-      searchAddresses(value)
-    }, 300)
-  }
-
-  // Handle address selection
-  const handleAddressSelect = (suggestion: GeocodingAddress) => {
-    const formattedAddress = suggestion.displayName
-    setJobSiteInput(formattedAddress)
-    setValue("jobSite", formattedAddress)
-    setJobSiteSuggestions([])
-  }
-
-  async function onSubmit(data: FormData) {
-    setIsSaving(true)
-
-    try {
-      const response = await fetch("/api/service-requests", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      })
-
-      if (!response.ok) {
-        let errorMessage = "Your service request was not created. Please try again."
-        
-        try {
-          const errorData = await response.json()
-          if (response.status === 422) {
-            // Validation errors
-            errorMessage = "Please check your form data and try again."
-            if (Array.isArray(errorData) && errorData.length > 0) {
-              errorMessage = `Validation error: ${errorData[0].message}`
-            }
-          } else if (response.status === 403) {
-            errorMessage = "You are not authorized to create service requests. Please log in and try again."
-          } else if (response.status === 500) {
-            errorMessage = "A server error occurred. Please try again later."
-          } else if (errorData?.message) {
-            errorMessage = errorData.message
-          }
-        } catch {
-          // If we can't parse the error response, use status-based messages
-          if (response.status === 403) {
-            errorMessage = "You are not authorized to create service requests. Please log in and try again."
-          } else if (response.status >= 500) {
-            errorMessage = "A server error occurred. Please try again later."
-          }
-        }
-
-        toast({
-          title: "Failed to create service request",
-          description: errorMessage,
-          variant: "destructive",
-        })
-        return
-      }
-
-      toast({
-        description: "Your service request has been created successfully.",
-      })
-
-      // Navigate and refresh after successful creation
-      router.push("/dashboard")
-      router.refresh()
-      return
-    } catch {
-      // Service request creation error - show user-friendly message
-      toast({
-        title: "Network error",
-        description: "Unable to connect to the server. Please check your internet connection and try again.",
-        variant: "destructive",
-      })
-      return
-    } finally {
-      setIsSaving(false)
-    }
-  }
+  } = form
 
   return (
     <form
