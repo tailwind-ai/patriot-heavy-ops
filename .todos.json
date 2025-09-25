@@ -1,75 +1,189 @@
 [
   {
-    "id": "github-1",
-    "content": "{",
+    "id": "github-5",
+    "content": "Verify ALL tests pass (npm test returns 0 exit code)",
     "status": "pending",
-    "priority": "high",
+    "priority": "critical",
     "dependencies": [],
-    "issueType": "ci_failure",
-    "files": [
-      "lib/services/service-request-service.ts"
-    ],
-    "lineNumbers": [
-      354
-    ],
-    "suggestedFix": "",
-    "createdAt": "2025-09-24T23:35:03.022Z",
-    "updatedAt": "2025-09-24T23:35:03.022Z",
-    "estimatedTime": "10-30 min",
-    "tags": [
-      "ci-failure",
-      "high"
-    ],
+    "issueType": "definition_of_done",
+    "files": [],
+    "lineNumbers": [],
+    "suggestedFix": "Run 'npm test' and ensure all tests pass with exit code 0",
+    "createdAt": "2025-09-25T02:43:39.100Z",
+    "updatedAt": "2025-09-25T02:43:39.100Z",
+    "estimatedTime": "2-5 min",
+    "tags": ["definition-of_done", "critical"],
     "assignee": "general-developer",
-    "relatedPR": "#242"
+    "relatedPR": "#245"
+  },
+  {
+    "id": "github-6",
+    "content": "Verify ALL linting passes (ESLint clean)",
+    "status": "pending",
+    "priority": "critical",
+    "dependencies": [],
+    "issueType": "definition_of_done",
+    "files": [],
+    "lineNumbers": [],
+    "suggestedFix": "Run 'npx eslint . --ext .ts,.tsx --max-warnings 0' and fix all issues",
+    "createdAt": "2025-09-25T02:43:39.100Z",
+    "updatedAt": "2025-09-25T02:43:39.100Z",
+    "estimatedTime": "2-5 min",
+    "tags": ["definition-of_done", "critical"],
+    "assignee": "general-developer",
+    "relatedPR": "#245"
+  },
+  {
+    "id": "github-7",
+    "content": "Verify ALL TypeScript compilation passes",
+    "status": "pending",
+    "priority": "critical",
+    "dependencies": [],
+    "issueType": "definition_of_done",
+    "files": [],
+    "lineNumbers": [],
+    "suggestedFix": "Run 'npx tsc --noEmit' and fix all compilation errors",
+    "createdAt": "2025-09-25T02:43:39.100Z",
+    "updatedAt": "2025-09-25T02:43:39.100Z",
+    "estimatedTime": "2-5 min",
+    "tags": ["definition-of_done", "critical"],
+    "assignee": "general-developer",
+    "relatedPR": "#245"
+  },
+  {
+    "id": "github-8",
+    "content": "Verify ALL changes committed with conventional commits",
+    "status": "pending",
+    "priority": "critical",
+    "dependencies": [],
+    "issueType": "definition_of_done",
+    "files": [],
+    "lineNumbers": [],
+    "suggestedFix": "Check git log and ensure all commits follow conventional commit format",
+    "createdAt": "2025-09-25T02:43:39.100Z",
+    "updatedAt": "2025-09-25T02:43:39.100Z",
+    "estimatedTime": "2-5 min",
+    "tags": ["definition-of_done", "critical"],
+    "assignee": "general-developer",
+    "relatedPR": "#245"
+  },
+  {
+    "id": "github-9",
+    "content": "Verify ALL changes pushed to remote branch",
+    "status": "pending",
+    "priority": "critical",
+    "dependencies": [],
+    "issueType": "definition_of_done",
+    "files": [],
+    "lineNumbers": [],
+    "suggestedFix": "Run 'git status' and 'git push' to ensure all changes are pushed",
+    "createdAt": "2025-09-25T02:43:39.100Z",
+    "updatedAt": "2025-09-25T02:43:39.100Z",
+    "estimatedTime": "2-5 min",
+    "tags": ["definition-of_done", "critical"],
+    "assignee": "general-developer",
+    "relatedPR": "#245"
+  },
+  {
+    "id": "github-10",
+    "content": "Monitor ALL CI checks are green on PR #245",
+    "status": "pending",
+    "priority": "critical",
+    "dependencies": [],
+    "issueType": "definition_of_done",
+    "files": [],
+    "lineNumbers": [],
+    "suggestedFix": "Use 'gh pr checks 245' to monitor CI status until all checks pass",
+    "createdAt": "2025-09-25T02:43:39.100Z",
+    "updatedAt": "2025-09-25T02:43:39.100Z",
+    "estimatedTime": "2-5 min",
+    "tags": ["definition-of_done", "critical"],
+    "assignee": "general-developer",
+    "relatedPR": "#245"
+  },
+  {
+    "id": "github-11",
+    "content": "Confirm Definition of Done achieved - 100% of checks passing",
+    "status": "pending",
+    "priority": "critical",
+    "dependencies": [],
+    "issueType": "definition_of_done",
+    "files": [],
+    "lineNumbers": [],
+    "suggestedFix": "Only mark complete when ALL above verification steps pass",
+    "createdAt": "2025-09-25T02:43:39.100Z",
+    "updatedAt": "2025-09-25T02:43:39.100Z",
+    "estimatedTime": "2-5 min",
+    "tags": ["definition-of_done", "critical"],
+    "assignee": "general-developer",
+    "relatedPR": "#245"
   },
   {
     "id": "github-2",
-    "content": "Date comparison using <= will reject requests scheduled for exactly the current time. Since dates include time components, this could incorrectly reject valid future times on the same day. Consider using `startDate.getTime() <= now.getTime()` for more explicit comparison or adding a small buffer for same-day scheduling.",
+    "content": "[nitpick] The type assertion and destructuring pattern is complex. Consider defining a separate type for input validation or making requestedTotalHours explicitly optional in the schema definition to avoid the need for this workaround.",
     "status": "pending",
     "priority": "high",
     "dependencies": [],
     "issueType": "ci_failure",
-    "files": [
-      "lib/services/service-request-service.ts"
-    ],
-    "lineNumbers": [
-      514
-    ],
+    "files": ["lib/services/service-request-service.ts"],
+    "lineNumbers": [235],
     "suggestedFix": "",
-    "createdAt": "2025-09-24T23:35:03.022Z",
-    "updatedAt": "2025-09-24T23:35:03.022Z",
+    "createdAt": "2025-09-25T02:43:39.100Z",
+    "updatedAt": "2025-09-25T02:43:39.100Z",
     "estimatedTime": "10-30 min",
-    "tags": [
-      "ci-failure",
-      "high"
-    ],
+    "tags": ["ci-failure", "high"],
     "assignee": "general-developer",
-    "relatedPR": "#242"
+    "relatedPR": "#245"
   },
   {
-    "id": "github-3",
-    "content": "Using type assertion `(service as any)` bypasses TypeScript's type safety. Consider making the logger property protected in the BaseService class or providing a setter method for dependency injection in tests.",
+    "id": "github-1",
+    "content": "The error handling converts all errors to strings which may lose important debugging information lik...",
     "status": "pending",
     "priority": "medium",
     "dependencies": [],
     "issueType": "copilot_comment",
-    "files": [
-      "__tests__/lib/services/service-request-service.test.ts"
-    ],
-    "lineNumbers": [
-      54
-    ],
+    "files": ["scripts/todo-cli.ts"],
+    "lineNumbers": [259],
     "suggestedFix": "",
-    "createdAt": "2025-09-24T23:35:03.022Z",
-    "updatedAt": "2025-09-24T23:35:03.022Z",
+    "createdAt": "2025-09-25T02:43:39.100Z",
+    "updatedAt": "2025-09-25T02:43:39.100Z",
     "estimatedTime": "5-15 min",
-    "tags": [
-      "copilot-comment",
-      "medium",
-      "testing"
-    ],
+    "tags": ["copilot-comment", "medium"],
+    "assignee": "general-developer",
+    "relatedPR": "#245"
+  },
+  {
+    "id": "github-3",
+    "content": "[nitpick] The nested ternary operator makes the logic hard to follow. Consider using if-else statements or extracting this logic into a helper function for better readability.",
+    "status": "pending",
+    "priority": "medium",
+    "dependencies": [],
+    "issueType": "copilot_comment",
+    "files": ["app/api/users/[userId]/route.ts"],
+    "lineNumbers": [95],
+    "suggestedFix": "",
+    "createdAt": "2025-09-25T02:43:39.100Z",
+    "updatedAt": "2025-09-25T02:43:39.100Z",
+    "estimatedTime": "5-15 min",
+    "tags": ["copilot-comment", "medium", "api"],
+    "assignee": "api-specialist",
+    "relatedPR": "#245"
+  },
+  {
+    "id": "github-4",
+    "content": "Using require() in TypeScript files is generally discouraged. Consider using dynamic imports with `await import()` or restructuring the test to use ES6 imports with proper mocking setup.",
+    "status": "pending",
+    "priority": "medium",
+    "dependencies": [],
+    "issueType": "lint_error",
+    "files": ["__tests__/lib/repositories/repository-factory.test.ts"],
+    "lineNumbers": [5],
+    "suggestedFix": "",
+    "createdAt": "2025-09-25T02:43:39.100Z",
+    "updatedAt": "2025-09-25T02:43:39.100Z",
+    "estimatedTime": "5-20 min",
+    "tags": ["lint-error", "medium", "testing"],
     "assignee": "test-specialist",
-    "relatedPR": "#242"
+    "relatedPR": "#245"
   }
 ]

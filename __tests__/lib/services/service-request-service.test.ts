@@ -49,9 +49,7 @@ describe("ServiceRequestService", () => {
 
   beforeEach(() => {
     mockLogger = new MockLogger()
-    service = new ServiceRequestService()
-    // Replace logger with mock for testing
-    ;(service as any).logger = mockLogger
+    service = new ServiceRequestService(mockLogger)
   })
 
   describe("calculateTotalHours", () => {
@@ -570,7 +568,7 @@ describe("ServiceRequestService", () => {
 
       expect(result.success).toBe(true)
       expect(result.data?.isValid).toBe(false)
-      expect(result.data?.errors).toContain("Start date must be in the future")
+      expect(result.data?.errors).toContain("Start date cannot be in the past")
     })
 
     it("should reject end date before start date", () => {
