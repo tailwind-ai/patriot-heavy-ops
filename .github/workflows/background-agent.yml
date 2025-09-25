@@ -14,6 +14,9 @@ on:
   workflow_run:
     workflows: ["CI Tests", "CI/CD Pipeline"]
     types: [completed]
+  # NEW: Continuous monitoring on push events
+  push:
+    branches: [sam-dev, main]
 
 jobs:
   # Analyze CI/CD workflow failures
@@ -69,6 +72,94 @@ jobs:
           name: failure-analysis-${{ github.event.workflow_run.id }}
           path: .todos.json
           retention-days: 7
+
+  # Continuous monitoring for push events
+  continuous-monitor:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup environment
+        run: |
+          echo "GITHUB_ACCESS_TOKEN=${{ secrets.SAM_PAT_EXP_09_04_2026 }}" >> .env.local
+          echo "NODE_ENV=production" >> .env.local
+        env:
+          GITHUB_ACCESS_TOKEN: ${{ secrets.SAM_PAT_EXP_09_04_2026 }}
+
+      - name: Check for existing todos and active PRs
+        run: |
+          echo "🔍 Checking for existing todos and active PRs..."
+
+          # Check if todos file exists and has pending items
+          if [ -f ".todos.json" ]; then
+            PENDING_TODOS=$(cat .todos.json | jq '[.[] | select(.status == "pending")] | length')
+            echo "📋 Found $PENDING_TODOS pending todos"
+            
+            if [ "$PENDING_TODOS" -gt 0 ]; then
+              echo "🔄 Pending todos exist, checking for associated PR..."
+              
+              # Find PR for current branch
+              BRANCH_NAME="${{ github.ref_name }}"
+              PR_NUMBER=$(gh pr list --state open --head "$BRANCH_NAME" --json number --jq '.[0].number' || echo "")
+              
+              if [ -n "$PR_NUMBER" ]; then
+                echo "🎯 Found PR #$PR_NUMBER for branch $BRANCH_NAME"
+                echo "🔍 Re-analyzing PR to update todos with latest changes..."
+                
+                # Use continuous monitoring to update todo statuses and detect new issues
+                npx tsx scripts/todo-cli.ts continuous-monitor $PR_NUMBER
+                
+                echo "✅ Continuous monitoring completed for PR #$PR_NUMBER"
+              else
+                echo "ℹ️ No open PR found for branch $BRANCH_NAME, skipping re-analysis"
+              fi
+            else
+              echo "✅ No pending todos found, continuous monitoring not needed"
+            fi
+          else
+            echo "ℹ️ No todos file found, continuous monitoring not needed"
+          fi
+        env:
+          GITHUB_ACCESS_TOKEN: ${{ secrets.SAM_PAT_EXP_09_04_2026 }}
+
+      - name: Upload updated todos
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: continuous-monitor-todos
+          path: .todos.json
+          retention-days: 7
+
+      - name: Check for completion and notify
+        run: |
+          if [ -f ".todos.json" ]; then
+            TOTAL_TODOS=$(cat .todos.json | jq 'length')
+            COMPLETED_TODOS=$(cat .todos.json | jq '[.[] | select(.status == "completed")] | length')
+            PENDING_TODOS=$(cat .todos.json | jq '[.[] | select(.status == "pending")] | length')
+            
+            if [ "$TOTAL_TODOS" -gt 0 ]; then
+              COMPLETION_RATE=$(echo "scale=1; $COMPLETED_TODOS * 100 / $TOTAL_TODOS" | bc -l)
+              echo "📊 Progress: $COMPLETED_TODOS/$TOTAL_TODOS completed (${COMPLETION_RATE}%)"
+              
+              if [ "$PENDING_TODOS" -eq 0 ] && [ "$COMPLETED_TODOS" -gt 0 ]; then
+                echo "🎉 All todos completed! Ready for review."
+              elif [ "$PENDING_TODOS" -gt 0 ]; then
+                echo "⚠️ $PENDING_TODOS todos still pending. Continue working on them."
+              fi
+            fi
+          fi
 
   # Monitor Copilot comments and PR events
   background-agent:

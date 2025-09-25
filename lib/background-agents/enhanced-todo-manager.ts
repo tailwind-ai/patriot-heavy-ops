@@ -274,6 +274,120 @@ export class EnhancedTodoManager {
   }
 
   /**
+   * Analyze and update todo statuses based on current codebase state
+   */
+  async updateTodoStatuses(prNumber: number): Promise<{
+    resolved: EnhancedTodoItem[]
+    stillPending: EnhancedTodoItem[]
+    newIssues: EnhancedTodoItem[]
+  }> {
+    console.log(`🔍 Analyzing todo statuses for PR #${prNumber}`)
+
+    const resolved: EnhancedTodoItem[] = []
+    const stillPending: EnhancedTodoItem[] = []
+    const newIssues: EnhancedTodoItem[] = []
+
+    // Get current issues from PR
+    const realAgent = new RealBackgroundAgent(
+      process.env.GITHUB_ACCESS_TOKEN || "",
+      "samuelhenry",
+      "patriot-heavy-ops"
+    )
+
+    const currentIssues = await realAgent.processPRIssues(prNumber)
+    const currentIssueContents = new Set(
+      currentIssues.map((issue) => issue.content.trim())
+    )
+
+    // Check existing todos against current issues
+    for (const todo of this.todos) {
+      if (todo.status === "pending") {
+        const todoContentTrimmed = todo.content.trim()
+
+        // Check if this todo's issue still exists
+        if (currentIssueContents.has(todoContentTrimmed)) {
+          stillPending.push(todo)
+        } else {
+          // Issue no longer exists, mark as resolved
+          todo.status = "completed"
+          todo.updatedAt = new Date()
+          resolved.push(todo)
+          console.log(`✅ Auto-resolved: ${todo.content.slice(0, 50)}...`)
+        }
+      }
+    }
+
+    // Check for new issues that weren't in existing todos
+    const existingTodoContents = new Set(
+      this.todos.map((todo) => todo.content.trim())
+    )
+
+    for (const issue of currentIssues) {
+      if (!existingTodoContents.has(issue.content.trim())) {
+        // This is a new issue, create a todo for it
+        const newTodo: EnhancedTodoItem = {
+          ...issue,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          estimatedTime: this.estimateTime(issue),
+          tags: this.generateTags(issue),
+          assignee: this.suggestAssignee(issue),
+          relatedPR: `#${prNumber}`,
+          file: this.extractPrimaryFile(issue),
+          line: this.extractPrimaryLine(issue),
+          cursorHints: this.generateCursorHints(issue),
+          failureDetails: this.extractFailureDetails(issue),
+        }
+
+        this.todos.push(newTodo)
+        newIssues.push(newTodo)
+        console.log(`🆕 New issue detected: ${issue.content.slice(0, 50)}...`)
+      }
+    }
+
+    // Save updated todos
+    TodoPersistence.saveTodos(this.todos)
+
+    console.log(
+      `📊 Status update: ${resolved.length} resolved, ${stillPending.length} still pending, ${newIssues.length} new`
+    )
+
+    return { resolved, stillPending, newIssues }
+  }
+
+  /**
+   * Get completion progress and determine if PR is ready
+   */
+  getCompletionStatus(): {
+    isComplete: boolean
+    totalTodos: number
+    completedTodos: number
+    pendingTodos: number
+    completionRate: number
+    readyForReview: boolean
+  } {
+    const totalTodos = this.todos.length
+    const completedTodos = this.todos.filter(
+      (t) => t.status === "completed"
+    ).length
+    const pendingTodos = this.todos.filter((t) => t.status === "pending").length
+    const completionRate =
+      totalTodos > 0 ? (completedTodos / totalTodos) * 100 : 0
+
+    const isComplete = pendingTodos === 0 && totalTodos > 0
+    const readyForReview = isComplete || completionRate >= 90
+
+    return {
+      isComplete,
+      totalTodos,
+      completedTodos,
+      pendingTodos,
+      completionRate,
+      readyForReview,
+    }
+  }
+
+  /**
    * Clear all todos (useful for switching to new PR)
    */
   clearAllTodos(): void {

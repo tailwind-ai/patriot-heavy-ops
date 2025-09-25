@@ -49,6 +49,16 @@ async function main() {
         }
         await analyzeWorkflowFailure(workflowRunId, parseInt(workflowPrNumber))
         break
+      case "continuous-monitor":
+        const monitorPrNumber = process.argv[3]
+        if (!monitorPrNumber) {
+          console.log(
+            "❌ Please provide PR number: npm run todo continuous-monitor <PR_NUMBER>"
+          )
+          process.exit(1)
+        }
+        await continuousMonitor(parseInt(monitorPrNumber))
+        break
       case "clear":
         await clearAllTodos()
         break
@@ -284,6 +294,80 @@ async function analyzeWorkflowFailure(workflowRunId: string, prNumber: number) {
     }
   } catch (error) {
     console.error("❌ Error analyzing workflow failure:", error)
+    process.exit(1)
+  }
+}
+
+async function continuousMonitor(prNumber: number) {
+  console.log(`🔄 Continuous monitoring for PR #${prNumber}`)
+  
+  try {
+    // Update todo statuses based on current codebase state
+    const statusUpdate = await enhancedTodoManager.updateTodoStatuses(prNumber)
+    
+    // Show status update summary
+    console.log("\n📊 Continuous Monitoring Results:")
+    console.log(`  ✅ Resolved: ${statusUpdate.resolved.length}`)
+    console.log(`  ⏳ Still Pending: ${statusUpdate.stillPending.length}`)
+    console.log(`  🆕 New Issues: ${statusUpdate.newIssues.length}`)
+
+    // Show resolved todos
+    if (statusUpdate.resolved.length > 0) {
+      console.log("\n🎉 Auto-Resolved Issues:")
+      statusUpdate.resolved.forEach((todo, index) => {
+        console.log(`  ${index + 1}. ✅ ${todo.content.slice(0, 80)}...`)
+      })
+    }
+
+    // Show new issues
+    if (statusUpdate.newIssues.length > 0) {
+      console.log("\n🆕 New Issues Detected:")
+      statusUpdate.newIssues.forEach((todo, index) => {
+        const priority = getPriorityEmoji(todo.priority)
+        const typeIcon = getIssueTypeIcon(todo.issueType)
+        console.log(`  ${index + 1}. ${priority} ${typeIcon} ${todo.content}`)
+        if (todo.suggestedFix) {
+          console.log(`     💡 Fix: ${todo.suggestedFix}`)
+        }
+        if (todo.files && todo.files.length > 0) {
+          console.log(`     📁 Files: ${todo.files.join(", ")}`)
+        }
+      })
+    }
+
+    // Show completion status
+    const completionStatus = enhancedTodoManager.getCompletionStatus()
+    console.log("\n📈 Overall Progress:")
+    console.log(`  Total: ${completionStatus.totalTodos}`)
+    console.log(`  Completed: ${completionStatus.completedTodos}`)
+    console.log(`  Pending: ${completionStatus.pendingTodos}`)
+    console.log(`  Completion Rate: ${completionStatus.completionRate.toFixed(1)}%`)
+
+    if (completionStatus.isComplete) {
+      console.log("\n🎉 All todos completed! PR is ready for review.")
+    } else if (completionStatus.readyForReview) {
+      console.log("\n✨ PR is nearly complete and ready for review!")
+    } else if (completionStatus.pendingTodos > 0) {
+      console.log(`\n⚠️ ${completionStatus.pendingTodos} todos still need attention.`)
+    }
+
+    // Show next todo if any pending
+    if (completionStatus.pendingTodos > 0) {
+      const nextTodo = enhancedTodoManager.getNextTodo()
+      if (nextTodo) {
+        console.log("\n🎯 Next Todo to Work On:")
+        console.log(`   ${nextTodo.content}`)
+        if (nextTodo.file && nextTodo.line) {
+          console.log(`   📁 ${nextTodo.file}:${nextTodo.line}`)
+        }
+        if (nextTodo.suggestedFix) {
+          console.log(`   💡 ${nextTodo.suggestedFix}`)
+        }
+      }
+    }
+
+  } catch (error) {
+    console.error("❌ Error in continuous monitoring:", error)
     process.exit(1)
   }
 }
@@ -619,6 +703,9 @@ function showHelp() {
   console.log(
     "analyze-workflow <RUN_ID> <PR> - Analyze workflow failure logs and create todos"
   )
+  console.log(
+    "continuous-monitor <PR> - Update todo statuses and detect new issues"
+  )
   console.log("sync <PR>      - Sync todos from GitHub Actions workflow")
   console.log("resolve <ID>   - Mark todo as resolved and comment on GitHub")
   console.log("clear          - Clear all todos")
@@ -638,6 +725,7 @@ function showHelp() {
     "  npm run todo github-dod 242  # Include Definition of Done checks"
   )
   console.log("  npm run todo analyze-workflow 12345678 245  # Analyze failed workflow")
+  console.log("  npm run todo continuous-monitor 245  # Update todo statuses")
   console.log("  npm run todo clear")
   console.log("  npm run todo next")
   console.log("  npm run todo update issue-1 completed")
