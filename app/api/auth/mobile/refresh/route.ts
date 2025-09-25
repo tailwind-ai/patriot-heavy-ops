@@ -111,6 +111,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<TokenRefreshR
     })
 
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error('Token refresh error:', error)
 
     // Handle validation errors

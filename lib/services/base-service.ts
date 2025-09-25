@@ -124,6 +124,14 @@ export abstract class BaseService {
         ? { originalError: error.message, stack: error.stack }
         : { originalError: String(error) };
 
+      // Check for specific error types
+      if (error instanceof Error && error.name === "ACCESS_DENIED") {
+        return this.createError<T>("ACCESS_DENIED", error.message, details);
+      }
+      if (error instanceof Error && error.name === "NOT_FOUND") {
+        return this.createError<T>("NOT_FOUND", error.message, details);
+      }
+
       return this.createError<T>(errorCode, errorMessage, details);
     }
   }

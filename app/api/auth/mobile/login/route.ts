@@ -1,12 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
-import { db } from "@/lib/db"
-import {
-  verifyPassword,
-  generateAccessToken,
-  generateRefreshToken,
-} from "@/lib/auth-utils"
+import { generateAccessToken, generateRefreshToken } from "@/lib/auth-utils"
 import { authRateLimit } from "@/lib/middleware/rate-limit"
+import { ServiceFactory } from "@/lib/services"
 
 /**
  * Mobile login request schema
@@ -49,19 +45,23 @@ export async function POST(
     const body = await req.json()
     const { email, password } = mobileLoginSchema.parse(body)
 
-    // Find user by email
-    const user = await db.user.findUnique({
-      where: { email: email.toLowerCase() },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        role: true,
-        password: true,
-      },
-    })
+    // Use service layer for authentication
+    const authService = ServiceFactory.getAuthService()
+    const result = await authService.authenticate({ email, password })
 
-    if (!user?.password) {
+    if (!result.success) {
+      // Check if it's a database error vs authentication failure
+      const errorMessage = String(result.error?.details?.originalError || result.error?.message || "")
+      if (errorMessage.toLowerCase().includes("database") || errorMessage.toLowerCase().includes("connection")) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: "Authentication failed",
+          },
+          { status: 500 }
+        )
+      }
+      
       return NextResponse.json(
         {
           success: false,
@@ -71,14 +71,12 @@ export async function POST(
       )
     }
 
-    // Verify password
-    const isValidPassword = await verifyPassword(password, user.password)
-
-    if (!isValidPassword) {
+    const user = result.data
+    if (!user) {
       return NextResponse.json(
         {
           success: false,
-          error: "Invalid email or password",
+          error: "Authentication failed",
         },
         { status: 401 }
       )
@@ -87,7 +85,7 @@ export async function POST(
     // Generate JWT tokens
     const tokenPayload = {
       userId: user.id,
-      email: user.email || "",
+      email: user.email,
       role: user.role || undefined,
     }
 
@@ -101,12 +99,13 @@ export async function POST(
       refreshToken,
       user: {
         id: user.id,
-        email: user.email || "",
+        email: user.email,
         name: user.name || undefined,
         role: user.role || undefined,
       },
     })
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Mobile login error:", error)
 
     // Handle validation errors

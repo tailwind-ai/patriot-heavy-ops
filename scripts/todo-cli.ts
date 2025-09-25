@@ -54,7 +54,9 @@ async function main() {
         const todoId = args[1]
         const resolution = args.slice(2).join(" ")
         if (!todoId) {
-          console.log("❌ Please provide a todo ID: npm run todo resolve <TODO_ID> [resolution message]")
+          console.log(
+            "❌ Please provide a todo ID: npm run todo resolve <TODO_ID> [resolution message]"
+          )
           process.exit(1)
         }
         await resolveTodoWithComment(todoId, resolution)
@@ -156,11 +158,17 @@ async function initializeFromGitHubPR(prNumber: number) {
 }
 
 async function initializeFromGitHubPRWithDoD(prNumber: number) {
-  console.log(`🤖 Fetching issues from GitHub PR #${prNumber} with Definition of Done checks...`)
+  console.log(
+    `🤖 Fetching issues from GitHub PR #${prNumber} with Definition of Done checks...`
+  )
   console.log(`🧹 Clearing previous todos for fresh PR-specific detection...`)
-  console.log(`🔍 Checking for Copilot comments, CI failures, and DoD requirements...`)
+  console.log(
+    `🔍 Checking for Copilot comments, CI failures, and DoD requirements...`
+  )
 
-  const todos = await enhancedTodoManager.initializeFromGitHubPRWithDoD(prNumber)
+  const todos = await enhancedTodoManager.initializeFromGitHubPRWithDoD(
+    prNumber
+  )
   console.log(`✅ Found ${todos.length} issues from GitHub PR #${prNumber}`)
 
   // Show summary
@@ -173,8 +181,12 @@ async function initializeFromGitHubPRWithDoD(prNumber: number) {
   console.log(`  Completion Rate: ${summary.completionRate.toFixed(1)}%`)
 
   // Separate DoD todos from regular issues
-  const dodTodos = todos.filter(todo => todo.issueType === 'definition_of_done')
-  const regularTodos = todos.filter(todo => todo.issueType !== 'definition_of_done')
+  const dodTodos = todos.filter(
+    (todo) => todo.issueType === "definition_of_done"
+  )
+  const regularTodos = todos.filter(
+    (todo) => todo.issueType !== "definition_of_done"
+  )
 
   // Show regular GitHub todos
   if (regularTodos.length > 0) {
@@ -209,7 +221,9 @@ async function initializeFromGitHubPRWithDoD(prNumber: number) {
         console.log(`     💡 Fix: ${todo.suggestedFix}`)
       }
     })
-    console.log("\n🚨 CRITICAL: All Definition of Done items must be verified before marking PR as complete!")
+    console.log(
+      "\n🚨 CRITICAL: All Definition of Done items must be verified before marking PR as complete!"
+    )
   }
 
   if (todos.length === 0) {
@@ -285,7 +299,7 @@ async function syncFromGitHubActions(prNumber: number) {
 
 async function resolveTodoWithComment(todoId: string, resolution?: string) {
   console.log(`🔧 Resolving todo ${todoId}...`)
-  
+
   const todo = enhancedTodoManager.getTodoById(todoId)
   if (!todo) {
     console.log(`❌ Todo ${todoId} not found`)
@@ -306,20 +320,20 @@ async function resolveTodoWithComment(todoId: string, resolution?: string) {
     try {
       const { execSync } = await import("child_process")
       const prNumber = todo.relatedPR.replace("#", "")
-      
+
       const resolutionMessage = resolution || `Fixed the issue: ${todo.content}`
-      
+
       console.log(`🔍 Looking for review conversations in PR ${prNumber}...`)
-      
+
       // Get PR review conversations
       const reviewsOutput = execSync(
         `gh api repos/samuelhenry/patriot-heavy-ops/pulls/${prNumber}/reviews --jq '.[] | select(.state == "COMMENTED") | {id: .id, body: .body}'`,
         { encoding: "utf8" }
       )
-      
+
       if (reviewsOutput.trim()) {
         console.log(`📝 Found review conversations, attempting to resolve...`)
-        
+
         // Add a resolution comment to the PR
         const commentBody = `✅ **Copilot Suggestions Resolved**
 
@@ -333,24 +347,35 @@ All related review conversations should now be resolved.
 _Resolved via Background Agent workflow_`
 
         execSync(
-          `gh pr comment ${prNumber} --repo samuelhenry/patriot-heavy-ops --body "${commentBody.replace(/"/g, '\\"')}"`,
+          `gh pr comment ${prNumber} --repo samuelhenry/patriot-heavy-ops --body "${commentBody.replace(
+            /"/g,
+            '\\"'
+          )}"`,
           { encoding: "utf8" }
         )
 
         console.log(`✅ Added resolution comment to PR ${prNumber}`)
-        console.log(`ℹ️  Note: Please manually resolve the review conversation in GitHub UI`)
+        console.log(
+          `ℹ️  Note: Please manually resolve the review conversation in GitHub UI`
+        )
       } else {
         console.log(`ℹ️  No review conversations found for PR ${prNumber}`)
       }
     } catch (error) {
       console.error("❌ Failed to resolve conversation:", error)
-      console.log("ℹ️  You may need to manually resolve the conversation in GitHub")
+      console.log(
+        "ℹ️  You may need to manually resolve the conversation in GitHub"
+      )
     }
   }
 
   // Show updated progress
   const summary = enhancedTodoManager.getProgressSummary()
-  console.log(`\n📊 Progress: ${summary.completed}/${summary.total} completed (${summary.completionRate.toFixed(1)}%)`)
+  console.log(
+    `\n📊 Progress: ${summary.completed}/${
+      summary.total
+    } completed (${summary.completionRate.toFixed(1)}%)`
+  )
 }
 
 async function listTodos() {
@@ -549,7 +574,9 @@ function showHelp() {
   console.log("Examples:")
   console.log("  npm run todo init")
   console.log("  npm run todo github 238")
-  console.log("  npm run todo github-dod 242  # Include Definition of Done checks")
+  console.log(
+    "  npm run todo github-dod 242  # Include Definition of Done checks"
+  )
   console.log("  npm run todo clear")
   console.log("  npm run todo next")
   console.log("  npm run todo update issue-1 completed")
@@ -605,7 +632,21 @@ function getIssueTypeIcon(issueType: string): string {
   }
 }
 
+
 // Run if called directly
 if (require.main === module) {
-  main()
+  main().catch((error) => {
+    if (error instanceof Error) {
+      console.error("❌ Error:", error.message)
+      if (error.stack) {
+        console.error("Stack trace:", error.stack)
+      }
+      if (error.cause) {
+        console.error("Caused by:", error.cause)
+      }
+    } else {
+      console.error("❌ Unknown error:", error)
+    }
+    process.exit(1)
+  })
 }
