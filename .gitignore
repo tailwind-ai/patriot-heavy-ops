@@ -8,3 +8,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .vercel
+
+# Generated files that cause merge conflicts
+coverage/junit.xml
+tsconfig.tsbuildinfo
