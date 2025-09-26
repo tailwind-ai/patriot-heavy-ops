@@ -14,7 +14,7 @@ const getCacheBuster = () => {
 }
 
 // Debounce utility for cache clearing
-const debounce = <T extends (...args: any[]) => any>(
+const debounce = <T extends (...args: unknown[]) => unknown>(
   func: T,
   wait: number
 ): ((...args: Parameters<T>) => void) => {
@@ -322,7 +322,7 @@ export function useDashboardData(
       // Still attempt to refetch even if cache clear failed
       await refetch()
     }
-  }, [options, getApiEndpoint, fetchDashboardData, refetch])
+  }, [options, getApiEndpoint, buildQueryParams, fetchDashboardData, refetch])
 
   // Debounced cache clearing to prevent rapid successive calls
   const clearCache = React.useMemo(
