@@ -1,0 +1,284 @@
+"use client"
+
+import * as React from "react"
+import { UserRole } from "@/lib/permissions"
+import { toast } from "@/components/ui/use-toast"
+
+// Types from dashboard service
+export interface DashboardStats {
+  totalRequests: number
+  activeRequests: number
+  completedRequests: number
+  pendingApproval: number
+  revenue?: number
+  averageJobDuration?: number
+}
+
+export interface DashboardServiceRequest {
+  id: string
+  title: string
+  status: string
+  equipmentCategory: string
+  jobSite: string
+  startDate: Date
+  endDate: Date | null
+  requestedDurationType: string
+  requestedDurationValue: number
+  requestedTotalHours: number | null
+  estimatedCost: number | null
+  createdAt: Date
+  updatedAt: Date
+  user?: {
+    name: string | null
+    email: string | null
+    company: string | null
+  }
+  assignedOperators?: Array<{
+    id: string
+    name: string | null
+    email: string | null
+  }>
+}
+
+export interface OperatorAssignment {
+  id: string
+  serviceRequestId: string
+  operatorId: string
+  assignedAt: Date
+  status: string
+  serviceRequest: {
+    title: string
+    jobSite: string
+    startDate: Date
+    endDate: Date | null
+    status: string
+  }
+}
+
+export interface DashboardUser {
+  id: string
+  name: string | null
+  email: string | null
+  role: string
+  company: string | null
+  createdAt: Date
+}
+
+export interface DashboardData {
+  stats: DashboardStats
+  recentRequests: DashboardServiceRequest[]
+  assignments?: OperatorAssignment[]
+  users?: DashboardUser[]
+}
+
+export interface UseDashboardDataOptions {
+  role: UserRole
+  limit?: number
+  offset?: number
+  enableCaching?: boolean
+  dateRange?: {
+    start: Date
+    end: Date
+  }
+}
+
+export interface UseDashboardDataReturn {
+  data: DashboardData | null
+  isLoading: boolean
+  error: string | null
+  refetch: () => Promise<void>
+  clearCache: () => void
+}
+
+/**
+ * Custom hook for fetching role-specific dashboard data
+ * 
+ * Provides platform-agnostic dashboard data access with mobile-ready caching.
+ * Designed for cross-platform reuse including future React Native mobile apps.
+ * 
+ * @param options - Dashboard data options including role and filters
+ * @returns Dashboard data, loading state, error state, and control functions
+ */
+export function useDashboardData(options: UseDashboardDataOptions): UseDashboardDataReturn {
+  const [data, setData] = React.useState<DashboardData | null>(null)
+  const [isLoading, setIsLoading] = React.useState<boolean>(true)
+  const [error, setError] = React.useState<string | null>(null)
+
+  // Build API endpoint based on role
+  const getApiEndpoint = React.useCallback((role: UserRole): string => {
+    const baseUrl = "/api/dashboard"
+    switch (role) {
+      case "USER":
+        return `${baseUrl}/user`
+      case "OPERATOR":
+        return `${baseUrl}/operator`
+      case "MANAGER":
+        return `${baseUrl}/manager`
+      case "ADMIN":
+        return `${baseUrl}/admin`
+      default:
+        throw new Error(`Invalid user role: ${role}`)
+    }
+  }, [])
+
+  // Build query parameters
+  const buildQueryParams = React.useCallback((opts: UseDashboardDataOptions): string => {
+    const params = new URLSearchParams()
+    
+    if (opts.limit) params.set("limit", opts.limit.toString())
+    if (opts.offset) params.set("offset", opts.offset.toString())
+    if (opts.enableCaching !== undefined) {
+      params.set("enableCaching", opts.enableCaching.toString())
+    }
+    if (opts.dateRange?.start) {
+      params.set("startDate", opts.dateRange.start.toISOString())
+    }
+    if (opts.dateRange?.end) {
+      params.set("endDate", opts.dateRange.end.toISOString())
+    }
+
+    return params.toString()
+  }, [])
+
+  // Fetch dashboard data
+  const fetchDashboardData = React.useCallback(async () => {
+    setIsLoading(true)
+    setError(null)
+
+    try {
+      const endpoint = getApiEndpoint(options.role)
+      const queryParams = buildQueryParams(options)
+      const url = queryParams ? `${endpoint}?${queryParams}` : endpoint
+
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include", // Include cookies for session auth
+      })
+
+      if (!response.ok) {
+        let errorMessage = "Failed to fetch dashboard data"
+        
+        try {
+          const errorData = await response.json()
+          if (response.status === 401) {
+            errorMessage = "Authentication required. Please log in."
+          } else if (response.status === 403) {
+            errorMessage = "Access denied. Insufficient permissions."
+          } else if (response.status === 422) {
+            errorMessage = "Invalid request parameters."
+          } else if (errorData?.error) {
+            errorMessage = errorData.error
+          }
+        } catch {
+          // Use status-based fallback messages
+          if (response.status === 401) {
+            errorMessage = "Authentication required. Please log in."
+          } else if (response.status === 403) {
+            errorMessage = "Access denied. Insufficient permissions."
+          } else if (response.status >= 500) {
+            errorMessage = "Server error. Please try again later."
+          }
+        }
+
+        setError(errorMessage)
+        return
+      }
+
+      const result = await response.json()
+      
+      if (result.data) {
+        // Transform date strings back to Date objects
+        const transformedData: DashboardData = {
+          ...result.data,
+          recentRequests: result.data.recentRequests.map((request: any) => ({
+            ...request,
+            startDate: new Date(request.startDate),
+            endDate: request.endDate ? new Date(request.endDate) : null,
+            createdAt: new Date(request.createdAt),
+            updatedAt: new Date(request.updatedAt),
+          })),
+          assignments: result.data.assignments?.map((assignment: any) => ({
+            ...assignment,
+            assignedAt: new Date(assignment.assignedAt),
+            serviceRequest: {
+              ...assignment.serviceRequest,
+              startDate: new Date(assignment.serviceRequest.startDate),
+              endDate: assignment.serviceRequest.endDate 
+                ? new Date(assignment.serviceRequest.endDate) 
+                : null,
+            },
+          })),
+          users: result.data.users?.map((user: any) => ({
+            ...user,
+            createdAt: new Date(user.createdAt),
+          })),
+        }
+        
+        setData(transformedData)
+      } else {
+        setError("Invalid response format")
+      }
+    } catch (err) {
+      // Network or parsing error
+      setError("Network error. Please check your connection and try again.")
+      console.error("Dashboard data fetch error:", err)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [options, getApiEndpoint, buildQueryParams])
+
+  // Refetch function for manual refresh
+  const refetch = React.useCallback(async () => {
+    await fetchDashboardData()
+  }, [fetchDashboardData])
+
+  // Clear cache function (calls API to clear server-side cache)
+  const clearCache = React.useCallback(() => {
+    // Clear local state
+    setData(null)
+    setError(null)
+    
+    // Show user feedback
+    toast({
+      description: "Dashboard cache cleared. Refreshing data...",
+    })
+    
+    // Refetch with cache disabled
+    const optionsWithoutCache = { ...options, enableCaching: false }
+    const endpoint = getApiEndpoint(optionsWithoutCache.role)
+    const queryParams = buildQueryParams(optionsWithoutCache)
+    const url = queryParams ? `${endpoint}?${queryParams}` : endpoint
+    
+    fetch(url, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+    }).then(() => {
+      // Refetch with caching re-enabled
+      refetch()
+    }).catch(() => {
+      toast({
+        title: "Cache clear failed",
+        description: "Unable to clear cache, but data will be refreshed.",
+        variant: "destructive",
+      })
+      refetch()
+    })
+  }, [options, getApiEndpoint, buildQueryParams, refetch])
+
+  // Initial fetch and refetch on options change
+  React.useEffect(() => {
+    fetchDashboardData()
+  }, [fetchDashboardData])
+
+  return {
+    data,
+    isLoading,
+    error,
+    refetch,
+    clearCache,
+  }
+}

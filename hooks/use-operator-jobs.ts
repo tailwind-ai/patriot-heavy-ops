@@ -1,0 +1,192 @@
+"use client"
+
+import * as React from "react"
+import { useDashboardData, type DashboardServiceRequest, type OperatorAssignment } from "./use-dashboard-data"
+import { toast } from "@/components/ui/use-toast"
+
+export interface UseOperatorJobsOptions {
+  limit?: number
+  offset?: number
+  enableCaching?: boolean
+}
+
+export interface UseOperatorJobsReturn {
+  availableJobs: DashboardServiceRequest[]
+  activeAssignments: OperatorAssignment[]
+  totalAssignments: number
+  activeJobs: number
+  completedJobs: number
+  isLoading: boolean
+  error: string | null
+  refetch: () => Promise<void>
+  acceptJob: (jobId: string) => Promise<void>
+  completeJob: (assignmentId: string) => Promise<void>
+}
+
+/**
+ * Custom hook for OPERATOR role job management
+ * 
+ * Provides job assignment data and actions for operators.
+ * Handles both available jobs and active assignments.
+ * 
+ * @param options - Operator job options
+ * @returns Job data, assignments, and control functions
+ */
+export function useOperatorJobs(options: UseOperatorJobsOptions = {}): UseOperatorJobsReturn {
+  const {
+    data: dashboardData,
+    isLoading,
+    error,
+    refetch,
+  } = useDashboardData({
+    role: "OPERATOR",
+    limit: options.limit || 15,
+    offset: options.offset || 0,
+    enableCaching: options.enableCaching !== false, // Default to true
+  })
+
+  // Accept a job assignment
+  const acceptJob = React.useCallback(async (jobId: string) => {
+    try {
+      const response = await fetch(`/api/service-requests/${jobId}/accept`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      })
+
+      if (!response.ok) {
+        let errorMessage = "Failed to accept job"
+        
+        try {
+          const errorData = await response.json()
+          if (response.status === 401) {
+            errorMessage = "Authentication required. Please log in."
+          } else if (response.status === 403) {
+            errorMessage = "Access denied. You may not be authorized for this job."
+          } else if (response.status === 409) {
+            errorMessage = "Job is no longer available or already assigned."
+          } else if (errorData?.error) {
+            errorMessage = errorData.error
+          }
+        } catch {
+          // Use status-based fallback
+          if (response.status === 401) {
+            errorMessage = "Authentication required. Please log in."
+          } else if (response.status === 403) {
+            errorMessage = "Access denied. You may not be authorized for this job."
+          } else if (response.status >= 500) {
+            errorMessage = "Server error. Please try again later."
+          }
+        }
+
+        toast({
+          title: "Failed to accept job",
+          description: errorMessage,
+          variant: "destructive",
+        })
+        return
+      }
+
+      toast({
+        description: "Job accepted successfully. You will be notified of next steps.",
+      })
+
+      // Refresh data to show updated assignments
+      await refetch()
+    } catch {
+      toast({
+        title: "Network error",
+        description: "Unable to connect to the server. Please check your connection and try again.",
+        variant: "destructive",
+      })
+    }
+  }, [refetch])
+
+  // Complete a job assignment
+  const completeJob = React.useCallback(async (assignmentId: string) => {
+    try {
+      const response = await fetch(`/api/assignments/${assignmentId}/complete`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      })
+
+      if (!response.ok) {
+        let errorMessage = "Failed to complete job"
+        
+        try {
+          const errorData = await response.json()
+          if (response.status === 401) {
+            errorMessage = "Authentication required. Please log in."
+          } else if (response.status === 403) {
+            errorMessage = "Access denied. You may not be authorized to complete this job."
+          } else if (response.status === 409) {
+            errorMessage = "Job cannot be completed at this time. Check job status."
+          } else if (errorData?.error) {
+            errorMessage = errorData.error
+          }
+        } catch {
+          // Use status-based fallback
+          if (response.status === 401) {
+            errorMessage = "Authentication required. Please log in."
+          } else if (response.status === 403) {
+            errorMessage = "Access denied. You may not be authorized to complete this job."
+          } else if (response.status >= 500) {
+            errorMessage = "Server error. Please try again later."
+          }
+        }
+
+        toast({
+          title: "Failed to complete job",
+          description: errorMessage,
+          variant: "destructive",
+        })
+        return
+      }
+
+      toast({
+        description: "Job marked as completed. Thank you for your work!",
+      })
+
+      // Refresh data to show updated status
+      await refetch()
+    } catch {
+      toast({
+        title: "Network error",
+        description: "Unable to connect to the server. Please check your connection and try again.",
+        variant: "destructive",
+      })
+    }
+  }, [refetch])
+
+  // Extract operator-specific data
+  const availableJobs = dashboardData?.recentRequests?.filter(
+    request => request.status === "OPERATOR_MATCHING" || request.status === "APPROVED"
+  ) || []
+  
+  const activeAssignments = dashboardData?.assignments || []
+  
+  const stats = dashboardData?.stats || {
+    totalRequests: 0,
+    activeRequests: 0,
+    completedRequests: 0,
+    pendingApproval: 0,
+  }
+
+  return {
+    availableJobs,
+    activeAssignments,
+    totalAssignments: stats.totalRequests,
+    activeJobs: stats.activeRequests,
+    completedJobs: stats.completedRequests,
+    isLoading,
+    error,
+    refetch,
+    acceptJob,
+    completeJob,
+  }
+}

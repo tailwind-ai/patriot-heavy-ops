@@ -1,17 +1,923 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="17" failures="0" errors="0" time="0.592">
-  <testsuite name="Dashboard API Routes" errors="0" failures="0" skipped="0" timestamp="2025-09-26T02:27:50" time="0.252" tests="17">
+<testsuites name="jest tests" tests="99" failures="8" errors="0" time="2.6">
+  <testsuite name="UserDashboard" errors="0" failures="2" skipped="0" timestamp="2025-09-26T03:07:42" time="0.427" tests="7">
+    <testcase classname="UserDashboard should render loading state" name="UserDashboard should render loading state" time="0.028">
+      <failure>TestingLibraryElementError: Unable to find an element by: [data-testid=&quot;skeleton&quot;]
+
+Ignored nodes: comments, script, style
+&lt;body&gt;
+  &lt;div&gt;
+    &lt;div
+      class=&quot;space-y-6&quot;
+    &gt;
+      &lt;div
+        class=&quot;flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0&quot;
+      &gt;
+        &lt;div&gt;
+          &lt;h1
+            class=&quot;text-2xl font-bold tracking-tight&quot;
+          &gt;
+            Dashboard
+          &lt;/h1&gt;
+          &lt;p
+            class=&quot;text-muted-foreground&quot;
+          &gt;
+            Manage your equipment service requests
+          &lt;/p&gt;
+        &lt;/div&gt;
+        &lt;button
+          data-testid=&quot;create-button&quot;
+        &gt;
+          Create Service Request
+        &lt;/button&gt;
+      &lt;/div&gt;
+      &lt;div
+        class=&quot;grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4&quot;
+      &gt;
+        &lt;div
+          class=&quot;rounded-lg border bg-card text-card-foreground shadow-sm&quot;
+        &gt;
+          &lt;div
+            class=&quot;p-6 flex flex-row items-center justify-between space-y-0 pb-2&quot;
+          &gt;
+            &lt;div
+              class=&quot;animate-pulse rounded-md bg-muted h-4 w-24&quot;
+            /&gt;
+            &lt;div
+              class=&quot;animate-pulse rounded-md bg-muted h-4 w-4&quot;
+            /&gt;
+          &lt;/div&gt;
+          &lt;div
+            class=&quot;p-6 pt-0&quot;
+          &gt;
+            &lt;div
+              class=&quot;animate-pulse rounded-md bg-muted h-8 w-16 mb-2&quot;
+            /&gt;
+            &lt;div
+              class=&quot;animate-pulse rounded-md bg-muted h-3 w-32&quot;
+            /&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div
+          class=&quot;rounded-lg border bg-card text-card-foreground shadow-sm&quot;
+        &gt;
+          &lt;div
+            class=&quot;p-6 flex flex-row items-center justify-between space-y-0 pb-2&quot;
+          &gt;
+            &lt;div
+              class=&quot;animate-pulse rounded-md bg-muted h-4 w-24&quot;
+            /&gt;
+            &lt;div
+              class=&quot;animate-pulse rounded-md bg-muted h-4 w-4&quot;
+            /&gt;
+          &lt;/div&gt;
+          &lt;div
+            class=&quot;p-6 pt-0&quot;
+          &gt;
+            &lt;div
+              class=&quot;animate-pulse rounded-md bg-muted h-8 w-16 mb-2&quot;
+            /&gt;
+            &lt;div
+              class=&quot;animate-pulse rounded-md bg-muted h-3 w-32&quot;
+            /&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div
+          class=&quot;rounded-lg border bg-card text-card-foreground shadow-sm&quot;
+        &gt;
+          &lt;div
+            class=&quot;p-6 flex flex-row items-center justify-between space-y-0 pb-2&quot;
+          &gt;
+            &lt;div
+              class=&quot;animate-pulse rounded-md bg-muted h-4 w-24&quot;
+            /&gt;
+            &lt;div
+              class=&quot;animate-pulse rounded-md bg-muted h-4 w-4&quot;
+            /&gt;
+          &lt;/div&gt;
+          &lt;div
+            class=&quot;p-6 pt-0&quot;
+          &gt;
+            &lt;div
+              class=&quot;animate-pulse rounded-md bg-muted h-8 w-16 mb-2&quot;
+            /&gt;
+            &lt;div
+              class=&quot;animate-pulse rounded-md bg-muted h-3 w-32&quot;
+            /&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div
+          class=&quot;rounded-lg border bg-card text-card-foreground shadow-sm&quot;
+        &gt;
+          &lt;div
+            class=&quot;p-6 flex flex-row items-center justify-between space-y-0 pb-2&quot;
+          &gt;
+            &lt;div
+              class=&quot;animate-pulse rounded-md bg-muted h-4 w-24&quot;
+            /&gt;
+            &lt;div
+              class=&quot;animate-pulse rounded-md bg-muted h-4 w-4&quot;
+            /&gt;
+          &lt;/div&gt;
+          &lt;div
+            class=&quot;p-6 pt-0&quot;
+          &gt;
+            &lt;div
+              class=&quot;animate-pulse rounded-md bg-muted h-8 w-16 mb-2&quot;
+            /&gt;
+            &lt;div
+              class=&quot;animate-pulse rounded-md bg-muted h-3 w-32&quot;
+            /&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div
+        class=&quot;rounded-lg border bg-card text-card-foreground shadow-sm&quot;
+      &gt;
+        &lt;div
+          class=&quot;p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0&quot;
+        &gt;
+          &lt;div&gt;
+            &lt;h3
+              class=&quot;text-lg font-semibold leading-none tracking-tight&quot;
+            &gt;
+              Recent Service Requests
+            &lt;/h3&gt;
+            &lt;p
+              class=&quot;text-sm text-muted-foreground&quot;
+            &gt;
+              Your latest equipment service requests
+            &lt;/p&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div
+          class=&quot;p-0&quot;
+        &gt;
+          &lt;div&gt;
+            &lt;div
+              class=&quot;space-y-3 p-4 border-b&quot;
+            &gt;
+              &lt;div
+                class=&quot;flex justify-between items-start&quot;
+              &gt;
+                &lt;div
+                  class=&quot;space-y-2 flex-1&quot;
+                &gt;
+                  &lt;div
+                    class=&quot;animate-pulse rounded-md bg-muted h-4 w-3/4&quot;
+                  /&gt;
+                  &lt;div
+                    class=&quot;animate-pulse rounded-md bg-muted h-3 w-1/2&quot;
+                  /&gt;
+                &lt;/div&gt;
+                &lt;div
+                  class=&quot;animate-pulse rounded-md bg-muted h-6 w-20&quot;
+                /&gt;
+              &lt;/div&gt;
+              &lt;div
+                class=&quot;grid grid-cols-1 sm:grid-cols-3 gap-2&quot;
+              &gt;
+                &lt;div
+                  class=&quot;animate-pulse rounded-md bg-muted h-3 w-full&quot;
+                /&gt;
+                &lt;div
+                  class=&quot;animate-pulse rounded-md bg-muted h-3 w-full&quot;
+                /&gt;
+                &lt;div
+                  class=&quot;animate-pulse rounded-md bg-muted h-3 w-full&quot;
+                /&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+            &lt;div
+              class=&quot;space-y-3 p-4 border-b&quot;
+            &gt;
+              &lt;div
+                class=&quot;flex justify-between items-start&quot;
+              &gt;
+                &lt;div
+                  class=&quot;space-y-2 flex-1&quot;
+                &gt;
+                  &lt;div
+                    class=&quot;animate-pulse rounded-md bg-muted h-4 w-3/4&quot;
+                  /&gt;
+                  &lt;div
+                    class=&quot;animate-pulse rounded-md bg-muted h-3 w-1/2&quot;
+                  /&gt;
+                &lt;/div&gt;
+                &lt;div
+                  class=&quot;animate-pulse rounded-md bg-muted h-6 w-20&quot;
+                /&gt;
+              &lt;/div&gt;
+              &lt;div
+                class=&quot;grid grid-cols-1 sm:grid-cols-3 gap-2&quot;
+              &gt;
+                &lt;div
+                  class=&quot;animate-pulse rounded-md bg-muted h-3 w-full&quot;
+                /&gt;
+                &lt;div
+                  class=&quot;animate-pulse rounded-md bg-muted h-3 w-full&quot;
+                /&gt;
+                &lt;div
+                  class=&quot;animate-pulse rounded-md bg-muted h-3 w-full&quot;
+                /&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+            &lt;div
+              class=&quot;space-y-3 p-4 border-b&quot;
+            &gt;
+              &lt;div
+                class=&quot;flex justify-between items-start&quot;
+              &gt;
+                &lt;div
+                  class=&quot;space-y-2 flex-1&quot;
+                &gt;
+                  &lt;div
+                    class=&quot;animate-pulse rounded-md bg-muted h-4 w-3/4&quot;
+                  /&gt;
+                  &lt;div
+                    class=&quot;animate-pulse rounded-md bg-muted h-3 w-1/2&quot;
+                  /&gt;
+                &lt;/div&gt;
+                &lt;div
+                  class=&quot;animate-pulse rounded-md bg-muted h-6 w-20&quot;
+                /&gt;
+              &lt;/div&gt;
+              &lt;div
+                class=&quot;grid grid-cols-1 sm:grid-cols-3 gap-2&quot;
+              &gt;
+                &lt;div
+                  class=&quot;animate-pulse rounded-md bg-muted h-3 w-full&quot;
+                /&gt;
+                &lt;div
+                  class=&quot;animate-pulse rounded-md bg-muted h-3 w-full&quot;
+                /&gt;
+                &lt;div
+                  class=&quot;animate-pulse rounded-md bg-muted h-3 w-full&quot;
+                /&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/body&gt;
+    at Object.getElementError (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/@testing-library/dom/dist/config.js:37:19)
+    at /Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+    at /Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/@testing-library/dom/dist/query-helpers.js:109:15
+    at Object.getAllByTestId (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/components/dashboard/user-dashboard.test.tsx:47:19)
+    at Promise.finally.completed (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
+    at _callCircusTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1006:40)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at _runTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:946:3)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:839:13)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at run (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:757:3)
+    at runAndTransformResultsToJestFormat (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1917:21)
+    at jestAdapter (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/runner.js:101:19)
+    at runTestInternal (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/index.js:275:16)
+    at runTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/index.js:343:7)</failure>
+    </testcase>
+    <testcase classname="UserDashboard should render error state" name="UserDashboard should render error state" time="0.006">
+    </testcase>
+    <testcase classname="UserDashboard should render dashboard with service requests" name="UserDashboard should render dashboard with service requests" time="0.046">
+      <failure>TestingLibraryElementError: Found multiple elements with the text: Completed
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+&lt;h3
+  class=&quot;tracking-tight text-sm font-medium&quot;
+&gt;
+  Completed
+&lt;/h3&gt;
+
+Ignored nodes: comments, script, style
+&lt;div
+  class=&quot;inline-flex items-center border rounded-full px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-secondary hover:bg-secondary/80 border-transparent text-secondary-foreground&quot;
+&gt;
+  Completed
+&lt;/div&gt;
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+&lt;body&gt;
+  &lt;div&gt;
+    &lt;div
+      class=&quot;space-y-6&quot;
+    &gt;
+      &lt;div
+        class=&quot;flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0&quot;
+      &gt;
+        &lt;div&gt;
+          &lt;h1
+            class=&quot;text-2xl font-bold tracking-tight&quot;
+          &gt;
+            Dashboard
+          &lt;/h1&gt;
+          &lt;p
+            class=&quot;text-muted-foreground&quot;
+          &gt;
+            Manage your equipment service requests
+          &lt;/p&gt;
+        &lt;/div&gt;
+        &lt;button
+          data-testid=&quot;create-button&quot;
+        &gt;
+          Create Service Request
+        &lt;/button&gt;
+      &lt;/div&gt;
+      &lt;div
+        class=&quot;grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4&quot;
+      &gt;
+        &lt;div
+          class=&quot;rounded-lg border bg-card text-card-foreground shadow-sm&quot;
+        &gt;
+          &lt;div
+            class=&quot;p-6 flex flex-row items-center justify-between space-y-0 pb-2&quot;
+          &gt;
+            &lt;h3
+              class=&quot;tracking-tight text-sm font-medium&quot;
+            &gt;
+              Total Requests
+            &lt;/h3&gt;
+            &lt;svg
+              aria-hidden=&quot;true&quot;
+              class=&quot;lucide lucide-trending-up h-4 w-4 text-muted-foreground&quot;
+              fill=&quot;none&quot;
+              height=&quot;24&quot;
+              stroke=&quot;currentColor&quot;
+              stroke-linecap=&quot;round&quot;
+              stroke-linejoin=&quot;round&quot;
+              stroke-width=&quot;2&quot;
+              viewBox=&quot;0 0 24 24&quot;
+              width=&quot;24&quot;
+              xmlns=&quot;http://www.w3.org/2000/svg&quot;
+            &gt;
+              &lt;path
+                d=&quot;M16 7h6v6&quot;
+              /&gt;
+              &lt;path
+                d=&quot;m22 7-8.5 8.5-5-5L2 17&quot;
+              /&gt;
+            &lt;/svg&gt;
+          &lt;/div&gt;
+          &lt;div
+            class=&quot;p-6 pt-0&quot;
+          &gt;
+            &lt;div
+              class=&quot;text-2xl font-bold&quot;
+            &gt;
+              5
+            &lt;/div&gt;
+            &lt;p
+              class=&quot;text-xs text-muted-foreground&quot;
+            &gt;
+              All time requests
+            &lt;/p&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div
+          class=&quot;rounded-lg border bg-card text-card-foreground shadow-sm&quot;
+        &gt;
+          &lt;div
+            class=&quot;p-6 flex flex-row items-center justify-between space-y-0 pb-2&quot;
+          &gt;
+            &lt;h3
+              class=&quot;tracking-tight text-sm font-medium&quot;
+            &gt;
+              Active Requests
+            &lt;/h3&gt;
+            &lt;svg
+              aria-hidden=&quot;true&quot;
+              class=&quot;lucide lucide-clock h-4 w-4 text-muted-foreground&quot;
+              fill=&quot;none&quot;
+              height=&quot;24&quot;
+              stroke=&quot;currentColor&quot;
+              stroke-linecap=&quot;round&quot;
+              stroke-linejoin=&quot;round&quot;
+              stroke-width=&quot;2&quot;
+              viewBox=&quot;0 0 24 24&quot;
+              width=&quot;24&quot;
+              xmlns=&quot;http://www.w3.org/2000/svg&quot;
+            &gt;
+              &lt;path
+                d=&quot;M12 6v6l4 2&quot;
+              /&gt;
+              &lt;circle
+                cx=&quot;12&quot;
+                cy=&quot;12&quot;
+                r=&quot;10&quot;
+              /&gt;
+            &lt;/svg&gt;
+          &lt;/div&gt;
+          &lt;div
+            class=&quot;p-6 pt-0&quot;
+          &gt;
+            &lt;div
+              class=&quot;text-2xl font-bold&quot;
+            &gt;
+              2
+            &lt;/div&gt;
+            &lt;p
+              class=&quot;text-xs text-muted-foreground&quot;
+            &gt;
+              Currently in progress
+            &lt;/p&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div
+          class=&quot;rounded-lg border bg-card text-card-foreground shadow-sm&quot;
+        &gt;
+          &lt;div
+            class=&quot;p-6 flex flex-row items-center justify-between space-y-0 pb-2&quot;
+          &gt;
+            &lt;h3
+              class=&quot;tracking-tight text-sm font-medium&quot;
+            &gt;
+              Completed
+            &lt;/h3&gt;
+            &lt;svg
+              aria-hidden=&quot;true&quot;
+              class=&quot;lucide lucide-circle-check-big h-4 w-4 text-muted-foreground&quot;
+              fill=&quot;none&quot;
+              height=&quot;24&quot;
+              stroke=&quot;currentColor&quot;
+              stroke-linecap=&quot;round&quot;
+              stroke-linejoin=&quot;round&quot;
+              stroke-width=&quot;2&quot;
+              viewBox=&quot;0 0 24 24&quot;
+              width=&quot;24&quot;
+              xmlns=&quot;http://www.w3.org/2000/svg&quot;
+            &gt;
+              &lt;path
+                d=&quot;M21.801 10A10 10 0 1 1 17 3.335&quot;
+              /&gt;
+              &lt;path
+                d=&quot;m9 11 3 3L22 4&quot;
+              /&gt;
+            &lt;/svg&gt;
+          &lt;/div&gt;
+          &lt;div
+            class=&quot;p-6 pt-0&quot;
+          &gt;
+            &lt;div
+              class=&quot;text-2xl font-bold&quot;
+            &gt;
+              3
+            &lt;/div&gt;
+            &lt;p
+              class=&quot;text-xs text-muted-foreground&quot;
+            &gt;
+              Successfully finished
+            &lt;/p&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div
+          class=&quot;rounded-lg border bg-card text-card-foreground shadow-sm&quot;
+        &gt;
+          &lt;div
+            class=&quot;p-6 flex flex-row items-center justify-between space-y-0 pb-2&quot;
+          &gt;
+            &lt;h3
+              class=&quot;tracking-tight text-sm font-medium&quot;
+            &gt;
+              Pending Approval
+            &lt;/h3&gt;
+            &lt;svg
+              aria-hidden=&quot;true&quot;
+              class=&quot;lucide lucide-circle-alert h-4 w-4 text-muted-foreground&quot;
+              fill=&quot;none&quot;
+              height=&quot;24&quot;
+              stroke=&quot;currentColor&quot;
+              stroke-linecap=&quot;round&quot;
+              stroke-linejoin=&quot;round&quot;
+              stroke-width=&quot;2&quot;
+              viewBox=&quot;0 0 24 24&quot;
+              width=&quot;24&quot;
+              xmlns=&quot;http://www.w3.org/2000/svg&quot;
+            &gt;
+              &lt;circle
+                cx=&quot;12&quot;
+                cy=&quot;12&quot;
+                r=&quot;10&quot;
+              /&gt;
+              &lt;line
+                x1=&quot;12&quot;
+                x2=&quot;12&quot;
+                y1=&quot;8&quot;
+                y2=&quot;12&quot;
+              /&gt;
+              &lt;line
+                x1=&quot;12&quot;
+                x2=&quot;12.01&quot;
+                y1=&quot;16&quot;
+                y2=&quot;16&quot;
+              /&gt;
+            &lt;/svg&gt;
+          &lt;/div&gt;
+          &lt;div
+            class=&quot;p-6 pt-0&quot;
+          &gt;
+            &lt;div
+              class=&quot;text-2xl font-bold&quot;
+            &gt;
+              1
+            &lt;/div&gt;
+            &lt;p
+              class=&quot;text-xs text-muted-foreground&quot;
+            &gt;
+              Awaiting review
+            &lt;/p&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div
+        class=&quot;rounded-lg border bg-card text-card-foreground shadow-sm&quot;
+      &gt;
+        &lt;div
+          class=&quot;p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0&quot;
+        &gt;
+          &lt;div&gt;
+            &lt;h3
+              class=&quot;text-lg font-semibold leading-none tracking-tight&quot;
+            &gt;
+              Recent Service Requests
+            &lt;/h3&gt;
+            &lt;p
+              class=&quot;text-sm text-muted-foreground&quot;
+            &gt;
+              Your latest equipment service requests
+            &lt;/p&gt;
+          &lt;/div&gt;
+          &lt;button
+            class=&quot;inline-flex items-center justify-center text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background border border-input hover:bg-accent hover:text-accent-foreground h-9 px-3 rounded-md w-full sm:w-auto&quot;
+          &gt;
+            Refresh
+          &lt;/button&gt;
+        &lt;/div&gt;
+        &lt;div
+          class=&quot;p-0&quot;
+        &gt;
+          &lt;div&gt;
+            &lt;div
+              class=&quot;flex flex-col space-y-3 p-4 border-b last:border-b-0&quot;
+            &gt;
+              &lt;div
+                class=&quot;flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0&quot;
+              &gt;
+                &lt;div
+                  class=&quot;flex-1 min-w-0&quot;
+                &gt;
+                  &lt;h3
+                    class=&quot;text-sm font-medium truncate&quot;
+                  &gt;
+                    Excavator Rental
+                  &lt;/h3&gt;
+                  &lt;p
+                    class=&quot;text-xs text-muted-foreground truncate&quot;
+                  &gt;
+                    EXCAVATORS
+                  &lt;/p&gt;
+                &lt;/div&gt;
+                &lt;div
+                  class=&quot;inline-flex items-center border rounded-full px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-secondary hover:bg-secondary/80 border-transparent text-secondary-foreground&quot;
+                &gt;
+                  Under Review
+                &lt;/div&gt;
+              &lt;/div&gt;
+              &lt;div
+                class=&quot;grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs text-muted-foreground&quot;
+              &gt;
+                &lt;div
+                  class=&quot;truncate&quot;
+                &gt;
+                  &lt;span
+                    class=&quot;font-medium&quot;
+                  &gt;
+                    Location:
+                  &lt;/span&gt;
+                   
+                  123 Main St, City, State
+                &lt;/div&gt;
+                &lt;div&gt;
+                  &lt;span
+                    class=&quot;font-medium&quot;
+                  &gt;
+                    Start:
+                  &lt;/span&gt;
+                   
+                  Jan 14, 2024
+                &lt;/div&gt;
+                &lt;div&gt;
+                  &lt;span
+                    class=&quot;font-medium&quot;
+                  &gt;
+                    Est. Cost:
+                  &lt;/span&gt;
+                   
+                  $750.00
+                &lt;/div&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+            &lt;div
+              class=&quot;flex flex-col space-y-3 p-4 border-b last:border-b-0&quot;
+            &gt;
+              &lt;div
+                class=&quot;flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0&quot;
+              &gt;
+                &lt;div
+                  class=&quot;flex-1 min-w-0&quot;
+                &gt;
+                  &lt;h3
+                    class=&quot;text-sm font-medium truncate&quot;
+                  &gt;
+                    Skid Steer Service
+                  &lt;/h3&gt;
+                  &lt;p
+                    class=&quot;text-xs text-muted-foreground truncate&quot;
+                  &gt;
+                    SKID STEERS TRACK LOADERS
+                  &lt;/p&gt;
+                &lt;/div&gt;
+                &lt;div
+                  class=&quot;inline-flex items-center border rounded-full px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-secondary hover:bg-secondary/80 border-transparent text-secondary-foreground&quot;
+                &gt;
+                  Completed
+                &lt;/div&gt;
+              &lt;/div&gt;
+              &lt;div
+                class=&quot;grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs text-muted-foreground&quot;
+              &gt;
+                &lt;div
+                  class=&quot;truncate&quot;
+                &gt;
+                  &lt;span
+                    class=&quot;font-medium&quot;
+                  &gt;
+                    Location:
+                  &lt;/span&gt;
+                   
+                  456 Oak Ave, Town, State
+                &lt;/div&gt;
+                &lt;div&gt;
+                  &lt;span
+                    class=&quot;font-medium&quot;
+                  &gt;
+                    Start:
+                  &lt;/span&gt;
+                   
+                  Jan 9, 2024
+                &lt;/div&gt;
+                &lt;div&gt;
+                  &lt;span
+                    class=&quot;font-medium&quot;
+                  &gt;
+                    Est. Cost:
+                  &lt;/span&gt;
+                   
+                  $1,200.00
+                &lt;/div&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/body&gt;
+    at Object.getElementError (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/@testing-library/dom/dist/config.js:37:19)
+    at getElementError (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/@testing-library/dom/dist/query-helpers.js:20:35)
+    at getMultipleElementsFoundError (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/@testing-library/dom/dist/query-helpers.js:23:10)
+    at /Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/@testing-library/dom/dist/query-helpers.js:55:13
+    at /Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+    at Object.getByText (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/components/dashboard/user-dashboard.test.tsx:126:19)
+    at Promise.finally.completed (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
+    at _callCircusTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1006:40)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at _runTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:946:3)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:839:13)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at run (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:757:3)
+    at runAndTransformResultsToJestFormat (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1917:21)
+    at jestAdapter (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/runner.js:101:19)
+    at runTestInternal (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/index.js:275:16)
+    at runTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/index.js:343:7)</failure>
+    </testcase>
+    <testcase classname="UserDashboard should render empty state when no service requests" name="UserDashboard should render empty state when no service requests" time="0.008">
+    </testcase>
+    <testcase classname="UserDashboard should handle refresh action" name="UserDashboard should handle refresh action" time="0.006">
+    </testcase>
+    <testcase classname="UserDashboard should format currency correctly" name="UserDashboard should format currency correctly" time="0.004">
+    </testcase>
+    <testcase classname="UserDashboard should be accessible" name="UserDashboard should be accessible" time="0.033">
+    </testcase>
+  </testsuite>
+  <testsuite name="useDashboardData" errors="0" failures="6" skipped="0" timestamp="2025-09-26T03:07:43" time="1.399" tests="8">
+    <testcase classname="useDashboardData should fetch USER dashboard data successfully" name="useDashboardData should fetch USER dashboard data successfully" time="0.058">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: null
+Received: &quot;Network error. Please check your connection and try again.&quot;
+    at Object.toBe (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/hooks/use-dashboard-data.test.ts:84:34)</failure>
+    </testcase>
+    <testcase classname="useDashboardData should fetch OPERATOR dashboard data successfully" name="useDashboardData should fetch OPERATOR dashboard data successfully" time="0.055">
+    </testcase>
+    <testcase classname="useDashboardData should handle authentication error" name="useDashboardData should handle authentication error" time="0.055">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: &quot;Authentication required. Please log in.&quot;
+Received: &quot;Network error. Please check your connection and try again.&quot;
+    at Object.toBe (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/hooks/use-dashboard-data.test.ts:181:34)</failure>
+    </testcase>
+    <testcase classname="useDashboardData should handle authorization error" name="useDashboardData should handle authorization error" time="0.055">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: &quot;Access denied. Insufficient permissions.&quot;
+Received: &quot;Network error. Please check your connection and try again.&quot;
+    at Object.toBe (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/hooks/use-dashboard-data.test.ts:202:34)</failure>
+    </testcase>
+    <testcase classname="useDashboardData should handle network error" name="useDashboardData should handle network error" time="0.055">
+    </testcase>
+    <testcase classname="useDashboardData should build correct query parameters" name="useDashboardData should build correct query parameters" time="1.006">
+      <failure>Error: expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+Expected: &quot;/api/dashboard/manager?limit=20&amp;offset=10&amp;enableCaching=false&amp;startDate=2024-01-01T00:00:00.000Z&amp;endDate=2024-01-31T00:00:00.000Z&quot;, Any&lt;Object&gt;
+Received
+       1: &quot;/api/dashboard/manager?limit=20&amp;offset=10&amp;enableCaching=false&amp;startDate=2024-01-01T00%3A00%3A00.000Z&amp;endDate=2024-01-31T00%3A00%3A00.000Z&quot;, {&quot;credentials&quot;: &quot;include&quot;, &quot;headers&quot;: {&quot;Content-Type&quot;: &quot;application/json&quot;}, &quot;method&quot;: &quot;GET&quot;}
+       2: &quot;/api/dashboard/manager?limit=20&amp;offset=10&amp;enableCaching=false&amp;startDate=2024-01-01T00%3A00%3A00.000Z&amp;endDate=2024-01-31T00%3A00%3A00.000Z&quot;, {&quot;credentials&quot;: &quot;include&quot;, &quot;headers&quot;: {&quot;Content-Type&quot;: &quot;application/json&quot;}, &quot;method&quot;: &quot;GET&quot;}
+       3: &quot;/api/dashboard/manager?limit=20&amp;offset=10&amp;enableCaching=false&amp;startDate=2024-01-01T00%3A00%3A00.000Z&amp;endDate=2024-01-31T00%3A00%3A00.000Z&quot;, {&quot;credentials&quot;: &quot;include&quot;, &quot;headers&quot;: {&quot;Content-Type&quot;: &quot;application/json&quot;}, &quot;method&quot;: &quot;GET&quot;}
+
+Number of calls: 3
+
+Ignored nodes: comments, script, style
+&lt;html&gt;
+  &lt;head /&gt;
+  &lt;body&gt;
+    &lt;div /&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+    at toHaveBeenCalledWith (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/hooks/use-dashboard-data.test.ts:242:25)
+    at runWithExpensiveErrorDiagnosticsDisabled (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/@testing-library/dom/dist/config.js:47:12)
+    at checkCallback (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/@testing-library/dom/dist/wait-for.js:124:77)
+    at checkRealTimersCallback (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/@testing-library/dom/dist/wait-for.js:118:16)
+    at Timeout.task [as _onTimeout] (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jsdom/lib/jsdom/browser/Window.js:579:19)
+    at listOnTimeout (node:internal/timers:588:17)
+    at processTimers (node:internal/timers:523:7)</failure>
+    </testcase>
+    <testcase classname="useDashboardData should handle refetch" name="useDashboardData should handle refetch" time="0.054">
+      <failure>Error: expect(jest.fn()).toHaveBeenCalledTimes(expected)
+
+Expected number of calls: 1
+Received number of calls: 19
+    at Object.toHaveBeenCalledTimes (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/hooks/use-dashboard-data.test.ts:272:23)
+    at runNextTicks (node:internal/process/task_queues:65:5)
+    at listOnTimeout (node:internal/timers:549:9)
+    at processTimers (node:internal/timers:523:7)</failure>
+    </testcase>
+    <testcase classname="useDashboardData should throw error for invalid role" name="useDashboardData should throw error for invalid role" time="0.019">
+      <failure>Error: expect(received).toThrow(expected)
+
+Expected substring: &quot;Invalid user role: INVALID_ROLE&quot;
+
+Received function did not throw
+    at Object.toThrow (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/hooks/use-dashboard-data.test.ts:287:8)
+    at Promise.finally.completed (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
+    at _callCircusTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1006:40)
+    at runNextTicks (node:internal/process/task_queues:65:5)
+    at listOnTimeout (node:internal/timers:549:9)
+    at processTimers (node:internal/timers:523:7)
+    at _runTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:946:3)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:839:13)
+    at _runTestsForDescribeBlock (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at run (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:757:3)
+    at runAndTransformResultsToJestFormat (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/jestAdapterInit.js:1917:21)
+    at jestAdapter (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-circus/build/runner.js:101:19)
+    at runTestInternal (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/index.js:275:16)
+    at runTest (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/node_modules/jest-runner/build/index.js:343:7)</failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="DashboardService Integration Tests" errors="0" failures="0" skipped="0" timestamp="2025-09-26T03:07:44" time="0.09" tests="15">
+    <testcase classname="DashboardService Integration Tests Repository Integration should initialize repositories with correct configuration" name="DashboardService Integration Tests Repository Integration should initialize repositories with correct configuration" time="0.001">
+    </testcase>
+    <testcase classname="DashboardService Integration Tests Repository Integration should set offline mode without errors" name="DashboardService Integration Tests Repository Integration should set offline mode without errors" time="0.006">
+    </testcase>
+    <testcase classname="DashboardService Integration Tests Repository Integration should handle repository offline mode queries" name="DashboardService Integration Tests Repository Integration should handle repository offline mode queries" time="0.001">
+    </testcase>
+    <testcase classname="DashboardService Integration Tests Service Layer Error Handling should handle repository errors gracefully" name="DashboardService Integration Tests Service Layer Error Handling should handle repository errors gracefully" time="0.009">
+    </testcase>
+    <testcase classname="DashboardService Integration Tests Service Layer Error Handling should propagate repository validation errors" name="DashboardService Integration Tests Service Layer Error Handling should propagate repository validation errors" time="0.002">
+    </testcase>
+    <testcase classname="DashboardService Integration Tests Cross-Service Integration should integrate with permission system for role-based access" name="DashboardService Integration Tests Cross-Service Integration should integrate with permission system for role-based access" time="0.001">
+    </testcase>
+    <testcase classname="DashboardService Integration Tests Cross-Service Integration should handle different role permissions correctly" name="DashboardService Integration Tests Cross-Service Integration should handle different role permissions correctly" time="0.001">
+    </testcase>
+    <testcase classname="DashboardService Integration Tests Mobile Platform Integration should support mobile caching patterns" name="DashboardService Integration Tests Mobile Platform Integration should support mobile caching patterns" time="0.001">
+    </testcase>
+    <testcase classname="DashboardService Integration Tests Mobile Platform Integration should handle offline mode gracefully" name="DashboardService Integration Tests Mobile Platform Integration should handle offline mode gracefully" time="0.001">
+    </testcase>
+    <testcase classname="DashboardService Integration Tests Performance and Scalability should handle large datasets efficiently" name="DashboardService Integration Tests Performance and Scalability should handle large datasets efficiently" time="0.002">
+    </testcase>
+    <testcase classname="DashboardService Integration Tests Performance and Scalability should respect pagination limits" name="DashboardService Integration Tests Performance and Scalability should respect pagination limits" time="0.001">
+    </testcase>
+    <testcase classname="DashboardService Integration Tests Data Consistency should maintain data consistency across role-specific queries" name="DashboardService Integration Tests Data Consistency should maintain data consistency across role-specific queries" time="0.001">
+    </testcase>
+    <testcase classname="DashboardService Integration Tests Data Consistency should handle concurrent requests safely" name="DashboardService Integration Tests Data Consistency should handle concurrent requests safely" time="0.005">
+    </testcase>
+    <testcase classname="DashboardService Integration Tests Error Recovery should recover from transient database errors" name="DashboardService Integration Tests Error Recovery should recover from transient database errors" time="0.002">
+    </testcase>
+    <testcase classname="DashboardService Integration Tests Error Recovery should provide meaningful error messages" name="DashboardService Integration Tests Error Recovery should provide meaningful error messages" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="Dashboard Service Role Filtering Tests" errors="0" failures="0" skipped="0" timestamp="2025-09-26T03:07:44" time="0.052" tests="14">
+    <testcase classname="Dashboard Service Role Filtering Tests USER Role Data Filtering should only return user&apos;s own service requests" name="Dashboard Service Role Filtering Tests USER Role Data Filtering should only return user&apos;s own service requests" time="0.002">
+    </testcase>
+    <testcase classname="Dashboard Service Role Filtering Tests USER Role Data Filtering should not include other users&apos; data in USER role" name="Dashboard Service Role Filtering Tests USER Role Data Filtering should not include other users&apos; data in USER role" time="0.001">
+    </testcase>
+    <testcase classname="Dashboard Service Role Filtering Tests OPERATOR Role Data Filtering should include both own requests and assigned requests" name="Dashboard Service Role Filtering Tests OPERATOR Role Data Filtering should include both own requests and assigned requests" time="0.001">
+    </testcase>
+    <testcase classname="Dashboard Service Role Filtering Tests OPERATOR Role Data Filtering should filter assignments by operator ID" name="Dashboard Service Role Filtering Tests OPERATOR Role Data Filtering should filter assignments by operator ID" time="0.001">
+    </testcase>
+    <testcase classname="Dashboard Service Role Filtering Tests MANAGER Role Data Filtering should access all service requests without user filtering" name="Dashboard Service Role Filtering Tests MANAGER Role Data Filtering should access all service requests without user filtering" time="0">
+    </testcase>
+    <testcase classname="Dashboard Service Role Filtering Tests MANAGER Role Data Filtering should respect date range filtering for managers" name="Dashboard Service Role Filtering Tests MANAGER Role Data Filtering should respect date range filtering for managers" time="0">
+    </testcase>
+    <testcase classname="Dashboard Service Role Filtering Tests ADMIN Role Data Filtering should access all data including user management" name="Dashboard Service Role Filtering Tests ADMIN Role Data Filtering should access all data including user management" time="0.001">
+    </testcase>
+    <testcase classname="Dashboard Service Role Filtering Tests ADMIN Role Data Filtering should not filter by userId for admin queries" name="Dashboard Service Role Filtering Tests ADMIN Role Data Filtering should not filter by userId for admin queries" time="0.001">
+    </testcase>
+    <testcase classname="Dashboard Service Role Filtering Tests Cross-Role Data Isolation should prevent USER from accessing other users&apos; data" name="Dashboard Service Role Filtering Tests Cross-Role Data Isolation should prevent USER from accessing other users&apos; data" time="0.003">
+    </testcase>
+    <testcase classname="Dashboard Service Role Filtering Tests Cross-Role Data Isolation should prevent OPERATOR from accessing unassigned requests" name="Dashboard Service Role Filtering Tests Cross-Role Data Isolation should prevent OPERATOR from accessing unassigned requests" time="0.001">
+    </testcase>
+    <testcase classname="Dashboard Service Role Filtering Tests Cross-Role Data Isolation should ensure role-specific data boundaries" name="Dashboard Service Role Filtering Tests Cross-Role Data Isolation should ensure role-specific data boundaries" time="0.001">
+    </testcase>
+    <testcase classname="Dashboard Service Role Filtering Tests Security Validation should reject invalid role types" name="Dashboard Service Role Filtering Tests Security Validation should reject invalid role types" time="0.007">
+    </testcase>
+    <testcase classname="Dashboard Service Role Filtering Tests Security Validation should validate user ID is not empty" name="Dashboard Service Role Filtering Tests Security Validation should validate user ID is not empty" time="0.002">
+    </testcase>
+    <testcase classname="Dashboard Service Role Filtering Tests Security Validation should handle SQL injection attempts safely" name="Dashboard Service Role Filtering Tests Security Validation should handle SQL injection attempts safely" time="0">
+    </testcase>
+  </testsuite>
+  <testsuite name="Dashboard Service Mobile Compatibility" errors="0" failures="0" skipped="0" timestamp="2025-09-26T03:07:44" time="0.064" tests="19">
+    <testcase classname="Dashboard Service Mobile Compatibility Offline Mode Support should enable offline mode without errors" name="Dashboard Service Mobile Compatibility Offline Mode Support should enable offline mode without errors" time="0.003">
+    </testcase>
+    <testcase classname="Dashboard Service Mobile Compatibility Offline Mode Support should disable offline mode without errors" name="Dashboard Service Mobile Compatibility Offline Mode Support should disable offline mode without errors" time="0.001">
+    </testcase>
+    <testcase classname="Dashboard Service Mobile Compatibility Offline Mode Support should handle offline mode configuration" name="Dashboard Service Mobile Compatibility Offline Mode Support should handle offline mode configuration" time="0.001">
+    </testcase>
+    <testcase classname="Dashboard Service Mobile Compatibility Mobile Caching Patterns should support mobile-optimized cache TTL" name="Dashboard Service Mobile Compatibility Mobile Caching Patterns should support mobile-optimized cache TTL" time="0.001">
+    </testcase>
+    <testcase classname="Dashboard Service Mobile Compatibility Mobile Caching Patterns should handle cache expiration for mobile scenarios" name="Dashboard Service Mobile Compatibility Mobile Caching Patterns should handle cache expiration for mobile scenarios" time="0.012">
+    </testcase>
+    <testcase classname="Dashboard Service Mobile Compatibility Mobile Caching Patterns should support cache preloading for mobile apps" name="Dashboard Service Mobile Compatibility Mobile Caching Patterns should support cache preloading for mobile apps" time="0">
+    </testcase>
+    <testcase classname="Dashboard Service Mobile Compatibility React Native Compatibility should work without Next.js dependencies" name="Dashboard Service Mobile Compatibility React Native Compatibility should work without Next.js dependencies" time="0.001">
+    </testcase>
+    <testcase classname="Dashboard Service Mobile Compatibility React Native Compatibility should handle React Native AsyncStorage patterns" name="Dashboard Service Mobile Compatibility React Native Compatibility should handle React Native AsyncStorage patterns" time="0">
+    </testcase>
+    <testcase classname="Dashboard Service Mobile Compatibility React Native Compatibility should support React Native network state handling" name="Dashboard Service Mobile Compatibility React Native Compatibility should support React Native network state handling" time="0.005">
+    </testcase>
+    <testcase classname="Dashboard Service Mobile Compatibility Mobile Performance Optimization should handle large datasets efficiently for mobile" name="Dashboard Service Mobile Compatibility Mobile Performance Optimization should handle large datasets efficiently for mobile" time="0.001">
+    </testcase>
+    <testcase classname="Dashboard Service Mobile Compatibility Mobile Performance Optimization should support incremental loading for mobile scrolling" name="Dashboard Service Mobile Compatibility Mobile Performance Optimization should support incremental loading for mobile scrolling" time="0.001">
+    </testcase>
+    <testcase classname="Dashboard Service Mobile Compatibility Mobile Performance Optimization should minimize data transfer for mobile networks" name="Dashboard Service Mobile Compatibility Mobile Performance Optimization should minimize data transfer for mobile networks" time="0">
+    </testcase>
+    <testcase classname="Dashboard Service Mobile Compatibility Mobile Error Handling should handle intermittent connectivity gracefully" name="Dashboard Service Mobile Compatibility Mobile Error Handling should handle intermittent connectivity gracefully" time="0.002">
+    </testcase>
+    <testcase classname="Dashboard Service Mobile Compatibility Mobile Error Handling should provide mobile-friendly error messages" name="Dashboard Service Mobile Compatibility Mobile Error Handling should provide mobile-friendly error messages" time="0.001">
+    </testcase>
+    <testcase classname="Dashboard Service Mobile Compatibility Cache Management for Mobile should support cache invalidation patterns" name="Dashboard Service Mobile Compatibility Cache Management for Mobile should support cache invalidation patterns" time="0">
+    </testcase>
+    <testcase classname="Dashboard Service Mobile Compatibility Cache Management for Mobile should handle cache memory management for mobile" name="Dashboard Service Mobile Compatibility Cache Management for Mobile should handle cache memory management for mobile" time="0.004">
+    </testcase>
+    <testcase classname="Dashboard Service Mobile Compatibility Cache Management for Mobile should support cache warming for mobile app startup" name="Dashboard Service Mobile Compatibility Cache Management for Mobile should support cache warming for mobile app startup" time="0.001">
+    </testcase>
+    <testcase classname="Dashboard Service Mobile Compatibility Cross-Platform Data Consistency should maintain consistent data format across platforms" name="Dashboard Service Mobile Compatibility Cross-Platform Data Consistency should maintain consistent data format across platforms" time="0">
+    </testcase>
+    <testcase classname="Dashboard Service Mobile Compatibility Cross-Platform Data Consistency should handle timezone differences for mobile users" name="Dashboard Service Mobile Compatibility Cross-Platform Data Consistency should handle timezone differences for mobile users" time="0">
+    </testcase>
+  </testsuite>
+  <testsuite name="Dashboard API Routes" errors="0" failures="0" skipped="0" timestamp="2025-09-26T03:07:44" time="0.107" tests="17">
     <testcase classname="Dashboard API Routes GET /api/dashboard/user should return user dashboard data for authenticated user" name="Dashboard API Routes GET /api/dashboard/user should return user dashboard data for authenticated user" time="0.004">
     </testcase>
     <testcase classname="Dashboard API Routes GET /api/dashboard/user should return 401 for unauthenticated request" name="Dashboard API Routes GET /api/dashboard/user should return 401 for unauthenticated request" time="0">
     </testcase>
-    <testcase classname="Dashboard API Routes GET /api/dashboard/user should validate query parameters" name="Dashboard API Routes GET /api/dashboard/user should validate query parameters" time="0.002">
+    <testcase classname="Dashboard API Routes GET /api/dashboard/user should validate query parameters" name="Dashboard API Routes GET /api/dashboard/user should validate query parameters" time="0.001">
     </testcase>
     <testcase classname="Dashboard API Routes GET /api/dashboard/user should handle service errors gracefully" name="Dashboard API Routes GET /api/dashboard/user should handle service errors gracefully" time="0.001">
     </testcase>
-    <testcase classname="Dashboard API Routes GET /api/dashboard/operator should return operator dashboard data for operator user" name="Dashboard API Routes GET /api/dashboard/operator should return operator dashboard data for operator user" time="0.004">
+    <testcase classname="Dashboard API Routes GET /api/dashboard/operator should return operator dashboard data for operator user" name="Dashboard API Routes GET /api/dashboard/operator should return operator dashboard data for operator user" time="0">
     </testcase>
-    <testcase classname="Dashboard API Routes GET /api/dashboard/operator should return 403 for non-operator user" name="Dashboard API Routes GET /api/dashboard/operator should return 403 for non-operator user" time="0.001">
+    <testcase classname="Dashboard API Routes GET /api/dashboard/operator should return 403 for non-operator user" name="Dashboard API Routes GET /api/dashboard/operator should return 403 for non-operator user" time="0">
     </testcase>
     <testcase classname="Dashboard API Routes GET /api/dashboard/operator should allow admin access to operator endpoint" name="Dashboard API Routes GET /api/dashboard/operator should allow admin access to operator endpoint" time="0">
     </testcase>
@@ -21,19 +927,59 @@
     </testcase>
     <testcase classname="Dashboard API Routes GET /api/dashboard/manager should return 403 for non-manager user" name="Dashboard API Routes GET /api/dashboard/manager should return 403 for non-manager user" time="0">
     </testcase>
-    <testcase classname="Dashboard API Routes GET /api/dashboard/admin should return admin dashboard data with security headers" name="Dashboard API Routes GET /api/dashboard/admin should return admin dashboard data with security headers" time="0.001">
+    <testcase classname="Dashboard API Routes GET /api/dashboard/admin should return admin dashboard data with security headers" name="Dashboard API Routes GET /api/dashboard/admin should return admin dashboard data with security headers" time="0">
     </testcase>
-    <testcase classname="Dashboard API Routes GET /api/dashboard/admin should return 403 for non-admin user" name="Dashboard API Routes GET /api/dashboard/admin should return 403 for non-admin user" time="0">
+    <testcase classname="Dashboard API Routes GET /api/dashboard/admin should return 403 for non-admin user" name="Dashboard API Routes GET /api/dashboard/admin should return 403 for non-admin user" time="0.001">
     </testcase>
-    <testcase classname="Dashboard API Routes GET /api/dashboard/admin should use shortest cache TTL for admin data" name="Dashboard API Routes GET /api/dashboard/admin should use shortest cache TTL for admin data" time="0.001">
+    <testcase classname="Dashboard API Routes GET /api/dashboard/admin should use shortest cache TTL for admin data" name="Dashboard API Routes GET /api/dashboard/admin should use shortest cache TTL for admin data" time="0">
     </testcase>
     <testcase classname="Dashboard API Routes Mobile JWT Compatibility should work with JWT tokens across all endpoints" name="Dashboard API Routes Mobile JWT Compatibility should work with JWT tokens across all endpoints" time="0.001">
     </testcase>
     <testcase classname="Dashboard API Routes Mobile JWT Compatibility should handle caching parameters for mobile apps" name="Dashboard API Routes Mobile JWT Compatibility should handle caching parameters for mobile apps" time="0.001">
     </testcase>
-    <testcase classname="Dashboard API Routes Error Handling should handle middleware Response errors" name="Dashboard API Routes Error Handling should handle middleware Response errors" time="0.018">
+    <testcase classname="Dashboard API Routes Error Handling should handle middleware Response errors" name="Dashboard API Routes Error Handling should handle middleware Response errors" time="0.003">
     </testcase>
-    <testcase classname="Dashboard API Routes Error Handling should handle unexpected errors" name="Dashboard API Routes Error Handling should handle unexpected errors" time="0.006">
+    <testcase classname="Dashboard API Routes Error Handling should handle unexpected errors" name="Dashboard API Routes Error Handling should handle unexpected errors" time="0.004">
+    </testcase>
+  </testsuite>
+  <testsuite name="DashboardService" errors="0" failures="0" skipped="0" timestamp="2025-09-26T03:07:44" time="0.05" tests="19">
+    <testcase classname="DashboardService Constructor should initialize with default logger if none provided" name="DashboardService Constructor should initialize with default logger if none provided" time="0.001">
+    </testcase>
+    <testcase classname="DashboardService Constructor should initialize with provided logger" name="DashboardService Constructor should initialize with provided logger" time="0">
+    </testcase>
+    <testcase classname="DashboardService getDashboardData should validate required parameters" name="DashboardService getDashboardData should validate required parameters" time="0.003">
+    </testcase>
+    <testcase classname="DashboardService getDashboardData should handle invalid user role" name="DashboardService getDashboardData should handle invalid user role" time="0.009">
+    </testcase>
+    <testcase classname="DashboardService getDashboardData should return cached data when caching is enabled" name="DashboardService getDashboardData should return cached data when caching is enabled" time="0.001">
+    </testcase>
+    <testcase classname="DashboardService USER Role Dashboard Data should return USER dashboard data with correct structure" name="DashboardService USER Role Dashboard Data should return USER dashboard data with correct structure" time="0.001">
+    </testcase>
+    <testcase classname="DashboardService USER Role Dashboard Data should filter requests by userId for USER role" name="DashboardService USER Role Dashboard Data should filter requests by userId for USER role" time="0.001">
+    </testcase>
+    <testcase classname="DashboardService OPERATOR Role Dashboard Data should return OPERATOR dashboard data with assignments" name="DashboardService OPERATOR Role Dashboard Data should return OPERATOR dashboard data with assignments" time="0.001">
+    </testcase>
+    <testcase classname="DashboardService OPERATOR Role Dashboard Data should include both assigned and own requests for OPERATOR" name="DashboardService OPERATOR Role Dashboard Data should include both assigned and own requests for OPERATOR" time="0.001">
+    </testcase>
+    <testcase classname="DashboardService MANAGER Role Dashboard Data should return MANAGER dashboard data with revenue stats" name="DashboardService MANAGER Role Dashboard Data should return MANAGER dashboard data with revenue stats" time="0.001">
+    </testcase>
+    <testcase classname="DashboardService MANAGER Role Dashboard Data should handle date range filtering for MANAGER" name="DashboardService MANAGER Role Dashboard Data should handle date range filtering for MANAGER" time="0">
+    </testcase>
+    <testcase classname="DashboardService ADMIN Role Dashboard Data should return ADMIN dashboard data with all sections" name="DashboardService ADMIN Role Dashboard Data should return ADMIN dashboard data with all sections" time="0.001">
+    </testcase>
+    <testcase classname="DashboardService Cache Management should clear cache by pattern" name="DashboardService Cache Management should clear cache by pattern" time="0">
+    </testcase>
+    <testcase classname="DashboardService Cache Management should clear all cache when no pattern provided" name="DashboardService Cache Management should clear all cache when no pattern provided" time="0">
+    </testcase>
+    <testcase classname="DashboardService Cache Management should return null for expired cache" name="DashboardService Cache Management should return null for expired cache" time="0">
+    </testcase>
+    <testcase classname="DashboardService Mobile Compatibility should support offline mode" name="DashboardService Mobile Compatibility should support offline mode" time="0">
+    </testcase>
+    <testcase classname="DashboardService Mobile Compatibility should provide cached data for offline access" name="DashboardService Mobile Compatibility should provide cached data for offline access" time="0">
+    </testcase>
+    <testcase classname="DashboardService Error Handling should handle database errors gracefully" name="DashboardService Error Handling should handle database errors gracefully" time="0.004">
+    </testcase>
+    <testcase classname="DashboardService Error Handling should validate required options" name="DashboardService Error Handling should validate required options" time="0.001">
     </testcase>
   </testsuite>
 </testsuites>

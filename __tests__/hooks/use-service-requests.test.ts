@@ -1,0 +1,169 @@
+/**
+ * @jest-environment jsdom
+ */
+
+import { renderHook, waitFor } from "@testing-library/react"
+import { useServiceRequests } from "@/hooks/use-service-requests"
+
+// Mock the dashboard data hook
+jest.mock("@/hooks/use-dashboard-data", () => ({
+  useDashboardData: jest.fn(),
+}))
+
+const mockUseDashboardData = require("@/hooks/use-dashboard-data").useDashboardData
+
+// Mock window.location
+const mockLocation = {
+  href: "",
+}
+Object.defineProperty(window, "location", {
+  value: mockLocation,
+  writable: true,
+})
+
+describe("useServiceRequests", () => {
+  beforeEach(() => {
+    mockUseDashboardData.mockClear()
+    mockLocation.href = ""
+  })
+
+  it("should return service request data and stats", async () => {
+    const mockDashboardData = {
+      stats: {
+        totalRequests: 5,
+        activeRequests: 2,
+        completedRequests: 3,
+        pendingApproval: 1,
+      },
+      recentRequests: [
+        {
+          id: "1",
+          title: "Test Request",
+          status: "SUBMITTED",
+          equipmentCategory: "SKID_STEERS_TRACK_LOADERS",
+          jobSite: "123 Main St",
+          startDate: new Date("2024-01-01"),
+          endDate: null,
+          requestedDurationType: "FULL_DAY",
+          requestedDurationValue: 1,
+          requestedTotalHours: 8,
+          estimatedCost: 500,
+          createdAt: new Date("2024-01-01"),
+          updatedAt: new Date("2024-01-01"),
+        },
+      ],
+    }
+
+    mockUseDashboardData.mockReturnValue({
+      data: mockDashboardData,
+      isLoading: false,
+      error: null,
+      refetch: jest.fn(),
+    })
+
+    const { result } = renderHook(() => useServiceRequests())
+
+    expect(result.current.serviceRequests).toEqual(mockDashboardData.recentRequests)
+    expect(result.current.totalRequests).toBe(5)
+    expect(result.current.activeRequests).toBe(2)
+    expect(result.current.completedRequests).toBe(3)
+    expect(result.current.pendingApproval).toBe(1)
+    expect(result.current.isLoading).toBe(false)
+    expect(result.current.error).toBe(null)
+
+    expect(mockUseDashboardData).toHaveBeenCalledWith({
+      role: "USER",
+      limit: 10,
+      offset: 0,
+      enableCaching: true,
+    })
+  })
+
+  it("should handle loading state", () => {
+    mockUseDashboardData.mockReturnValue({
+      data: null,
+      isLoading: true,
+      error: null,
+      refetch: jest.fn(),
+    })
+
+    const { result } = renderHook(() => useServiceRequests())
+
+    expect(result.current.serviceRequests).toEqual([])
+    expect(result.current.totalRequests).toBe(0)
+    expect(result.current.activeRequests).toBe(0)
+    expect(result.current.completedRequests).toBe(0)
+    expect(result.current.pendingApproval).toBe(0)
+    expect(result.current.isLoading).toBe(true)
+    expect(result.current.error).toBe(null)
+  })
+
+  it("should handle error state", () => {
+    const errorMessage = "Failed to fetch data"
+    mockUseDashboardData.mockReturnValue({
+      data: null,
+      isLoading: false,
+      error: errorMessage,
+      refetch: jest.fn(),
+    })
+
+    const { result } = renderHook(() => useServiceRequests())
+
+    expect(result.current.serviceRequests).toEqual([])
+    expect(result.current.isLoading).toBe(false)
+    expect(result.current.error).toBe(errorMessage)
+  })
+
+  it("should handle custom options", () => {
+    mockUseDashboardData.mockReturnValue({
+      data: null,
+      isLoading: false,
+      error: null,
+      refetch: jest.fn(),
+    })
+
+    renderHook(() =>
+      useServiceRequests({
+        limit: 20,
+        offset: 10,
+        enableCaching: false,
+      })
+    )
+
+    expect(mockUseDashboardData).toHaveBeenCalledWith({
+      role: "USER",
+      limit: 20,
+      offset: 10,
+      enableCaching: false,
+    })
+  })
+
+  it("should navigate to service request creation", () => {
+    mockUseDashboardData.mockReturnValue({
+      data: null,
+      isLoading: false,
+      error: null,
+      refetch: jest.fn(),
+    })
+
+    const { result } = renderHook(() => useServiceRequests())
+
+    result.current.createServiceRequest()
+
+    expect(mockLocation.href).toBe("/dashboard/service-requests/new")
+  })
+
+  it("should pass through refetch function", () => {
+    const mockRefetch = jest.fn()
+    mockUseDashboardData.mockReturnValue({
+      data: null,
+      isLoading: false,
+      error: null,
+      refetch: mockRefetch,
+    })
+
+    const { result } = renderHook(() => useServiceRequests())
+
+    expect(result.current.refetch).toBe(mockRefetch)
+  })
+})
