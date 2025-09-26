@@ -1,3 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="0" failures="0" errors="0" time="0.001">
+<testsuites name="jest tests" tests="21" failures="0" errors="0" time="1.475">
+  <testsuite name="useServiceRequests" errors="0" failures="0" skipped="0" timestamp="2025-09-26T05:03:54" time="0.381" tests="6">
+    <testcase classname="useServiceRequests should return service request data and stats" name="useServiceRequests should return service request data and stats" time="0.013">
+    </testcase>
+    <testcase classname="useServiceRequests should handle loading state" name="useServiceRequests should handle loading state" time="0.002">
+    </testcase>
+    <testcase classname="useServiceRequests should handle error state" name="useServiceRequests should handle error state" time="0.003">
+    </testcase>
+    <testcase classname="useServiceRequests should handle custom options" name="useServiceRequests should handle custom options" time="0.002">
+    </testcase>
+    <testcase classname="useServiceRequests should log development warning when createServiceRequest is called" name="useServiceRequests should log development warning when createServiceRequest is called" time="0.003">
+    </testcase>
+    <testcase classname="useServiceRequests should pass through refetch function" name="useServiceRequests should pass through refetch function" time="0.002">
+    </testcase>
+  </testsuite>
+  <testsuite name="UserDashboard" errors="0" failures="0" skipped="0" timestamp="2025-09-26T05:03:54" time="0.664" tests="7">
+    <testcase classname="UserDashboard should render loading state" name="UserDashboard should render loading state" time="0.049">
+    </testcase>
+    <testcase classname="UserDashboard should render error state" name="UserDashboard should render error state" time="0.009">
+    </testcase>
+    <testcase classname="UserDashboard should render dashboard with service requests" name="UserDashboard should render dashboard with service requests" time="0.092">
+    </testcase>
+    <testcase classname="UserDashboard should render empty state when no service requests" name="UserDashboard should render empty state when no service requests" time="0.011">
+    </testcase>
+    <testcase classname="UserDashboard should handle refresh action" name="UserDashboard should handle refresh action" time="0.01">
+    </testcase>
+    <testcase classname="UserDashboard should format currency correctly" name="UserDashboard should format currency correctly" time="0.01">
+    </testcase>
+    <testcase classname="UserDashboard should be accessible" name="UserDashboard should be accessible" time="0.047">
+    </testcase>
+  </testsuite>
+  <testsuite name="useDashboardData" errors="0" failures="0" skipped="0" timestamp="2025-09-26T05:03:54" time="0.695" tests="8">
+    <testcase classname="useDashboardData should fetch USER dashboard data successfully" name="useDashboardData should fetch USER dashboard data successfully" time="0.069">
+    </testcase>
+    <testcase classname="useDashboardData should fetch OPERATOR dashboard data successfully" name="useDashboardData should fetch OPERATOR dashboard data successfully" time="0.056">
+    </testcase>
+    <testcase classname="useDashboardData should handle authentication error" name="useDashboardData should handle authentication error" time="0.058">
+    </testcase>
+    <testcase classname="useDashboardData should handle authorization error" name="useDashboardData should handle authorization error" time="0.055">
+    </testcase>
+    <testcase classname="useDashboardData should handle network error" name="useDashboardData should handle network error" time="0.059">
+    </testcase>
+    <testcase classname="useDashboardData should build correct query parameters" name="useDashboardData should build correct query parameters" time="0.004">
+    </testcase>
+    <testcase classname="useDashboardData should handle refetch" name="useDashboardData should handle refetch" time="0.055">
+    </testcase>
+    <testcase classname="useDashboardData should handle error for invalid role" name="useDashboardData should handle error for invalid role" time="0.003">
+    </testcase>
+  </testsuite>
 </testsuites>
