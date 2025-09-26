@@ -9,14 +9,13 @@ jest.mock("next/navigation", () => ({
 }))
 jest.mock("@/lib/services")
 
-// Mock console.log for notification testing
-const originalConsoleLog = console.log
-beforeAll(() => {
-  console.log = jest.fn()
-})
-afterAll(() => {
-  console.log = originalConsoleLog
-})
+// Mock notifications for testing
+const mockNotifications = {
+  showNotification: jest.fn(),
+  showSuccess: jest.fn(),
+  showError: jest.fn(),
+  showWarning: jest.fn(),
+}
 
 const mockRouter = {
   push: jest.fn(),
@@ -40,6 +39,8 @@ describe("useServiceRequestForm", () => {
   beforeEach(() => {
     jest.clearAllMocks()
     ;(useRouter as jest.Mock).mockReturnValue(mockRouter)
+    // Reset notification mocks
+    Object.values(mockNotifications).forEach(mock => mock.mockClear())
     ;(ServiceFactory.getGeocodingService as jest.Mock).mockReturnValue(
       mockGeocodingService
     )
@@ -51,7 +52,7 @@ describe("useServiceRequestForm", () => {
 
   it("should initialize with default form values", () => {
     const { result } = renderHook(() =>
-      useServiceRequestForm({ user: mockUser })
+      useServiceRequestForm({ user: mockUser, notifications: mockNotifications })
     )
 
     expect(result.current.form.getValues()).toMatchObject({
@@ -74,7 +75,7 @@ describe("useServiceRequestForm", () => {
 
   it("should update total hours when duration changes", () => {
     const { result } = renderHook(() =>
-      useServiceRequestForm({ user: mockUser })
+      useServiceRequestForm({ user: mockUser, notifications: mockNotifications })
     )
 
     act(() => {
@@ -98,7 +99,7 @@ describe("useServiceRequestForm", () => {
     })
 
     const { result } = renderHook(() =>
-      useServiceRequestForm({ user: mockUser })
+      useServiceRequestForm({ user: mockUser, notifications: mockNotifications })
     )
 
     act(() => {
@@ -129,7 +130,7 @@ describe("useServiceRequestForm", () => {
 
   it("should handle address selection", () => {
     const { result } = renderHook(() =>
-      useServiceRequestForm({ user: mockUser })
+      useServiceRequestForm({ user: mockUser, notifications: mockNotifications })
     )
 
     const suggestion = {
@@ -164,7 +165,7 @@ describe("useServiceRequestForm", () => {
     })
 
     const { result } = renderHook(() =>
-      useServiceRequestForm({ user: mockUser })
+      useServiceRequestForm({ user: mockUser, notifications: mockNotifications })
     )
 
     act(() => {
@@ -179,11 +180,10 @@ describe("useServiceRequestForm", () => {
     )
 
     await waitFor(() => {
-      expect(console.log).toHaveBeenCalledWith("Notification:", {
-        title: "Address search unavailable",
-        description: "Service unavailable",
-        variant: "destructive",
-      })
+      expect(mockNotifications.showError).toHaveBeenCalledWith(
+        "Service unavailable",
+        "Address search unavailable"
+      )
     })
   })
 
@@ -194,7 +194,7 @@ describe("useServiceRequestForm", () => {
     })
 
     const { result } = renderHook(() =>
-      useServiceRequestForm({ user: mockUser })
+      useServiceRequestForm({ user: mockUser, notifications: mockNotifications })
     )
 
     const formData = {
@@ -229,9 +229,9 @@ describe("useServiceRequestForm", () => {
       body: JSON.stringify(formData),
     })
 
-    expect(console.log).toHaveBeenCalledWith("Notification:", {
-      description: "Your service request has been created successfully.",
-    })
+    expect(mockNotifications.showSuccess).toHaveBeenCalledWith(
+      "Your service request has been created successfully."
+    )
 
     expect(mockRouter.push).toHaveBeenCalledWith("/dashboard")
     expect(mockRouter.refresh).toHaveBeenCalled()
@@ -245,7 +245,7 @@ describe("useServiceRequestForm", () => {
     })
 
     const { result } = renderHook(() =>
-      useServiceRequestForm({ user: mockUser })
+      useServiceRequestForm({ user: mockUser, notifications: mockNotifications })
     )
 
     const formData = {
@@ -272,18 +272,17 @@ describe("useServiceRequestForm", () => {
       await result.current.onSubmit(formData)
     })
 
-    expect(console.log).toHaveBeenCalledWith("Notification:", {
-      title: "Failed to create service request",
-      description: "Validation error: Validation failed",
-      variant: "destructive",
-    })
+    expect(mockNotifications.showError).toHaveBeenCalledWith(
+      "Validation error: Validation failed",
+      "Failed to create service request"
+    )
   })
 
   it("should handle network errors", async () => {
     ;(global.fetch as jest.Mock).mockRejectedValue(new Error("Network error"))
 
     const { result } = renderHook(() =>
-      useServiceRequestForm({ user: mockUser })
+      useServiceRequestForm({ user: mockUser, notifications: mockNotifications })
     )
 
     const formData = {
@@ -310,11 +309,9 @@ describe("useServiceRequestForm", () => {
       await result.current.onSubmit(formData)
     })
 
-    expect(console.log).toHaveBeenCalledWith("Notification:", {
-      title: "Network error",
-      description:
-        "Unable to connect to the server. Please check your internet connection and try again.",
-      variant: "destructive",
-    })
+    expect(mockNotifications.showError).toHaveBeenCalledWith(
+      "Unable to connect to the server. Please check your internet connection and try again.",
+      "Network error"
+    )
   })
 })

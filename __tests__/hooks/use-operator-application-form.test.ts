@@ -9,14 +9,13 @@ jest.mock("next/navigation", () => ({
 }))
 jest.mock("@/lib/services")
 
-// Mock console.log for notification testing
-const originalConsoleLog = console.log
-beforeAll(() => {
-  console.log = jest.fn()
-})
-afterAll(() => {
-  console.log = originalConsoleLog
-})
+// Mock notifications for testing
+const mockNotifications = {
+  showNotification: jest.fn(),
+  showSuccess: jest.fn(),
+  showError: jest.fn(),
+  showWarning: jest.fn(),
+}
 
 const mockRouter = {
   refresh: jest.fn(),
@@ -35,6 +34,8 @@ describe("useOperatorApplicationForm", () => {
   beforeEach(() => {
     jest.clearAllMocks()
     ;(useRouter as jest.Mock).mockReturnValue(mockRouter)
+    // Reset notification mocks
+    Object.values(mockNotifications).forEach((mock) => mock.mockClear())
     ;(ServiceFactory.getGeocodingService as jest.Mock).mockReturnValue(
       mockGeocodingService
     )
@@ -46,7 +47,10 @@ describe("useOperatorApplicationForm", () => {
 
   it("should initialize with default form values", () => {
     const { result } = renderHook(() =>
-      useOperatorApplicationForm({ user: mockUser })
+      useOperatorApplicationForm({
+        user: mockUser,
+        notifications: mockNotifications,
+      })
     )
 
     expect(result.current.form.getValues()).toMatchObject({
@@ -79,7 +83,10 @@ describe("useOperatorApplicationForm", () => {
     })
 
     const { result } = renderHook(() =>
-      useOperatorApplicationForm({ user: mockUser })
+      useOperatorApplicationForm({
+        user: mockUser,
+        notifications: mockNotifications,
+      })
     )
 
     act(() => {
@@ -110,7 +117,10 @@ describe("useOperatorApplicationForm", () => {
 
   it("should not search for addresses with less than 3 characters", async () => {
     const { result } = renderHook(() =>
-      useOperatorApplicationForm({ user: mockUser })
+      useOperatorApplicationForm({
+        user: mockUser,
+        notifications: mockNotifications,
+      })
     )
 
     act(() => {
@@ -133,7 +143,10 @@ describe("useOperatorApplicationForm", () => {
 
   it("should handle address selection", () => {
     const { result } = renderHook(() =>
-      useOperatorApplicationForm({ user: mockUser })
+      useOperatorApplicationForm({
+        user: mockUser,
+        notifications: mockNotifications,
+      })
     )
 
     const suggestion = {
@@ -168,7 +181,10 @@ describe("useOperatorApplicationForm", () => {
     })
 
     const { result } = renderHook(() =>
-      useOperatorApplicationForm({ user: mockUser })
+      useOperatorApplicationForm({
+        user: mockUser,
+        notifications: mockNotifications,
+      })
     )
 
     act(() => {
@@ -191,7 +207,10 @@ describe("useOperatorApplicationForm", () => {
 
   it("should handle suggestions blur with delay", () => {
     const { result } = renderHook(() =>
-      useOperatorApplicationForm({ user: mockUser })
+      useOperatorApplicationForm({
+        user: mockUser,
+        notifications: mockNotifications,
+      })
     )
 
     // Set some suggestions first
@@ -237,7 +256,10 @@ describe("useOperatorApplicationForm", () => {
     })
 
     const { result } = renderHook(() =>
-      useOperatorApplicationForm({ user: mockUser })
+      useOperatorApplicationForm({
+        user: mockUser,
+        notifications: mockNotifications,
+      })
     )
 
     const formData = {
@@ -261,9 +283,9 @@ describe("useOperatorApplicationForm", () => {
       }
     )
 
-    expect(console.log).toHaveBeenCalledWith("Notification:", {
-      description: "Your operator application has been submitted for review.",
-    })
+    expect(mockNotifications.showSuccess).toHaveBeenCalledWith(
+      "Your operator application has been submitted for review."
+    )
 
     expect(mockRouter.refresh).toHaveBeenCalled()
   })
@@ -275,7 +297,10 @@ describe("useOperatorApplicationForm", () => {
     })
 
     const { result } = renderHook(() =>
-      useOperatorApplicationForm({ user: mockUser })
+      useOperatorApplicationForm({
+        user: mockUser,
+        notifications: mockNotifications,
+      })
     )
 
     const formData = {
@@ -286,18 +311,20 @@ describe("useOperatorApplicationForm", () => {
       await result.current.onSubmit(formData)
     })
 
-    expect(console.log).toHaveBeenCalledWith("Notification:", {
-      title: "Something went wrong.",
-      description: "Your application was not submitted. Please try again.",
-      variant: "destructive",
-    })
+    expect(mockNotifications.showError).toHaveBeenCalledWith(
+      "Your application was not submitted. Please try again.",
+      "Something went wrong."
+    )
   })
 
   it("should handle network errors during submission", async () => {
     ;(global.fetch as jest.Mock).mockRejectedValue(new Error("Network error"))
 
     const { result } = renderHook(() =>
-      useOperatorApplicationForm({ user: mockUser })
+      useOperatorApplicationForm({
+        user: mockUser,
+        notifications: mockNotifications,
+      })
     )
 
     const formData = {
@@ -308,12 +335,10 @@ describe("useOperatorApplicationForm", () => {
       await result.current.onSubmit(formData)
     })
 
-    expect(console.log).toHaveBeenCalledWith("Notification:", {
-      title: "Network error",
-      description:
-        "Unable to connect to the server. Please check your internet connection and try again.",
-      variant: "destructive",
-    })
+    expect(mockNotifications.showError).toHaveBeenCalledWith(
+      "Unable to connect to the server. Please check your internet connection and try again.",
+      "Network error"
+    )
   })
 
   it("should set loading states correctly during submission", async () => {
@@ -325,7 +350,10 @@ describe("useOperatorApplicationForm", () => {
     ;(global.fetch as jest.Mock).mockReturnValue(promise)
 
     const { result } = renderHook(() =>
-      useOperatorApplicationForm({ user: mockUser })
+      useOperatorApplicationForm({
+        user: mockUser,
+        notifications: mockNotifications,
+      })
     )
 
     const formData = {
