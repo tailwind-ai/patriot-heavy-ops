@@ -1,8 +1,15 @@
 "use client"
 
 import * as React from "react"
-import { useDashboardData, type DashboardServiceRequest, type OperatorAssignment } from "./use-dashboard-data"
-import { NotificationCallbacks, createNoOpNotifications } from "@/lib/utils/notifications"
+import {
+  useDashboardData,
+  type DashboardServiceRequest,
+  type OperatorAssignment,
+} from "./use-dashboard-data"
+import {
+  NotificationCallbacks,
+  createNoOpNotifications,
+} from "@/lib/utils/notifications"
 
 export interface UseManagerQueueOptions {
   limit?: number
@@ -34,17 +41,19 @@ export interface UseManagerQueueReturn {
 
 /**
  * Custom hook for MANAGER role approval queue management
- * 
+ *
  * Provides approval queue data and management actions for managers.
  * Handles service request approvals, operator assignments, and oversight.
- * 
+ *
  * @param options - Manager queue options including date range filtering
  * @returns Queue data, stats, and management functions
  */
-export function useManagerQueue(options: UseManagerQueueOptions = {}): UseManagerQueueReturn {
+export function useManagerQueue(
+  options: UseManagerQueueOptions = {}
+): UseManagerQueueReturn {
   // Use provided notifications or fallback to no-op
   const notifications = options.notifications || createNoOpNotifications()
-  
+
   const {
     data: dashboardData,
     isLoading,
@@ -60,170 +69,191 @@ export function useManagerQueue(options: UseManagerQueueOptions = {}): UseManage
   })
 
   // Approve a service request
-  const approveRequest = React.useCallback(async (requestId: string) => {
-    try {
-      const response = await fetch(`/api/service-requests/${requestId}/approve`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-      })
+  const approveRequest = React.useCallback(
+    async (requestId: string) => {
+      try {
+        const response = await fetch(
+          `/api/service-requests/${requestId}/approve`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            credentials: "include",
+          }
+        )
 
-      if (!response.ok) {
-        let errorMessage = "Failed to approve request"
-        
-        try {
-          const errorData = await response.json()
-          if (response.status === 401) {
-            errorMessage = "Authentication required. Please log in."
-          } else if (response.status === 403) {
-            errorMessage = "Access denied. Manager permissions required."
-          } else if (response.status === 409) {
-            errorMessage = "Request cannot be approved at this time. Check request status."
-          } else if (errorData?.error) {
-            errorMessage = errorData.error
+        if (!response.ok) {
+          let errorMessage = "Failed to approve request"
+
+          try {
+            const errorData = await response.json()
+            if (response.status === 401) {
+              errorMessage = "Authentication required. Please log in."
+            } else if (response.status === 403) {
+              errorMessage = "Access denied. Manager permissions required."
+            } else if (response.status === 409) {
+              errorMessage =
+                "Request cannot be approved at this time. Check request status."
+            } else if (errorData?.error) {
+              errorMessage = errorData.error
+            }
+          } catch {
+            // Use status-based fallback
+            if (response.status === 401) {
+              errorMessage = "Authentication required. Please log in."
+            } else if (response.status === 403) {
+              errorMessage = "Access denied. Manager permissions required."
+            } else if (response.status >= 500) {
+              errorMessage = "Server error. Please try again later."
+            }
           }
-        } catch {
-          // Use status-based fallback
-          if (response.status === 401) {
-            errorMessage = "Authentication required. Please log in."
-          } else if (response.status === 403) {
-            errorMessage = "Access denied. Manager permissions required."
-          } else if (response.status >= 500) {
-            errorMessage = "Server error. Please try again later."
-          }
+
+          notifications.showError(errorMessage, "Failed to approve request")
+          return
         }
 
-        notifications.showError(errorMessage, "Failed to approve request")
-        return
+        notifications.showSuccess("Service request approved successfully.")
+
+        // Refresh data to show updated status
+        await refetch()
+      } catch {
+        notifications.showError(
+          "Unable to connect to the server. Please check your connection and try again.",
+          "Network error"
+        )
       }
-
-      notifications.showSuccess("Service request approved successfully.")
-
-      // Refresh data to show updated status
-      await refetch()
-    } catch {
-      notifications.showError(
-        "Unable to connect to the server. Please check your connection and try again.",
-        "Network error"
-      )
-    }
-  }, [refetch])
+    },
+    [refetch, notifications]
+  )
 
   // Reject a service request
-  const rejectRequest = React.useCallback(async (requestId: string, reason?: string) => {
-    try {
-      const response = await fetch(`/api/service-requests/${requestId}/reject`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ reason }),
-        credentials: "include",
-      })
+  const rejectRequest = React.useCallback(
+    async (requestId: string, reason?: string) => {
+      try {
+        const response = await fetch(
+          `/api/service-requests/${requestId}/reject`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ reason }),
+            credentials: "include",
+          }
+        )
 
-      if (!response.ok) {
-        let errorMessage = "Failed to reject request"
-        
-        try {
-          const errorData = await response.json()
-          if (response.status === 401) {
-            errorMessage = "Authentication required. Please log in."
-          } else if (response.status === 403) {
-            errorMessage = "Access denied. Manager permissions required."
-          } else if (response.status === 409) {
-            errorMessage = "Request cannot be rejected at this time. Check request status."
-          } else if (errorData?.error) {
-            errorMessage = errorData.error
+        if (!response.ok) {
+          let errorMessage = "Failed to reject request"
+
+          try {
+            const errorData = await response.json()
+            if (response.status === 401) {
+              errorMessage = "Authentication required. Please log in."
+            } else if (response.status === 403) {
+              errorMessage = "Access denied. Manager permissions required."
+            } else if (response.status === 409) {
+              errorMessage =
+                "Request cannot be rejected at this time. Check request status."
+            } else if (errorData?.error) {
+              errorMessage = errorData.error
+            }
+          } catch {
+            // Use status-based fallback
+            if (response.status === 401) {
+              errorMessage = "Authentication required. Please log in."
+            } else if (response.status === 403) {
+              errorMessage = "Access denied. Manager permissions required."
+            } else if (response.status >= 500) {
+              errorMessage = "Server error. Please try again later."
+            }
           }
-        } catch {
-          // Use status-based fallback
-          if (response.status === 401) {
-            errorMessage = "Authentication required. Please log in."
-          } else if (response.status === 403) {
-            errorMessage = "Access denied. Manager permissions required."
-          } else if (response.status >= 500) {
-            errorMessage = "Server error. Please try again later."
-          }
+
+          notifications.showError(errorMessage, "Failed to reject request")
+          return
         }
 
-        notifications.showError(errorMessage, "Failed to reject request")
-        return
+        notifications.showSuccess("Service request rejected.")
+
+        // Refresh data to show updated status
+        await refetch()
+      } catch {
+        notifications.showError(
+          "Unable to connect to the server. Please check your connection and try again.",
+          "Network error"
+        )
       }
-
-      notifications.showSuccess("Service request rejected.")
-
-      // Refresh data to show updated status
-      await refetch()
-    } catch {
-      notifications.showError(
-        "Unable to connect to the server. Please check your connection and try again.",
-        "Network error"
-      )
-    }
-  }, [refetch])
+    },
+    [refetch, notifications]
+  )
 
   // Assign operator to a service request
-  const assignOperator = React.useCallback(async (requestId: string, operatorId: string) => {
-    try {
-      const response = await fetch(`/api/service-requests/${requestId}/assign`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ operatorId }),
-        credentials: "include",
-      })
+  const assignOperator = React.useCallback(
+    async (requestId: string, operatorId: string) => {
+      try {
+        const response = await fetch(
+          `/api/service-requests/${requestId}/assign`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ operatorId }),
+            credentials: "include",
+          }
+        )
 
-      if (!response.ok) {
-        let errorMessage = "Failed to assign operator"
-        
-        try {
-          const errorData = await response.json()
-          if (response.status === 401) {
-            errorMessage = "Authentication required. Please log in."
-          } else if (response.status === 403) {
-            errorMessage = "Access denied. Manager permissions required."
-          } else if (response.status === 409) {
-            errorMessage = "Operator assignment failed. Check availability."
-          } else if (errorData?.error) {
-            errorMessage = errorData.error
+        if (!response.ok) {
+          let errorMessage = "Failed to assign operator"
+
+          try {
+            const errorData = await response.json()
+            if (response.status === 401) {
+              errorMessage = "Authentication required. Please log in."
+            } else if (response.status === 403) {
+              errorMessage = "Access denied. Manager permissions required."
+            } else if (response.status === 409) {
+              errorMessage = "Operator assignment failed. Check availability."
+            } else if (errorData?.error) {
+              errorMessage = errorData.error
+            }
+          } catch {
+            // Use status-based fallback
+            if (response.status === 401) {
+              errorMessage = "Authentication required. Please log in."
+            } else if (response.status === 403) {
+              errorMessage = "Access denied. Manager permissions required."
+            } else if (response.status >= 500) {
+              errorMessage = "Server error. Please try again later."
+            }
           }
-        } catch {
-          // Use status-based fallback
-          if (response.status === 401) {
-            errorMessage = "Authentication required. Please log in."
-          } else if (response.status === 403) {
-            errorMessage = "Access denied. Manager permissions required."
-          } else if (response.status >= 500) {
-            errorMessage = "Server error. Please try again later."
-          }
+
+          notifications.showError(errorMessage, "Failed to assign operator")
+          return
         }
 
-        notifications.showError(errorMessage, "Failed to assign operator")
-        return
+        notifications.showSuccess("Operator assigned successfully.")
+
+        // Refresh data to show updated assignments
+        await refetch()
+      } catch {
+        notifications.showError(
+          "Unable to connect to the server. Please check your connection and try again.",
+          "Network error"
+        )
       }
-
-      notifications.showSuccess("Operator assigned successfully.")
-
-      // Refresh data to show updated assignments
-      await refetch()
-    } catch {
-      notifications.showError(
-        "Unable to connect to the server. Please check your connection and try again.",
-        "Network error"
-      )
-    }
-  }, [refetch])
+    },
+    [refetch, notifications]
+  )
 
   // Extract manager-specific data
   const allRequests = dashboardData?.recentRequests || []
   const pendingApprovals = allRequests.filter(
-    request => request.status === "SUBMITTED" || request.status === "UNDER_REVIEW"
+    (request) =>
+      request.status === "SUBMITTED" || request.status === "UNDER_REVIEW"
   )
   const activeAssignments = dashboardData?.assignments || []
-  
+
   const stats = dashboardData?.stats || {
     totalRequests: 0,
     activeRequests: 0,

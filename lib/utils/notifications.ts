@@ -5,6 +5,8 @@
  * Supports Next.js (with toast), React Native, and testing environments.
  */
 
+import { logger } from './logger'
+
 export interface NotificationOptions {
   title?: string
   description: string
@@ -44,10 +46,15 @@ export const createToastNotifications = (
   }) => void
 ): NotificationCallbacks => ({
   showNotification: (options) => {
+    const excludedVariants = ['success', 'warning']
+    const isValidVariant = (variant: string): variant is 'default' | 'destructive' => {
+      return variant === 'default' || variant === 'destructive'
+    }
+    
     toast({
       ...(options.title && { title: options.title }),
       description: options.description,
-      ...(options.variant && options.variant !== 'success' && options.variant !== 'warning' && { variant: options.variant }),
+      ...(options.variant && isValidVariant(options.variant) && { variant: options.variant }),
       ...(options.duration && { duration: options.duration }),
     })
   },
@@ -84,22 +91,22 @@ export const createToastNotifications = (
 export const createReactNativeNotifications = (): NotificationCallbacks => ({
   showNotification: (options) => {
     // Example: Alert.alert(options.title || 'Notification', options.description)
-    console.log(`[${options.variant?.toUpperCase() || 'INFO'}] ${options.title || ''}: ${options.description}`)
+    logger.info(`[${options.variant?.toUpperCase() || 'INFO'}] ${options.title || ''}: ${options.description}`)
   },
   
   showSuccess: (message, title = "Success") => {
     // Example: Alert.alert(title, message)
-    console.log(`[SUCCESS] ${title}: ${message}`)
+    logger.info(`[SUCCESS] ${title}: ${message}`)
   },
   
   showError: (message, title = "Error") => {
     // Example: Alert.alert(title, message)
-    console.log(`[ERROR] ${title}: ${message}`)
+    logger.info(`[ERROR] ${title}: ${message}`)
   },
   
   showWarning: (message, title = "Warning") => {
     // Example: Alert.alert(title, message)
-    console.log(`[WARNING] ${title}: ${message}`)
+    logger.info(`[WARNING] ${title}: ${message}`)
   },
 })
 

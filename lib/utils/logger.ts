@@ -143,11 +143,9 @@ class Logger {
    * Only logs in development environment to avoid production noise
    */
   devWarn(message: string, context?: Record<string, unknown>) {
-    if (process.env.NODE_ENV === 'production') {
-      return
+    if (process.env.NODE_ENV === 'development') {
+      this.warn(`[DEV] ${message}`, context)
     }
-    
-    this.warn(`[DEV] ${message}`, context)
   }
 }
 
