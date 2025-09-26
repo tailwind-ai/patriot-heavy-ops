@@ -261,3 +261,179 @@ export const INVALID_SERVICE_REQUEST_DATA = {
   requestedDurationValue: -1, // Invalid: negative number
   baseRate: 0, // Invalid: must be positive
 } as const
+
+/**
+ * Create mock authentication result for testing
+ */
+export function createMockAuthResult(
+  user: { id: string; email: string; role: string },
+  authMethod: 'session' | 'jwt' = 'session'
+) {
+  return {
+    isAuthenticated: true,
+    user,
+    authMethod,
+  }
+}
+
+/**
+ * Create mock dashboard data based on user role
+ */
+export function createMockDashboardData(role: UserRole) {
+  const baseStats = {
+    totalRequests: 10,
+    activeRequests: 3,
+    completedRequests: 7,
+    pendingApproval: 1,
+  }
+
+  const baseRequests = [
+    {
+      id: 'req-1',
+      title: 'Foundation Work',
+      status: 'APPROVED',
+      equipmentCategory: 'BACKHOES_EXCAVATORS',
+      jobSite: 'Austin, TX',
+      startDate: new Date('2024-01-15'),
+      endDate: new Date('2024-01-20'),
+      requestedDurationType: 'MULTI_DAY',
+      requestedDurationValue: 5,
+      requestedTotalHours: 40,
+      estimatedCost: 4000,
+      createdAt: new Date('2024-01-01'),
+      updatedAt: new Date('2024-01-01'),
+    },
+  ]
+
+  switch (role) {
+    case 'USER':
+      return {
+        stats: baseStats,
+        recentRequests: baseRequests,
+      }
+
+    case 'OPERATOR':
+      return {
+        stats: baseStats,
+        recentRequests: baseRequests.map(req => ({
+          ...req,
+          user: {
+            name: 'John Contractor',
+            email: 'john@contractor.com',
+            company: 'Contractor LLC',
+          },
+        })),
+        assignments: [
+          {
+            id: 'assign-1',
+            serviceRequestId: 'req-1',
+            operatorId: 'op-1',
+            assignedAt: new Date('2024-01-10'),
+            status: 'ACTIVE',
+            serviceRequest: {
+              title: 'Foundation Work',
+              jobSite: 'Austin, TX',
+              startDate: new Date('2024-01-15'),
+              endDate: new Date('2024-01-20'),
+              status: 'APPROVED',
+            },
+          },
+        ],
+      }
+
+    case 'MANAGER':
+      return {
+        stats: {
+          ...baseStats,
+          revenue: 25000,
+        },
+        recentRequests: baseRequests.map(req => ({
+          ...req,
+          user: {
+            name: 'John Contractor',
+            email: 'john@contractor.com',
+            company: 'Contractor LLC',
+          },
+          assignedOperators: [
+            {
+              id: 'op-1',
+              name: 'Mike Operator',
+              email: 'mike@patriot.com',
+            },
+          ],
+        })),
+        assignments: [
+          {
+            id: 'assign-1',
+            serviceRequestId: 'req-1',
+            operatorId: 'op-1',
+            assignedAt: new Date('2024-01-10'),
+            status: 'ACTIVE',
+            serviceRequest: {
+              title: 'Foundation Work',
+              jobSite: 'Austin, TX',
+              startDate: new Date('2024-01-15'),
+              endDate: new Date('2024-01-20'),
+              status: 'APPROVED',
+            },
+          },
+        ],
+      }
+
+    case 'ADMIN':
+      return {
+        stats: {
+          ...baseStats,
+          revenue: 50000,
+          averageJobDuration: 32.5,
+        },
+        recentRequests: baseRequests.map(req => ({
+          ...req,
+          user: {
+            name: 'John Contractor',
+            email: 'john@contractor.com',
+            company: 'Contractor LLC',
+          },
+          assignedOperators: [
+            {
+              id: 'op-1',
+              name: 'Mike Operator',
+              email: 'mike@patriot.com',
+            },
+          ],
+        })),
+        assignments: [
+          {
+            id: 'assign-1',
+            serviceRequestId: 'req-1',
+            operatorId: 'op-1',
+            assignedAt: new Date('2024-01-10'),
+            status: 'ACTIVE',
+            serviceRequest: {
+              title: 'Foundation Work',
+              jobSite: 'Austin, TX',
+              startDate: new Date('2024-01-15'),
+              endDate: new Date('2024-01-20'),
+              status: 'APPROVED',
+            },
+          },
+        ],
+        users: [
+          {
+            id: 'user-1',
+            name: 'John Contractor',
+            email: 'john@contractor.com',
+            role: 'USER',
+            company: 'Contractor LLC',
+            createdAt: new Date('2024-01-01'),
+          },
+        ],
+      }
+
+    default:
+      return {
+        stats: baseStats,
+        recentRequests: baseRequests,
+      }
+  }
+}
