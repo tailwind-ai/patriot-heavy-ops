@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 
-import { renderHook, waitFor } from "@testing-library/react"
+import { renderHook } from "@testing-library/react"
 import { useServiceRequests } from "@/hooks/use-service-requests"
 
 // Mock the dashboard data hook
@@ -10,21 +10,25 @@ jest.mock("@/hooks/use-dashboard-data", () => ({
   useDashboardData: jest.fn(),
 }))
 
-const mockUseDashboardData = require("@/hooks/use-dashboard-data").useDashboardData
+import { useDashboardData } from "@/hooks/use-dashboard-data"
+const mockUseDashboardData = useDashboardData as jest.MockedFunction<
+  typeof useDashboardData
+>
 
-// Mock window.location
-const mockLocation = {
-  href: "",
-}
-Object.defineProperty(window, "location", {
-  value: mockLocation,
-  writable: true,
+// Mock console.warn for navigation tests
+const originalWarn = console.warn
+beforeAll(() => {
+  console.warn = jest.fn()
+})
+
+afterAll(() => {
+  console.warn = originalWarn
 })
 
 describe("useServiceRequests", () => {
   beforeEach(() => {
     mockUseDashboardData.mockClear()
-    mockLocation.href = ""
+    jest.clearAllMocks()
   })
 
   it("should return service request data and stats", async () => {
@@ -63,7 +67,9 @@ describe("useServiceRequests", () => {
 
     const { result } = renderHook(() => useServiceRequests())
 
-    expect(result.current.serviceRequests).toEqual(mockDashboardData.recentRequests)
+    expect(result.current.serviceRequests).toEqual(
+      mockDashboardData.recentRequests
+    )
     expect(result.current.totalRequests).toBe(5)
     expect(result.current.activeRequests).toBe(2)
     expect(result.current.completedRequests).toBe(3)
@@ -139,8 +145,8 @@ describe("useServiceRequests", () => {
   })
 
   it("should log warning when createServiceRequest is called", () => {
-    const consoleSpy = jest.spyOn(console, 'warn').mockImplementation(() => {})
-    
+    const consoleSpy = jest.spyOn(console, "warn").mockImplementation(() => {})
+
     mockUseDashboardData.mockReturnValue({
       data: null,
       isLoading: false,
@@ -155,7 +161,7 @@ describe("useServiceRequests", () => {
     expect(consoleSpy).toHaveBeenCalledWith(
       "createServiceRequest called - navigation should be handled by parent component"
     )
-    
+
     consoleSpy.mockRestore()
   })
 
