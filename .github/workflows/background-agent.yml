@@ -225,6 +225,41 @@ jobs:
           GITHUB_ACCESS_TOKEN: ${{ secrets.REPO_PAT }}
           GH_TOKEN: ${{ secrets.REPO_PAT }}
 
+      - name: Commit .todos.json to PR branch (same-repo only)
+        if: always()
+        run: |
+          set -e
+          if [ ! -f ".todos.json" ]; then
+            echo "No .todos.json present; skipping commit."
+            exit 0
+          fi
+
+          echo "Fetching PR metadata for #${PR_NUMBER}"
+          PR_JSON=$(gh pr view ${PR_NUMBER} --json isCrossRepository,headRefName,headRepositoryOwner --jq '{cross:.isCrossRepository, ref:.headRefName, owner:.headRepositoryOwner.login}')
+          IS_CROSS=$(echo "$PR_JSON" | jq -r .cross)
+          HEAD_REF=$(echo "$PR_JSON" | jq -r .ref)
+
+          if [ "$IS_CROSS" != "false" ]; then
+            echo "PR is from a fork; skipping commit to branch."
+            exit 0
+          fi
+
+          git config user.name "background-agent"
+          git config user.email "background-agent@users.noreply.github.com"
+          git fetch origin "$HEAD_REF" --depth=1
+          git checkout "$HEAD_REF"
+
+          # Avoid needless churn: only commit if contents changed
+          git add .todos.json
+          if git diff --cached --quiet; then
+            echo "No changes in .todos.json to commit."
+            exit 0
+          fi
+          git commit -m "chore(todos): update PR #${PR_NUMBER} todos"
+          git push https://x-access-token:${{ secrets.REPO_PAT }}@github.com/${{ github.repository }}.git HEAD:"$HEAD_REF"
+        env:
+          GH_TOKEN: ${{ secrets.REPO_PAT }}
+
       - name: Check for new todos
         run: |
           if [ -f ".todos.json" ]; then
