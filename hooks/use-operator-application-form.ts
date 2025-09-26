@@ -9,15 +9,18 @@ import * as z from "zod"
 
 import { operatorApplicationSchema } from "@/lib/validations/user"
 import { ServiceFactory, type GeocodingAddress } from "@/lib/services"
-import { toast } from "@/components/ui/use-toast"
+import { NotificationCallbacks, createNoOpNotifications } from "@/lib/utils/notifications"
 
 type FormData = z.infer<typeof operatorApplicationSchema>
 
 interface UseOperatorApplicationFormProps {
   user: Pick<User, "id" | "name">
+  notifications?: NotificationCallbacks
 }
 
-export function useOperatorApplicationForm({ user }: UseOperatorApplicationFormProps) {
+export function useOperatorApplicationForm({ user, notifications }: UseOperatorApplicationFormProps) {
+  // Use provided notifications or fallback to no-op
+  const notificationCallbacks = notifications || createNoOpNotifications()
   const router = useRouter()
   const geocodingService = React.useMemo(() => ServiceFactory.getGeocodingService(), [])
 
@@ -102,26 +105,22 @@ export function useOperatorApplicationForm({ user }: UseOperatorApplicationFormP
       })
 
       if (!response?.ok) {
-        toast({
-          title: "Something went wrong.",
-          description: "Your application was not submitted. Please try again.",
-          variant: "destructive",
-        })
+        notificationCallbacks.showError(
+          "Your application was not submitted. Please try again.",
+          "Something went wrong."
+        )
         return
       }
 
-      toast({
-        description: "Your operator application has been submitted for review.",
-      })
+      notificationCallbacks.showSuccess("Your operator application has been submitted for review.")
 
       router.refresh()
       return
     } catch {
-      toast({
-        title: "Network error",
-        description: "Unable to connect to the server. Please check your internet connection and try again.",
-        variant: "destructive",
-      })
+      notificationCallbacks.showError(
+        "Unable to connect to the server. Please check your internet connection and try again.",
+        "Network error"
+      )
       return
     } finally {
       setIsSaving(false)
