@@ -132,8 +132,21 @@ export function useDashboardData(
   const [isLoading, setIsLoading] = React.useState<boolean>(true)
   const [error, setError] = React.useState<string | null>(null)
 
+  // Extract specific properties to avoid dependency on entire options object
+  const {
+    role,
+    limit,
+    offset,
+    enableCaching,
+    dateRange,
+    notifications: optionsNotifications,
+  } = options
+
   // Use provided notifications or fallback to no-op
-  const notifications = options.notifications || createNoOpNotifications()
+  const notifications = React.useMemo(
+    () => optionsNotifications || createNoOpNotifications(),
+    [optionsNotifications]
+  )
 
   // Build API endpoint based on role
   const getApiEndpoint = React.useCallback((role: UserRole): string => {
@@ -154,27 +167,27 @@ export function useDashboardData(
 
   // Build query parameters
   const buildQueryParams = React.useCallback(
-    (opts: UseDashboardDataOptions & { cacheBuster?: string }): string => {
+    (cacheBuster?: string): string => {
       const params = new URLSearchParams()
 
-      if (opts.limit) params.set("limit", opts.limit.toString())
-      if (opts.offset) params.set("offset", opts.offset.toString())
-      if (opts.enableCaching !== undefined) {
-        params.set("enableCaching", opts.enableCaching.toString())
+      if (limit) params.set("limit", limit.toString())
+      if (offset) params.set("offset", offset.toString())
+      if (enableCaching !== undefined) {
+        params.set("enableCaching", enableCaching.toString())
       }
-      if (opts.dateRange?.start) {
-        params.set("startDate", opts.dateRange.start.toISOString())
+      if (dateRange?.start) {
+        params.set("startDate", dateRange.start.toISOString())
       }
-      if (opts.dateRange?.end) {
-        params.set("endDate", opts.dateRange.end.toISOString())
+      if (dateRange?.end) {
+        params.set("endDate", dateRange.end.toISOString())
       }
-      if (opts.cacheBuster) {
-        params.set("_t", opts.cacheBuster)
+      if (cacheBuster) {
+        params.set("_t", cacheBuster)
       }
 
       return params.toString()
     },
-    []
+    [limit, offset, enableCaching, dateRange]
   )
 
   // Fetch dashboard data
@@ -183,8 +196,8 @@ export function useDashboardData(
     setError(null)
 
     try {
-      const endpoint = getApiEndpoint(options.role)
-      const queryParams = buildQueryParams(options)
+      const endpoint = getApiEndpoint(role)
+      const queryParams = buildQueryParams()
       const url = queryParams ? `${endpoint}?${queryParams}` : endpoint
 
       const response = await fetch(url, {
@@ -238,12 +251,12 @@ export function useDashboardData(
       setError("Network error. Please check your connection and try again.")
       logger.error("Dashboard data fetch error", {
         error: err,
-        role: options.role,
+        role,
       })
     } finally {
       setIsLoading(false)
     }
-  }, [options, getApiEndpoint, buildQueryParams])
+  }, [role, getApiEndpoint, buildQueryParams])
 
   // Refetch function for manual refresh
   const refetch = React.useCallback(async () => {
@@ -265,7 +278,7 @@ export function useDashboardData(
 
     try {
       // Call server-side cache clearing endpoint with DELETE method
-      const cacheEndpoint = getApiEndpoint(options.role)
+      const cacheEndpoint = getApiEndpoint(role)
       const cacheUrl = `${cacheEndpoint}/cache`
 
       const cacheResponse = await fetch(cacheUrl, {
@@ -282,18 +295,13 @@ export function useDashboardData(
       if (!cacheResponse.ok) {
         logger.warn(
           "Cache clear request failed, proceeding with local refresh",
-          { role: options.role }
+          { role }
         )
       }
 
       // Force refetch with cache-busting parameter
-      const dataEndpoint = getApiEndpoint(options.role)
-      const optionsWithCacheBuster = {
-        ...options,
-        enableCaching: false,
-        cacheBuster: getCacheBuster(),
-      }
-      const queryParams = buildQueryParams(optionsWithCacheBuster)
+      const dataEndpoint = getApiEndpoint(role)
+      const queryParams = buildQueryParams(getCacheBuster())
       const dataUrl = queryParams
         ? `${dataEndpoint}?${queryParams}`
         : dataEndpoint
@@ -321,7 +329,7 @@ export function useDashboardData(
         await refetch()
       }
     } catch (error) {
-      logger.warn("Cache clear failed", { error, role: options.role })
+      logger.warn("Cache clear failed", { error, role })
       notifications.showError(
         "Unable to clear server cache, but data will be refreshed.",
         "Cache clear failed"
@@ -330,7 +338,7 @@ export function useDashboardData(
       // Still attempt to refetch even if cache clear failed
       await refetch()
     }
-  }, [options, getApiEndpoint, buildQueryParams, refetch, notifications])
+  }, [role, getApiEndpoint, buildQueryParams, refetch, notifications])
 
   // Debounced cache clearing to prevent rapid successive calls
   const clearCache = React.useMemo(

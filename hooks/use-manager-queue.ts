@@ -51,10 +51,13 @@ export interface UseManagerQueueReturn {
 export function useManagerQueue(
   options: UseManagerQueueOptions = {}
 ): UseManagerQueueReturn {
+  // Extract notifications and dateRange to avoid dependency on entire options object
+  const { notifications: optionsNotifications, dateRange, ...restOptions } = options
+  
   // Use provided notifications or fallback to no-op
   const notifications = React.useMemo(
-    () => options.notifications || createNoOpNotifications(),
-    [options.notifications]
+    () => optionsNotifications || createNoOpNotifications(),
+    [optionsNotifications]
   )
 
   const {
@@ -64,10 +67,10 @@ export function useManagerQueue(
     refetch,
   } = useDashboardData({
     role: "MANAGER",
-    limit: options.limit || 20,
-    offset: options.offset || 0,
-    enableCaching: options.enableCaching !== false, // Default to true
-    ...(options.dateRange && { dateRange: options.dateRange }),
+    limit: restOptions.limit || 20,
+    offset: restOptions.offset || 0,
+    enableCaching: restOptions.enableCaching !== false, // Default to true
+    ...(dateRange && { dateRange }),
     notifications,
   })
 

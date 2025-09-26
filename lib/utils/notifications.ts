@@ -46,9 +46,8 @@ export const createToastNotifications = (
   }) => void
 ): NotificationCallbacks => ({
   showNotification: (options) => {
-    const excludedVariants = ['success', 'warning']
     const isValidVariant = (variant: string): variant is 'default' | 'destructive' => {
-      return !excludedVariants.includes(variant) && (variant === 'default' || variant === 'destructive')
+      return variant === 'default' || variant === 'destructive'
     }
     
     toast({

@@ -34,10 +34,13 @@ export interface UseServiceRequestsReturn {
  * @returns Service request data, stats, and control functions
  */
 export function useServiceRequests(options: UseServiceRequestsOptions = {}): UseServiceRequestsReturn {
+  // Extract notifications to avoid dependency on entire options object
+  const { notifications: optionsNotifications, ...restOptions } = options
+  
   // Use provided notifications or fallback to no-op
   const notifications = React.useMemo(
-    () => options.notifications || createNoOpNotifications(),
-    [options.notifications]
+    () => optionsNotifications || createNoOpNotifications(),
+    [optionsNotifications]
   )
   
   const {
@@ -47,9 +50,9 @@ export function useServiceRequests(options: UseServiceRequestsOptions = {}): Use
     refetch,
   } = useDashboardData({
     role: "USER",
-    limit: options.limit || 10,
-    offset: options.offset || 0,
-    enableCaching: options.enableCaching !== false, // Default to true
+    limit: restOptions.limit || 10,
+    offset: restOptions.offset || 0,
+    enableCaching: restOptions.enableCaching !== false, // Default to true
     notifications,
   })
 
