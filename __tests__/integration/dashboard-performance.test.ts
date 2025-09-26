@@ -10,7 +10,6 @@
  */
 
 import React from "react"
-import { NextRequest } from "next/server"
 import { render, screen, waitFor } from "@testing-library/react"
 import { performance } from "perf_hooks"
 import { GET as getUserDashboard } from "@/app/api/dashboard/user/route"
@@ -367,7 +366,7 @@ describe("Dashboard Performance Tests", () => {
       
       // Render and unmount multiple times
       for (let i = 0; i < 10; i++) {
-        const { unmount } = render(<UserDashboard />)
+        const { unmount } = render(React.createElement(UserDashboard))
         
         await waitFor(() => {
           expect(screen.getByText(/service requests/i)).toBeInTheDocument()
