@@ -12,8 +12,10 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { EmptyPlaceholder } from "@/components/empty-placeholder"
 import { ServiceRequestCreateButton } from "@/components/service-request-create-button"
 import { SERVICE_REQUEST_STATUS } from "@/lib/constants/status"
+import { NotificationCallbacks } from "@/lib/utils/notifications"
 
 interface UserDashboardProps {
+  notifications?: NotificationCallbacks
   onNavigateToCreateRequest?: (() => void) | undefined
 }
 
@@ -173,7 +175,7 @@ function ServiceRequestSkeleton() {
  * - Accessibility compliant (WCAG 2.1 AA)
  * - Loading states and error handling
  */
-export function UserDashboard({ onNavigateToCreateRequest }: UserDashboardProps = {}) {
+export function UserDashboard({ notifications, onNavigateToCreateRequest }: UserDashboardProps = {}) {
   const {
     serviceRequests,
     totalRequests,
@@ -186,6 +188,7 @@ export function UserDashboard({ onNavigateToCreateRequest }: UserDashboardProps 
   } = useServiceRequests({
     limit: 10,
     enableCaching: true,
+    ...(notifications && { notifications }),
   })
 
   // Error state

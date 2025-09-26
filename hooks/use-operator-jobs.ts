@@ -2,7 +2,6 @@
 
 import * as React from "react"
 import { useDashboardData, type DashboardServiceRequest, type OperatorAssignment } from "./use-dashboard-data"
-import { toast } from "@/components/ui/use-toast"
 
 export interface UseOperatorJobsOptions {
   limit?: number
@@ -81,7 +80,8 @@ export function useOperatorJobs(options: UseOperatorJobsOptions = {}): UseOperat
           }
         }
 
-        toast({
+        // TODO: Add notification callback support
+      console.log("Notification:", {
           title: "Failed to accept job",
           description: errorMessage,
           variant: "destructive",
@@ -89,14 +89,16 @@ export function useOperatorJobs(options: UseOperatorJobsOptions = {}): UseOperat
         return
       }
 
-      toast({
+      // TODO: Add notification callback support
+      console.log("Notification:", {
         description: "Job accepted successfully. You will be notified of next steps.",
       })
 
       // Refresh data to show updated assignments
       await refetch()
     } catch {
-      toast({
+      // TODO: Add notification callback support
+      console.log("Notification:", {
         title: "Network error",
         description: "Unable to connect to the server. Please check your connection and try again.",
         variant: "destructive",
@@ -140,7 +142,8 @@ export function useOperatorJobs(options: UseOperatorJobsOptions = {}): UseOperat
           }
         }
 
-        toast({
+        // TODO: Add notification callback support
+      console.log("Notification:", {
           title: "Failed to complete job",
           description: errorMessage,
           variant: "destructive",
@@ -148,14 +151,16 @@ export function useOperatorJobs(options: UseOperatorJobsOptions = {}): UseOperat
         return
       }
 
-      toast({
+      // TODO: Add notification callback support
+      console.log("Notification:", {
         description: "Job marked as completed. Thank you for your work!",
       })
 
       // Refresh data to show updated status
       await refetch()
     } catch {
-      toast({
+      // TODO: Add notification callback support
+      console.log("Notification:", {
         title: "Network error",
         description: "Unable to connect to the server. Please check your connection and try again.",
         variant: "destructive",

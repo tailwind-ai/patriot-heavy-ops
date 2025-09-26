@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation"
 import { DashboardRouter } from "./dashboard-router"
+import { NotificationCallbacks } from "@/lib/utils/notifications"
 
 interface DashboardWithNavigationProps {
   user: {
@@ -10,6 +11,7 @@ interface DashboardWithNavigationProps {
     name?: string | null
     email?: string | null
   }
+  notifications?: NotificationCallbacks
 }
 
 /**
@@ -21,7 +23,7 @@ interface DashboardWithNavigationProps {
  * 
  * For React Native, create a similar wrapper that uses React Navigation instead.
  */
-export function DashboardWithNavigation({ user }: DashboardWithNavigationProps) {
+export function DashboardWithNavigation({ user, notifications }: DashboardWithNavigationProps) {
   const router = useRouter()
 
   // Next.js-specific navigation handlers
@@ -44,6 +46,7 @@ export function DashboardWithNavigation({ user }: DashboardWithNavigationProps) 
   return (
     <DashboardRouter
       user={user}
+      {...(notifications && { notifications })}
       onNavigateToCreateRequest={handleNavigateToCreateRequest}
       onNavigateToOperatorJobs={handleNavigateToOperatorJobs}
       onNavigateToManagerQueue={handleNavigateToManagerQueue}

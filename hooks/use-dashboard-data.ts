@@ -2,9 +2,9 @@
 
 import * as React from "react"
 import { UserRole } from "@/lib/permissions"
-import { toast } from "@/components/ui/use-toast"
 import { transformDashboardData } from "@/lib/utils/date-transform"
 import { logger } from "@/lib/utils/logger"
+import { NotificationCallbacks, createNoOpNotifications } from "@/lib/utils/notifications"
 
 // Cache busting utilities
 let cacheSequence = 0
@@ -101,6 +101,7 @@ export interface UseDashboardDataOptions {
     start: Date
     end: Date
   }
+  notifications?: NotificationCallbacks
 }
 
 export interface UseDashboardDataReturn {
@@ -126,6 +127,9 @@ export function useDashboardData(
   const [data, setData] = React.useState<DashboardData | null>(null)
   const [isLoading, setIsLoading] = React.useState<boolean>(true)
   const [error, setError] = React.useState<string | null>(null)
+  
+  // Use provided notifications or fallback to no-op
+  const notifications = options.notifications || createNoOpNotifications()
 
   // Build API endpoint based on role
   const getApiEndpoint = React.useCallback((role: UserRole): string => {
@@ -249,7 +253,7 @@ export function useDashboardData(
     setError(null)
 
     // Show user feedback
-    toast({
+    notifications.showNotification({
       description: "Dashboard cache cleared. Refreshing data...",
     })
 
@@ -312,12 +316,10 @@ export function useDashboardData(
       }
     } catch (error) {
       logger.warn("Cache clear failed", { error, role: options.role })
-      toast({
-        title: "Cache clear failed",
-        description:
-          "Unable to clear server cache, but data will be refreshed.",
-        variant: "destructive",
-      })
+      notifications.showError(
+        "Unable to clear server cache, but data will be refreshed.",
+        "Cache clear failed"
+      )
 
       // Still attempt to refetch even if cache clear failed
       await refetch()

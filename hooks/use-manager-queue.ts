@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { useDashboardData, type DashboardServiceRequest, type OperatorAssignment } from "./use-dashboard-data"
-import { toast } from "@/components/ui/use-toast"
+import { NotificationCallbacks, createNoOpNotifications } from "@/lib/utils/notifications"
 
 export interface UseManagerQueueOptions {
   limit?: number
@@ -90,22 +90,19 @@ export function useManagerQueue(options: UseManagerQueueOptions = {}): UseManage
           }
         }
 
-        toast({
-          title: "Failed to approve request",
-          description: errorMessage,
-          variant: "destructive",
-        })
+        // TODO: Add notification callback support
+        console.error("Failed to approve request:", errorMessage)
         return
       }
 
-      toast({
-        description: "Service request approved successfully.",
-      })
+      // TODO: Add notification callback support
+      console.log("Service request approved successfully.")
 
       // Refresh data to show updated status
       await refetch()
     } catch {
-      toast({
+      // TODO: Add notification callback support
+      console.log("Notification:", {
         title: "Network error",
         description: "Unable to connect to the server. Please check your connection and try again.",
         variant: "destructive",
@@ -150,7 +147,8 @@ export function useManagerQueue(options: UseManagerQueueOptions = {}): UseManage
           }
         }
 
-        toast({
+        // TODO: Add notification callback support
+      console.log("Notification:", {
           title: "Failed to reject request",
           description: errorMessage,
           variant: "destructive",
@@ -158,14 +156,16 @@ export function useManagerQueue(options: UseManagerQueueOptions = {}): UseManage
         return
       }
 
-      toast({
+      // TODO: Add notification callback support
+      console.log("Notification:", {
         description: "Service request rejected.",
       })
 
       // Refresh data to show updated status
       await refetch()
     } catch {
-      toast({
+      // TODO: Add notification callback support
+      console.log("Notification:", {
         title: "Network error",
         description: "Unable to connect to the server. Please check your connection and try again.",
         variant: "destructive",
@@ -210,7 +210,8 @@ export function useManagerQueue(options: UseManagerQueueOptions = {}): UseManage
           }
         }
 
-        toast({
+        // TODO: Add notification callback support
+      console.log("Notification:", {
           title: "Failed to assign operator",
           description: errorMessage,
           variant: "destructive",
@@ -218,14 +219,16 @@ export function useManagerQueue(options: UseManagerQueueOptions = {}): UseManage
         return
       }
 
-      toast({
+      // TODO: Add notification callback support
+      console.log("Notification:", {
         description: "Operator assigned successfully.",
       })
 
       // Refresh data to show updated assignments
       await refetch()
     } catch {
-      toast({
+      // TODO: Add notification callback support
+      console.log("Notification:", {
         title: "Network error",
         description: "Unable to connect to the server. Please check your connection and try again.",
         variant: "destructive",

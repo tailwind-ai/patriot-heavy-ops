@@ -42,6 +42,27 @@ class Logger {
     return `[${timestamp}] ${level}: ${message}${contextStr}`
   }
 
+  private getSanitizedUserAgent(): string {
+    if (typeof window === 'undefined') {
+      return 'server'
+    }
+    
+    // Sanitize userAgent to prevent fingerprinting while keeping useful info
+    const ua = window.navigator.userAgent
+    const browser = ua.includes('Chrome') ? 'Chrome' : 
+                   ua.includes('Firefox') ? 'Firefox' : 
+                   ua.includes('Safari') ? 'Safari' : 
+                   ua.includes('Edge') ? 'Edge' : 'Unknown'
+    
+    const os = ua.includes('Windows') ? 'Windows' : 
+              ua.includes('Mac') ? 'macOS' : 
+              ua.includes('Linux') ? 'Linux' : 
+              ua.includes('Android') ? 'Android' : 
+              ua.includes('iOS') ? 'iOS' : 'Unknown'
+    
+    return `${browser}/${os}`
+  }
+
   private async sendToRemote(level: string, message: string, context?: Record<string, unknown>) {
     if (!this.config.enableRemote || !this.config.remoteEndpoint) {
       return
@@ -58,7 +79,7 @@ class Logger {
           message,
           context,
           timestamp: new Date().toISOString(),
-          userAgent: typeof window !== 'undefined' ? window.navigator.userAgent : 'server',
+          userAgent: this.getSanitizedUserAgent(),
         }),
       })
     } catch (error) {

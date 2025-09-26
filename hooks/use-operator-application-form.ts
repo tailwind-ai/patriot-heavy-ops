@@ -9,7 +9,6 @@ import * as z from "zod"
 
 import { operatorApplicationSchema } from "@/lib/validations/user"
 import { ServiceFactory, type GeocodingAddress } from "@/lib/services"
-import { toast } from "@/components/ui/use-toast"
 
 type FormData = z.infer<typeof operatorApplicationSchema>
 
@@ -102,7 +101,8 @@ export function useOperatorApplicationForm({ user }: UseOperatorApplicationFormP
       })
 
       if (!response?.ok) {
-        toast({
+        // TODO: Add notification callback support
+      console.log("Notification:", {
           title: "Something went wrong.",
           description: "Your application was not submitted. Please try again.",
           variant: "destructive",
@@ -110,14 +110,16 @@ export function useOperatorApplicationForm({ user }: UseOperatorApplicationFormP
         return
       }
 
-      toast({
+      // TODO: Add notification callback support
+      console.log("Notification:", {
         description: "Your operator application has been submitted for review.",
       })
 
       router.refresh()
       return
     } catch {
-      toast({
+      // TODO: Add notification callback support
+      console.log("Notification:", {
         title: "Network error",
         description: "Unable to connect to the server. Please check your internet connection and try again.",
         variant: "destructive",

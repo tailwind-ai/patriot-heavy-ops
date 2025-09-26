@@ -3,12 +3,13 @@
 import * as React from "react"
 import { useDashboardData, type DashboardServiceRequest } from "./use-dashboard-data"
 import { logger } from "@/lib/utils/logger"
-import { toast } from "@/components/ui/use-toast"
+import { NotificationCallbacks, createNoOpNotifications } from "@/lib/utils/notifications"
 
 export interface UseServiceRequestsOptions {
   limit?: number
   offset?: number
   enableCaching?: boolean
+  notifications?: NotificationCallbacks
 }
 
 export interface UseServiceRequestsReturn {
@@ -33,6 +34,9 @@ export interface UseServiceRequestsReturn {
  * @returns Service request data, stats, and control functions
  */
 export function useServiceRequests(options: UseServiceRequestsOptions = {}): UseServiceRequestsReturn {
+  // Use provided notifications or fallback to no-op
+  const notifications = options.notifications || createNoOpNotifications()
+  
   const {
     data: dashboardData,
     isLoading,
@@ -43,6 +47,7 @@ export function useServiceRequests(options: UseServiceRequestsOptions = {}): Use
     limit: options.limit || 10,
     offset: options.offset || 0,
     enableCaching: options.enableCaching !== false, // Default to true
+    notifications,
   })
 
   // Track if we've already logged the development warning to avoid noise

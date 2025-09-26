@@ -3,7 +3,7 @@ import { redirect } from "next/navigation"
 import { authOptions } from "@/lib/auth"
 import { getCurrentUser } from "@/lib/session"
 import { DashboardShell } from "@/components/shell"
-import { DashboardWithNavigation } from "@/components/dashboard/dashboard-with-navigation"
+import { DashboardWithNotifications } from "@/components/dashboard/dashboard-with-notifications"
 
 export const metadata = {
   title: "Dashboard",
@@ -11,10 +11,10 @@ export const metadata = {
 
 /**
  * Main Dashboard Page
- * 
+ *
  * Routes to role-specific dashboard components based on user role.
  * Provides platform-agnostic dashboard experience with mobile-first design.
- * 
+ *
  * Role-based routing:
  * - USER: UserDashboard - Service request tracking and creation
  * - OPERATOR: OperatorDashboard - Available jobs and active assignments
@@ -30,7 +30,7 @@ export default async function DashboardPage() {
 
   return (
     <DashboardShell>
-      <DashboardWithNavigation user={user} />
+      <DashboardWithNotifications user={user} />
     </DashboardShell>
   )
 }

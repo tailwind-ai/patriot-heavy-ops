@@ -8,7 +8,6 @@ import * as z from "zod"
 
 import { serviceRequestSchema, calculateTotalHours } from "@/lib/validations/service-request"
 import { ServiceFactory, type GeocodingAddress } from "@/lib/services"
-import { toast } from "@/components/ui/use-toast"
 
 type FormData = z.infer<typeof serviceRequestSchema>
 
@@ -83,7 +82,8 @@ export function useServiceRequestForm({ user }: UseServiceRequestFormProps) {
       } else {
         // Service returned an error
         setJobSiteSuggestions([])
-        toast({
+        // TODO: Add notification callback support
+      console.log("Notification:", {
           title: "Address search unavailable",
           description: result.error?.message || "Unable to search for addresses at the moment. Please enter the address manually.",
           variant: "destructive",
@@ -92,7 +92,8 @@ export function useServiceRequestForm({ user }: UseServiceRequestFormProps) {
     } catch {
       // Unexpected error - fallback to manual entry
       setJobSiteSuggestions([])
-      toast({
+      // TODO: Add notification callback support
+      console.log("Notification:", {
         title: "Address search unavailable",
         description: "Unable to search for addresses at the moment. Please enter the address manually.",
         variant: "destructive",
@@ -164,7 +165,8 @@ export function useServiceRequestForm({ user }: UseServiceRequestFormProps) {
           }
         }
 
-        toast({
+        // TODO: Add notification callback support
+      console.log("Notification:", {
           title: "Failed to create service request",
           description: errorMessage,
           variant: "destructive",
@@ -172,7 +174,8 @@ export function useServiceRequestForm({ user }: UseServiceRequestFormProps) {
         return
       }
 
-      toast({
+      // TODO: Add notification callback support
+      console.log("Notification:", {
         description: "Your service request has been created successfully.",
       })
 
@@ -182,7 +185,8 @@ export function useServiceRequestForm({ user }: UseServiceRequestFormProps) {
       return
     } catch {
       // Service request creation error - show user-friendly message
-      toast({
+      // TODO: Add notification callback support
+      console.log("Notification:", {
         title: "Network error",
         description: "Unable to connect to the server. Please check your internet connection and try again.",
         variant: "destructive",

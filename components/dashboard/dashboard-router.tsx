@@ -4,6 +4,7 @@ import { UserDashboard } from "./user-dashboard"
 import { OperatorDashboard } from "./operator-dashboard"
 import { ManagerDashboard } from "./manager-dashboard"
 import { AdminDashboard } from "./admin-dashboard"
+import { NotificationCallbacks } from "@/lib/utils/notifications"
 
 interface DashboardRouterProps {
   user: {
@@ -12,6 +13,7 @@ interface DashboardRouterProps {
     name?: string | null
     email?: string | null
   }
+  notifications?: NotificationCallbacks
   onNavigateToCreateRequest?: () => void
   onNavigateToOperatorJobs?: () => void
   onNavigateToManagerQueue?: () => void
@@ -36,6 +38,7 @@ interface DashboardRouterProps {
  */
 export function DashboardRouter({
   user,
+  notifications,
   onNavigateToCreateRequest,
 }: // Future navigation handlers for other dashboard types
 // onNavigateToOperatorJobs,
@@ -54,7 +57,8 @@ DashboardRouterProps) {
     default:
       return (
         <UserDashboard
-          onNavigateToCreateRequest={onNavigateToCreateRequest || undefined}
+          {...(notifications && { notifications })}
+          {...(onNavigateToCreateRequest && { onNavigateToCreateRequest })}
         />
       )
   }
