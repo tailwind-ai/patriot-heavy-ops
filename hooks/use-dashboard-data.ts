@@ -4,6 +4,7 @@ import * as React from "react"
 import { UserRole } from "@/lib/permissions"
 import { toast } from "@/components/ui/use-toast"
 import { transformDashboardData } from "@/lib/utils/date-transform"
+import { logger } from "@/lib/utils/logger"
 
 // Cache busting utilities
 let cacheSequence = 0
@@ -112,14 +113,16 @@ export interface UseDashboardDataReturn {
 
 /**
  * Custom hook for fetching role-specific dashboard data
- * 
+ *
  * Provides platform-agnostic dashboard data access with mobile-ready caching.
  * Designed for cross-platform reuse including future React Native mobile apps.
- * 
+ *
  * @param options - Dashboard data options including role and filters
  * @returns Dashboard data, loading state, error state, and control functions
  */
-export function useDashboardData(options: UseDashboardDataOptions): UseDashboardDataReturn {
+export function useDashboardData(
+  options: UseDashboardDataOptions
+): UseDashboardDataReturn {
   const [data, setData] = React.useState<DashboardData | null>(null)
   const [isLoading, setIsLoading] = React.useState<boolean>(true)
   const [error, setError] = React.useState<string | null>(null)
@@ -142,26 +145,29 @@ export function useDashboardData(options: UseDashboardDataOptions): UseDashboard
   }, [])
 
   // Build query parameters
-  const buildQueryParams = React.useCallback((opts: UseDashboardDataOptions & { cacheBuster?: string }): string => {
-    const params = new URLSearchParams()
-    
-    if (opts.limit) params.set("limit", opts.limit.toString())
-    if (opts.offset) params.set("offset", opts.offset.toString())
-    if (opts.enableCaching !== undefined) {
-      params.set("enableCaching", opts.enableCaching.toString())
-    }
-    if (opts.dateRange?.start) {
-      params.set("startDate", opts.dateRange.start.toISOString())
-    }
-    if (opts.dateRange?.end) {
-      params.set("endDate", opts.dateRange.end.toISOString())
-    }
-    if (opts.cacheBuster) {
-      params.set("_t", opts.cacheBuster)
-    }
+  const buildQueryParams = React.useCallback(
+    (opts: UseDashboardDataOptions & { cacheBuster?: string }): string => {
+      const params = new URLSearchParams()
 
-    return params.toString()
-  }, [])
+      if (opts.limit) params.set("limit", opts.limit.toString())
+      if (opts.offset) params.set("offset", opts.offset.toString())
+      if (opts.enableCaching !== undefined) {
+        params.set("enableCaching", opts.enableCaching.toString())
+      }
+      if (opts.dateRange?.start) {
+        params.set("startDate", opts.dateRange.start.toISOString())
+      }
+      if (opts.dateRange?.end) {
+        params.set("endDate", opts.dateRange.end.toISOString())
+      }
+      if (opts.cacheBuster) {
+        params.set("_t", opts.cacheBuster)
+      }
+
+      return params.toString()
+    },
+    []
+  )
 
   // Fetch dashboard data
   const fetchDashboardData = React.useCallback(async () => {
@@ -183,7 +189,7 @@ export function useDashboardData(options: UseDashboardDataOptions): UseDashboard
 
       if (!response.ok) {
         let errorMessage = "Failed to fetch dashboard data"
-        
+
         try {
           const errorData = await response.json()
           if (response.status === 401) {
@@ -211,7 +217,7 @@ export function useDashboardData(options: UseDashboardDataOptions): UseDashboard
       }
 
       const result = await response.json()
-      
+
       if (result.data) {
         // Transform date strings back to Date objects using utility function
         const transformedData: DashboardData = transformDashboardData(result)
@@ -222,7 +228,10 @@ export function useDashboardData(options: UseDashboardDataOptions): UseDashboard
     } catch (err) {
       // Network or parsing error
       setError("Network error. Please check your connection and try again.")
-      console.error("Dashboard data fetch error:", err)
+      logger.error("Dashboard data fetch error", {
+        error: err,
+        role: options.role,
+      })
     } finally {
       setIsLoading(false)
     }
@@ -238,49 +247,54 @@ export function useDashboardData(options: UseDashboardDataOptions): UseDashboard
     // Keep current data during refresh for better UX
     // Only clear error state
     setError(null)
-    
+
     // Show user feedback
     toast({
       description: "Dashboard cache cleared. Refreshing data...",
     })
-    
+
     try {
       // Call server-side cache clearing endpoint with DELETE method
       const cacheEndpoint = getApiEndpoint(options.role)
       const cacheUrl = `${cacheEndpoint}/cache`
-      
+
       const cacheResponse = await fetch(cacheUrl, {
         method: "DELETE",
-        headers: { 
+        headers: {
           "Content-Type": "application/json",
           "Cache-Control": "no-cache, no-store, must-revalidate",
-          "Pragma": "no-cache",
-          "Expires": "0"
+          Pragma: "no-cache",
+          Expires: "0",
         },
         credentials: "include",
       })
 
       if (!cacheResponse.ok) {
-        console.warn("Cache clear request failed, proceeding with local refresh")
+        logger.warn(
+          "Cache clear request failed, proceeding with local refresh",
+          { role: options.role }
+        )
       }
-      
+
       // Force refetch with cache-busting parameter
       const dataEndpoint = getApiEndpoint(options.role)
-      const optionsWithCacheBuster = { 
-        ...options, 
+      const optionsWithCacheBuster = {
+        ...options,
         enableCaching: false,
-        cacheBuster: getCacheBuster()
+        cacheBuster: getCacheBuster(),
       }
       const queryParams = buildQueryParams(optionsWithCacheBuster)
-      const dataUrl = queryParams ? `${dataEndpoint}?${queryParams}` : dataEndpoint
+      const dataUrl = queryParams
+        ? `${dataEndpoint}?${queryParams}`
+        : dataEndpoint
 
       const dataResponse = await fetch(dataUrl, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
           "Cache-Control": "no-cache, no-store, must-revalidate",
-          "Pragma": "no-cache",
-          "Expires": "0"
+          Pragma: "no-cache",
+          Expires: "0",
         },
         credentials: "include",
       })
@@ -296,15 +310,15 @@ export function useDashboardData(options: UseDashboardDataOptions): UseDashboard
         // Fallback to regular refetch if cache-busted request fails
         await refetch()
       }
-      
     } catch (error) {
-      console.warn("Cache clear failed:", error)
+      logger.warn("Cache clear failed", { error, role: options.role })
       toast({
         title: "Cache clear failed",
-        description: "Unable to clear server cache, but data will be refreshed.",
+        description:
+          "Unable to clear server cache, but data will be refreshed.",
         variant: "destructive",
       })
-      
+
       // Still attempt to refetch even if cache clear failed
       await refetch()
     }

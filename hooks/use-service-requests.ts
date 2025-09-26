@@ -45,10 +45,13 @@ export function useServiceRequests(options: UseServiceRequestsOptions = {}): Use
     enableCaching: options.enableCaching !== false, // Default to true
   })
 
+  // Track if we've already logged the development warning to avoid noise
+  const hasLoggedWarningRef = React.useRef(false)
+
   // Navigate to service request creation
   const createServiceRequest = React.useCallback(() => {
     // Platform-agnostic navigation - should be handled by parent component
-    // 
+    //
     // Example usage in Next.js:
     // const router = useRouter()
     // const handleCreateRequest = () => router.push('/dashboard/requests/new')
@@ -60,14 +63,19 @@ export function useServiceRequests(options: UseServiceRequestsOptions = {}): Use
     // <UserDashboard onNavigateToCreateRequest={handleCreateRequest} />
     //
     // See components/dashboard/README.md for complete implementation guide
-    logger.devWarn(
-      "createServiceRequest called - navigation should be handled by parent component",
-      {
-        guidance: "Pass onNavigateToCreateRequest prop to UserDashboard component",
-        documentation: "See components/dashboard/README.md for implementation examples",
-        component: "useServiceRequests",
-      }
-    )
+    
+    // Only log once per component instance to avoid noise in development logs
+    if (!hasLoggedWarningRef.current) {
+      hasLoggedWarningRef.current = true
+      logger.devWarn(
+        "createServiceRequest called - navigation should be handled by parent component",
+        {
+          guidance: "Pass onNavigateToCreateRequest prop to UserDashboard component",
+          documentation: "See components/dashboard/README.md for implementation examples",
+          component: "useServiceRequests",
+        }
+      )
+    }
   }, [])
 
   // Extract service request data and stats

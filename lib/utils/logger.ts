@@ -16,7 +16,7 @@ interface LoggerConfig {
   level: LogLevel
   enableConsole: boolean
   enableRemote: boolean
-  remoteEndpoint?: string | undefined
+  remoteEndpoint?: string
 }
 
 class Logger {
@@ -27,7 +27,7 @@ class Logger {
       level: process.env.NODE_ENV === 'production' ? LogLevel.WARN : LogLevel.DEBUG,
       enableConsole: process.env.NODE_ENV !== 'production',
       enableRemote: process.env.NODE_ENV === 'production',
-      remoteEndpoint: process.env.LOGGING_ENDPOINT || undefined,
+      ...(process.env.LOGGING_ENDPOINT && { remoteEndpoint: process.env.LOGGING_ENDPOINT }),
       ...config,
     }
   }
