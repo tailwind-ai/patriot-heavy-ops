@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { useDashboardData, type DashboardServiceRequest } from "./use-dashboard-data"
+import { logger } from "@/lib/utils/logger"
 import { toast } from "@/components/ui/use-toast"
 
 export interface UseServiceRequestsOptions {
@@ -59,10 +60,13 @@ export function useServiceRequests(options: UseServiceRequestsOptions = {}): Use
     // <UserDashboard onNavigateToCreateRequest={handleCreateRequest} />
     //
     // See components/dashboard/README.md for complete implementation guide
-    console.warn(
-      "createServiceRequest called - navigation should be handled by parent component. " +
-      "Pass onNavigateToCreateRequest prop to UserDashboard component. " +
-      "See components/dashboard/README.md for implementation examples."
+    logger.devWarn(
+      "createServiceRequest called - navigation should be handled by parent component",
+      {
+        guidance: "Pass onNavigateToCreateRequest prop to UserDashboard component",
+        documentation: "See components/dashboard/README.md for implementation examples",
+        component: "useServiceRequests",
+      }
     )
   }, [])
 

@@ -11,9 +11,10 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { EmptyPlaceholder } from "@/components/empty-placeholder"
 import { ServiceRequestCreateButton } from "@/components/service-request-create-button"
+import { SERVICE_REQUEST_STATUS } from "@/lib/constants/status"
 
 interface UserDashboardProps {
-  onNavigateToCreateRequest?: () => void
+  onNavigateToCreateRequest?: (() => void) | undefined
 }
 
 /**
@@ -22,22 +23,22 @@ interface UserDashboardProps {
 function StatusBadge({ status }: { status: string }) {
   const getStatusConfig = (status: string) => {
     switch (status) {
-      case "SUBMITTED":
-      case "UNDER_REVIEW":
+      case SERVICE_REQUEST_STATUS.SUBMITTED:
+      case SERVICE_REQUEST_STATUS.UNDER_REVIEW:
         return { variant: "secondary" as const, label: "Under Review" }
-      case "APPROVED":
+      case SERVICE_REQUEST_STATUS.APPROVED:
         return { variant: "default" as const, label: "Approved" }
-      case "OPERATOR_MATCHING":
-      case "OPERATOR_ASSIGNED":
+      case SERVICE_REQUEST_STATUS.OPERATOR_MATCHING:
+      case SERVICE_REQUEST_STATUS.OPERATOR_ASSIGNED:
         return { variant: "default" as const, label: "In Progress" }
-      case "JOB_IN_PROGRESS":
+      case SERVICE_REQUEST_STATUS.JOB_IN_PROGRESS:
         return { variant: "default" as const, label: "Active" }
-      case "JOB_COMPLETED":
-      case "PAYMENT_RECEIVED":
-      case "CLOSED":
+      case SERVICE_REQUEST_STATUS.JOB_COMPLETED:
+      case SERVICE_REQUEST_STATUS.PAYMENT_RECEIVED:
+      case SERVICE_REQUEST_STATUS.CLOSED:
         return { variant: "secondary" as const, label: "Completed" }
-      case "REJECTED":
-      case "CANCELLED":
+      case SERVICE_REQUEST_STATUS.REJECTED:
+      case SERVICE_REQUEST_STATUS.CANCELLED:
         return { variant: "destructive" as const, label: "Cancelled" }
       default:
         return { variant: "outline" as const, label: status }

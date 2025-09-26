@@ -93,6 +93,8 @@ describe("useDashboardData", () => {
           updatedAt: new Date("2024-01-01T00:00:00.000Z"),
         },
       ],
+      assignments: [],
+      users: [],
     })
     expect(result.current.error).toBe(null)
     expect(mockFetch).toHaveBeenCalledWith(
@@ -170,6 +172,7 @@ describe("useDashboardData", () => {
           },
         },
       ],
+      users: [],
     })
     expect(mockFetch).toHaveBeenCalledWith("/api/dashboard/operator?limit=15", {
       method: "GET",

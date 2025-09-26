@@ -1,6 +1,5 @@
 "use client"
 
-import { useRouter } from "next/navigation"
 import { UserDashboard } from "./user-dashboard"
 import { OperatorDashboard } from "./operator-dashboard"
 import { ManagerDashboard } from "./manager-dashboard"
@@ -13,26 +12,35 @@ interface DashboardRouterProps {
     name?: string | null
     email?: string | null
   }
+  onNavigateToCreateRequest?: () => void
+  onNavigateToOperatorJobs?: () => void
+  onNavigateToManagerQueue?: () => void
+  onNavigateToAdminPanel?: () => void
 }
 
 /**
  * DashboardRouter Component
  * 
- * Client-side router that handles role-based dashboard rendering and navigation.
+ * Platform-agnostic router that handles role-based dashboard rendering.
  * Separates server-side user fetching from client-side navigation logic.
  * 
  * This pattern maintains platform-agnostic design by:
- * - Keeping navigation logic in client components
- * - Using callback props for navigation actions
- * - Allowing easy substitution of navigation methods for different platforms
+ * - Using callback props for all navigation actions
+ * - No direct dependency on Next.js router or React Native navigation
+ * - Allowing parent components to handle navigation appropriately for their platform
+ * 
+ * Usage:
+ * - Next.js: Pass router.push callbacks
+ * - React Native: Pass navigation.navigate callbacks
+ * - Testing: Pass mock functions
  */
-export function DashboardRouter({ user }: DashboardRouterProps) {
-  const router = useRouter()
-
-  // Navigation handlers for platform-agnostic design
-  const handleNavigateToCreateRequest = () => {
-    router.push("/dashboard/requests/new")
-  }
+export function DashboardRouter({ 
+  user, 
+  onNavigateToCreateRequest,
+  onNavigateToOperatorJobs,
+  onNavigateToManagerQueue,
+  onNavigateToAdminPanel 
+}: DashboardRouterProps) {
 
   // Determine which dashboard component to render based on user role
   switch (user.role) {
@@ -44,6 +52,6 @@ export function DashboardRouter({ user }: DashboardRouterProps) {
       return <AdminDashboard />
     case "USER":
     default:
-      return <UserDashboard onNavigateToCreateRequest={handleNavigateToCreateRequest} />
+      return <UserDashboard onNavigateToCreateRequest={onNavigateToCreateRequest || undefined} />
   }
 }

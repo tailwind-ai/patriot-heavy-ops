@@ -3,7 +3,7 @@ import { redirect } from "next/navigation"
 import { authOptions } from "@/lib/auth"
 import { getCurrentUser } from "@/lib/session"
 import { DashboardShell } from "@/components/shell"
-import { DashboardRouter } from "@/components/dashboard/dashboard-router"
+import { DashboardWithNavigation } from "@/components/dashboard/dashboard-with-navigation"
 
 export const metadata = {
   title: "Dashboard",
@@ -30,7 +30,7 @@ export default async function DashboardPage() {
 
   return (
     <DashboardShell>
-      <DashboardRouter user={user} />
+      <DashboardWithNavigation user={user} />
     </DashboardShell>
   )
 }
