@@ -47,20 +47,15 @@ class Logger {
       return 'server'
     }
     
-    // Sanitize userAgent to prevent fingerprinting while keeping useful info
+    // Minimal user agent info to prevent fingerprinting
+    // Only include basic browser type for debugging purposes
     const ua = window.navigator.userAgent
-    const browser = ua.includes('Chrome') ? 'Chrome' : 
-                   ua.includes('Firefox') ? 'Firefox' : 
-                   ua.includes('Safari') ? 'Safari' : 
-                   ua.includes('Edge') ? 'Edge' : 'Unknown'
+    const isMobile = /Mobile|Android|iPhone|iPad/.test(ua)
+    const browserType = ua.includes('Chrome') ? 'chromium' : 
+                       ua.includes('Firefox') ? 'firefox' : 
+                       ua.includes('Safari') ? 'webkit' : 'unknown'
     
-    const os = ua.includes('Windows') ? 'Windows' : 
-              ua.includes('Mac') ? 'macOS' : 
-              ua.includes('Linux') ? 'Linux' : 
-              ua.includes('Android') ? 'Android' : 
-              ua.includes('iOS') ? 'iOS' : 'Unknown'
-    
-    return `${browser}/${os}`
+    return isMobile ? `${browserType}-mobile` : `${browserType}-desktop`
   }
 
   private async sendToRemote(level: string, message: string, context?: Record<string, unknown>) {

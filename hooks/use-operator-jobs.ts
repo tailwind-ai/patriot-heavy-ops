@@ -2,11 +2,13 @@
 
 import * as React from "react"
 import { useDashboardData, type DashboardServiceRequest, type OperatorAssignment } from "./use-dashboard-data"
+import { NotificationCallbacks, createNoOpNotifications } from "@/lib/utils/notifications"
 
 export interface UseOperatorJobsOptions {
   limit?: number
   offset?: number
   enableCaching?: boolean
+  notifications?: NotificationCallbacks
 }
 
 export interface UseOperatorJobsReturn {
@@ -32,6 +34,9 @@ export interface UseOperatorJobsReturn {
  * @returns Job data, assignments, and control functions
  */
 export function useOperatorJobs(options: UseOperatorJobsOptions = {}): UseOperatorJobsReturn {
+  // Use provided notifications or fallback to no-op
+  const notifications = options.notifications || createNoOpNotifications()
+  
   const {
     data: dashboardData,
     isLoading,
@@ -42,6 +47,7 @@ export function useOperatorJobs(options: UseOperatorJobsOptions = {}): UseOperat
     limit: options.limit || 15,
     offset: options.offset || 0,
     enableCaching: options.enableCaching !== false, // Default to true
+    ...(options.notifications && { notifications: options.notifications }),
   })
 
   // Accept a job assignment
@@ -80,29 +86,19 @@ export function useOperatorJobs(options: UseOperatorJobsOptions = {}): UseOperat
           }
         }
 
-        // TODO: Add notification callback support
-      console.log("Notification:", {
-          title: "Failed to accept job",
-          description: errorMessage,
-          variant: "destructive",
-        })
+        notifications.showError(errorMessage, "Failed to accept job")
         return
       }
 
-      // TODO: Add notification callback support
-      console.log("Notification:", {
-        description: "Job accepted successfully. You will be notified of next steps.",
-      })
+      notifications.showSuccess("Job accepted successfully. You will be notified of next steps.")
 
       // Refresh data to show updated assignments
       await refetch()
     } catch {
-      // TODO: Add notification callback support
-      console.log("Notification:", {
-        title: "Network error",
-        description: "Unable to connect to the server. Please check your connection and try again.",
-        variant: "destructive",
-      })
+      notifications.showError(
+        "Unable to connect to the server. Please check your connection and try again.",
+        "Network error"
+      )
     }
   }, [refetch])
 
@@ -159,12 +155,10 @@ export function useOperatorJobs(options: UseOperatorJobsOptions = {}): UseOperat
       // Refresh data to show updated status
       await refetch()
     } catch {
-      // TODO: Add notification callback support
-      console.log("Notification:", {
-        title: "Network error",
-        description: "Unable to connect to the server. Please check your connection and try again.",
-        variant: "destructive",
-      })
+      notifications.showError(
+        "Unable to connect to the server. Please check your connection and try again.",
+        "Network error"
+      )
     }
   }, [refetch])
 

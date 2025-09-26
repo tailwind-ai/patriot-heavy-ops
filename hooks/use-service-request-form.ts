@@ -8,6 +8,7 @@ import * as z from "zod"
 
 import { serviceRequestSchema, calculateTotalHours } from "@/lib/validations/service-request"
 import { ServiceFactory, type GeocodingAddress } from "@/lib/services"
+import { NotificationCallbacks, createNoOpNotifications } from "@/lib/utils/notifications"
 
 type FormData = z.infer<typeof serviceRequestSchema>
 
@@ -17,9 +18,12 @@ interface UseServiceRequestFormProps {
     name: string | null
     email: string | null
   }
+  notifications?: NotificationCallbacks
 }
 
-export function useServiceRequestForm({ user }: UseServiceRequestFormProps) {
+export function useServiceRequestForm({ user, notifications }: UseServiceRequestFormProps) {
+  // Use provided notifications or fallback to no-op
+  const notificationCallbacks = notifications || createNoOpNotifications()
   const router = useRouter()
   const geocodingService = ServiceFactory.getGeocodingService()
 
@@ -82,22 +86,18 @@ export function useServiceRequestForm({ user }: UseServiceRequestFormProps) {
       } else {
         // Service returned an error
         setJobSiteSuggestions([])
-        // TODO: Add notification callback support
-      console.log("Notification:", {
-          title: "Address search unavailable",
-          description: result.error?.message || "Unable to search for addresses at the moment. Please enter the address manually.",
-          variant: "destructive",
-        })
+        notificationCallbacks.showError(
+          result.error?.message || "Unable to search for addresses at the moment. Please enter the address manually.",
+          "Address search unavailable"
+        )
       }
     } catch {
       // Unexpected error - fallback to manual entry
       setJobSiteSuggestions([])
-      // TODO: Add notification callback support
-      console.log("Notification:", {
-        title: "Address search unavailable",
-        description: "Unable to search for addresses at the moment. Please enter the address manually.",
-        variant: "destructive",
-      })
+      notificationCallbacks.showError(
+        "Unable to search for addresses at the moment. Please enter the address manually.",
+        "Address search unavailable"
+      )
     } finally {
       setIsLoadingAddresses(false)
     }
@@ -165,19 +165,14 @@ export function useServiceRequestForm({ user }: UseServiceRequestFormProps) {
           }
         }
 
-        // TODO: Add notification callback support
-      console.log("Notification:", {
-          title: "Failed to create service request",
-          description: errorMessage,
-          variant: "destructive",
-        })
+        notificationCallbacks.showError(
+          errorMessage,
+          "Failed to create service request"
+        )
         return
       }
 
-      // TODO: Add notification callback support
-      console.log("Notification:", {
-        description: "Your service request has been created successfully.",
-      })
+      notificationCallbacks.showSuccess("Your service request has been created successfully.")
 
       // Navigate and refresh after successful creation
       router.push("/dashboard")
@@ -185,12 +180,10 @@ export function useServiceRequestForm({ user }: UseServiceRequestFormProps) {
       return
     } catch {
       // Service request creation error - show user-friendly message
-      // TODO: Add notification callback support
-      console.log("Notification:", {
-        title: "Network error",
-        description: "Unable to connect to the server. Please check your internet connection and try again.",
-        variant: "destructive",
-      })
+      notificationCallbacks.showError(
+        "Unable to connect to the server. Please check your internet connection and try again.",
+        "Network error"
+      )
       return
     } finally {
       setIsSaving(false)

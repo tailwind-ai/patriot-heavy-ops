@@ -12,6 +12,7 @@ export interface UseManagerQueueOptions {
     start: Date
     end: Date
   }
+  notifications?: NotificationCallbacks
 }
 
 export interface UseManagerQueueReturn {
@@ -41,6 +42,9 @@ export interface UseManagerQueueReturn {
  * @returns Queue data, stats, and management functions
  */
 export function useManagerQueue(options: UseManagerQueueOptions = {}): UseManagerQueueReturn {
+  // Use provided notifications or fallback to no-op
+  const notifications = options.notifications || createNoOpNotifications()
+  
   const {
     data: dashboardData,
     isLoading,
@@ -52,6 +56,7 @@ export function useManagerQueue(options: UseManagerQueueOptions = {}): UseManage
     offset: options.offset || 0,
     enableCaching: options.enableCaching !== false, // Default to true
     ...(options.dateRange && { dateRange: options.dateRange }),
+    ...(options.notifications && { notifications: options.notifications }),
   })
 
   // Approve a service request
@@ -90,23 +95,19 @@ export function useManagerQueue(options: UseManagerQueueOptions = {}): UseManage
           }
         }
 
-        // TODO: Add notification callback support
-        console.error("Failed to approve request:", errorMessage)
+        notifications.showError(errorMessage, "Failed to approve request")
         return
       }
 
-      // TODO: Add notification callback support
-      console.log("Service request approved successfully.")
+      notifications.showSuccess("Service request approved successfully.")
 
       // Refresh data to show updated status
       await refetch()
     } catch {
-      // TODO: Add notification callback support
-      console.log("Notification:", {
-        title: "Network error",
-        description: "Unable to connect to the server. Please check your connection and try again.",
-        variant: "destructive",
-      })
+      notifications.showError(
+        "Unable to connect to the server. Please check your connection and try again.",
+        "Network error"
+      )
     }
   }, [refetch])
 
@@ -147,29 +148,19 @@ export function useManagerQueue(options: UseManagerQueueOptions = {}): UseManage
           }
         }
 
-        // TODO: Add notification callback support
-      console.log("Notification:", {
-          title: "Failed to reject request",
-          description: errorMessage,
-          variant: "destructive",
-        })
+        notifications.showError(errorMessage, "Failed to reject request")
         return
       }
 
-      // TODO: Add notification callback support
-      console.log("Notification:", {
-        description: "Service request rejected.",
-      })
+      notifications.showSuccess("Service request rejected.")
 
       // Refresh data to show updated status
       await refetch()
     } catch {
-      // TODO: Add notification callback support
-      console.log("Notification:", {
-        title: "Network error",
-        description: "Unable to connect to the server. Please check your connection and try again.",
-        variant: "destructive",
-      })
+      notifications.showError(
+        "Unable to connect to the server. Please check your connection and try again.",
+        "Network error"
+      )
     }
   }, [refetch])
 
@@ -210,29 +201,19 @@ export function useManagerQueue(options: UseManagerQueueOptions = {}): UseManage
           }
         }
 
-        // TODO: Add notification callback support
-      console.log("Notification:", {
-          title: "Failed to assign operator",
-          description: errorMessage,
-          variant: "destructive",
-        })
+        notifications.showError(errorMessage, "Failed to assign operator")
         return
       }
 
-      // TODO: Add notification callback support
-      console.log("Notification:", {
-        description: "Operator assigned successfully.",
-      })
+      notifications.showSuccess("Operator assigned successfully.")
 
       // Refresh data to show updated assignments
       await refetch()
     } catch {
-      // TODO: Add notification callback support
-      console.log("Notification:", {
-        title: "Network error",
-        description: "Unable to connect to the server. Please check your connection and try again.",
-        variant: "destructive",
-      })
+      notifications.showError(
+        "Unable to connect to the server. Please check your connection and try again.",
+        "Network error"
+      )
     }
   }, [refetch])
 

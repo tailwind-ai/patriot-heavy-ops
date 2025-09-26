@@ -21,12 +21,14 @@ export interface NotificationCallbacks {
 
 /**
  * Default no-op notification callbacks for testing or when notifications aren't needed
+ * Includes a flag to identify no-op implementations
  */
-export const createNoOpNotifications = (): NotificationCallbacks => ({
+export const createNoOpNotifications = (): NotificationCallbacks & { isNoOp: boolean } => ({
   showNotification: () => {},
   showSuccess: () => {},
   showError: () => {},
   showWarning: () => {},
+  isNoOp: true,
 })
 
 /**
@@ -106,4 +108,13 @@ export const createReactNativeNotifications = (): NotificationCallbacks => ({
  */
 export const hasNotifications = (notifications?: NotificationCallbacks): notifications is NotificationCallbacks => {
   return notifications !== undefined
+}
+
+/**
+ * Check if notifications are meaningful (not no-op implementation)
+ * Useful to avoid showing feedback when using fallback notifications
+ */
+export const hasRealNotifications = (notifications?: NotificationCallbacks): boolean => {
+  if (!notifications) return false
+  return !('isNoOp' in notifications && notifications.isNoOp === true)
 }
