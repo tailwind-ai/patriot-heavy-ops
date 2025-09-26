@@ -115,7 +115,7 @@ export function useOperatorJobs(
         )
       }
     },
-    [refetch]
+    [refetch, notifications]
   )
 
   // Complete a job assignment
@@ -178,7 +178,7 @@ export function useOperatorJobs(
         )
       }
     },
-    [refetch]
+    [refetch, notifications]
   )
 
   // Extract operator-specific data
