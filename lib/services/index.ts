@@ -51,11 +51,24 @@ export {
   type StatusTransition,
 } from "./service-request-service"
 
+// Dashboard data service
+import { DashboardService } from "./dashboard-service"
+export {
+  DashboardService,
+  type DashboardUser,
+  type DashboardServiceRequest,
+  type DashboardStats,
+  type OperatorAssignment,
+  type DashboardDataOptions,
+  type CacheOptions,
+} from "./dashboard-service"
+
 // Service factory for dependency injection
 export class ServiceFactory {
   private static authService: AuthService | null = null
   private static geocodingService: GeocodingService | null = null
   private static serviceRequestService: ServiceRequestService | null = null
+  private static dashboardService: DashboardService | null = null
 
   /**
    * Get singleton instance of AuthService
@@ -88,11 +101,22 @@ export class ServiceFactory {
   }
 
   /**
+   * Get singleton instance of DashboardService
+   */
+  static getDashboardService(): DashboardService {
+    if (!this.dashboardService) {
+      this.dashboardService = new DashboardService()
+    }
+    return this.dashboardService
+  }
+
+  /**
    * Reset all service instances (useful for testing)
    */
   static reset(): void {
     this.authService = null
     this.geocodingService = null
     this.serviceRequestService = null
+    this.dashboardService = null
   }
 }
