@@ -1,0 +1,36 @@
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Install curl for health checks
+RUN apk add --no-cache curl
+
+# Copy package files first
+COPY package*.json ./
+
+# Copy Prisma schema files before npm ci to prevent postinstall failures
+COPY prisma/ ./prisma/
+
+# Install all dependencies in a single step
+RUN npm ci
+
+# Copy remaining source code
+COPY . .
+
+# Create test user
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S nextjs -u 1001
+
+# Change ownership
+RUN chown -R nextjs:nodejs /app
+USER nextjs
+
+# Expose port
+EXPOSE 3000
+
+# Health check using curl (now available)
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:3000/api/health || exit 1
+
+# Start command
+CMD ["npm", "run", "test:integration"]
