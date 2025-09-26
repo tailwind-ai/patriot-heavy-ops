@@ -11,7 +11,13 @@ import { UserRole } from "@/lib/permissions"
 const dashboardOperatorQuerySchema = z.object({
   limit: z.coerce.number().min(1).max(50).optional().default(15),
   offset: z.coerce.number().min(0).optional().default(0),
-  enableCaching: z.coerce.boolean().optional().default(true),
+  enableCaching: z
+    .string()
+    .optional()
+    .transform((val) => {
+      if (val === undefined) return true
+      return val !== "false" && val !== "0"
+    }),
 })
 
 /**

@@ -4,6 +4,7 @@ import { z } from "zod"
 import { authenticateRequest, hasRole } from "@/lib/middleware/mobile-auth"
 import { ServiceFactory } from "@/lib/services"
 import { UserRole } from "@/lib/permissions"
+import type { DashboardDataOptions } from "@/lib/services/dashboard-service"
 
 /**
  * Query parameters schema for dashboard manager endpoint
@@ -11,7 +12,13 @@ import { UserRole } from "@/lib/permissions"
 const dashboardManagerQuerySchema = z.object({
   limit: z.coerce.number().min(1).max(100).optional().default(20),
   offset: z.coerce.number().min(0).optional().default(0),
-  enableCaching: z.coerce.boolean().optional().default(true),
+  enableCaching: z
+    .string()
+    .optional()
+    .transform((val) => {
+      if (val === undefined) return true
+      return val !== "false" && val !== "0"
+    }),
   startDate: z.coerce.date().optional(),
   endDate: z.coerce.date().optional(),
 })
@@ -102,16 +109,12 @@ export async function GET(req: NextRequest) {
     const dashboardService = ServiceFactory.getDashboardService()
 
     // Build options for service call
-    const options: any = {
+    const options: DashboardDataOptions = {
       userId: authResult.user.id,
       userRole: "MANAGER" as UserRole,
       limit,
       offset,
-    }
-
-    // Add date range if provided
-    if (startDate && endDate) {
-      options.dateRange = { start: startDate, end: endDate }
+      ...(startDate && endDate && { dateRange: { start: startDate, end: endDate } }),
     }
 
     // Fetch dashboard data using service layer
