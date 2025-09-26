@@ -63,6 +63,7 @@ describe("useServiceRequests", () => {
       isLoading: false,
       error: null,
       refetch: jest.fn(),
+      clearCache: jest.fn(),
     })
 
     const { result } = renderHook(() => useServiceRequests())
@@ -91,6 +92,7 @@ describe("useServiceRequests", () => {
       isLoading: true,
       error: null,
       refetch: jest.fn(),
+      clearCache: jest.fn(),
     })
 
     const { result } = renderHook(() => useServiceRequests())
@@ -111,6 +113,7 @@ describe("useServiceRequests", () => {
       isLoading: false,
       error: errorMessage,
       refetch: jest.fn(),
+      clearCache: jest.fn(),
     })
 
     const { result } = renderHook(() => useServiceRequests())
@@ -126,6 +129,7 @@ describe("useServiceRequests", () => {
       isLoading: false,
       error: null,
       refetch: jest.fn(),
+      clearCache: jest.fn(),
     })
 
     renderHook(() =>
@@ -152,6 +156,7 @@ describe("useServiceRequests", () => {
       isLoading: false,
       error: null,
       refetch: jest.fn(),
+      clearCache: jest.fn(),
     })
 
     const { result } = renderHook(() => useServiceRequests())
