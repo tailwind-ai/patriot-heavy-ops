@@ -2,6 +2,6 @@
 . "$(dirname "$0")/_/husky.sh"
 
 echo "[husky] post-checkout: exporting Cursor todos"
-npx --yes tsx scripts/export-cursor-todos.ts || true
+npm run --silent cursor:todos || true
 
 
