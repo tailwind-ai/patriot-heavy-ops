@@ -52,7 +52,10 @@ export function useManagerQueue(
   options: UseManagerQueueOptions = {}
 ): UseManagerQueueReturn {
   // Use provided notifications or fallback to no-op
-  const notifications = options.notifications || createNoOpNotifications()
+  const notifications = React.useMemo(
+    () => options.notifications || createNoOpNotifications(),
+    [options.notifications]
+  )
 
   const {
     data: dashboardData,
@@ -65,7 +68,7 @@ export function useManagerQueue(
     offset: options.offset || 0,
     enableCaching: options.enableCaching !== false, // Default to true
     ...(options.dateRange && { dateRange: options.dateRange }),
-    ...(options.notifications && { notifications: options.notifications }),
+    notifications,
   })
 
   // Approve a service request

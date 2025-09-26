@@ -35,7 +35,10 @@ export interface UseServiceRequestsReturn {
  */
 export function useServiceRequests(options: UseServiceRequestsOptions = {}): UseServiceRequestsReturn {
   // Use provided notifications or fallback to no-op
-  const notifications = options.notifications || createNoOpNotifications()
+  const notifications = React.useMemo(
+    () => options.notifications || createNoOpNotifications(),
+    [options.notifications]
+  )
   
   const {
     data: dashboardData,

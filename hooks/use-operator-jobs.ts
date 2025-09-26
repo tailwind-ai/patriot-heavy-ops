@@ -44,7 +44,10 @@ export function useOperatorJobs(
   options: UseOperatorJobsOptions = {}
 ): UseOperatorJobsReturn {
   // Use provided notifications or fallback to no-op
-  const notifications = options.notifications || createNoOpNotifications()
+  const notifications = React.useMemo(
+    () => options.notifications || createNoOpNotifications(),
+    [options.notifications]
+  )
 
   const {
     data: dashboardData,
@@ -56,7 +59,7 @@ export function useOperatorJobs(
     limit: options.limit || 15,
     offset: options.offset || 0,
     enableCaching: options.enableCaching !== false, // Default to true
-    ...(options.notifications && { notifications: options.notifications }),
+    notifications,
   })
 
   // Accept a job assignment
