@@ -3,6 +3,7 @@
 import * as React from "react"
 import { UserRole } from "@/lib/permissions"
 import { toast } from "@/components/ui/use-toast"
+import { transformDashboardData } from "@/lib/utils/date-transform"
 
 // Types from dashboard service
 export interface DashboardStats {
@@ -193,33 +194,8 @@ export function useDashboardData(options: UseDashboardDataOptions): UseDashboard
       const result = await response.json()
       
       if (result.data) {
-        // Transform date strings back to Date objects
-        const transformedData: DashboardData = {
-          ...result.data,
-          recentRequests: result.data.recentRequests.map((request: any) => ({
-            ...request,
-            startDate: new Date(request.startDate),
-            endDate: request.endDate ? new Date(request.endDate) : null,
-            createdAt: new Date(request.createdAt),
-            updatedAt: new Date(request.updatedAt),
-          })),
-          assignments: result.data.assignments?.map((assignment: any) => ({
-            ...assignment,
-            assignedAt: new Date(assignment.assignedAt),
-            serviceRequest: {
-              ...assignment.serviceRequest,
-              startDate: new Date(assignment.serviceRequest.startDate),
-              endDate: assignment.serviceRequest.endDate 
-                ? new Date(assignment.serviceRequest.endDate) 
-                : null,
-            },
-          })),
-          users: result.data.users?.map((user: any) => ({
-            ...user,
-            createdAt: new Date(user.createdAt),
-          })),
-        }
-        
+        // Transform date strings back to Date objects using utility function
+        const transformedData: DashboardData = transformDashboardData(result)
         setData(transformedData)
       } else {
         setError("Invalid response format")
@@ -293,32 +269,8 @@ export function useDashboardData(options: UseDashboardDataOptions): UseDashboard
       if (dataResponse.ok) {
         const result = await dataResponse.json()
         if (result.data) {
-          // Transform date strings back to Date objects (same logic as fetchDashboardData)
-          const transformedData: DashboardData = {
-            ...result.data,
-            recentRequests: result.data.recentRequests.map((request: any) => ({
-              ...request,
-              startDate: new Date(request.startDate),
-              endDate: request.endDate ? new Date(request.endDate) : null,
-              createdAt: new Date(request.createdAt),
-              updatedAt: new Date(request.updatedAt),
-            })),
-            assignments: result.data.assignments?.map((assignment: any) => ({
-              ...assignment,
-              assignedAt: new Date(assignment.assignedAt),
-              serviceRequest: {
-                ...assignment.serviceRequest,
-                startDate: new Date(assignment.serviceRequest.startDate),
-                endDate: assignment.serviceRequest.endDate 
-                  ? new Date(assignment.serviceRequest.endDate) 
-                  : null,
-              },
-            })),
-            users: result.data.users?.map((user: any) => ({
-              ...user,
-              createdAt: new Date(user.createdAt),
-            })),
-          }
+          // Transform date strings back to Date objects using utility function
+          const transformedData: DashboardData = transformDashboardData(result)
           setData(transformedData)
         }
       } else {

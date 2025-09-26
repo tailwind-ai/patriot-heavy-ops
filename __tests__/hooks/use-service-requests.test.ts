@@ -164,7 +164,9 @@ describe("useServiceRequests", () => {
     result.current.createServiceRequest()
 
     expect(consoleSpy).toHaveBeenCalledWith(
-      "createServiceRequest called - navigation should be handled by parent component"
+      "createServiceRequest called - navigation should be handled by parent component. " +
+      "Pass onNavigateToCreateRequest prop to UserDashboard component. " +
+      "See components/dashboard/README.md for implementation examples."
     )
 
     consoleSpy.mockRestore()

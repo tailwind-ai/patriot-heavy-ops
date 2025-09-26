@@ -47,9 +47,23 @@ export function useServiceRequests(options: UseServiceRequestsOptions = {}): Use
   // Navigate to service request creation
   const createServiceRequest = React.useCallback(() => {
     // Platform-agnostic navigation - should be handled by parent component
-    // In Next.js, this would use router.push()
-    // In React Native, this would use navigation.navigate()
-    console.warn("createServiceRequest called - navigation should be handled by parent component")
+    // 
+    // Example usage in Next.js:
+    // const router = useRouter()
+    // const handleCreateRequest = () => router.push('/dashboard/requests/new')
+    // <UserDashboard onNavigateToCreateRequest={handleCreateRequest} />
+    //
+    // Example usage in React Native:
+    // const navigation = useNavigation()
+    // const handleCreateRequest = () => navigation.navigate('CreateRequest')
+    // <UserDashboard onNavigateToCreateRequest={handleCreateRequest} />
+    //
+    // See components/dashboard/README.md for complete implementation guide
+    console.warn(
+      "createServiceRequest called - navigation should be handled by parent component. " +
+      "Pass onNavigateToCreateRequest prop to UserDashboard component. " +
+      "See components/dashboard/README.md for implementation examples."
+    )
   }, [])
 
   // Extract service request data and stats
