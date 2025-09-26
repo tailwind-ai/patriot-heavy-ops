@@ -149,8 +149,9 @@ export function transformUser(user: UserInput): UserOutput {
 export function transformDashboardData(result: {
   data: DashboardDataInput
 }): DashboardDataOutput {
+  // Explicitly map only required fields to avoid issues with unexpected properties
   return {
-    ...result.data,
+    stats: result.data.stats,
     recentRequests:
       result.data.recentRequests?.map(transformServiceRequest) || [],
     assignments: result.data.assignments?.map(transformAssignment) || [],

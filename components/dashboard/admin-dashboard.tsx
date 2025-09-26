@@ -408,7 +408,7 @@ export function AdminDashboard() {
             />
             <StatsCard
               title="Total Revenue"
-              value={formatCurrency(stats.revenue || 0)}
+              value={formatCurrency(stats.revenue ?? 0)}
               icon={DollarSign}
               description="System revenue"
             />

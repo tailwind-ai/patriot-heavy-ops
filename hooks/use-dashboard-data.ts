@@ -5,6 +5,25 @@ import { UserRole } from "@/lib/permissions"
 import { toast } from "@/components/ui/use-toast"
 import { transformDashboardData } from "@/lib/utils/date-transform"
 
+// Cache busting utilities
+let cacheSequence = 0
+const getCacheBuster = () => {
+  cacheSequence += 1
+  return `${Date.now()}-${cacheSequence}`
+}
+
+// Debounce utility for cache clearing
+const debounce = <T extends (...args: any[]) => any>(
+  func: T,
+  wait: number
+): ((...args: Parameters<T>) => void) => {
+  let timeout: NodeJS.Timeout | null = null
+  return (...args: Parameters<T>) => {
+    if (timeout) clearTimeout(timeout)
+    timeout = setTimeout(() => func(...args), wait)
+  }
+}
+
 // Types from dashboard service
 export interface DashboardStats {
   totalRequests: number
@@ -214,10 +233,10 @@ export function useDashboardData(options: UseDashboardDataOptions): UseDashboard
     await fetchDashboardData()
   }, [fetchDashboardData])
 
-  // Clear cache function (calls API to clear server-side cache)
-  const clearCache = React.useCallback(async () => {
-    // Clear local state immediately
-    setData(null)
+  // Internal cache clearing function
+  const clearCacheInternal = React.useCallback(async () => {
+    // Keep current data during refresh for better UX
+    // Only clear error state
     setError(null)
     
     // Show user feedback
@@ -250,7 +269,7 @@ export function useDashboardData(options: UseDashboardDataOptions): UseDashboard
       const optionsWithCacheBuster = { 
         ...options, 
         enableCaching: false,
-        cacheBuster: Date.now().toString()
+        cacheBuster: getCacheBuster()
       }
       const queryParams = buildQueryParams(optionsWithCacheBuster)
       const dataUrl = queryParams ? `${dataEndpoint}?${queryParams}` : dataEndpoint
@@ -290,6 +309,12 @@ export function useDashboardData(options: UseDashboardDataOptions): UseDashboard
       await refetch()
     }
   }, [options, getApiEndpoint, fetchDashboardData, refetch])
+
+  // Debounced cache clearing to prevent rapid successive calls
+  const clearCache = React.useMemo(
+    () => debounce(clearCacheInternal, 1000), // 1 second debounce
+    [clearCacheInternal]
+  )
 
   // Initial fetch and refetch on options change
   React.useEffect(() => {

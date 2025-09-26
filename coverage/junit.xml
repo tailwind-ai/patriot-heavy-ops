@@ -1,3 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="0" failures="0" errors="0" time="0.001">
+<testsuites name="jest tests" tests="8" failures="1" errors="0" time="0.626">
+  <testsuite name="useDashboardData" errors="0" failures="1" skipped="7" timestamp="2025-09-26T04:53:13" time="0.249" tests="8">
+    <testcase classname="useDashboardData should fetch USER dashboard data successfully" name="useDashboardData should fetch USER dashboard data successfully" time="0.062">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: null
+Received: &quot;Network error. Please check your connection and try again.&quot;
+    at Object.toBe (/Users/samhenry/patriot-heavy-ops/patriot-heavy-ops/__tests__/hooks/use-dashboard-data.test.ts:99:34)</failure>
+    </testcase>
+    <testcase classname="useDashboardData should fetch OPERATOR dashboard data successfully" name="useDashboardData should fetch OPERATOR dashboard data successfully" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="useDashboardData should handle authentication error" name="useDashboardData should handle authentication error" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="useDashboardData should handle authorization error" name="useDashboardData should handle authorization error" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="useDashboardData should handle network error" name="useDashboardData should handle network error" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="useDashboardData should build correct query parameters" name="useDashboardData should build correct query parameters" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="useDashboardData should handle refetch" name="useDashboardData should handle refetch" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="useDashboardData should handle error for invalid role" name="useDashboardData should handle error for invalid role" time="0">
+      <skipped/>
+    </testcase>
+  </testsuite>
 </testsuites>

@@ -199,7 +199,7 @@ export function UserDashboard({ onNavigateToCreateRequest }: UserDashboardProps 
               Manage your equipment service requests
             </p>
           </div>
-          <ServiceRequestCreateButton />
+          <ServiceRequestCreateButton onClick={onNavigateToCreateRequest} />
         </div>
 
         <Alert variant="destructive">
