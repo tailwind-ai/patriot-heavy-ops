@@ -249,44 +249,81 @@ jobs:
           github-token: ${{ secrets.REPO_PAT }}
           script: |
             const fs = require('fs');
-            let comment = '## 🤖 Background Agent Analysis\n\n';
+            const crypto = require('crypto');
 
-            try {
-              if (fs.existsSync('.todos.json')) {
-                const todos = JSON.parse(fs.readFileSync('.todos.json', 'utf8'));
-                const pendingTodos = todos.filter(t => t.status === 'pending');
-                
-                if (pendingTodos.length > 0) {
-                  comment += `Found **${pendingTodos.length}** issues to address:\n\n`;
-                  pendingTodos.forEach((todo, index) => {
-                    const priority = todo.priority === 'critical' ? '🔴' : 
-                                   todo.priority === 'high' ? '🟠' : 
-                                   todo.priority === 'medium' ? '🟡' : '🟢';
-                    comment += `${index + 1}. ${priority} **${todo.priority.toUpperCase()}**: ${todo.content}\n`;
-                    if (todo.suggestedFix) {
-                      comment += `   💡 **Fix**: ${todo.suggestedFix}\n`;
-                    }
-                    if (todo.files && todo.files.length > 0) {
-                      comment += `   📁 **Files**: ${todo.files.join(', ')}\n`;
-                    }
-                    comment += '\n';
-                  });
-                  
-                  comment += '---\n';
-                  comment += '🤖 *Background Agent has created todos for these issues. Use `npm run todo list` to see all todos and `npm run todo next` to get the next item to work on.*';
-                } else {
-                  comment += '✅ No new issues detected. All GitHub Copilot comments have been processed.';
-                }
-              } else {
-                comment += 'ℹ️ No todos file found. Background Agent may not have detected any issues.';
-              }
-            } catch (error) {
-              comment += `❌ Error processing todos: ${error.message}`;
+            const header = '## 🤖 Background Agent Analysis\n\n';
+            const stickyMarker = '<!-- background-agent:sticky -->';
+
+            function computeDigest(items) {
+              const minimal = items.map(t => ({
+                c: t.content,
+                p: t.priority,
+                f: (t.files || []).slice().sort(),
+              }));
+              const text = JSON.stringify(minimal);
+              return crypto.createHash('sha256').update(text).digest('hex');
             }
 
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
+            let pendingTodos = [];
+            if (fs.existsSync('.todos.json')) {
+              const todos = JSON.parse(fs.readFileSync('.todos.json', 'utf8'));
+              pendingTodos = todos.filter(t => t.status === 'pending');
+            }
+
+            let body = header;
+            if (pendingTodos.length > 0) {
+              body += `Found **${pendingTodos.length}** issues to address:\n\n`;
+              pendingTodos.forEach((todo, index) => {
+                const priority = todo.priority === 'critical' ? '🔴' : 
+                               todo.priority === 'high' ? '🟠' : 
+                               todo.priority === 'medium' ? '🟡' : '🟢';
+                body += `${index + 1}. ${priority} **${todo.priority.toUpperCase()}**: ${todo.content}\n`;
+                if (todo.suggestedFix) {
+                  body += `   💡 **Fix**: ${todo.suggestedFix}\n`;
+                }
+                if (todo.files && todo.files.length > 0) {
+                  body += `   📁 **Files**: ${todo.files.join(', ')}\n`;
+                }
+                body += '\n';
+              });
+              body += '---\n';
+              body += '🤖 *Background Agent has created todos for these issues. Use `npm run todo list` to see all todos and `npm run todo next` to get the next item to work on.*';
+            } else {
+              body += '✅ No new issues detected. All GitHub Copilot comments have been processed.';
+            }
+
+            const digest = computeDigest(pendingTodos);
+            body += `\n\n${stickyMarker}\n<!-- digest:${digest} -->`;
+
+            // Find existing sticky comment
+            const comments = await github.paginate(github.rest.issues.listComments, {
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: comment
+              issue_number: context.issue.number,
+              per_page: 100,
             });
+
+            const existing = comments.find(c => c.body && c.body.includes(stickyMarker));
+            if (existing) {
+              const existingDigestMatch = existing.body.match(/<!--\s*digest:([a-f0-9]+)\s*-->/i);
+              const existingDigest = existingDigestMatch?.[1] || '';
+              if (existingDigest === digest) {
+                console.log('No changes to Background Agent analysis; skipping comment update.');
+              } else {
+                console.log('Updating existing Background Agent sticky comment.');
+                await github.rest.issues.updateComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: existing.id,
+                  body,
+                });
+              }
+            } else {
+              console.log('Creating new Background Agent sticky comment.');
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body,
+              });
+            }
