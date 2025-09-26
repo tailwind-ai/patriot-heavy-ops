@@ -6,7 +6,7 @@ import { renderHook, waitFor } from "@testing-library/react"
 import { useDashboardData } from "@/hooks/use-dashboard-data"
 
 // Mock fetch
-const mockFetch = jest.fn()
+const mockFetch = jest.fn() as jest.MockedFunction<typeof fetch>
 global.fetch = mockFetch
 
 // Mock console.error to avoid noise in test output
@@ -28,8 +28,7 @@ describe("useDashboardData", () => {
   beforeEach(() => {
     mockFetch.mockClear()
     mockFetch.mockReset()
-    // Ensure fetch is properly mocked
-    global.fetch = mockFetch
+    jest.clearAllMocks()
   })
 
   it("should fetch USER dashboard data successfully", async () => {
@@ -61,9 +60,12 @@ describe("useDashboardData", () => {
       },
     }
 
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      json: async () => mockData,
+    mockFetch.mockImplementation(async () => {
+      return {
+        ok: true,
+        status: 200,
+        json: async () => mockData,
+      } as Response
     })
 
     const { result } = renderHook(() =>
@@ -127,20 +129,31 @@ describe("useDashboardData", () => {
             assignedAt: "2024-01-01T00:00:00.000Z",
             status: "ACTIVE",
             serviceRequest: {
+              id: "req-1",
               title: "Test Assignment",
+              status: "JOB_IN_PROGRESS",
+              equipmentCategory: "SKID_STEERS_TRACK_LOADERS",
               jobSite: "456 Oak Ave",
               startDate: "2024-01-02T00:00:00.000Z",
               endDate: null,
-              status: "JOB_IN_PROGRESS",
+              requestedDurationType: "FULL_DAY",
+              requestedDurationValue: 1,
+              requestedTotalHours: 8,
+              estimatedCost: 500,
+              createdAt: "2024-01-01T00:00:00.000Z",
+              updatedAt: "2024-01-01T00:00:00.000Z",
             },
           },
         ],
       },
     }
 
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      json: async () => mockData,
+    mockFetch.mockImplementation(async () => {
+      return {
+        ok: true,
+        status: 200,
+        json: async () => mockData,
+      } as Response
     })
 
     const { result } = renderHook(() =>
@@ -169,6 +182,8 @@ describe("useDashboardData", () => {
             ...expectedAssignment!.serviceRequest,
             startDate: new Date("2024-01-02T00:00:00.000Z"),
             endDate: null,
+            createdAt: new Date("2024-01-01T00:00:00.000Z"),
+            updatedAt: new Date("2024-01-01T00:00:00.000Z"),
           },
         },
       ],
@@ -184,10 +199,12 @@ describe("useDashboardData", () => {
   })
 
   it("should handle authentication error", async () => {
-    mockFetch.mockResolvedValueOnce({
-      ok: false,
-      status: 401,
-      json: jest.fn().mockResolvedValue({ error: "Authentication required" }),
+    mockFetch.mockImplementation(async () => {
+      return {
+        ok: false,
+        status: 401,
+        json: async () => ({ error: "Authentication required" }),
+      } as Response
     })
 
     const { result } = renderHook(() =>
@@ -205,10 +222,12 @@ describe("useDashboardData", () => {
   })
 
   it("should handle authorization error", async () => {
-    mockFetch.mockResolvedValueOnce({
-      ok: false,
-      status: 403,
-      json: jest.fn().mockResolvedValue({ error: "Access denied" }),
+    mockFetch.mockImplementation(async () => {
+      return {
+        ok: false,
+        status: 403,
+        json: async () => ({ error: "Access denied" }),
+      } as Response
     })
 
     const { result } = renderHook(() =>
