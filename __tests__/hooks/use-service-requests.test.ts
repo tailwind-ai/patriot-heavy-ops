@@ -83,6 +83,12 @@ describe("useServiceRequests", () => {
       limit: 10,
       offset: 0,
       enableCaching: true,
+      notifications: expect.objectContaining({
+        showError: expect.any(Function),
+        showNotification: expect.any(Function),
+        showSuccess: expect.any(Function),
+        showWarning: expect.any(Function),
+      }),
     })
   })
 
@@ -145,6 +151,12 @@ describe("useServiceRequests", () => {
       limit: 20,
       offset: 10,
       enableCaching: false,
+      notifications: expect.objectContaining({
+        showError: expect.any(Function),
+        showNotification: expect.any(Function),
+        showSuccess: expect.any(Function),
+        showWarning: expect.any(Function),
+      }),
     })
   })
 

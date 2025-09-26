@@ -1,6 +1,5 @@
 import { renderHook, act, waitFor } from "@testing-library/react"
 import { useRouter } from "next/navigation"
-import { toast } from "@/components/ui/use-toast"
 import { useOperatorApplicationForm } from "@/hooks/use-operator-application-form"
 import { ServiceFactory } from "@/lib/services"
 
@@ -8,8 +7,16 @@ import { ServiceFactory } from "@/lib/services"
 jest.mock("next/navigation", () => ({
   useRouter: jest.fn(),
 }))
-jest.mock("@/components/ui/use-toast")
 jest.mock("@/lib/services")
+
+// Mock console.log for notification testing
+const originalConsoleLog = console.log
+beforeAll(() => {
+  console.log = jest.fn()
+})
+afterAll(() => {
+  console.log = originalConsoleLog
+})
 
 const mockRouter = {
   refresh: jest.fn(),
@@ -254,7 +261,7 @@ describe("useOperatorApplicationForm", () => {
       }
     )
 
-    expect(toast).toHaveBeenCalledWith({
+    expect(console.log).toHaveBeenCalledWith("Notification:", {
       description: "Your operator application has been submitted for review.",
     })
 
@@ -279,7 +286,7 @@ describe("useOperatorApplicationForm", () => {
       await result.current.onSubmit(formData)
     })
 
-    expect(toast).toHaveBeenCalledWith({
+    expect(console.log).toHaveBeenCalledWith("Notification:", {
       title: "Something went wrong.",
       description: "Your application was not submitted. Please try again.",
       variant: "destructive",
@@ -301,7 +308,7 @@ describe("useOperatorApplicationForm", () => {
       await result.current.onSubmit(formData)
     })
 
-    expect(toast).toHaveBeenCalledWith({
+    expect(console.log).toHaveBeenCalledWith("Notification:", {
       title: "Network error",
       description:
         "Unable to connect to the server. Please check your internet connection and try again.",

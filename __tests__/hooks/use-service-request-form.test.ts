@@ -1,6 +1,5 @@
 import { renderHook, act, waitFor } from "@testing-library/react"
 import { useRouter } from "next/navigation"
-import { toast } from "@/components/ui/use-toast"
 import { ServiceFactory } from "@/lib/services"
 import { useServiceRequestForm } from "@/hooks/use-service-request-form"
 
@@ -8,8 +7,16 @@ import { useServiceRequestForm } from "@/hooks/use-service-request-form"
 jest.mock("next/navigation", () => ({
   useRouter: jest.fn(),
 }))
-jest.mock("@/components/ui/use-toast")
 jest.mock("@/lib/services")
+
+// Mock console.log for notification testing
+const originalConsoleLog = console.log
+beforeAll(() => {
+  console.log = jest.fn()
+})
+afterAll(() => {
+  console.log = originalConsoleLog
+})
 
 const mockRouter = {
   push: jest.fn(),
@@ -172,7 +179,7 @@ describe("useServiceRequestForm", () => {
     )
 
     await waitFor(() => {
-      expect(toast).toHaveBeenCalledWith({
+      expect(console.log).toHaveBeenCalledWith("Notification:", {
         title: "Address search unavailable",
         description: "Service unavailable",
         variant: "destructive",
@@ -222,7 +229,7 @@ describe("useServiceRequestForm", () => {
       body: JSON.stringify(formData),
     })
 
-    expect(toast).toHaveBeenCalledWith({
+    expect(console.log).toHaveBeenCalledWith("Notification:", {
       description: "Your service request has been created successfully.",
     })
 
@@ -265,7 +272,7 @@ describe("useServiceRequestForm", () => {
       await result.current.onSubmit(formData)
     })
 
-    expect(toast).toHaveBeenCalledWith({
+    expect(console.log).toHaveBeenCalledWith("Notification:", {
       title: "Failed to create service request",
       description: "Validation error: Validation failed",
       variant: "destructive",
@@ -303,7 +310,7 @@ describe("useServiceRequestForm", () => {
       await result.current.onSubmit(formData)
     })
 
-    expect(toast).toHaveBeenCalledWith({
+    expect(console.log).toHaveBeenCalledWith("Notification:", {
       title: "Network error",
       description:
         "Unable to connect to the server. Please check your internet connection and try again.",
