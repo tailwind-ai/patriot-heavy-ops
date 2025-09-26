@@ -15,6 +15,7 @@
 import { BaseService, ServiceResult, ServiceLogger } from "./base-service"
 import { UserRole } from "../permissions"
 import { db } from "../db"
+import { decimalToNumber, decimalToHours } from "../utils/decimal"
 
 // Dashboard data types
 export interface DashboardUser {
@@ -450,7 +451,7 @@ export class DashboardService extends BaseService {
       activeRequests,
       completedRequests,
       pendingApproval,
-      revenue: Number(revenueResult._sum.estimatedCost) || 0,
+      revenue: decimalToNumber(revenueResult._sum.estimatedCost) || 0,
     }
   }
 
@@ -483,8 +484,9 @@ export class DashboardService extends BaseService {
 
     return {
       ...stats,
-      averageJobDuration:
-        Number(avgDurationResult._avg?.requestedTotalHours) || 0,
+      averageJobDuration: decimalToHours(
+        avgDurationResult._avg?.requestedTotalHours
+      ),
     }
   }
 
@@ -518,12 +520,8 @@ export class DashboardService extends BaseService {
 
     return requests.map((request) => ({
       ...request,
-      estimatedCost: request.estimatedCost
-        ? Number(request.estimatedCost)
-        : null,
-      requestedTotalHours: request.requestedTotalHours
-        ? Number(request.requestedTotalHours)
-        : null,
+      estimatedCost: decimalToNumber(request.estimatedCost),
+      requestedTotalHours: decimalToHours(request.requestedTotalHours),
     }))
   }
 
@@ -573,12 +571,8 @@ export class DashboardService extends BaseService {
 
     return requests.map((request) => ({
       ...request,
-      estimatedCost: request.estimatedCost
-        ? Number(request.estimatedCost)
-        : null,
-      requestedTotalHours: request.requestedTotalHours
-        ? Number(request.requestedTotalHours)
-        : null,
+      estimatedCost: decimalToNumber(request.estimatedCost),
+      requestedTotalHours: decimalToHours(request.requestedTotalHours),
     }))
   }
 
@@ -639,12 +633,8 @@ export class DashboardService extends BaseService {
 
     return requests.map((request) => ({
       ...request,
-      estimatedCost: request.estimatedCost
-        ? Number(request.estimatedCost)
-        : null,
-      requestedTotalHours: request.requestedTotalHours
-        ? Number(request.requestedTotalHours)
-        : null,
+      estimatedCost: decimalToNumber(request.estimatedCost),
+      requestedTotalHours: decimalToHours(request.requestedTotalHours),
       assignedOperators: request.userAssignments.map(
         (assignment) => assignment.operator
       ),
