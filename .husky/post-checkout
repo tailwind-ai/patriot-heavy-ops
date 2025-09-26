@@ -1,0 +1,7 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+echo "[husky] post-checkout: exporting Cursor todos"
+npm run --silent cursor:todos || true
+
+
