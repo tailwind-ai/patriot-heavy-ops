@@ -1,16 +1,16 @@
 /**
  * Platform-Agnostic Notification System
- * 
+ *
  * Provides a unified interface for notifications that works across platforms.
  * Supports Next.js (with toast), React Native, and testing environments.
  */
 
-import { logger } from './logger'
+import { logger } from "./logger"
 
 export interface NotificationOptions {
   title?: string
   description: string
-  variant?: 'default' | 'destructive' | 'success' | 'warning'
+  variant?: "default" | "destructive" | "success" | "warning"
   duration?: number
 }
 
@@ -25,7 +25,9 @@ export interface NotificationCallbacks {
  * Default no-op notification callbacks for testing or when notifications aren't needed
  * Includes a flag to identify no-op implementations
  */
-export const createNoOpNotifications = (): NotificationCallbacks & { isNoOp: boolean } => ({
+export const createNoOpNotifications = (): NotificationCallbacks & {
+  isNoOp: boolean
+} => ({
   showNotification: () => {},
   showSuccess: () => {},
   showError: () => {},
@@ -41,44 +43,54 @@ export const createToastNotifications = (
   toast: (options: {
     title?: string
     description: string
-    variant?: 'default' | 'destructive'
+    variant?: "default" | "destructive"
     duration?: number
   }) => void
 ): NotificationCallbacks => ({
   showNotification: (options) => {
-    const isValidVariant = (variant: string): variant is 'default' | 'destructive' => {
-      return variant === 'default' || variant === 'destructive'
+    // Map notification variants to toast variants
+    const mapVariant = (variant?: string): "default" | "destructive" => {
+      switch (variant) {
+        case "success":
+        case "warning":
+        case "default":
+          return "default"
+        case "destructive":
+          return "destructive"
+        default:
+          return "default"
+      }
     }
-    
+
     toast({
       ...(options.title && { title: options.title }),
       description: options.description,
-      ...(options.variant && isValidVariant(options.variant) && { variant: options.variant }),
+      variant: mapVariant(options.variant),
       ...(options.duration && { duration: options.duration }),
     })
   },
-  
+
   showSuccess: (message, title = "Success") => {
     toast({
       title,
       description: message,
-      variant: 'default',
+      variant: "default",
     })
   },
-  
+
   showError: (message, title = "Error") => {
     toast({
       title,
       description: message,
-      variant: 'destructive',
+      variant: "destructive",
     })
   },
-  
+
   showWarning: (message, title = "Warning") => {
     toast({
       title,
       description: message,
-      variant: 'default',
+      variant: "default",
     })
   },
 })
@@ -90,19 +102,23 @@ export const createToastNotifications = (
 export const createReactNativeNotifications = (): NotificationCallbacks => ({
   showNotification: (options) => {
     // Example: Alert.alert(options.title || 'Notification', options.description)
-    logger.info(`[${options.variant?.toUpperCase() || 'INFO'}] ${options.title || ''}: ${options.description}`)
+    logger.info(
+      `[${options.variant?.toUpperCase() || "INFO"}] ${options.title || ""}: ${
+        options.description
+      }`
+    )
   },
-  
+
   showSuccess: (message, title = "Success") => {
     // Example: Alert.alert(title, message)
     logger.info(`[SUCCESS] ${title}: ${message}`)
   },
-  
+
   showError: (message, title = "Error") => {
     // Example: Alert.alert(title, message)
     logger.info(`[ERROR] ${title}: ${message}`)
   },
-  
+
   showWarning: (message, title = "Warning") => {
     // Example: Alert.alert(title, message)
     logger.info(`[WARNING] ${title}: ${message}`)
@@ -112,7 +128,9 @@ export const createReactNativeNotifications = (): NotificationCallbacks => ({
 /**
  * Type guard to check if notifications are provided
  */
-export const hasNotifications = (notifications?: NotificationCallbacks): notifications is NotificationCallbacks => {
+export const hasNotifications = (
+  notifications?: NotificationCallbacks
+): notifications is NotificationCallbacks => {
   return notifications !== undefined
 }
 
@@ -120,7 +138,9 @@ export const hasNotifications = (notifications?: NotificationCallbacks): notific
  * Check if notifications are meaningful (not no-op implementation)
  * Useful to avoid showing feedback when using fallback notifications
  */
-export const hasRealNotifications = (notifications?: NotificationCallbacks): boolean => {
+export const hasRealNotifications = (
+  notifications?: NotificationCallbacks
+): boolean => {
   if (!notifications) return false
-  return !('isNoOp' in notifications && notifications.isNoOp === true)
+  return !("isNoOp" in notifications && notifications.isNoOp === true)
 }
