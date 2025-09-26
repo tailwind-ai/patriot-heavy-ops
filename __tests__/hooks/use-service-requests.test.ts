@@ -177,6 +177,7 @@ describe("useServiceRequests", () => {
       isLoading: false,
       error: null,
       refetch: mockRefetch,
+      clearCache: jest.fn(),
     })
 
     const { result } = renderHook(() => useServiceRequests())
