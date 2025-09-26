@@ -159,6 +159,7 @@ jobs:
           fi
 
           echo "Processing PR #$PR_NUMBER with Background Agent..."
+          echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_ENV
 
           # Use DoD-enabled version for status/check events (when CI might be passing)
           if [ "${{ github.event_name }}" = "status" ] || [ "${{ github.event_name }}" = "check_run" ]; then
