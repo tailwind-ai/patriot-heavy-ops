@@ -171,7 +171,8 @@ describe("DashboardService", () => {
       expect(result.data).not.toHaveProperty("users")
 
       // Verify stats structure
-      expect(result.data.stats).toEqual({
+      expect(result.data).toBeDefined()
+      expect(result.data!.stats).toEqual({
         totalRequests: 10,
         activeRequests: 5,
         completedRequests: 3,
@@ -179,8 +180,8 @@ describe("DashboardService", () => {
       })
 
       // Verify requests structure
-      expect(result.data.recentRequests).toHaveLength(1)
-      expect(result.data.recentRequests[0]).toMatchObject({
+      expect(result.data!.recentRequests).toHaveLength(1)
+      expect(result.data!.recentRequests[0]).toMatchObject({
         id: "req-1",
         title: "User Request 1",
         status: "SUBMITTED",
@@ -274,11 +275,12 @@ describe("DashboardService", () => {
       expect(result.data).not.toHaveProperty("users")
 
       // Verify stats include assignments + own requests
-      expect(result.data.stats.totalRequests).toBe(10) // 8 assignments + 2 own requests
+      expect(result.data).toBeDefined()
+      expect(result.data!.stats.totalRequests).toBe(10) // 8 assignments + 2 own requests
 
       // Verify assignments are included
-      expect(result.data.assignments).toHaveLength(1)
-      expect(result.data.assignments[0]).toMatchObject({
+      expect(result.data!.assignments).toHaveLength(1)
+      expect(result.data!.assignments![0]).toMatchObject({
         id: "assignment-1",
         operatorId: "operator-123",
         status: "ACTIVE",
@@ -389,7 +391,8 @@ describe("DashboardService", () => {
       expect(result.data).not.toHaveProperty("users")
 
       // Verify stats include revenue
-      expect(result.data.stats).toMatchObject({
+      expect(result.data).toBeDefined()
+      expect(result.data!.stats).toMatchObject({
         totalRequests: 50,
         activeRequests: 25,
         completedRequests: 20,
@@ -398,8 +401,8 @@ describe("DashboardService", () => {
       })
 
       // Verify requests include user and operator info
-      expect(result.data.recentRequests[0]).toHaveProperty("user")
-      expect(result.data.recentRequests[0]).toHaveProperty("assignedOperators")
+      expect(result.data!.recentRequests[0]).toHaveProperty("user")
+      expect(result.data!.recentRequests[0]).toHaveProperty("assignedOperators")
     })
 
     it("should handle date range filtering for MANAGER", async () => {
@@ -472,7 +475,8 @@ describe("DashboardService", () => {
       expect(result.data).toHaveProperty("users")
 
       // Verify stats include admin-specific metrics
-      expect(result.data.stats).toMatchObject({
+      expect(result.data).toBeDefined()
+      expect(result.data!.stats).toMatchObject({
         totalRequests: 100,
         activeRequests: 45,
         completedRequests: 50,
@@ -482,8 +486,8 @@ describe("DashboardService", () => {
       })
 
       // Verify users section is included
-      expect(result.data.users).toHaveLength(1)
-      expect(result.data.users[0]).toMatchObject({
+      expect(result.data!.users).toHaveLength(1)
+      expect(result.data!.users![0]).toMatchObject({
         id: "user-1",
         name: "Recent User",
         role: "USER",

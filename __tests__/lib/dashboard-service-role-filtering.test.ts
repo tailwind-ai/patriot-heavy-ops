@@ -88,9 +88,10 @@ describe("Dashboard Service Role Filtering Tests", () => {
       )
 
       // Verify no admin/manager specific data is included
+      expect(result.data).toBeDefined()
       expect(result.data).not.toHaveProperty("users")
       expect(result.data).not.toHaveProperty("assignments")
-      expect(result.data.stats).not.toHaveProperty("revenue")
+      expect(result.data!.stats).not.toHaveProperty("revenue")
     })
 
     it("should not include other users' data in USER role", async () => {
@@ -192,9 +193,10 @@ describe("Dashboard Service Role Filtering Tests", () => {
       )
 
       // Verify assignments are included but admin data is not
+      expect(result.data).toBeDefined()
       expect(result.data).toHaveProperty("assignments")
       expect(result.data).not.toHaveProperty("users")
-      expect(result.data.stats).not.toHaveProperty("revenue")
+      expect(result.data!.stats).not.toHaveProperty("revenue")
     })
 
     it("should filter assignments by operator ID", async () => {
@@ -284,8 +286,9 @@ describe("Dashboard Service Role Filtering Tests", () => {
       })
 
       // Verify manager-specific data is included
+      expect(result.data).toBeDefined()
       expect(result.data).toHaveProperty("assignments")
-      expect(result.data.stats).toHaveProperty("revenue")
+      expect(result.data!.stats).toHaveProperty("revenue")
       expect(result.data).not.toHaveProperty("users") // Admin-only
     })
 
@@ -369,15 +372,16 @@ describe("Dashboard Service Role Filtering Tests", () => {
       expect(result.data).toHaveProperty("stats")
       expect(result.data).toHaveProperty("recentRequests")
       expect(result.data).toHaveProperty("assignments")
+      expect(result.data).toBeDefined()
       expect(result.data).toHaveProperty("users")
 
       // Verify admin-specific metrics
-      expect(result.data.stats).toHaveProperty("revenue")
-      expect(result.data.stats).toHaveProperty("averageJobDuration")
+      expect(result.data!.stats).toHaveProperty("revenue")
+      expect(result.data!.stats).toHaveProperty("averageJobDuration")
 
       // Verify user data is included
-      expect(result.data.users).toHaveLength(1)
-      expect(result.data.users[0]).toMatchObject({
+      expect(result.data!.users).toHaveLength(1)
+      expect(result.data!.users![0]).toMatchObject({
         id: "user-1",
         role: "USER",
       })
@@ -454,8 +458,9 @@ describe("Dashboard Service Role Filtering Tests", () => {
       )
 
       // Should not include any admin/manager fields
-      expect(result.data.recentRequests[0]).not.toHaveProperty("user")
-      expect(result.data.recentRequests[0]).not.toHaveProperty("assignedOperators")
+      expect(result.data).toBeDefined()
+      expect(result.data!.recentRequests[0]).not.toHaveProperty("user")
+      expect(result.data!.recentRequests[0]).not.toHaveProperty("assignedOperators")
     })
 
     it("should prevent OPERATOR from accessing unassigned requests", async () => {

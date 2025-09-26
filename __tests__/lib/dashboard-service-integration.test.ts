@@ -66,14 +66,13 @@ describe("DashboardService Integration Tests", () => {
       expect(service.getServiceName()).toBe("DashboardService")
     })
 
-    it("should set offline mode on repositories", () => {
-      mockServiceRequestRepo.setOfflineMode = jest.fn()
-      mockUserRepo.setOfflineMode = jest.fn()
-
-      dashboardService.setOfflineMode(true)
-
-      expect(mockServiceRequestRepo.setOfflineMode).toHaveBeenCalledWith(true)
-      expect(mockUserRepo.setOfflineMode).toHaveBeenCalledWith(true)
+    it("should set offline mode without errors", () => {
+      // Since DashboardService no longer uses repositories directly,
+      // setOfflineMode just logs the operation for API compatibility
+      expect(() => {
+        dashboardService.setOfflineMode(true)
+        dashboardService.setOfflineMode(false)
+      }).not.toThrow()
     })
 
     it("should handle repository offline mode queries", () => {
@@ -146,8 +145,9 @@ describe("DashboardService Integration Tests", () => {
       })
 
       expect(result.success).toBe(true)
-      expect(result.data.stats).toBeDefined()
-      expect(result.data.recentRequests).toBeDefined()
+      expect(result.data).toBeDefined()
+      expect(result.data!.stats).toBeDefined()
+      expect(result.data!.recentRequests).toBeDefined()
     })
 
     it("should handle different role permissions correctly", async () => {
@@ -169,8 +169,9 @@ describe("DashboardService Integration Tests", () => {
       })
 
       expect(result.success).toBe(true)
-      expect(result.data.stats.revenue).toBe(25000)
-      expect(result.data.assignments).toBeDefined()
+      expect(result.data).toBeDefined()
+      expect(result.data!.stats.revenue).toBe(25000)
+      expect(result.data!.assignments).toBeDefined()
     })
   })
 
@@ -257,8 +258,9 @@ describe("DashboardService Integration Tests", () => {
       })
 
       expect(result.success).toBe(true)
-      expect(result.data.recentRequests).toHaveLength(20)
-      expect(result.data.stats.totalRequests).toBe(1000)
+      expect(result.data).toBeDefined()
+      expect(result.data!.recentRequests).toHaveLength(20)
+      expect(result.data!.stats.totalRequests).toBe(1000)
     })
 
     it("should respect pagination limits", async () => {
@@ -333,8 +335,10 @@ describe("DashboardService Integration Tests", () => {
       // Verify consistent data structure
       expect(userResult.success).toBe(true)
       expect(managerResult.success).toBe(true)
-      expect(userResult.data.stats.totalRequests).toBe(1)
-      expect(managerResult.data.stats.totalRequests).toBe(1)
+      expect(userResult.data).toBeDefined()
+      expect(managerResult.data).toBeDefined()
+      expect(userResult.data!.stats.totalRequests).toBe(1)
+      expect(managerResult.data!.stats.totalRequests).toBe(1)
     })
 
     it("should handle concurrent requests safely", async () => {

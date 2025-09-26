@@ -55,18 +55,16 @@ describe("Dashboard Service Mobile Compatibility", () => {
       }).not.toThrow()
     })
 
-    it("should propagate offline mode to repositories", () => {
-      const serviceRequestRepo = (dashboardService as any).serviceRequestRepo
-      const userRepo = (dashboardService as any).userRepo
-
-      // Mock the setOfflineMode methods
-      serviceRequestRepo.setOfflineMode = jest.fn()
-      userRepo.setOfflineMode = jest.fn()
-
-      dashboardService.setOfflineMode(true)
-
-      expect(serviceRequestRepo.setOfflineMode).toHaveBeenCalledWith(true)
-      expect(userRepo.setOfflineMode).toHaveBeenCalledWith(true)
+    it("should handle offline mode configuration", () => {
+      // Since DashboardService no longer uses repositories directly,
+      // offline mode is handled at the database connection level
+      expect(() => {
+        dashboardService.setOfflineMode(true)
+        dashboardService.setOfflineMode(false)
+      }).not.toThrow()
+      
+      // Verify the method exists and is callable
+      expect(typeof dashboardService.setOfflineMode).toBe("function")
     })
   })
 
@@ -232,8 +230,9 @@ describe("Dashboard Service Mobile Compatibility", () => {
       })
 
       expect(result.success).toBe(true)
-      expect(result.data.recentRequests).toHaveLength(10)
-      expect(result.data.stats.totalRequests).toBe(1000)
+      expect(result.data).toBeDefined()
+      expect(result.data!.recentRequests).toHaveLength(10)
+      expect(result.data!.stats.totalRequests).toBe(1000)
 
       // Verify mobile-appropriate pagination was used
       expect(mockDb.db.serviceRequest.findMany).toHaveBeenCalledWith(
@@ -433,7 +432,8 @@ describe("Dashboard Service Mobile Compatibility", () => {
       })
 
       expect(result.success).toBe(true)
-      expect(result.data.recentRequests[0]).toMatchObject({
+      expect(result.data).toBeDefined()
+      expect(result.data!.recentRequests[0]).toMatchObject({
         id: "cross-platform-req",
         title: "Cross Platform Request",
         status: "SUBMITTED",
@@ -472,10 +472,14 @@ describe("Dashboard Service Mobile Compatibility", () => {
       })
 
       expect(result.success).toBe(true)
+      expect(result.data).toBeDefined()
+      expect(result.data!.recentRequests).toHaveLength(1)
       
       // Dates should be returned as Date objects for proper timezone handling
-      expect(result.data.recentRequests[0].startDate).toBeInstanceOf(Date)
-      expect(result.data.recentRequests[0].startDate.toISOString()).toBe("2024-01-15T10:00:00.000Z")
+      const firstRequest = result.data!.recentRequests[0]
+      expect(firstRequest).toBeDefined()
+      expect(firstRequest!.startDate).toBeInstanceOf(Date)
+      expect(firstRequest!.startDate.toISOString()).toBe("2024-01-15T10:00:00.000Z")
     })
   })
 })
