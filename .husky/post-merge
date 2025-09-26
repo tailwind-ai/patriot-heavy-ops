@@ -2,6 +2,6 @@
 . "$(dirname "$0")/_/husky.sh"
 
 echo "[husky] post-merge: exporting Cursor todos"
-npm run --silent cursor:todos || true
+npx --yes tsx scripts/export-cursor-todos.ts || true
 
 
