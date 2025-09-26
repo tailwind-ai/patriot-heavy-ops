@@ -36,6 +36,7 @@ export interface DashboardServiceRequest {
   endDate: Date | null
   requestedDurationType: string
   requestedDurationValue: number
+  requestedTotalHours: number | null
   estimatedCost: number | null
   createdAt: Date
   updatedAt: Date
@@ -142,12 +143,14 @@ export class DashboardService extends BaseService {
     if (cacheOptions?.enableCaching) {
       const cached = this.getFromCache(cacheKey)
       if (cached) {
-        return this.createSuccess(cached as {
-          stats: DashboardStats
-          recentRequests: DashboardServiceRequest[]
-          assignments?: OperatorAssignment[]
-          users?: DashboardUser[]
-        })
+        return this.createSuccess(
+          cached as {
+            stats: DashboardStats
+            recentRequests: DashboardServiceRequest[]
+            assignments?: OperatorAssignment[]
+            users?: DashboardUser[]
+          }
+        )
       }
     }
 
@@ -503,6 +506,7 @@ export class DashboardService extends BaseService {
         endDate: true,
         requestedDurationType: true,
         requestedDurationValue: true,
+        requestedTotalHours: true,
         estimatedCost: true,
         createdAt: true,
         updatedAt: true,
@@ -516,6 +520,9 @@ export class DashboardService extends BaseService {
       ...request,
       estimatedCost: request.estimatedCost
         ? Number(request.estimatedCost)
+        : null,
+      requestedTotalHours: request.requestedTotalHours
+        ? Number(request.requestedTotalHours)
         : null,
     }))
   }
@@ -547,6 +554,7 @@ export class DashboardService extends BaseService {
         endDate: true,
         requestedDurationType: true,
         requestedDurationValue: true,
+        requestedTotalHours: true,
         estimatedCost: true,
         createdAt: true,
         updatedAt: true,
@@ -567,6 +575,9 @@ export class DashboardService extends BaseService {
       ...request,
       estimatedCost: request.estimatedCost
         ? Number(request.estimatedCost)
+        : null,
+      requestedTotalHours: request.requestedTotalHours
+        ? Number(request.requestedTotalHours)
         : null,
     }))
   }
@@ -598,6 +609,7 @@ export class DashboardService extends BaseService {
         endDate: true,
         requestedDurationType: true,
         requestedDurationValue: true,
+        requestedTotalHours: true,
         estimatedCost: true,
         createdAt: true,
         updatedAt: true,
@@ -629,6 +641,9 @@ export class DashboardService extends BaseService {
       ...request,
       estimatedCost: request.estimatedCost
         ? Number(request.estimatedCost)
+        : null,
+      requestedTotalHours: request.requestedTotalHours
+        ? Number(request.requestedTotalHours)
         : null,
       assignedOperators: request.userAssignments.map(
         (assignment) => assignment.operator
