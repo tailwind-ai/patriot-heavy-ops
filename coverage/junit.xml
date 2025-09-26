@@ -1,3 +1,89 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="0" failures="0" errors="0" time="0.001">
+<testsuites name="jest tests" tests="8" failures="6" errors="0" time="1.852">
+  <testsuite name="useDashboardData" errors="0" failures="6" skipped="0" timestamp="2025-09-26T03:16:25" time="1.602" tests="8">
+    <testcase classname="useDashboardData should fetch USER dashboard data successfully" name="useDashboardData should fetch USER dashboard data successfully" time="0.07">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: null
+Received: &quot;Network error. Please check your connection and try again.&quot;
+    at Object.toBe (/app/__tests__/hooks/use-dashboard-data.test.ts:84:34)</failure>
+    </testcase>
+    <testcase classname="useDashboardData should fetch OPERATOR dashboard data successfully" name="useDashboardData should fetch OPERATOR dashboard data successfully" time="0.06">
+    </testcase>
+    <testcase classname="useDashboardData should handle authentication error" name="useDashboardData should handle authentication error" time="0.065">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: &quot;Authentication required. Please log in.&quot;
+Received: &quot;Network error. Please check your connection and try again.&quot;
+    at Object.toBe (/app/__tests__/hooks/use-dashboard-data.test.ts:184:34)</failure>
+    </testcase>
+    <testcase classname="useDashboardData should handle authorization error" name="useDashboardData should handle authorization error" time="0.064">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: &quot;Access denied. Insufficient permissions.&quot;
+Received: &quot;Network error. Please check your connection and try again.&quot;
+    at Object.toBe (/app/__tests__/hooks/use-dashboard-data.test.ts:205:34)</failure>
+    </testcase>
+    <testcase classname="useDashboardData should handle network error" name="useDashboardData should handle network error" time="0.063">
+    </testcase>
+    <testcase classname="useDashboardData should build correct query parameters" name="useDashboardData should build correct query parameters" time="1.031">
+      <failure>Error: expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+Expected: &quot;/api/dashboard/manager?limit=20&amp;offset=10&amp;enableCaching=false&amp;startDate=2024-01-01T00:00:00.000Z&amp;endDate=2024-01-31T00:00:00.000Z&quot;, Any&lt;Object&gt;
+Received
+       1: &quot;/api/dashboard/manager?limit=20&amp;offset=10&amp;enableCaching=false&amp;startDate=2024-01-01T00%3A00%3A00.000Z&amp;endDate=2024-01-31T00%3A00%3A00.000Z&quot;, {&quot;credentials&quot;: &quot;include&quot;, &quot;headers&quot;: {&quot;Content-Type&quot;: &quot;application/json&quot;}, &quot;method&quot;: &quot;GET&quot;}
+       2: &quot;/api/dashboard/manager?limit=20&amp;offset=10&amp;enableCaching=false&amp;startDate=2024-01-01T00%3A00%3A00.000Z&amp;endDate=2024-01-31T00%3A00%3A00.000Z&quot;, {&quot;credentials&quot;: &quot;include&quot;, &quot;headers&quot;: {&quot;Content-Type&quot;: &quot;application/json&quot;}, &quot;method&quot;: &quot;GET&quot;}
+       3: &quot;/api/dashboard/manager?limit=20&amp;offset=10&amp;enableCaching=false&amp;startDate=2024-01-01T00%3A00%3A00.000Z&amp;endDate=2024-01-31T00%3A00%3A00.000Z&quot;, {&quot;credentials&quot;: &quot;include&quot;, &quot;headers&quot;: {&quot;Content-Type&quot;: &quot;application/json&quot;}, &quot;method&quot;: &quot;GET&quot;}
+
+Number of calls: 3
+
+Ignored nodes: comments, script, style
+&lt;html&gt;
+  &lt;head /&gt;
+  &lt;body&gt;
+    &lt;div /&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+    at toHaveBeenCalledWith (/app/__tests__/hooks/use-dashboard-data.test.ts:249:25)
+    at runWithExpensiveErrorDiagnosticsDisabled (/app/node_modules/@testing-library/dom/dist/config.js:47:12)
+    at checkCallback (/app/node_modules/@testing-library/dom/dist/wait-for.js:124:77)
+    at checkRealTimersCallback (/app/node_modules/@testing-library/dom/dist/wait-for.js:118:16)
+    at Timeout.task [as _onTimeout] (/app/node_modules/jsdom/lib/jsdom/browser/Window.js:579:19)
+    at listOnTimeout (node:internal/timers:581:17)
+    at processTimers (node:internal/timers:519:7)</failure>
+    </testcase>
+    <testcase classname="useDashboardData should handle refetch" name="useDashboardData should handle refetch" time="0.056">
+      <failure>Error: expect(jest.fn()).toHaveBeenCalledTimes(expected)
+
+Expected number of calls: 1
+Received number of calls: 12
+    at Object.toHaveBeenCalledTimes (/app/__tests__/hooks/use-dashboard-data.test.ts:286:23)
+    at runNextTicks (node:internal/process/task_queues:60:5)
+    at listOnTimeout (node:internal/timers:545:9)
+    at processTimers (node:internal/timers:519:7)</failure>
+    </testcase>
+    <testcase classname="useDashboardData should throw error for invalid role" name="useDashboardData should throw error for invalid role" time="0.022">
+      <failure>Error: expect(received).toThrow(expected)
+
+Expected substring: &quot;Invalid user role: INVALID_ROLE&quot;
+
+Received function did not throw
+    at Object.toThrow (/app/__tests__/hooks/use-dashboard-data.test.ts:301:8)
+    at Promise.finally.completed (/app/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (/app/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
+    at _callCircusTest (/app/node_modules/jest-circus/build/jestAdapterInit.js:1006:40)
+    at runNextTicks (node:internal/process/task_queues:60:5)
+    at listOnTimeout (node:internal/timers:545:9)
+    at processTimers (node:internal/timers:519:7)
+    at _runTest (/app/node_modules/jest-circus/build/jestAdapterInit.js:946:3)
+    at _runTestsForDescribeBlock (/app/node_modules/jest-circus/build/jestAdapterInit.js:839:13)
+    at _runTestsForDescribeBlock (/app/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at run (/app/node_modules/jest-circus/build/jestAdapterInit.js:757:3)
+    at runAndTransformResultsToJestFormat (/app/node_modules/jest-circus/build/jestAdapterInit.js:1917:21)
+    at jestAdapter (/app/node_modules/jest-circus/build/runner.js:101:19)
+    at runTestInternal (/app/node_modules/jest-runner/build/index.js:275:16)
+    at runTest (/app/node_modules/jest-runner/build/index.js:343:7)</failure>
+    </testcase>
+  </testsuite>
 </testsuites>

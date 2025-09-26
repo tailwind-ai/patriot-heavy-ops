@@ -82,13 +82,16 @@ describe("useDashboardData", () => {
       ],
     })
     expect(result.current.error).toBe(null)
-    expect(mockFetch).toHaveBeenCalledWith("/api/dashboard/user?limit=10&enableCaching=true", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-    })
+    expect(mockFetch).toHaveBeenCalledWith(
+      "/api/dashboard/user?limit=10&enableCaching=true",
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      }
+    )
   })
 
   it("should fetch OPERATOR dashboard data successfully", async () => {
@@ -199,7 +202,9 @@ describe("useDashboardData", () => {
     })
 
     expect(result.current.data).toBe(null)
-    expect(result.current.error).toBe("Access denied. Insufficient permissions.")
+    expect(result.current.error).toBe(
+      "Access denied. Insufficient permissions."
+    )
   })
 
   it("should handle network error", async () => {
@@ -216,7 +221,9 @@ describe("useDashboardData", () => {
     })
 
     expect(result.current.data).toBe(null)
-    expect(result.current.error).toBe("Network error. Please check your connection and try again.")
+    expect(result.current.error).toBe(
+      "Network error. Please check your connection and try again."
+    )
   })
 
   it("should build correct query parameters", async () => {
@@ -244,12 +251,19 @@ describe("useDashboardData", () => {
         expect.any(Object)
       )
     })
+
+    expect(result.current.data).toBeDefined()
   })
 
   it("should handle refetch", async () => {
     const mockData = {
       data: {
-        stats: { totalRequests: 1, activeRequests: 0, completedRequests: 1, pendingApproval: 0 },
+        stats: {
+          totalRequests: 1,
+          activeRequests: 0,
+          completedRequests: 1,
+          pendingApproval: 0,
+        },
         recentRequests: [],
       },
     }
