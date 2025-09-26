@@ -11,7 +11,13 @@ import { UserRole } from "@/lib/permissions"
 const dashboardUserQuerySchema = z.object({
   limit: z.coerce.number().min(1).max(50).optional().default(10),
   offset: z.coerce.number().min(0).optional().default(0),
-  enableCaching: z.coerce.boolean().optional().default(true),
+  enableCaching: z
+    .string()
+    .optional()
+    .transform((val) => {
+      if (val === undefined) return true
+      return val !== "false" && val !== "0"
+    }),
 })
 
 /**
@@ -44,9 +50,9 @@ export async function GET(req: NextRequest) {
     // Parse and validate query parameters
     const { searchParams } = new URL(req.url)
     const queryResult = dashboardUserQuerySchema.safeParse({
-      limit: searchParams.get("limit"),
-      offset: searchParams.get("offset"),
-      enableCaching: searchParams.get("enableCaching"),
+      limit: searchParams.get("limit") || undefined,
+      offset: searchParams.get("offset") || undefined,
+      enableCaching: searchParams.get("enableCaching") || undefined,
     })
 
     if (!queryResult.success) {

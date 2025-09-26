@@ -237,7 +237,7 @@ describe("Dashboard API Routes", () => {
       Object.entries(params).forEach(([key, value]) => {
         url.searchParams.set(key, value)
       })
-      return new NextRequest(url.toString())
+      return createMockRequest("GET", url.toString())
     }
 
     it("should return manager dashboard data with date range", async () => {
@@ -336,7 +336,7 @@ describe("Dashboard API Routes", () => {
       Object.entries(params).forEach(([key, value]) => {
         url.searchParams.set(key, value)
       })
-      return new NextRequest(url.toString())
+      return createMockRequest("GET", url.toString())
     }
 
     it("should return admin dashboard data with security headers", async () => {

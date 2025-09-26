@@ -63,11 +63,11 @@ export async function GET(req: NextRequest) {
     // Parse and validate query parameters
     const { searchParams } = new URL(req.url)
     const queryResult = dashboardManagerQuerySchema.safeParse({
-      limit: searchParams.get("limit"),
-      offset: searchParams.get("offset"),
-      enableCaching: searchParams.get("enableCaching"),
-      startDate: searchParams.get("startDate"),
-      endDate: searchParams.get("endDate"),
+      limit: searchParams.get("limit") || undefined,
+      offset: searchParams.get("offset") || undefined,
+      enableCaching: searchParams.get("enableCaching") || undefined,
+      startDate: searchParams.get("startDate") || undefined,
+      endDate: searchParams.get("endDate") || undefined,
     })
 
     if (!queryResult.success) {

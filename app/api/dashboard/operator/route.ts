@@ -60,9 +60,9 @@ export async function GET(req: NextRequest) {
     // Parse and validate query parameters
     const { searchParams } = new URL(req.url)
     const queryResult = dashboardOperatorQuerySchema.safeParse({
-      limit: searchParams.get("limit"),
-      offset: searchParams.get("offset"),
-      enableCaching: searchParams.get("enableCaching"),
+      limit: searchParams.get("limit") || undefined,
+      offset: searchParams.get("offset") || undefined,
+      enableCaching: searchParams.get("enableCaching") || undefined,
     })
 
     if (!queryResult.success) {
