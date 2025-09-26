@@ -138,7 +138,9 @@ describe("useServiceRequests", () => {
     })
   })
 
-  it("should navigate to service request creation", () => {
+  it("should log warning when createServiceRequest is called", () => {
+    const consoleSpy = jest.spyOn(console, 'warn').mockImplementation(() => {})
+    
     mockUseDashboardData.mockReturnValue({
       data: null,
       isLoading: false,
@@ -150,7 +152,11 @@ describe("useServiceRequests", () => {
 
     result.current.createServiceRequest()
 
-    expect(mockLocation.href).toBe("/dashboard/service-requests/new")
+    expect(consoleSpy).toHaveBeenCalledWith(
+      "createServiceRequest called - navigation should be handled by parent component"
+    )
+    
+    consoleSpy.mockRestore()
   })
 
   it("should pass through refetch function", () => {

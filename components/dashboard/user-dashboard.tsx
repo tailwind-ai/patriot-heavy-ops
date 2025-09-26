@@ -4,10 +4,6 @@ import * as React from "react"
 import { Plus, TrendingUp, Clock, CheckCircle, AlertCircle } from "lucide-react"
 
 import { useServiceRequests } from "@/hooks/use-service-requests"
-
-interface UserDashboardProps {
-  onNavigateToCreateRequest?: () => void
-}
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -15,6 +11,10 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { EmptyPlaceholder } from "@/components/empty-placeholder"
 import { ServiceRequestCreateButton } from "@/components/service-request-create-button"
+
+interface UserDashboardProps {
+  onNavigateToCreateRequest?: () => void
+}
 
 /**
  * Status badge component with consistent styling

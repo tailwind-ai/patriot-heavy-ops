@@ -122,7 +122,7 @@ export function useDashboardData(options: UseDashboardDataOptions): UseDashboard
   }, [])
 
   // Build query parameters
-  const buildQueryParams = React.useCallback((opts: UseDashboardDataOptions): string => {
+  const buildQueryParams = React.useCallback((opts: UseDashboardDataOptions & { cacheBuster?: string }): string => {
     const params = new URLSearchParams()
     
     if (opts.limit) params.set("limit", opts.limit.toString())
@@ -135,6 +135,9 @@ export function useDashboardData(options: UseDashboardDataOptions): UseDashboard
     }
     if (opts.dateRange?.end) {
       params.set("endDate", opts.dateRange.end.toISOString())
+    }
+    if (opts.cacheBuster) {
+      params.set("_t", opts.cacheBuster)
     }
 
     return params.toString()
@@ -248,10 +251,10 @@ export function useDashboardData(options: UseDashboardDataOptions): UseDashboard
     
     try {
       // Call server-side cache clearing endpoint with DELETE method
-      const endpoint = getApiEndpoint(options.role)
-      const cacheEndpoint = `${endpoint}/cache`
+      const cacheEndpoint = getApiEndpoint(options.role)
+      const cacheUrl = `${cacheEndpoint}/cache`
       
-      const response = await fetch(cacheEndpoint, {
+      const cacheResponse = await fetch(cacheUrl, {
         method: "DELETE",
         headers: { 
           "Content-Type": "application/json",
@@ -262,19 +265,66 @@ export function useDashboardData(options: UseDashboardDataOptions): UseDashboard
         credentials: "include",
       })
 
-      if (!response.ok) {
+      if (!cacheResponse.ok) {
         console.warn("Cache clear request failed, proceeding with local refresh")
       }
       
-      // Refetch with cache-busting parameter
-      const optionsWithoutCache = { 
+      // Force refetch with cache-busting parameter
+      const dataEndpoint = getApiEndpoint(options.role)
+      const optionsWithCacheBuster = { 
         ...options, 
         enableCaching: false,
         cacheBuster: Date.now().toString()
       }
-      
-      // Force refetch with new options
-      await fetchDashboardData()
+      const queryParams = buildQueryParams(optionsWithCacheBuster)
+      const dataUrl = queryParams ? `${dataEndpoint}?${queryParams}` : dataEndpoint
+
+      const dataResponse = await fetch(dataUrl, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Cache-Control": "no-cache, no-store, must-revalidate",
+          "Pragma": "no-cache",
+          "Expires": "0"
+        },
+        credentials: "include",
+      })
+
+      if (dataResponse.ok) {
+        const result = await dataResponse.json()
+        if (result.data) {
+          // Transform date strings back to Date objects (same logic as fetchDashboardData)
+          const transformedData: DashboardData = {
+            ...result.data,
+            recentRequests: result.data.recentRequests.map((request: any) => ({
+              ...request,
+              startDate: new Date(request.startDate),
+              endDate: request.endDate ? new Date(request.endDate) : null,
+              createdAt: new Date(request.createdAt),
+              updatedAt: new Date(request.updatedAt),
+            })),
+            assignments: result.data.assignments?.map((assignment: any) => ({
+              ...assignment,
+              assignedAt: new Date(assignment.assignedAt),
+              serviceRequest: {
+                ...assignment.serviceRequest,
+                startDate: new Date(assignment.serviceRequest.startDate),
+                endDate: assignment.serviceRequest.endDate 
+                  ? new Date(assignment.serviceRequest.endDate) 
+                  : null,
+              },
+            })),
+            users: result.data.users?.map((user: any) => ({
+              ...user,
+              createdAt: new Date(user.createdAt),
+            })),
+          }
+          setData(transformedData)
+        }
+      } else {
+        // Fallback to regular refetch if cache-busted request fails
+        await refetch()
+      }
       
     } catch (error) {
       console.warn("Cache clear failed:", error)
