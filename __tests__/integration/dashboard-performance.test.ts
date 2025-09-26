@@ -9,6 +9,7 @@
  * - Mobile compatibility and responsive design
  */
 
+import React from "react"
 import { NextRequest } from "next/server"
 import { render, screen, waitFor } from "@testing-library/react"
 import { performance } from "perf_hooks"
@@ -71,7 +72,7 @@ describe("Dashboard Performance Tests", () => {
 
       // Test component rendering time
       const renderStart = performance.now()
-      render(<UserDashboard />)
+      render(React.createElement(UserDashboard))
       
       await waitFor(() => {
         expect(screen.getByText(/service requests/i)).toBeInTheDocument()
@@ -100,7 +101,7 @@ describe("Dashboard Performance Tests", () => {
       expect(apiTime).toBeLessThan(500)
 
       const renderStart = performance.now()
-      render(<OperatorDashboard />)
+      render(React.createElement(OperatorDashboard))
       
       await waitFor(() => {
         expect(screen.getByText(/available jobs/i)).toBeInTheDocument()
@@ -129,7 +130,7 @@ describe("Dashboard Performance Tests", () => {
       expect(apiTime).toBeLessThan(500)
 
       const renderStart = performance.now()
-      render(<ManagerDashboard />)
+      render(React.createElement(ManagerDashboard))
       
       await waitFor(() => {
         expect(screen.getByText(/approval queue/i)).toBeInTheDocument()
@@ -158,7 +159,7 @@ describe("Dashboard Performance Tests", () => {
       expect(apiTime).toBeLessThan(500)
 
       const renderStart = performance.now()
-      render(<AdminDashboard />)
+      render(React.createElement(AdminDashboard))
       
       await waitFor(() => {
         expect(screen.getByText(/system overview/i)).toBeInTheDocument()
@@ -248,7 +249,7 @@ describe("Dashboard Performance Tests", () => {
     it("should render UserDashboard efficiently", async () => {
       const startTime = performance.now()
       
-      render(<UserDashboard />)
+      render(React.createElement(UserDashboard))
       
       await waitFor(() => {
         expect(screen.getByText(/service requests/i)).toBeInTheDocument()
@@ -261,7 +262,7 @@ describe("Dashboard Performance Tests", () => {
     it("should render OperatorDashboard efficiently", async () => {
       const startTime = performance.now()
       
-      render(<OperatorDashboard />)
+      render(React.createElement(OperatorDashboard))
       
       await waitFor(() => {
         expect(screen.getByText(/available jobs/i)).toBeInTheDocument()
@@ -274,7 +275,7 @@ describe("Dashboard Performance Tests", () => {
     it("should render ManagerDashboard efficiently", async () => {
       const startTime = performance.now()
       
-      render(<ManagerDashboard />)
+      render(React.createElement(ManagerDashboard))
       
       await waitFor(() => {
         expect(screen.getByText(/approval queue/i)).toBeInTheDocument()
@@ -287,7 +288,7 @@ describe("Dashboard Performance Tests", () => {
     it("should render AdminDashboard efficiently", async () => {
       const startTime = performance.now()
       
-      render(<AdminDashboard />)
+      render(React.createElement(AdminDashboard))
       
       await waitFor(() => {
         expect(screen.getByText(/system overview/i)).toBeInTheDocument()
@@ -309,7 +310,7 @@ describe("Dashboard Performance Tests", () => {
 
       const startTime = performance.now()
       
-      render(<UserDashboard />)
+      render(React.createElement(UserDashboard))
       
       await waitFor(() => {
         expect(screen.getByText(/service requests/i)).toBeInTheDocument()
@@ -329,7 +330,7 @@ describe("Dashboard Performance Tests", () => {
 
       const startTime = performance.now()
       
-      render(<OperatorDashboard />)
+      render(React.createElement(OperatorDashboard))
       
       await waitFor(() => {
         expect(screen.getByText(/available jobs/i)).toBeInTheDocument()
@@ -349,7 +350,7 @@ describe("Dashboard Performance Tests", () => {
 
       const startTime = performance.now()
       
-      render(<ManagerDashboard />)
+      render(React.createElement(ManagerDashboard))
       
       await waitFor(() => {
         expect(screen.getByText(/approval queue/i)).toBeInTheDocument()

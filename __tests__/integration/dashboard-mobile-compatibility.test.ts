@@ -9,6 +9,7 @@
  * - Mobile performance optimization
  */
 
+import React from "react"
 import { NextRequest } from "next/server"
 import { render, screen, waitFor, fireEvent } from "@testing-library/react"
 import { GET as getUserDashboard } from "@/app/api/dashboard/user/route"
@@ -142,7 +143,7 @@ describe("Dashboard Mobile Compatibility Tests", () => {
         data: mockDashboardData,
       })
 
-      render(<OperatorDashboard />)
+      render(React.createElement(OperatorDashboard))
       
       await waitFor(() => {
         expect(screen.getByText(/available jobs/i)).toBeInTheDocument()
@@ -167,7 +168,7 @@ describe("Dashboard Mobile Compatibility Tests", () => {
         data: mockDashboardData,
       })
 
-      render(<UserDashboard />)
+      render(React.createElement(UserDashboard))
       
       await waitFor(() => {
         expect(screen.getByText(/service requests/i)).toBeInTheDocument()
@@ -183,7 +184,7 @@ describe("Dashboard Mobile Compatibility Tests", () => {
     })
 
     it("should handle touch events correctly", async () => {
-      render(<UserDashboard />)
+      render(React.createElement(UserDashboard))
       
       await waitFor(() => {
         expect(screen.getByText(/service requests/i)).toBeInTheDocument()
@@ -213,7 +214,7 @@ describe("Dashboard Mobile Compatibility Tests", () => {
         value: 375,
       })
 
-      render(<UserDashboard />)
+      render(React.createElement(UserDashboard))
       
       await waitFor(() => {
         expect(screen.getByText(/service requests/i)).toBeInTheDocument()
@@ -232,7 +233,7 @@ describe("Dashboard Mobile Compatibility Tests", () => {
         value: 768,
       })
 
-      render(<OperatorDashboard />)
+      render(React.createElement(OperatorDashboard))
       
       await waitFor(() => {
         expect(screen.getByText(/available jobs/i)).toBeInTheDocument()
@@ -251,7 +252,7 @@ describe("Dashboard Mobile Compatibility Tests", () => {
         value: 1920,
       })
 
-      render(<ManagerDashboard />)
+      render(React.createElement(ManagerDashboard))
       
       await waitFor(() => {
         expect(screen.getByText(/approval queue/i)).toBeInTheDocument()
@@ -267,7 +268,7 @@ describe("Dashboard Mobile Compatibility Tests", () => {
     it("should load quickly on mobile devices", async () => {
       const startTime = performance.now()
       
-      render(<UserDashboard />)
+      render(React.createElement(UserDashboard))
       
       await waitFor(() => {
         expect(screen.getByText(/service requests/i)).toBeInTheDocument()
@@ -301,13 +302,13 @@ describe("Dashboard Mobile Compatibility Tests", () => {
       const initialMemory = process.memoryUsage().heapUsed
       
       // Render multiple dashboard components
-      const { unmount: unmountUser } = render(<UserDashboard />)
+      const { unmount: unmountUser } = render(React.createElement(UserDashboard))
       await waitFor(() => {
         expect(screen.getByText(/service requests/i)).toBeInTheDocument()
       })
       unmountUser()
 
-      const { unmount: unmountOperator } = render(<OperatorDashboard />)
+      const { unmount: unmountOperator } = render(React.createElement(OperatorDashboard))
       await waitFor(() => {
         expect(screen.getByText(/available jobs/i)).toBeInTheDocument()
       })
@@ -375,7 +376,7 @@ describe("Dashboard Mobile Compatibility Tests", () => {
         data: mockDashboardData,
       })
 
-      render(<UserDashboard />)
+      render(React.createElement(UserDashboard))
       
       await waitFor(() => {
         expect(screen.getByText(/service requests/i)).toBeInTheDocument()
