@@ -330,7 +330,7 @@ export function useDashboardData(
       // Still attempt to refetch even if cache clear failed
       await refetch()
     }
-  }, [options, getApiEndpoint, buildQueryParams, refetch])
+  }, [options, getApiEndpoint, buildQueryParams, refetch, notifications])
 
   // Debounced cache clearing to prevent rapid successive calls
   const clearCache = React.useMemo(
