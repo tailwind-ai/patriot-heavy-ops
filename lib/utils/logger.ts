@@ -36,13 +36,13 @@ class Logger {
     return level >= this.config.level
   }
 
-  private formatMessage(level: string, message: string, context?: Record<string, any>): string {
+  private formatMessage(level: string, message: string, context?: Record<string, unknown>): string {
     const timestamp = new Date().toISOString()
     const contextStr = context ? ` ${JSON.stringify(context)}` : ''
     return `[${timestamp}] ${level}: ${message}${contextStr}`
   }
 
-  private async sendToRemote(level: string, message: string, context?: Record<string, any>) {
+  private async sendToRemote(level: string, message: string, context?: Record<string, unknown>) {
     if (!this.config.enableRemote || !this.config.remoteEndpoint) {
       return
     }
@@ -64,53 +64,58 @@ class Logger {
     } catch (error) {
       // Fallback to console if remote logging fails
       if (this.config.enableConsole) {
+        // eslint-disable-next-line no-console
         console.error('Failed to send log to remote endpoint:', error)
       }
     }
   }
 
-  debug(message: string, context?: Record<string, any>) {
+  debug(message: string, context?: Record<string, unknown>) {
     if (!this.shouldLog(LogLevel.DEBUG)) return
 
     const formatted = this.formatMessage('DEBUG', message, context)
     
     if (this.config.enableConsole) {
+      // eslint-disable-next-line no-console
       console.debug(formatted)
     }
     
     this.sendToRemote('DEBUG', message, context)
   }
 
-  info(message: string, context?: Record<string, any>) {
+  info(message: string, context?: Record<string, unknown>) {
     if (!this.shouldLog(LogLevel.INFO)) return
 
     const formatted = this.formatMessage('INFO', message, context)
     
     if (this.config.enableConsole) {
+      // eslint-disable-next-line no-console
       console.info(formatted)
     }
     
     this.sendToRemote('INFO', message, context)
   }
 
-  warn(message: string, context?: Record<string, any>) {
+  warn(message: string, context?: Record<string, unknown>) {
     if (!this.shouldLog(LogLevel.WARN)) return
 
     const formatted = this.formatMessage('WARN', message, context)
     
     if (this.config.enableConsole) {
+      // eslint-disable-next-line no-console
       console.warn(formatted)
     }
     
     this.sendToRemote('WARN', message, context)
   }
 
-  error(message: string, context?: Record<string, any>) {
+  error(message: string, context?: Record<string, unknown>) {
     if (!this.shouldLog(LogLevel.ERROR)) return
 
     const formatted = this.formatMessage('ERROR', message, context)
     
     if (this.config.enableConsole) {
+      // eslint-disable-next-line no-console
       console.error(formatted)
     }
     
@@ -121,7 +126,7 @@ class Logger {
    * Development-only warning for guidance messages
    * Only logs in development environment to avoid production noise
    */
-  devWarn(message: string, context?: Record<string, any>) {
+  devWarn(message: string, context?: Record<string, unknown>) {
     if (process.env.NODE_ENV === 'production') {
       return
     }

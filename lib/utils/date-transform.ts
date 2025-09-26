@@ -1,6 +1,6 @@
 /**
  * Date Transformation Utilities
- * 
+ *
  * Utilities for transforming date strings to Date objects in API responses.
  * Extracted to avoid code duplication and ensure consistency across the application.
  */
@@ -20,7 +20,7 @@ interface ServiceRequestInput {
   estimatedCost: number
   createdAt: string
   updatedAt: string
-  [key: string]: any
+  [key: string]: unknown
 }
 
 interface AssignmentInput {
@@ -30,7 +30,7 @@ interface AssignmentInput {
   assignedAt: string
   status: string
   serviceRequest: ServiceRequestInput
-  [key: string]: any
+  [key: string]: unknown
 }
 
 interface UserInput {
@@ -40,7 +40,7 @@ interface UserInput {
   role: string
   company: string | null
   createdAt: string
-  [key: string]: any
+  [key: string]: unknown
 }
 
 interface DashboardDataInput {
@@ -70,7 +70,7 @@ interface ServiceRequestOutput {
   estimatedCost: number
   createdAt: Date
   updatedAt: Date
-  [key: string]: any
+  [key: string]: unknown
 }
 
 interface AssignmentOutput {
@@ -80,7 +80,7 @@ interface AssignmentOutput {
   assignedAt: Date
   status: string
   serviceRequest: ServiceRequestOutput
-  [key: string]: any
+  [key: string]: unknown
 }
 
 interface UserOutput {
@@ -90,7 +90,7 @@ interface UserOutput {
   role: string
   company: string | null
   createdAt: Date
-  [key: string]: any
+  [key: string]: unknown
 }
 
 interface DashboardDataOutput {
@@ -108,7 +108,9 @@ interface DashboardDataOutput {
 /**
  * Transform a service request object by converting date strings to Date objects
  */
-export function transformServiceRequest(request: ServiceRequestInput): ServiceRequestOutput {
+export function transformServiceRequest(
+  request: ServiceRequestInput
+): ServiceRequestOutput {
   return {
     ...request,
     startDate: new Date(request.startDate),
@@ -121,7 +123,9 @@ export function transformServiceRequest(request: ServiceRequestInput): ServiceRe
 /**
  * Transform an assignment object by converting date strings to Date objects
  */
-export function transformAssignment(assignment: AssignmentInput): AssignmentOutput {
+export function transformAssignment(
+  assignment: AssignmentInput
+): AssignmentOutput {
   return {
     ...assignment,
     assignedAt: new Date(assignment.assignedAt),
@@ -142,10 +146,13 @@ export function transformUser(user: UserInput): UserOutput {
 /**
  * Transform dashboard data by converting all date strings to Date objects
  */
-export function transformDashboardData(result: { data: DashboardDataInput }): DashboardDataOutput {
+export function transformDashboardData(result: {
+  data: DashboardDataInput
+}): DashboardDataOutput {
   return {
     ...result.data,
-    recentRequests: result.data.recentRequests?.map(transformServiceRequest) || [],
+    recentRequests:
+      result.data.recentRequests?.map(transformServiceRequest) || [],
     assignments: result.data.assignments?.map(transformAssignment) || [],
     users: result.data.users?.map(transformUser) || [],
   }
