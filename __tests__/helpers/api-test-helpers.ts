@@ -37,6 +37,12 @@ export function createMockRequest(
     writable: false,
   })
 
+  // Ensure the url property is properly set for API route parsing
+  Object.defineProperty(request, "url", {
+    value: url,
+    writable: false,
+  })
+
   Object.defineProperty(request, "cookies", {
     value: {
       get: jest.fn(),
