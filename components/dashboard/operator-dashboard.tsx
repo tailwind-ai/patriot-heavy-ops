@@ -38,7 +38,7 @@ function StatsCard({ title, value, icon: Icon, description, className }: StatsCa
     <Card className={className}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium">{title}</CardTitle>
-        <Icon className="h-4 w-4 text-muted-foreground" />
+        <Icon className="size-4 text-muted-foreground" />
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold">{value}</div>
@@ -97,9 +97,9 @@ function AvailableJobItem({ job, onAccept, isAccepting }: AvailableJobItemProps)
   }
 
   return (
-    <div className="flex flex-col space-y-4 p-4 border-b last:border-b-0">
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between space-y-2 sm:space-y-0">
-        <div className="flex-1 min-w-0">
+    <div className="flex flex-col space-y-4 border-b p-4 last:border-b-0">
+      <div className="flex flex-col space-y-2 sm:flex-row sm:items-start sm:justify-between sm:space-y-0">
+        <div className="min-w-0 flex-1">
           <h3 className="text-sm font-medium">{job.title}</h3>
           <p className="text-xs text-muted-foreground">
             {job.equipmentCategory.replace(/_/g, " ")}
@@ -114,23 +114,23 @@ function AvailableJobItem({ job, onAccept, isAccepting }: AvailableJobItemProps)
         <Badge variant="outline">Available</Badge>
       </div>
       
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 text-xs text-muted-foreground">
+      <div className="grid grid-cols-1 gap-2 text-xs text-muted-foreground sm:grid-cols-2 lg:grid-cols-4">
         <div className="flex items-center space-x-1">
-          <MapPin className="h-3 w-3" />
+          <MapPin className="size-3" />
           <span className="truncate">{job.jobSite}</span>
         </div>
         <div className="flex items-center space-x-1">
-          <Calendar className="h-3 w-3" />
+          <Calendar className="size-3" />
           <span>Start: {formatDate(job.startDate)}</span>
         </div>
         {job.endDate && (
           <div className="flex items-center space-x-1">
-            <Calendar className="h-3 w-3" />
+            <Calendar className="size-3" />
             <span>End: {formatDate(job.endDate)}</span>
           </div>
         )}
         <div className="flex items-center space-x-1">
-          <DollarSign className="h-3 w-3" />
+          <DollarSign className="size-3" />
           <span>Est: {formatCurrency(job.estimatedCost)}</span>
         </div>
       </div>
@@ -140,7 +140,7 @@ function AvailableJobItem({ job, onAccept, isAccepting }: AvailableJobItemProps)
           <AlertDialogTrigger asChild>
             <Button 
               size="sm" 
-              className="w-full sm:w-auto touch-target"
+              className="touch-target w-full sm:w-auto"
               disabled={isAccepting}
             >
               {isAccepting ? "Accepting..." : "Accept Job"}
@@ -215,25 +215,25 @@ function ActiveAssignmentItem({ assignment, onComplete, isCompleting }: ActiveAs
   }
 
   return (
-    <div className="flex flex-col space-y-4 p-4 border-b last:border-b-0">
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between space-y-2 sm:space-y-0">
-        <div className="flex-1 min-w-0">
+    <div className="flex flex-col space-y-4 border-b p-4 last:border-b-0">
+      <div className="flex flex-col space-y-2 sm:flex-row sm:items-start sm:justify-between sm:space-y-0">
+        <div className="min-w-0 flex-1">
           <h3 className="text-sm font-medium">{assignment.serviceRequest.title}</h3>
-          <p className="text-xs text-muted-foreground truncate">
+          <p className="truncate text-xs text-muted-foreground">
             {assignment.serviceRequest.jobSite}
           </p>
         </div>
         {getStatusBadge(assignment.serviceRequest.status)}
       </div>
       
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-muted-foreground">
+      <div className="grid grid-cols-1 gap-2 text-xs text-muted-foreground sm:grid-cols-2">
         <div className="flex items-center space-x-1">
-          <Calendar className="h-3 w-3" />
+          <Calendar className="size-3" />
           <span>Start: {formatDate(assignment.serviceRequest.startDate)}</span>
         </div>
         {assignment.serviceRequest.endDate && (
           <div className="flex items-center space-x-1">
-            <Calendar className="h-3 w-3" />
+            <Calendar className="size-3" />
             <span>End: {formatDate(assignment.serviceRequest.endDate)}</span>
           </div>
         )}
@@ -246,7 +246,7 @@ function ActiveAssignmentItem({ assignment, onComplete, isCompleting }: ActiveAs
               <Button 
                 size="sm" 
                 variant="outline"
-                className="w-full sm:w-auto touch-target"
+                className="touch-target w-full sm:w-auto"
                 disabled={isCompleting}
               >
                 {isCompleting ? "Completing..." : "Mark Complete"}
@@ -278,15 +278,15 @@ function ActiveAssignmentItem({ assignment, onComplete, isCompleting }: ActiveAs
  */
 function JobSkeleton() {
   return (
-    <div className="space-y-4 p-4 border-b">
-      <div className="flex justify-between items-start">
-        <div className="space-y-2 flex-1">
+    <div className="space-y-4 border-b p-4">
+      <div className="flex items-start justify-between">
+        <div className="flex-1 space-y-2">
           <Skeleton className="h-4 w-3/4" />
           <Skeleton className="h-3 w-1/2" />
         </div>
         <Skeleton className="h-6 w-20" />
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
         <Skeleton className="h-3 w-full" />
         <Skeleton className="h-3 w-full" />
       </div>
@@ -361,8 +361,8 @@ export function OperatorDashboard() {
         </div>
 
         <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
+          <AlertCircle className="size-4" />
+          <AlertDescription className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
             <span>{error}</span>
             <Button
               variant="outline"
@@ -381,7 +381,7 @@ export function OperatorDashboard() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+      <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Operator Dashboard</h1>
           <p className="text-muted-foreground">
@@ -399,17 +399,17 @@ export function OperatorDashboard() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {isLoading ? (
           <>
             {Array.from({ length: 3 }).map((_, i) => (
               <Card key={i}>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <Skeleton className="h-4 w-24" />
-                  <Skeleton className="h-4 w-4" />
+                  <Skeleton className="size-4" />
                 </CardHeader>
                 <CardContent>
-                  <Skeleton className="h-8 w-16 mb-2" />
+                  <Skeleton className="mb-2 h-8 w-16" />
                   <Skeleton className="h-3 w-32" />
                 </CardContent>
               </Card>
@@ -439,7 +439,7 @@ export function OperatorDashboard() {
         )}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Available Jobs */}
         <Card>
           <CardHeader>

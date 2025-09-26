@@ -1,11 +1,26 @@
 "use client"
 
 import * as React from "react"
-import { TrendingUp, Clock, CheckCircle, AlertCircle, DollarSign, Users, BarChart3, Activity } from "lucide-react"
+import {
+  TrendingUp,
+  Clock,
+  CheckCircle,
+  AlertCircle,
+  DollarSign,
+  Users,
+  BarChart3,
+  Activity,
+} from "lucide-react"
 
 import { useDashboardData } from "@/hooks/use-dashboard-data"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription } from "@/components/ui/alert"
@@ -23,12 +38,18 @@ interface StatsCardProps {
   className?: string
 }
 
-function StatsCard({ title, value, icon: Icon, description, className }: StatsCardProps) {
+function StatsCard({
+  title,
+  value,
+  icon: Icon,
+  description,
+  className,
+}: StatsCardProps) {
   return (
     <Card className={className}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium">{title}</CardTitle>
-        <Icon className="h-4 w-4 text-muted-foreground" />
+        <Icon className="size-4 text-muted-foreground" />
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold">{value}</div>
@@ -66,7 +87,9 @@ interface ServiceRequestOverviewItemProps {
   }
 }
 
-function ServiceRequestOverviewItem({ request }: ServiceRequestOverviewItemProps) {
+function ServiceRequestOverviewItem({
+  request,
+}: ServiceRequestOverviewItemProps) {
   const formatCurrency = (amount: number | null) => {
     if (!amount) return "TBD"
     return new Intl.NumberFormat("en-US", {
@@ -104,9 +127,9 @@ function ServiceRequestOverviewItem({ request }: ServiceRequestOverviewItemProps
   }
 
   return (
-    <div className="flex flex-col space-y-3 p-4 border-b last:border-b-0">
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between space-y-2 sm:space-y-0">
-        <div className="flex-1 min-w-0">
+    <div className="flex flex-col space-y-3 border-b p-4 last:border-b-0">
+      <div className="flex flex-col space-y-2 sm:flex-row sm:items-start sm:justify-between sm:space-y-0">
+        <div className="min-w-0 flex-1">
           <h3 className="text-sm font-medium">{request.title}</h3>
           <p className="text-xs text-muted-foreground">
             {request.equipmentCategory.replace(/_/g, " ")}
@@ -120,26 +143,31 @@ function ServiceRequestOverviewItem({ request }: ServiceRequestOverviewItemProps
         </div>
         {getStatusBadge(request.status)}
       </div>
-      
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 text-xs text-muted-foreground">
+
+      <div className="grid grid-cols-1 gap-2 text-xs text-muted-foreground sm:grid-cols-2 lg:grid-cols-4">
         <div className="truncate">
           <span className="font-medium">Location:</span> {request.jobSite}
         </div>
         <div>
-          <span className="font-medium">Start:</span> {formatDate(request.startDate)}
+          <span className="font-medium">Start:</span>{" "}
+          {formatDate(request.startDate)}
         </div>
         <div>
-          <span className="font-medium">Est. Cost:</span> {formatCurrency(request.estimatedCost)}
+          <span className="font-medium">Est. Cost:</span>{" "}
+          {formatCurrency(request.estimatedCost)}
         </div>
         <div>
-          <span className="font-medium">Created:</span> {formatDate(request.createdAt)}
+          <span className="font-medium">Created:</span>{" "}
+          {formatDate(request.createdAt)}
         </div>
       </div>
 
       {request.assignedOperators && request.assignedOperators.length > 0 && (
         <div className="text-xs text-muted-foreground">
           <span className="font-medium">Assigned Operators:</span>{" "}
-          {request.assignedOperators.map(op => `${op.name || "Unknown"} (${op.email})`).join(", ")}
+          {request.assignedOperators
+            .map((op) => `${op.name || "Unknown"} (${op.email})`)
+            .join(", ")}
         </div>
       )}
     </div>
@@ -185,20 +213,23 @@ function UserOverviewItem({ user }: UserOverviewItemProps) {
   }
 
   return (
-    <div className="flex flex-col space-y-3 p-4 border-b last:border-b-0">
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between space-y-2 sm:space-y-0">
-        <div className="flex-1 min-w-0">
+    <div className="flex flex-col space-y-3 border-b p-4 last:border-b-0">
+      <div className="flex flex-col space-y-2 sm:flex-row sm:items-start sm:justify-between sm:space-y-0">
+        <div className="min-w-0 flex-1">
           <h3 className="text-sm font-medium">{user.name || "Unknown User"}</h3>
           <p className="text-xs text-muted-foreground">{user.email}</p>
           {user.company && (
-            <p className="text-xs text-muted-foreground">Company: {user.company}</p>
+            <p className="text-xs text-muted-foreground">
+              Company: {user.company}
+            </p>
           )}
         </div>
         {getRoleBadge(user.role)}
       </div>
-      
+
       <div className="text-xs text-muted-foreground">
-        <span className="font-medium">Joined:</span> {formatDate(user.createdAt)}
+        <span className="font-medium">Joined:</span>{" "}
+        {formatDate(user.createdAt)}
       </div>
     </div>
   )
@@ -209,16 +240,16 @@ function UserOverviewItem({ user }: UserOverviewItemProps) {
  */
 function ItemSkeleton() {
   return (
-    <div className="space-y-3 p-4 border-b">
-      <div className="flex justify-between items-start">
-        <div className="space-y-2 flex-1">
+    <div className="space-y-3 border-b p-4">
+      <div className="flex items-start justify-between">
+        <div className="flex-1 space-y-2">
           <Skeleton className="h-4 w-3/4" />
           <Skeleton className="h-3 w-1/2" />
           <Skeleton className="h-3 w-2/3" />
         </div>
         <Skeleton className="h-6 w-24" />
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-4 gap-2">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-4">
         <Skeleton className="h-3 w-full" />
         <Skeleton className="h-3 w-full" />
         <Skeleton className="h-3 w-full" />
@@ -230,10 +261,10 @@ function ItemSkeleton() {
 
 /**
  * AdminDashboard Component
- * 
+ *
  * Provides comprehensive system metrics and user management for administrators.
  * Features mobile-first responsive design with complete system oversight.
- * 
+ *
  * Key Features:
  * - Complete system statistics with revenue and performance metrics
  * - All service requests with full details
@@ -278,7 +309,7 @@ export function AdminDashboard() {
     revenue: 0,
     averageJobDuration: 0,
   }
-  
+
   const allRequests = dashboardData?.recentRequests || []
   const users = dashboardData?.users || []
   const assignments = dashboardData?.assignments || []
@@ -295,8 +326,8 @@ export function AdminDashboard() {
         </div>
 
         <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
+          <AlertCircle className="size-4" />
+          <AlertDescription className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
             <span>{error}</span>
             <Button
               variant="outline"
@@ -315,7 +346,7 @@ export function AdminDashboard() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+      <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Admin Dashboard</h1>
           <p className="text-muted-foreground">
@@ -333,17 +364,17 @@ export function AdminDashboard() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         {isLoading ? (
           <>
             {Array.from({ length: 6 }).map((_, i) => (
               <Card key={i}>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <Skeleton className="h-4 w-24" />
-                  <Skeleton className="h-4 w-4" />
+                  <Skeleton className="size-4" />
                 </CardHeader>
                 <CardContent>
-                  <Skeleton className="h-8 w-16 mb-2" />
+                  <Skeleton className="mb-2 h-8 w-16" />
                   <Skeleton className="h-3 w-32" />
                 </CardContent>
               </Card>
@@ -395,15 +426,18 @@ export function AdminDashboard() {
       <Tabs defaultValue="requests" className="space-y-4">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="requests" className="flex items-center space-x-2">
-            <Activity className="h-4 w-4" />
+            <Activity className="size-4" />
             <span>All Requests</span>
           </TabsTrigger>
           <TabsTrigger value="users" className="flex items-center space-x-2">
-            <Users className="h-4 w-4" />
+            <Users className="size-4" />
             <span>Users</span>
           </TabsTrigger>
-          <TabsTrigger value="assignments" className="flex items-center space-x-2">
-            <CheckCircle className="h-4 w-4" />
+          <TabsTrigger
+            value="assignments"
+            className="flex items-center space-x-2"
+          >
+            <CheckCircle className="size-4" />
             <span>Assignments</span>
           </TabsTrigger>
         </TabsList>
@@ -467,10 +501,7 @@ export function AdminDashboard() {
               ) : users.length > 0 ? (
                 <div>
                   {users.map((user) => (
-                    <UserOverviewItem
-                      key={user.id}
-                      user={user}
-                    />
+                    <UserOverviewItem key={user.id} user={user} />
                   ))}
                 </div>
               ) : (
@@ -508,10 +539,15 @@ export function AdminDashboard() {
               ) : assignments.length > 0 ? (
                 <div>
                   {assignments.map((assignment) => (
-                    <div key={assignment.id} className="flex flex-col space-y-3 p-4 border-b last:border-b-0">
-                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between space-y-2 sm:space-y-0">
-                        <div className="flex-1 min-w-0">
-                          <h3 className="text-sm font-medium">{assignment.serviceRequest.title}</h3>
+                    <div
+                      key={assignment.id}
+                      className="flex flex-col space-y-3 border-b p-4 last:border-b-0"
+                    >
+                      <div className="flex flex-col space-y-2 sm:flex-row sm:items-start sm:justify-between sm:space-y-0">
+                        <div className="min-w-0 flex-1">
+                          <h3 className="text-sm font-medium">
+                            {assignment.serviceRequest.title}
+                          </h3>
                           <p className="text-xs text-muted-foreground">
                             Location: {assignment.serviceRequest.jobSite}
                           </p>

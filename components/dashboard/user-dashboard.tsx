@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Plus, TrendingUp, Clock, CheckCircle, AlertCircle } from "lucide-react"
+import { TrendingUp, Clock, CheckCircle, AlertCircle } from "lucide-react"
 
 import { useServiceRequests } from "@/hooks/use-service-requests"
 import { Button } from "@/components/ui/button"
@@ -64,7 +64,7 @@ function StatsCard({ title, value, icon: Icon, description, className }: StatsCa
     <Card className={className}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium">{title}</CardTitle>
-        <Icon className="h-4 w-4 text-muted-foreground" />
+        <Icon className="size-4 text-muted-foreground" />
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold">{value}</div>
@@ -110,18 +110,18 @@ function ServiceRequestItem({ request }: ServiceRequestItemProps) {
   }
 
   return (
-    <div className="flex flex-col space-y-3 p-4 border-b last:border-b-0">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
-        <div className="flex-1 min-w-0">
-          <h3 className="text-sm font-medium truncate">{request.title}</h3>
-          <p className="text-xs text-muted-foreground truncate">
+    <div className="flex flex-col space-y-3 border-b p-4 last:border-b-0">
+      <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
+        <div className="min-w-0 flex-1">
+          <h3 className="truncate text-sm font-medium">{request.title}</h3>
+          <p className="truncate text-xs text-muted-foreground">
             {request.equipmentCategory.replace(/_/g, " ")}
           </p>
         </div>
         <StatusBadge status={request.status} />
       </div>
       
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs text-muted-foreground">
+      <div className="grid grid-cols-1 gap-2 text-xs text-muted-foreground sm:grid-cols-3">
         <div className="truncate">
           <span className="font-medium">Location:</span> {request.jobSite}
         </div>
@@ -141,15 +141,15 @@ function ServiceRequestItem({ request }: ServiceRequestItemProps) {
  */
 function ServiceRequestSkeleton() {
   return (
-    <div className="space-y-3 p-4 border-b">
-      <div className="flex justify-between items-start">
-        <div className="space-y-2 flex-1">
+    <div className="space-y-3 border-b p-4">
+      <div className="flex items-start justify-between">
+        <div className="flex-1 space-y-2">
           <Skeleton className="h-4 w-3/4" />
           <Skeleton className="h-3 w-1/2" />
         </div>
         <Skeleton className="h-6 w-20" />
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
         <Skeleton className="h-3 w-full" />
         <Skeleton className="h-3 w-full" />
         <Skeleton className="h-3 w-full" />
@@ -191,7 +191,7 @@ export function UserDashboard({ onNavigateToCreateRequest }: UserDashboardProps 
   if (error) {
     return (
       <div className="space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+        <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
           <div>
             <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
             <p className="text-muted-foreground">
@@ -202,8 +202,8 @@ export function UserDashboard({ onNavigateToCreateRequest }: UserDashboardProps 
         </div>
 
         <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
+          <AlertCircle className="size-4" />
+          <AlertDescription className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
             <span>{error}</span>
             <Button
               variant="outline"
@@ -222,7 +222,7 @@ export function UserDashboard({ onNavigateToCreateRequest }: UserDashboardProps 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+      <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
           <p className="text-muted-foreground">
@@ -233,17 +233,17 @@ export function UserDashboard({ onNavigateToCreateRequest }: UserDashboardProps 
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {isLoading ? (
           <>
             {Array.from({ length: 4 }).map((_, i) => (
               <Card key={i}>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <Skeleton className="h-4 w-24" />
-                  <Skeleton className="h-4 w-4" />
+                  <Skeleton className="size-4" />
                 </CardHeader>
                 <CardContent>
-                  <Skeleton className="h-8 w-16 mb-2" />
+                  <Skeleton className="mb-2 h-8 w-16" />
                   <Skeleton className="h-3 w-32" />
                 </CardContent>
               </Card>
@@ -281,7 +281,7 @@ export function UserDashboard({ onNavigateToCreateRequest }: UserDashboardProps 
 
       {/* Recent Service Requests */}
       <Card>
-        <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
+        <CardHeader className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
           <div>
             <CardTitle>Recent Service Requests</CardTitle>
             <CardDescription>

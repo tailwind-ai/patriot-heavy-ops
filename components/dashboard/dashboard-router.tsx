@@ -9,7 +9,9 @@ import { AdminDashboard } from "./admin-dashboard"
 interface DashboardRouterProps {
   user: {
     role: string
-    [key: string]: any
+    id?: string
+    name?: string | null
+    email?: string | null
   }
 }
 
