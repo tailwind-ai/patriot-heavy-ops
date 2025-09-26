@@ -46,10 +46,10 @@ export function useServiceRequests(options: UseServiceRequestsOptions = {}): Use
 
   // Navigate to service request creation
   const createServiceRequest = React.useCallback(() => {
-    // This would typically use Next.js router, but keeping it platform-agnostic
-    if (typeof window !== "undefined") {
-      window.location.href = "/dashboard/service-requests/new"
-    }
+    // Platform-agnostic navigation - should be handled by parent component
+    // In Next.js, this would use router.push()
+    // In React Native, this would use navigation.navigate()
+    console.warn("createServiceRequest called - navigation should be handled by parent component")
   }, [])
 
   // Extract service request data and stats

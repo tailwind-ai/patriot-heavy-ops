@@ -139,15 +139,19 @@ describe("useDashboardData", () => {
       expect(result.current.isLoading).toBe(false)
     })
 
+    const expectedAssignment = mockData.data.assignments?.[0]
+    expect(expectedAssignment).toBeDefined()
+    expect(expectedAssignment?.serviceRequest).toBeDefined()
+    
     expect(result.current.data).toEqual({
       stats: mockData.data.stats,
       recentRequests: [],
       assignments: [
         {
-          ...mockData.data.assignments[0],
+          ...expectedAssignment!,
           assignedAt: new Date("2024-01-01T00:00:00.000Z"),
           serviceRequest: {
-            ...mockData.data.assignments[0].serviceRequest,
+            ...expectedAssignment!.serviceRequest,
             startDate: new Date("2024-01-02T00:00:00.000Z"),
             endDate: null,
           },
@@ -235,7 +239,7 @@ describe("useDashboardData", () => {
     const startDate = new Date("2024-01-01")
     const endDate = new Date("2024-01-31")
 
-    renderHook(() =>
+    const { result } = renderHook(() =>
       useDashboardData({
         role: "MANAGER",
         limit: 20,
@@ -251,8 +255,6 @@ describe("useDashboardData", () => {
         expect.any(Object)
       )
     })
-
-    expect(result.current.data).toBeDefined()
   })
 
   it("should handle refetch", async () => {

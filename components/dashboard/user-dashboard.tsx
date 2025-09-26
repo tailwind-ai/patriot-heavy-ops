@@ -4,6 +4,10 @@ import * as React from "react"
 import { Plus, TrendingUp, Clock, CheckCircle, AlertCircle } from "lucide-react"
 
 import { useServiceRequests } from "@/hooks/use-service-requests"
+
+interface UserDashboardProps {
+  onNavigateToCreateRequest?: () => void
+}
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -168,7 +172,7 @@ function ServiceRequestSkeleton() {
  * - Accessibility compliant (WCAG 2.1 AA)
  * - Loading states and error handling
  */
-export function UserDashboard() {
+export function UserDashboard({ onNavigateToCreateRequest }: UserDashboardProps = {}) {
   const {
     serviceRequests,
     totalRequests,
@@ -225,7 +229,7 @@ export function UserDashboard() {
             Manage your equipment service requests
           </p>
         </div>
-        <ServiceRequestCreateButton />
+        <ServiceRequestCreateButton onClick={onNavigateToCreateRequest} />
       </div>
 
       {/* Stats Cards */}
@@ -318,7 +322,7 @@ export function UserDashboard() {
                 <EmptyPlaceholder.Description>
                   Get started by creating your first equipment service request.
                 </EmptyPlaceholder.Description>
-                <ServiceRequestCreateButton variant="outline" />
+                <ServiceRequestCreateButton variant="outline" onClick={onNavigateToCreateRequest} />
               </EmptyPlaceholder>
             </div>
           )}

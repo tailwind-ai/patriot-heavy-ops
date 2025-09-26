@@ -3,10 +3,7 @@ import { redirect } from "next/navigation"
 import { authOptions } from "@/lib/auth"
 import { getCurrentUser } from "@/lib/session"
 import { DashboardShell } from "@/components/shell"
-import { UserDashboard } from "@/components/dashboard/user-dashboard"
-import { OperatorDashboard } from "@/components/dashboard/operator-dashboard"
-import { ManagerDashboard } from "@/components/dashboard/manager-dashboard"
-import { AdminDashboard } from "@/components/dashboard/admin-dashboard"
+import { DashboardRouter } from "@/components/dashboard/dashboard-router"
 
 export const metadata = {
   title: "Dashboard",
@@ -31,24 +28,9 @@ export default async function DashboardPage() {
     redirect(authOptions?.pages?.signIn || "/login")
   }
 
-  // Determine which dashboard component to render based on user role
-  const renderDashboard = () => {
-    switch (user.role) {
-      case "OPERATOR":
-        return <OperatorDashboard />
-      case "MANAGER":
-        return <ManagerDashboard />
-      case "ADMIN":
-        return <AdminDashboard />
-      case "USER":
-      default:
-        return <UserDashboard />
-    }
-  }
-
   return (
     <DashboardShell>
-      {renderDashboard()}
+      <DashboardRouter user={user} />
     </DashboardShell>
   )
 }

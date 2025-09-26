@@ -203,6 +203,7 @@ describe("UserDashboard", () => {
       isLoading: false,
       error: null,
       refetch: mockRefetch,
+      createServiceRequest: jest.fn(),
     })
 
     render(<UserDashboard />)

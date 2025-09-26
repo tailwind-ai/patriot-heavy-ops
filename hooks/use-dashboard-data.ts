@@ -236,8 +236,8 @@ export function useDashboardData(options: UseDashboardDataOptions): UseDashboard
   }, [fetchDashboardData])
 
   // Clear cache function (calls API to clear server-side cache)
-  const clearCache = React.useCallback(() => {
-    // Clear local state
+  const clearCache = React.useCallback(async () => {
+    // Clear local state immediately
     setData(null)
     setError(null)
     
@@ -246,28 +246,48 @@ export function useDashboardData(options: UseDashboardDataOptions): UseDashboard
       description: "Dashboard cache cleared. Refreshing data...",
     })
     
-    // Refetch with cache disabled
-    const optionsWithoutCache = { ...options, enableCaching: false }
-    const endpoint = getApiEndpoint(optionsWithoutCache.role)
-    const queryParams = buildQueryParams(optionsWithoutCache)
-    const url = queryParams ? `${endpoint}?${queryParams}` : endpoint
-    
-    fetch(url, {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-    }).then(() => {
-      // Refetch with caching re-enabled
-      refetch()
-    }).catch(() => {
+    try {
+      // Call server-side cache clearing endpoint with DELETE method
+      const endpoint = getApiEndpoint(options.role)
+      const cacheEndpoint = `${endpoint}/cache`
+      
+      const response = await fetch(cacheEndpoint, {
+        method: "DELETE",
+        headers: { 
+          "Content-Type": "application/json",
+          "Cache-Control": "no-cache, no-store, must-revalidate",
+          "Pragma": "no-cache",
+          "Expires": "0"
+        },
+        credentials: "include",
+      })
+
+      if (!response.ok) {
+        console.warn("Cache clear request failed, proceeding with local refresh")
+      }
+      
+      // Refetch with cache-busting parameter
+      const optionsWithoutCache = { 
+        ...options, 
+        enableCaching: false,
+        cacheBuster: Date.now().toString()
+      }
+      
+      // Force refetch with new options
+      await fetchDashboardData()
+      
+    } catch (error) {
+      console.warn("Cache clear failed:", error)
       toast({
         title: "Cache clear failed",
-        description: "Unable to clear cache, but data will be refreshed.",
+        description: "Unable to clear server cache, but data will be refreshed.",
         variant: "destructive",
       })
-      refetch()
-    })
-  }, [options, getApiEndpoint, buildQueryParams, refetch])
+      
+      // Still attempt to refetch even if cache clear failed
+      await refetch()
+    }
+  }, [options, getApiEndpoint, fetchDashboardData, refetch])
 
   // Initial fetch and refetch on options change
   React.useEffect(() => {
