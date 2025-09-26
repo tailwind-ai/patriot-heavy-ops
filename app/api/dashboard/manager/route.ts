@@ -101,18 +101,21 @@ export async function GET(req: NextRequest) {
     // Get dashboard service instance
     const dashboardService = ServiceFactory.getDashboardService()
 
-    // Build date range for service call
-    const dateRange = startDate && endDate ? { start: startDate, end: endDate } : undefined
+    // Build options for service call
+    const options: any = {
+      userId: authResult.user.id,
+      userRole: "MANAGER" as UserRole,
+      limit,
+      offset,
+    }
+
+    // Add date range if provided
+    if (startDate && endDate) {
+      options.dateRange = { start: startDate, end: endDate }
+    }
 
     // Fetch dashboard data using service layer
-    const result = await dashboardService.getDashboardData(
-      {
-        userId: authResult.user.id,
-        userRole: "MANAGER" as UserRole,
-        limit,
-        offset,
-        dateRange,
-      },
+    const result = await dashboardService.getDashboardData(options,
       {
         enableCaching,
         cacheKey: `dashboard_manager_${authResult.user.id}_${limit}_${offset}_${startDate?.toISOString()}_${endDate?.toISOString()}`,
@@ -144,7 +147,7 @@ export async function GET(req: NextRequest) {
         meta: {
           limit,
           offset,
-          dateRange: dateRange ? { startDate, endDate } : null,
+          dateRange: startDate && endDate ? { startDate, endDate } : null,
           authMethod: authResult.authMethod,
           userRole: authResult.user.role,
           cached: enableCaching
