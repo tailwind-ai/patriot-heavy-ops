@@ -145,7 +145,6 @@ jobs:
             # Extract PR number from issue if it's a PR
             if [[ "${{ github.event.issue.pull_request }}" != "" ]]; then
               PR_NUMBER=${{ github.event.issue.number }}
-              PR_BRANCH=$(gh pr view $PR_NUMBER --json headRefName -q .headRefName | head -1)
             else
               echo "Not a PR comment, skipping"
               exit 0
@@ -153,7 +152,6 @@ jobs:
           elif [ "${{ github.event_name }}" = "status" ] || [ "${{ github.event_name }}" = "check_run" ]; then
             # For status/check events, find associated PR
             PR_NUMBER=$(gh pr list --state open --json number,headRefName --jq '.[] | select(.headRefName == "${{ github.ref_name }}") | .number' | head -1)
-            PR_BRANCH="${{ github.ref_name }}"
             if [ -z "$PR_NUMBER" ]; then
               echo "No open PR found for this ref, skipping"
               exit 0
@@ -161,65 +159,13 @@ jobs:
           fi
 
           echo "Processing PR #$PR_NUMBER with Background Agent..."
-          echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_ENV
-          echo "PR_BRANCH=$PR_BRANCH" >> $GITHUB_ENV
-        env:
-          GITHUB_ACCESS_TOKEN: ${{ secrets.REPO_PAT }}
-          GH_TOKEN: ${{ secrets.REPO_PAT }}
 
-      - name: Reuse failure-analysis todos if available
-        run: |
-          set -e
-          echo "Attempting to reuse failure-analysis artifact for branch: ${PR_BRANCH}"
-
-          # Authenticate GH CLI (env GH_TOKEN is set)
-          gh auth status || true
-
-          # Find most recent Background Agent run for this branch triggered by workflow_run
-          RUN_ID=$(gh run list --workflow "Background Agent" --branch "$PR_BRANCH" --json databaseId,event,headBranch --jq '.[] | select(.event == "workflow_run" and .headBranch == env.PR_BRANCH) | .databaseId' | head -1)
-
-          if [ -n "$RUN_ID" ]; then
-            echo "Found workflow_run-triggered Background Agent run: $RUN_ID"
-            # Find artifact name that starts with failure-analysis-
-            ARTIFACT_NAME=$(gh api repos/${{ github.repository }}/actions/runs/$RUN_ID/artifacts --jq '.artifacts[] | .name' | grep '^failure-analysis-' | head -1 || true)
-
-            if [ -n "$ARTIFACT_NAME" ]; then
-              echo "Downloading artifact: $ARTIFACT_NAME from run $RUN_ID"
-              gh run download "$RUN_ID" --name "$ARTIFACT_NAME" --repo ${{ github.repository }} || true
-              # If the artifact extracted into a subdirectory, locate and copy .todos.json to repo root
-              if [ ! -f ".todos.json" ]; then
-                CANDIDATE=$(find . -maxdepth 3 -type f -name ".todos.json" | head -1 || true)
-                if [ -n "$CANDIDATE" ]; then
-                  cp "$CANDIDATE" ./.todos.json || true
-                fi
-              fi
-            else
-              echo "No failure-analysis artifact found on run $RUN_ID"
-            fi
+          # Use DoD-enabled version for status/check events (when CI might be passing)
+          if [ "${{ github.event_name }}" = "status" ] || [ "${{ github.event_name }}" = "check_run" ]; then
+            echo "Using Definition of Done checks for status/check event..."
+            npx tsx scripts/todo-cli.ts github-dod $PR_NUMBER
           else
-            echo "No matching Background Agent run found for branch $PR_BRANCH"
-          fi
-
-          if [ -f ".todos.json" ]; then
-            echo "SOURCE=artifact" >> $GITHUB_ENV
-          else
-            echo "SOURCE=generated" >> $GITHUB_ENV
-          fi
-        env:
-          GH_TOKEN: ${{ secrets.REPO_PAT }}
-
-      - name: Generate or reuse todos
-        run: |
-          if [ "$SOURCE" = "artifact" ]; then
-            echo "Reusing .todos.json from failure-analysis artifact"
-          else
-            if [ "${{ github.event_name }}" = "status" ] || [ "${{ github.event_name }}" = "check_run" ]; then
-              echo "Generating todos via github-dod for PR #${PR_NUMBER}"
-              npx tsx scripts/todo-cli.ts github-dod ${PR_NUMBER}
-            else
-              echo "Generating todos via github for PR #${PR_NUMBER}"
-              npx tsx scripts/todo-cli.ts github ${PR_NUMBER}
-            fi
+            npx tsx scripts/todo-cli.ts github $PR_NUMBER
           fi
         env:
           GITHUB_ACCESS_TOKEN: ${{ secrets.REPO_PAT }}
