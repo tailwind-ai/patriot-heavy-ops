@@ -145,7 +145,6 @@ jobs:
             # Extract PR number from issue if it's a PR
             if [[ "${{ github.event.issue.pull_request }}" != "" ]]; then
               PR_NUMBER=${{ github.event.issue.number }}
-              PR_BRANCH=$(gh pr view $PR_NUMBER --json headRefName -q .headRefName | head -1)
             else
               echo "Not a PR comment, skipping"
               exit 0
@@ -153,7 +152,6 @@ jobs:
           elif [ "${{ github.event_name }}" = "status" ] || [ "${{ github.event_name }}" = "check_run" ]; then
             # For status/check events, find associated PR
             PR_NUMBER=$(gh pr list --state open --json number,headRefName --jq '.[] | select(.headRefName == "${{ github.ref_name }}") | .number' | head -1)
-            PR_BRANCH="${{ github.ref_name }}"
             if [ -z "$PR_NUMBER" ]; then
               echo "No open PR found for this ref, skipping"
               exit 0
@@ -162,102 +160,16 @@ jobs:
 
           echo "Processing PR #$PR_NUMBER with Background Agent..."
           echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_ENV
-          echo "PR_BRANCH=$PR_BRANCH" >> $GITHUB_ENV
-        env:
-          GITHUB_ACCESS_TOKEN: ${{ secrets.REPO_PAT }}
-          GH_TOKEN: ${{ secrets.REPO_PAT }}
 
-      - name: Reuse failure-analysis todos if available
-        run: |
-          set -e
-          echo "Attempting to reuse failure-analysis artifact for branch: ${PR_BRANCH}"
-
-          # Authenticate GH CLI (env GH_TOKEN is set)
-          gh auth status || true
-
-          # Find most recent Background Agent run for this branch triggered by workflow_run
-          RUN_ID=$(gh run list --workflow "Background Agent" --branch "$PR_BRANCH" --json databaseId,event,headBranch --jq '.[] | select(.event == "workflow_run" and .headBranch == env.PR_BRANCH) | .databaseId' | head -1)
-
-          if [ -n "$RUN_ID" ]; then
-            echo "Found workflow_run-triggered Background Agent run: $RUN_ID"
-            # Find artifact name that starts with failure-analysis-
-            ARTIFACT_NAME=$(gh api repos/${{ github.repository }}/actions/runs/$RUN_ID/artifacts --jq '.artifacts[] | .name' | grep '^failure-analysis-' | head -1 || true)
-
-            if [ -n "$ARTIFACT_NAME" ]; then
-              echo "Downloading artifact: $ARTIFACT_NAME from run $RUN_ID"
-              gh run download "$RUN_ID" --name "$ARTIFACT_NAME" --repo ${{ github.repository }} || true
-              # If the artifact extracted into a subdirectory, locate and copy .todos.json to repo root
-              if [ ! -f ".todos.json" ]; then
-                CANDIDATE=$(find . -maxdepth 3 -type f -name ".todos.json" | head -1 || true)
-                if [ -n "$CANDIDATE" ]; then
-                  cp "$CANDIDATE" ./.todos.json || true
-                fi
-              fi
-            else
-              echo "No failure-analysis artifact found on run $RUN_ID"
-            fi
+          # Use DoD-enabled version for status/check events (when CI might be passing)
+          if [ "${{ github.event_name }}" = "status" ] || [ "${{ github.event_name }}" = "check_run" ]; then
+            echo "Using Definition of Done checks for status/check event..."
+            npx tsx scripts/todo-cli.ts github-dod $PR_NUMBER
           else
-            echo "No matching Background Agent run found for branch $PR_BRANCH"
-          fi
-
-          if [ -f ".todos.json" ]; then
-            echo "SOURCE=artifact" >> $GITHUB_ENV
-          else
-            echo "SOURCE=generated" >> $GITHUB_ENV
-          fi
-        env:
-          GH_TOKEN: ${{ secrets.REPO_PAT }}
-
-      - name: Generate or reuse todos
-        run: |
-          if [ "$SOURCE" = "artifact" ]; then
-            echo "Reusing .todos.json from failure-analysis artifact"
-          else
-            if [ "${{ github.event_name }}" = "status" ] || [ "${{ github.event_name }}" = "check_run" ]; then
-              echo "Generating todos via github-dod for PR #${PR_NUMBER}"
-              npx tsx scripts/todo-cli.ts github-dod ${PR_NUMBER}
-            else
-              echo "Generating todos via github for PR #${PR_NUMBER}"
-              npx tsx scripts/todo-cli.ts github ${PR_NUMBER}
-            fi
+            npx tsx scripts/todo-cli.ts github $PR_NUMBER
           fi
         env:
           GITHUB_ACCESS_TOKEN: ${{ secrets.REPO_PAT }}
-          GH_TOKEN: ${{ secrets.REPO_PAT }}
-
-      - name: Commit .todos.json to PR branch (same-repo only)
-        if: always()
-        run: |
-          set -e
-          if [ ! -f ".todos.json" ]; then
-            echo "No .todos.json present; skipping commit."
-            exit 0
-          fi
-
-          echo "Fetching PR metadata for #${PR_NUMBER}"
-          PR_JSON=$(gh pr view ${PR_NUMBER} --json isCrossRepository,headRefName,headRepositoryOwner --jq '{cross:.isCrossRepository, ref:.headRefName, owner:.headRepositoryOwner.login}')
-          IS_CROSS=$(echo "$PR_JSON" | jq -r .cross)
-          HEAD_REF=$(echo "$PR_JSON" | jq -r .ref)
-
-          if [ "$IS_CROSS" != "false" ]; then
-            echo "PR is from a fork; skipping commit to branch."
-            exit 0
-          fi
-
-          git config user.name "background-agent"
-          git config user.email "background-agent@users.noreply.github.com"
-          git fetch origin "$HEAD_REF" --depth=1
-          git checkout "$HEAD_REF"
-
-          # Avoid needless churn: only commit if contents changed
-          git add .todos.json
-          if git diff --cached --quiet; then
-            echo "No changes in .todos.json to commit."
-            exit 0
-          fi
-          git commit -m "chore(todos): update PR #${PR_NUMBER} todos"
-          git push https://x-access-token:${{ secrets.REPO_PAT }}@github.com/${{ github.repository }}.git HEAD:"$HEAD_REF"
-        env:
           GH_TOKEN: ${{ secrets.REPO_PAT }}
 
       - name: Check for new todos
@@ -284,81 +196,44 @@ jobs:
           github-token: ${{ secrets.REPO_PAT }}
           script: |
             const fs = require('fs');
-            const crypto = require('crypto');
+            let comment = '## 🤖 Background Agent Analysis\n\n';
 
-            const header = '## 🤖 Background Agent Analysis\n\n';
-            const stickyMarker = '<!-- background-agent:sticky -->';
-
-            function computeDigest(items) {
-              const minimal = items.map(t => ({
-                c: t.content,
-                p: t.priority,
-                f: (t.files || []).slice().sort(),
-              }));
-              const text = JSON.stringify(minimal);
-              return crypto.createHash('sha256').update(text).digest('hex');
-            }
-
-            let pendingTodos = [];
-            if (fs.existsSync('.todos.json')) {
-              const todos = JSON.parse(fs.readFileSync('.todos.json', 'utf8'));
-              pendingTodos = todos.filter(t => t.status === 'pending');
-            }
-
-            let body = header;
-            if (pendingTodos.length > 0) {
-              body += `Found **${pendingTodos.length}** issues to address:\n\n`;
-              pendingTodos.forEach((todo, index) => {
-                const priority = todo.priority === 'critical' ? '🔴' : 
-                               todo.priority === 'high' ? '🟠' : 
-                               todo.priority === 'medium' ? '🟡' : '🟢';
-                body += `${index + 1}. ${priority} **${todo.priority.toUpperCase()}**: ${todo.content}\n`;
-                if (todo.suggestedFix) {
-                  body += `   💡 **Fix**: ${todo.suggestedFix}\n`;
+            try {
+              if (fs.existsSync('.todos.json')) {
+                const todos = JSON.parse(fs.readFileSync('.todos.json', 'utf8'));
+                const pendingTodos = todos.filter(t => t.status === 'pending');
+                
+                if (pendingTodos.length > 0) {
+                  comment += `Found **${pendingTodos.length}** issues to address:\n\n`;
+                  pendingTodos.forEach((todo, index) => {
+                    const priority = todo.priority === 'critical' ? '🔴' : 
+                                   todo.priority === 'high' ? '🟠' : 
+                                   todo.priority === 'medium' ? '🟡' : '🟢';
+                    comment += `${index + 1}. ${priority} **${todo.priority.toUpperCase()}**: ${todo.content}\n`;
+                    if (todo.suggestedFix) {
+                      comment += `   💡 **Fix**: ${todo.suggestedFix}\n`;
+                    }
+                    if (todo.files && todo.files.length > 0) {
+                      comment += `   📁 **Files**: ${todo.files.join(', ')}\n`;
+                    }
+                    comment += '\n';
+                  });
+                  
+                  comment += '---\n';
+                  comment += '🤖 *Background Agent has created todos for these issues. Use `npm run todo list` to see all todos and `npm run todo next` to get the next item to work on.*';
+                } else {
+                  comment += '✅ No new issues detected. All GitHub Copilot comments have been processed.';
                 }
-                if (todo.files && todo.files.length > 0) {
-                  body += `   📁 **Files**: ${todo.files.join(', ')}\n`;
-                }
-                body += '\n';
-              });
-              body += '---\n';
-              body += '🤖 *Background Agent has created todos for these issues. Use `npm run todo list` to see all todos and `npm run todo next` to get the next item to work on.*';
-            } else {
-              body += '✅ No new issues detected. All GitHub Copilot comments have been processed.';
+              } else {
+                comment += 'ℹ️ No todos file found. Background Agent may not have detected any issues.';
+              }
+            } catch (error) {
+              comment += `❌ Error processing todos: ${error.message}`;
             }
 
-            const digest = computeDigest(pendingTodos);
-            body += `\n\n${stickyMarker}\n<!-- digest:${digest} -->`;
-
-            // Find existing sticky comment
-            const comments = await github.paginate(github.rest.issues.listComments, {
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: context.issue.number,
-              per_page: 100,
+              body: comment
             });
-
-            const existing = comments.find(c => c.body && c.body.includes(stickyMarker));
-            if (existing) {
-              const existingDigestMatch = existing.body.match(/<!--\s*digest:([a-f0-9]+)\s*-->/i);
-              const existingDigest = existingDigestMatch?.[1] || '';
-              if (existingDigest === digest) {
-                console.log('No changes to Background Agent analysis; skipping comment update.');
-              } else {
-                console.log('Updating existing Background Agent sticky comment.');
-                await github.rest.issues.updateComment({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  comment_id: existing.id,
-                  body,
-                });
-              }
-            } else {
-              console.log('Creating new Background Agent sticky comment.');
-              await github.rest.issues.createComment({
-                issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body,
-              });
-            }
