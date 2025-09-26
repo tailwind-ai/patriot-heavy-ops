@@ -266,9 +266,12 @@ describe("useDashboardData", () => {
   })
 
   it("should build correct query parameters", async () => {
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({ data: { stats: {}, recentRequests: [] } }),
+    mockFetch.mockImplementation(async () => {
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({ data: { stats: {}, recentRequests: [] } }),
+      } as Response
     })
 
     const startDate = new Date("2024-01-01")
@@ -307,9 +310,12 @@ describe("useDashboardData", () => {
       },
     }
 
-    mockFetch.mockResolvedValue({
-      ok: true,
-      json: async () => mockData,
+    mockFetch.mockImplementation(async () => {
+      return {
+        ok: true,
+        status: 200,
+        json: async () => mockData,
+      } as Response
     })
 
     const { result } = renderHook(() =>
