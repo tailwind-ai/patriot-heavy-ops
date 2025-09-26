@@ -204,7 +204,7 @@ function PendingApprovalItem({ request, onApprove, onReject, isProcessing }: Pen
               <AlertDialogAction 
                 onClick={handleReject} 
                 disabled={isProcessing}
-                variant="destructive"
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               >
                 {isProcessing ? "Rejecting..." : "Reject"}
               </AlertDialogAction>

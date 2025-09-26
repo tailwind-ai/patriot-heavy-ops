@@ -476,7 +476,7 @@ export function AdminDashboard() {
               ) : (
                 <div className="p-6">
                   <EmptyPlaceholder>
-                    <EmptyPlaceholder.Icon name="users" />
+                    <EmptyPlaceholder.Icon name="user" />
                     <EmptyPlaceholder.Title>
                       No users found
                     </EmptyPlaceholder.Title>
@@ -532,7 +532,7 @@ export function AdminDashboard() {
               ) : (
                 <div className="p-6">
                   <EmptyPlaceholder>
-                    <EmptyPlaceholder.Icon name="calendar" />
+                    <EmptyPlaceholder.Icon name="post" />
                     <EmptyPlaceholder.Title>
                       No active assignments
                     </EmptyPlaceholder.Title>

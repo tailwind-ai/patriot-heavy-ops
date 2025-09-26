@@ -469,7 +469,7 @@ export function OperatorDashboard() {
             ) : (
               <div className="p-6">
                 <EmptyPlaceholder>
-                  <EmptyPlaceholder.Icon name="search" />
+                  <EmptyPlaceholder.Icon name="post" />
                   <EmptyPlaceholder.Title>
                     No available jobs
                   </EmptyPlaceholder.Title>
@@ -511,7 +511,7 @@ export function OperatorDashboard() {
             ) : (
               <div className="p-6">
                 <EmptyPlaceholder>
-                  <EmptyPlaceholder.Icon name="calendar" />
+                  <EmptyPlaceholder.Icon name="post" />
                   <EmptyPlaceholder.Title>
                     No active assignments
                   </EmptyPlaceholder.Title>

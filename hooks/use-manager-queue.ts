@@ -51,7 +51,7 @@ export function useManagerQueue(options: UseManagerQueueOptions = {}): UseManage
     limit: options.limit || 20,
     offset: options.offset || 0,
     enableCaching: options.enableCaching !== false, // Default to true
-    dateRange: options.dateRange,
+    ...(options.dateRange && { dateRange: options.dateRange }),
   })
 
   // Approve a service request

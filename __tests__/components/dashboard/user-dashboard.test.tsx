@@ -39,6 +39,7 @@ describe("UserDashboard", () => {
       isLoading: true,
       error: null,
       refetch: jest.fn(),
+      createServiceRequest: jest.fn(),
     })
 
     render(<UserDashboard />)
@@ -63,6 +64,7 @@ describe("UserDashboard", () => {
       isLoading: false,
       error: "Failed to fetch data",
       refetch: mockRefetch,
+      createServiceRequest: jest.fn(),
     })
 
     render(<UserDashboard />)
@@ -119,6 +121,7 @@ describe("UserDashboard", () => {
       isLoading: false,
       error: null,
       refetch: jest.fn(),
+      createServiceRequest: jest.fn(),
     })
 
     render(<UserDashboard />)
@@ -155,6 +158,7 @@ describe("UserDashboard", () => {
       isLoading: false,
       error: null,
       refetch: jest.fn(),
+      createServiceRequest: jest.fn(),
     })
 
     render(<UserDashboard />)
@@ -236,6 +240,7 @@ describe("UserDashboard", () => {
       isLoading: false,
       error: null,
       refetch: jest.fn(),
+      createServiceRequest: jest.fn(),
     })
 
     render(<UserDashboard />)
@@ -253,6 +258,7 @@ describe("UserDashboard", () => {
       isLoading: false,
       error: null,
       refetch: jest.fn(),
+      createServiceRequest: jest.fn(),
     })
 
     render(<UserDashboard />)
