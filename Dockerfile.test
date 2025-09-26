@@ -5,11 +5,16 @@ WORKDIR /app
 # Install curl for health checks
 RUN apk add --no-cache curl
 
-# Install all dependencies in a single step
+# Copy package files first
 COPY package*.json ./
+
+# Copy Prisma schema files before npm ci to prevent postinstall failures
+COPY prisma/ ./prisma/
+
+# Install all dependencies in a single step
 RUN npm ci
 
-# Copy source code
+# Copy remaining source code
 COPY . .
 
 # Create test user

@@ -36,8 +36,8 @@ const customJestConfig = {
       statements: 80,
     },
   },
-  testTimeout: 30000,
-  maxWorkers: 1, // Run integration tests sequentially
+      testTimeout: 30000,
+      maxWorkers: 2, // Allow 2 workers for better performance while maintaining stability // Run integration tests sequentially
 }
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
