@@ -32,8 +32,8 @@ services:
       NEXTAUTH_URL: http://localhost:3000
       NEXT_PUBLIC_APP_URL: http://localhost:3000
       # Stripe configuration
-      STRIPE_SECRET_KEY: sk_test_your_stripe_secret_key_here
-      STRIPE_PUBLISHABLE_KEY: pk_test_your_stripe_publishable_key_here
+      STRIPE_API_KEY: sk_test_your_stripe_secret_key_here
+      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: pk_test_your_stripe_publishable_key_here
       STRIPE_WEBHOOK_SECRET: whsec_your_webhook_secret_here
       # Email configuration
       POSTMARK_API_TOKEN: your_postmark_token_here
