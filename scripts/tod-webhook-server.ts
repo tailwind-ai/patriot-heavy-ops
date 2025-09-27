@@ -5,7 +5,9 @@
  * Receives Ana failure analysis data and creates native Cursor TODOs
  */
 
-import * as express from "express"
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const express = require("express")
+import type { Request, Response, NextFunction, Application } from "express"
 // import { createHash, timingSafeEqual } from 'crypto' // TODO: Implement signature validation
 
 // Ana → Tod Data Contract (from Issue #282)
@@ -53,7 +55,7 @@ export interface CursorTodoItem {
 }
 
 class TodWebhookServer {
-  private app: express.Application
+  private app: Application
   private port: number
 
   constructor(port: number = 3001) {
@@ -68,21 +70,15 @@ class TodWebhookServer {
     this.app.use(express.json({ limit: "10mb" }))
 
     // Add request logging
-    this.app.use(
-      (
-        req: express.Request,
-        res: express.Response,
-        next: express.NextFunction
-      ) => {
-        console.log(`${new Date().toISOString()} ${req.method} ${req.path}`)
-        next()
-      }
-    )
+    this.app.use((req: Request, res: Response, next: NextFunction) => {
+      console.log(`${new Date().toISOString()} ${req.method} ${req.path}`)
+      next()
+    })
   }
 
   private setupRoutes(): void {
     // Health check endpoint
-    this.app.get("/health", (req: express.Request, res: express.Response) => {
+    this.app.get("/health", (req: Request, res: Response) => {
       res.json({
         status: "healthy",
         service: "tod-webhook-server",
@@ -93,7 +89,7 @@ class TodWebhookServer {
     // Ana webhook endpoint (from Issue #282 contract)
     this.app.post(
       "/webhook/ana-failures",
-      async (req: express.Request, res: express.Response) => {
+      async (req: Request, res: Response) => {
         try {
           await this.handleAnaWebhook(req, res)
         } catch (error) {
@@ -107,31 +103,25 @@ class TodWebhookServer {
     )
 
     // Test endpoint for development
-    this.app.post(
-      "/test/create-todo",
-      async (req: express.Request, res: express.Response) => {
-        try {
-          const mockFailure: AnalyzedFailure = req.body
-          const todos = this.transformAnaToTodos([mockFailure])
-          await this.createCursorTodos(todos)
+    this.app.post("/test/create-todo", async (req: Request, res: Response) => {
+      try {
+        const mockFailure: AnalyzedFailure = req.body
+        const todos = this.transformAnaToTodos([mockFailure])
+        await this.createCursorTodos(todos)
 
-          res.json({
-            success: true,
-            message: `Created ${todos.length} TODOs`,
-            todos: todos.map((t) => ({ id: t.id, content: t.content })),
-          })
-        } catch (error) {
-          console.error("❌ Test TODO creation error:", error)
-          res.status(500).json({ error: "Failed to create test TODO" })
-        }
+        res.json({
+          success: true,
+          message: `Created ${todos.length} TODOs`,
+          todos: todos.map((t) => ({ id: t.id, content: t.content })),
+        })
+      } catch (error) {
+        console.error("❌ Test TODO creation error:", error)
+        res.status(500).json({ error: "Failed to create test TODO" })
       }
-    )
+    })
   }
 
-  private async handleAnaWebhook(
-    req: express.Request,
-    res: express.Response
-  ): Promise<void> {
+  private async handleAnaWebhook(req: Request, res: Response): Promise<void> {
     // Validate signature (security from Issue #282)
     const signature = req.headers["x-ana-signature"] as string
     const timestamp = req.headers["x-ana-timestamp"] as string
