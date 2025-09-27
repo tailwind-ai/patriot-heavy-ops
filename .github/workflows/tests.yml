@@ -205,6 +205,26 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Setup Docker Compose
+        run: |
+          # Verify docker compose is available
+          if ! command -v docker &> /dev/null; then
+            echo "Docker is not available on this runner"
+            exit 1
+          fi
+
+          # Check if docker compose command exists (newer versions use 'docker compose')
+          if docker compose version &> /dev/null; then
+            echo "Using 'docker compose'"
+          elif docker-compose --version &> /dev/null; then
+            echo "Using 'docker-compose'"
+            # Create alias for consistency
+            echo 'alias docker-compose="docker compose"' >> ~/.bashrc
+          else
+            echo "Neither 'docker compose' nor 'docker-compose' is available"
+            exit 1
+          fi
+
       - name: Start services with Docker
         run: docker compose up -d
 
@@ -212,7 +232,53 @@ jobs:
         run: sleep 30
 
       - name: Run integration tests
-        run: npm run test:integration || echo "Integration tests not yet implemented"
+        run: |
+          set -o pipefail
+          # Check if integration test config exists, if not, skip gracefully
+          if [ ! -f "jest.integration.config.js" ]; then
+            echo "Integration test configuration not found. Creating basic config..."
+            cat > jest.integration.config.js << 'EOF'
+          const nextJest = require('next/jest')
+
+          const createJestConfig = nextJest({
+            dir: './',
+          })
+
+          const customJestConfig = {
+            setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+            moduleNameMapping: {
+              '^@/components/(.*)$': '<rootDir>/components/$1',
+              '^@/pages/(.*)$': '<rootDir>/pages/$1',
+              '^@/lib/(.*)$': '<rootDir>/lib/$1',
+              '^@/hooks/(.*)$': '<rootDir>/hooks/$1',
+            },
+            testEnvironment: 'jest-environment-jsdom',
+            testMatch: ['**/__tests__/**/*integration*.test.{js,jsx,ts,tsx}'],
+            collectCoverageFrom: [
+              '**/*.{js,jsx,ts,tsx}',
+              '!**/*.d.ts',
+              '!**/node_modules/**',
+            ],
+          }
+
+          module.exports = createJestConfig(customJestConfig)
+          EOF
+          fi
+
+          # Run integration tests and capture output
+          npm run test:integration 2>&1 | tee integration-output.log
+
+          # Check if tests actually ran and passed
+          if [ ${PIPESTATUS[0]} -ne 0 ]; then
+            echo "Integration tests failed!"
+            exit 1
+          fi
+
+          # Check if any tests were found and executed
+          if grep -q "No tests found" integration-output.log; then
+            echo "No integration tests found. This is expected if integration tests haven't been implemented yet."
+            echo "Integration test setup completed successfully." >> integration-output.log
+          fi
 
       - name: Stop services
         if: always()
