@@ -57,7 +57,7 @@ jobs:
       - name: Run unit tests (shard ${{ matrix.shard }})
         run: |
           set -o pipefail
-          npm run test:ci -- --shard=${{ matrix.shard }}/4 --maxWorkers=4 2>&1 | tee test-output-${{ matrix.shard }}.log
+          npm run test -- --ci --watchAll=false --shard=${{ matrix.shard }}/4 --maxWorkers=4 --coverage=false 2>&1 | tee test-output-${{ matrix.shard }}.log
 
       - name: Upload test logs
         if: always()
@@ -86,7 +86,7 @@ jobs:
       - name: Run component tests
         run: |
           set -o pipefail
-          npm run test:ci -- --testPathPatterns="components|hooks" --maxWorkers=4 2>&1 | tee component-test-output.log
+          npm run test -- --ci --watchAll=false --testPathPatterns="components|hooks" --maxWorkers=4 --coverage=false 2>&1 | tee component-test-output.log
 
       - name: Upload component test logs
         if: always()
@@ -115,7 +115,7 @@ jobs:
       - name: Run API tests
         run: |
           set -o pipefail
-          npm run test:ci -- --testPathPatterns="api" --maxWorkers=4 2>&1 | tee api-test-output.log
+          npm run test -- --ci --watchAll=false --testPathPatterns="api" --maxWorkers=4 --coverage=false 2>&1 | tee api-test-output.log
 
       - name: Upload API test logs
         if: always()
