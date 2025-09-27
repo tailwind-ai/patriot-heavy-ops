@@ -125,16 +125,13 @@ async function detectIssues(
   return issues
 }
 
-async function detectReviewComment(
-  commentData: {
-    id: number
-    body: string
-    user: { login: string }
-    created_at: string
-  }
-): Promise<IssueDetection | null> {
+async function detectReviewComment(commentData: {
+  id: number
+  body: string
+  user: { login: string }
+  created_at: string
+}): Promise<IssueDetection | null> {
   const body = commentData.body || ""
-  const author = commentData.user?.login || ""
 
   // Check if comment contains code suggestions or review feedback
   if (
@@ -174,7 +171,8 @@ async function detectNewComments(
     for (const comment of comments.data) {
       // Check for review suggestions
       if (
-        (comment.body?.includes("```") && comment.body.includes("suggestion")) ||
+        (comment.body?.includes("```") &&
+          comment.body.includes("suggestion")) ||
         comment.body?.includes("review") ||
         comment.body?.includes("consider")
       ) {
@@ -254,7 +252,8 @@ async function detectVercelFailures(
     if (response.ok) {
       const deployments = await response.json()
       const prDeployment = deployments.deployments?.find(
-        (d: { meta?: { githubCommitRef?: string } }) => d.meta?.githubCommitRef === `pull/${prNumber}/head`
+        (d: { meta?: { githubCommitRef?: string } }) =>
+          d.meta?.githubCommitRef === `pull/${prNumber}/head`
       )
 
       if (prDeployment && prDeployment.state === "ERROR") {
@@ -415,14 +414,20 @@ function extractCodeFromComment(commentBody: string): string {
   return codeBlocks ? codeBlocks.join("\n") : ""
 }
 
-async function generateCIFix(check: { name: string; conclusion?: string | null }): Promise<string> {
+async function generateCIFix(check: {
+  name: string
+  conclusion?: string | null
+}): Promise<string> {
   // Analyze check output to generate fix suggestions
   const conclusion = check.conclusion || "unknown"
   return `Fix for CI failure in ${check.name} (${conclusion}). Check the logs for specific error details.`
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-async function generateVercelFix(_deployment: { state: string; url?: string }): Promise<string> {
+async function generateVercelFix(_deployment: {
+  state: string
+  url?: string
+}): Promise<string> {
   // Analyze Vercel deployment failure to generate fix suggestions
   return `Fix for Vercel deployment failure. Check build logs for specific error details.`
 }
