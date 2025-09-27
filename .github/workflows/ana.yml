@@ -92,7 +92,7 @@ jobs:
   # Analyze Cursor Bot reviews and add to Cursor TODO list
   analyze-cursor-bugbot:
     runs-on: ubuntu-latest
-    if: github.event_name == 'issue_comment' && (contains(github.event.comment.body, 'Cursor Bugbot') || github.event.comment.user.login == 'cursor-bot' || contains(github.event.comment.body, 'cursor') || contains(github.event.comment.body, 'Cursor'))
+    if: github.event_name == 'issue_comment' && (contains(github.event.comment.body, 'Cursor Bugbot') || github.event.comment.user.login == 'cursor-bot' || github.event.comment.user.login == 'cursor bot' || contains(github.event.comment.body, 'cursor') || contains(github.event.comment.body, 'Cursor'))
 
     steps:
       - name: Checkout code
