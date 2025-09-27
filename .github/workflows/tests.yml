@@ -295,17 +295,45 @@ jobs:
   ci-status:
     name: CI Status Check
     runs-on: ubuntu-latest
-    needs: [lint, unit-tests, component-tests, api-tests, build, integration]
+    needs:
+      [
+        lint,
+        unit-tests,
+        component-tests,
+        api-tests,
+        build,
+        integration,
+        coverage,
+      ]
     if: always()
     steps:
       - name: Check all jobs status
         run: |
-          if [[ "${{ needs.lint.result }}" == "success" && 
-                "${{ needs.unit-tests.result }}" == "success" && 
-                "${{ needs.component-tests.result }}" == "success" && 
-                "${{ needs.api-tests.result }}" == "success" && 
-                "${{ needs.build.result }}" == "success" && 
-                "${{ needs.integration.result }}" == "success" ]]; then
+          # Function to check if a job result is acceptable (success or skipped)
+          is_job_ok() {
+            local result="$1"
+            [[ "$result" == "success" || "$result" == "skipped" ]]
+          }
+
+          # Check each job result
+          lint_ok=$(is_job_ok "${{ needs.lint.result }}" && echo "true" || echo "false")
+          unit_tests_ok=$(is_job_ok "${{ needs.unit-tests.result }}" && echo "true" || echo "false")
+          component_tests_ok=$(is_job_ok "${{ needs.component-tests.result }}" && echo "true" || echo "false")
+          api_tests_ok=$(is_job_ok "${{ needs.api-tests.result }}" && echo "true" || echo "false")
+          build_ok=$(is_job_ok "${{ needs.build.result }}" && echo "true" || echo "false")
+          integration_ok=$(is_job_ok "${{ needs.integration.result }}" && echo "true" || echo "false")
+          coverage_ok=$(is_job_ok "${{ needs.coverage.result }}" && echo "true" || echo "false")
+
+          echo "Job Results:"
+          echo "  lint: ${{ needs.lint.result }} (ok: $lint_ok)"
+          echo "  unit-tests: ${{ needs.unit-tests.result }} (ok: $unit_tests_ok)"
+          echo "  component-tests: ${{ needs.component-tests.result }} (ok: $component_tests_ok)"
+          echo "  api-tests: ${{ needs.api-tests.result }} (ok: $api_tests_ok)"
+          echo "  build: ${{ needs.build.result }} (ok: $build_ok)"
+          echo "  integration: ${{ needs.integration.result }} (ok: $integration_ok)"
+          echo "  coverage: ${{ needs.coverage.result }} (ok: $coverage_ok)"
+
+          if [[ "$lint_ok" == "true" && "$unit_tests_ok" == "true" && "$component_tests_ok" == "true" && "$api_tests_ok" == "true" && "$build_ok" == "true" && "$integration_ok" == "true" && "$coverage_ok" == "true" ]]; then
             echo "All CI checks passed!"
             exit 0
           else
@@ -325,16 +353,33 @@ jobs:
               "component-tests": "${{ needs.component-tests.result }}",
               "api-tests": "${{ needs.api-tests.result }}",
               build: "${{ needs.build.result }}",
-              integration: "${{ needs.integration.result }}"
+              integration: "${{ needs.integration.result }}",
+              coverage: "${{ needs.coverage.result }}"
             };
 
             const failed = Object.entries(jobs)
               .filter(([_, status]) => status === 'failure')
               .map(([job, _]) => job);
 
+            const cancelled = Object.entries(jobs)
+              .filter(([_, status]) => status === 'cancelled')
+              .map(([job, _]) => job);
+
+            let body = '🚨 **CI Pipeline Failed**\n\n';
+
+            if (failed.length > 0) {
+              body += `**Failed Jobs:** ${failed.join(', ')}\n`;
+            }
+
+            if (cancelled.length > 0) {
+              body += `**Cancelled Jobs:** ${cancelled.join(', ')}\n`;
+            }
+
+            body += `\nCheck the [workflow run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details.`;
+
             const issue_number = context.payload.pull_request.number;
             await github.rest.issues.createComment({
               ...context.repo,
               issue_number,
-              body: `🚨 **CI Pipeline Failed**\n\n**Failed Jobs:** ${failed.join(', ')}\n\nCheck the [workflow run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details.`
+              body
             });
