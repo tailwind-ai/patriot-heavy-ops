@@ -8,6 +8,7 @@
 
 <!-- Testing Background Agent failure analysis -->
 <!-- Testing Vercel CI integration - $(date) -->
+<!-- Updated Vercel Ignored Build Step: Check if CI tests have passed -->
 
 ## Product Vision
 
