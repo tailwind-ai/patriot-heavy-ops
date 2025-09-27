@@ -6,7 +6,7 @@
  */
 
 import { Octokit } from "@octokit/rest"
-import { execSync } from "child_process"
+import { spawn } from "child_process"
 import { writeFileSync } from "fs"
 
 interface AnaTodo {
@@ -30,7 +30,7 @@ interface AnaResults {
   analysisDate: string
 }
 
-class AnaAnalyzer {
+export class AnaAnalyzer {
   private octokit: Octokit
   private owner: string
   private repo: string
@@ -1183,9 +1183,9 @@ class AnaAnalyzer {
   }
 
   /**
-   * Add todo to Cursor TODO list using Cursor CLI with enhanced root cause information
+   * Add todo to Cursor TODO list using Cursor agent with enhanced root cause information
    */
-  private async addToCursorTodo(todo: AnaTodo): Promise<void> {
+  public async addToCursorTodo(todo: AnaTodo): Promise<void> {
     try {
       // Create enhanced content with root cause analysis
       let enhancedContent = todo.content
@@ -1208,26 +1208,108 @@ class AnaAnalyzer {
         )}`
       }
 
-      // Use Cursor CLI to add the enhanced todo
-      const cursorCommand = `cursor todo add "${enhancedContent}" --priority ${todo.priority}`
+      // Create a structured prompt for Cursor agent to create TODO
+      const todoPrompt = `Create a TODO item with the following details:
+Priority: ${todo.priority}
+Content: ${enhancedContent}
+${todo.files && todo.files.length > 0 ? `Files: ${todo.files.join(", ")}` : ""}
+Related PR: ${todo.relatedPR}
 
-      if (todo.files && todo.files.length > 0) {
-        const filesArg = todo.files.join(",")
-        const fullCommand = `${cursorCommand} --files "${filesArg}"`
-        execSync(fullCommand, { stdio: "pipe" })
-      } else {
-        execSync(cursorCommand, { stdio: "pipe" })
+Please add this to the project TODO list.`
+
+      try {
+        // Use Cursor agent to create the TODO using its built-in TODO system
+        const child = spawn("cursor", ["agent", "--print", todoPrompt], {
+          stdio: ["pipe", "pipe", "pipe"],
+          timeout: 30000, // 30 second timeout
+        })
+
+        let errorOutput = ""
+
+        child.stdout?.on("data", () => {
+          // Cursor agent output handled internally
+        })
+
+        child.stderr?.on("data", (data) => {
+          errorOutput += data.toString()
+        })
+
+        // Wait for the process to complete
+        await new Promise<void>((resolve, reject) => {
+          child.on("close", (code) => {
+            if (code === 0) {
+              resolve()
+            } else {
+              reject(
+                new Error(
+                  `Cursor agent exited with code ${code}: ${errorOutput}`
+                )
+              )
+            }
+          })
+          child.on("error", reject)
+          child.on("timeout", () => {
+            child.kill()
+            reject(new Error("Cursor agent command timed out"))
+          })
+        })
+
+        console.log(
+          `  ✅ Added to Cursor TODO via agent: ${todo.content.substring(
+            0,
+            50
+          )}...`
+        )
+      } catch (agentError) {
+        console.warn(`  ⚠️  Cursor agent failed: ${agentError}`)
+        // Fallback: save to local TODO file
+        await this.saveTodoToFile(todo, enhancedContent)
       }
-
-      console.log(
-        `  ✅ Added to Cursor TODO with root cause analysis: ${todo.content.substring(
-          0,
-          50
-        )}...`
-      )
     } catch (error) {
       console.warn(`  ⚠️  Failed to add to Cursor TODO: ${error}`)
       // Continue processing even if Cursor CLI fails
+    }
+  }
+
+  /**
+   * Save TODO to a local file as backup
+   */
+  private async saveTodoToFile(
+    todo: AnaTodo,
+    enhancedContent: string
+  ): Promise<void> {
+    try {
+      const todoEntry = `## TODO: ${todo.content}
+- **Priority:** ${todo.priority}
+- **Type:** ${todo.issueType}
+- **Related PR:** ${todo.relatedPR}
+- **Created:** ${todo.createdAt}
+${todo.rootCause ? `- **Root Cause:** ${todo.rootCause}` : ""}
+${todo.impact ? `- **Impact:** ${todo.impact}` : ""}
+${todo.suggestedFix ? `- **Suggested Fix:** ${todo.suggestedFix}` : ""}
+${
+  todo.affectedComponents && todo.affectedComponents.length > 0
+    ? `- **Affected Components:** ${todo.affectedComponents.join(", ")}`
+    : ""
+}
+${
+  todo.files && todo.files.length > 0
+    ? `- **Files:** ${todo.files.join(", ")}`
+    : ""
+}
+
+${enhancedContent}
+
+---
+
+`
+
+      const todoFile = "ana-generated-todos.md"
+      writeFileSync(todoFile, todoEntry, { flag: "a" }) // Append to file
+
+      console.log(`  📝 Saved TODO to local file: ${todoFile}`)
+    } catch (error) {
+      console.warn(`  ⚠️  Failed to save TODO to file: ${error}`)
     }
   }
 }
