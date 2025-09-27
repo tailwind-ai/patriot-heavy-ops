@@ -38,16 +38,16 @@ jobs:
 
       - name: Setup environment
         run: |
-          echo "GITHUB_ACCESS_TOKEN=${{ secrets.REPO_PAT }}" >> .env.local
+          echo "GITHUB_ACCESS_TOKEN=${{ secrets.ORG_PAT }}" >> .env.local
           echo "NODE_ENV=production" >> .env.local
         env:
-          GITHUB_ACCESS_TOKEN: ${{ secrets.REPO_PAT }}
+          GITHUB_ACCESS_TOKEN: ${{ secrets.ORG_PAT }}
 
       - name: Check for unresolved review comments
         id: check-comments
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.REPO_PAT }}
+          github-token: ${{ secrets.ORG_PAT }}
           script: |
             // Find associated PR for this workflow run
             const { data: prs } = await github.rest.pulls.list({
@@ -90,7 +90,7 @@ jobs:
           echo "Conclusion: ${{ github.event.workflow_run.conclusion }}"
 
           # Set up GitHub CLI authentication
-          echo "${{ secrets.REPO_PAT }}" | gh auth login --with-token
+          echo "${{ secrets.ORG_PAT }}" | gh auth login --with-token
 
           # Find associated PR for this workflow run
           PR_NUMBER=$(gh pr list --state open --json number,headRefName --jq '.[] | select(.headRefName == "${{ github.event.workflow_run.head_branch }}") | .number' | head -1)
@@ -103,7 +103,7 @@ jobs:
           echo "Found PR #$PR_NUMBER for failed workflow"
 
           # Use enhanced log analysis
-          GITHUB_ACCESS_TOKEN="${{ secrets.REPO_PAT }}" GH_TOKEN="${{ secrets.REPO_PAT }}" npx tsx scripts/todo-cli.ts analyze-workflow ${{ github.event.workflow_run.id }} $PR_NUMBER
+          GITHUB_ACCESS_TOKEN="${{ secrets.ORG_PAT }}" GH_TOKEN="${{ secrets.ORG_PAT }}" npx tsx scripts/todo-cli.ts analyze-workflow ${{ github.event.workflow_run.id }} $PR_NUMBER
 
       - name: Upload failure analysis
         if: always()
@@ -133,10 +133,10 @@ jobs:
 
       - name: Setup environment
         run: |
-          echo "GITHUB_ACCESS_TOKEN=${{ secrets.REPO_PAT }}" >> .env.local
+          echo "GITHUB_ACCESS_TOKEN=${{ secrets.ORG_PAT }}" >> .env.local
           echo "NODE_ENV=production" >> .env.local
         env:
-          GITHUB_ACCESS_TOKEN: ${{ secrets.REPO_PAT }}
+          GITHUB_ACCESS_TOKEN: ${{ secrets.ORG_PAT }}
 
       - name: Trigger Background Agent
         run: |
@@ -169,8 +169,8 @@ jobs:
             npx tsx scripts/todo-cli.ts github $PR_NUMBER
           fi
         env:
-          GITHUB_ACCESS_TOKEN: ${{ secrets.REPO_PAT }}
-          GH_TOKEN: ${{ secrets.REPO_PAT }}
+          GITHUB_ACCESS_TOKEN: ${{ secrets.ORG_PAT }}
+          GH_TOKEN: ${{ secrets.ORG_PAT }}
 
       - name: Check for new todos
         run: |
@@ -193,7 +193,7 @@ jobs:
         if: github.event.pull_request || github.event_name == 'issue_comment' || github.event_name == 'status' || github.event_name == 'check_run'
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.REPO_PAT }}
+          github-token: ${{ secrets.ORG_PAT }}
           script: |
             const fs = require('fs');
             let comment = '## 🤖 Background Agent Analysis\n\n';
