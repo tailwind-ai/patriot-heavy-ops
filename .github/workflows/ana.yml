@@ -1,0 +1,195 @@
+name: Ana
+
+on:
+  # Monitor CI Test workflow completion
+  workflow_run:
+    workflows: ["CI Tests"]
+    types: [completed]
+  # Monitor Cursor Bugbot completion (when it posts comments)
+  issue_comment:
+    types: [created]
+
+permissions:
+  actions: read
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  # Analyze CI Test failures and add to Cursor TODO list
+  analyze-ci-failures:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'failure'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup environment
+        run: |
+          echo "CURSOR_CLI=CURSOR_CLI" >> .env.local
+          echo "GITHUB_ACCESS_TOKEN=${{ secrets.ORG_PAT }}" >> .env.local
+          echo "NODE_ENV=production" >> .env.local
+        env:
+          GITHUB_ACCESS_TOKEN: ${{ secrets.ORG_PAT }}
+
+      - name: Find associated PR
+        id: find-pr
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.ORG_PAT }}
+          script: |
+            // Find associated PR for this workflow run
+            const { data: prs } = await github.rest.pulls.list({
+              ...context.repo,
+              state: 'open',
+              head: `${context.repo.owner}:${{ github.event.workflow_run.head_branch }}`
+            });
+
+            if (prs.length === 0) {
+              console.log("No open PR found for branch ${{ github.event.workflow_run.head_branch }}, skipping");
+              return { pr_number: null };
+            }
+
+            const prNumber = prs[0].number;
+            console.log(`Found PR #${prNumber} for failed CI Test workflow`);
+            return { pr_number: prNumber.toString() };
+
+      - name: Analyze CI Test failures
+        if: steps.find-pr.outputs.pr_number != 'null'
+        run: |
+          echo "🔍 Ana analyzing CI Test failures..."
+          echo "Workflow: ${{ github.event.workflow_run.name }}"
+          echo "Run ID: ${{ github.event.workflow_run.id }}"
+          echo "PR: ${{ steps.find-pr.outputs.pr_number }}"
+
+          # Set up GitHub CLI authentication
+          echo "${{ secrets.ORG_PAT }}" | gh auth login --with-token
+
+          # Analyze workflow logs and create Cursor TODOs
+          npx tsx scripts/ana-cli.ts analyze-ci-failures ${{ github.event.workflow_run.id }} ${{ steps.find-pr.outputs.pr_number }}
+
+      - name: Upload analysis results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ana-ci-analysis-${{ github.event.workflow_run.id }}
+          path: ana-results.json
+          retention-days: 7
+
+  # Analyze Cursor Bugbot reviews and add to Cursor TODO list
+  analyze-cursor-bugbot:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'issue_comment' && contains(github.event.comment.body, 'Cursor Bugbot')
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup environment
+        run: |
+          echo "CURSOR_CLI=CURSOR_CLI" >> .env.local
+          echo "GITHUB_ACCESS_TOKEN=${{ secrets.ORG_PAT }}" >> .env.local
+          echo "NODE_ENV=production" >> .env.local
+        env:
+          GITHUB_ACCESS_TOKEN: ${{ secrets.ORG_PAT }}
+
+      - name: Check if comment is on a PR
+        id: check-pr
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.ORG_PAT }}
+          script: |
+            // Check if this comment is on a PR
+            if (!context.payload.issue.pull_request) {
+              console.log("Comment is not on a PR, skipping");
+              return { is_pr: false, pr_number: null };
+            }
+
+            const prNumber = context.payload.issue.number;
+            console.log(`Found Cursor Bugbot comment on PR #${prNumber}`);
+            return { is_pr: true, pr_number: prNumber.toString() };
+
+      - name: Analyze Cursor Bugbot review
+        if: steps.check-pr.outputs.is_pr == 'true'
+        run: |
+          echo "🔍 Ana analyzing Cursor Bugbot review..."
+          echo "PR: ${{ steps.check-pr.outputs.pr_number }}"
+          echo "Comment ID: ${{ github.event.comment.id }}"
+
+          # Set up GitHub CLI authentication
+          echo "${{ secrets.ORG_PAT }}" | gh auth login --with-token
+
+          # Analyze Cursor Bugbot comment and create Cursor TODOs
+          npx tsx scripts/ana-cli.ts analyze-cursor-bugbot ${{ steps.check-pr.outputs.pr_number }} ${{ github.event.comment.id }}
+
+      - name: Upload analysis results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ana-cursor-analysis-${{ github.event.comment.id }}
+          path: ana-results.json
+          retention-days: 7
+
+      - name: Comment on PR with analysis summary
+        if: steps.check-pr.outputs.is_pr == 'true'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.ORG_PAT }}
+          script: |
+            const fs = require('fs');
+            let comment = '## 🤖 Ana Analysis Summary\n\n';
+
+            try {
+              if (fs.existsSync('ana-results.json')) {
+                const results = JSON.parse(fs.readFileSync('ana-results.json', 'utf8'));
+                
+                if (results.todos && results.todos.length > 0) {
+                  comment += `Found **${results.todos.length}** issues from Cursor Bugbot review:\n\n`;
+                  results.todos.forEach((todo, index) => {
+                    const priority = todo.priority === 'critical' ? '🔴' : 
+                                   todo.priority === 'high' ? '🟠' : 
+                                   todo.priority === 'medium' ? '🟡' : '🟢';
+                    comment += `${index + 1}. ${priority} **${todo.priority.toUpperCase()}**: ${todo.content}\n`;
+                    if (todo.files && todo.files.length > 0) {
+                      comment += `   📁 **Files**: ${todo.files.join(', ')}\n`;
+                    }
+                    comment += '\n';
+                  });
+                  
+                  comment += '---\n';
+                  comment += '🤖 *Ana has added these items to your Cursor TODO list. Check Cursor for the full list.*';
+                } else {
+                  comment += '✅ No new issues detected from Cursor Bugbot review.';
+                }
+              } else {
+                comment += 'ℹ️ No analysis results found.';
+              }
+            } catch (error) {
+              comment += `❌ Error processing analysis: ${error.message}`;
+            }
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
