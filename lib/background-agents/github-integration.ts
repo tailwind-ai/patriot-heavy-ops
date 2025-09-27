@@ -125,13 +125,26 @@ export class GitHubIntegration {
    */
   private isReviewComment(comment: GitHubComment): boolean {
     const body = comment.body || ""
-    return (
-      body.includes("```") ||
-      body.includes("suggestion") ||
-      body.includes("review") ||
-      body.includes("consider") ||
-      body.includes("fix")
-    )
+
+    // Check for code suggestion blocks (most reliable indicator)
+    if (body.includes("```suggestion") || body.includes("```diff")) {
+      return true
+    }
+
+    // Check for specific actionable review patterns
+    const actionablePatterns = [
+      /```[\s\S]*?suggestion[\s\S]*?```/i,
+      /```[\s\S]*?fix[\s\S]*?```/i,
+      /should\s+(be|use|have|include|change)/i,
+      /consider\s+(using|changing|adding|removing)/i,
+      /recommend\s+(using|changing|adding)/i,
+      /suggest\s+(using|changing|adding|removing)/i,
+      /instead\s+of/i,
+      /better\s+to/i,
+      /prefer\s+(to|using)/i,
+    ]
+
+    return actionablePatterns.some((pattern) => pattern.test(body))
   }
 
   /**
@@ -493,11 +506,12 @@ export class GitHubIntegration {
       })
 
       // Get combined status for the PR
-      const { data: combinedStatus } = await this.octokit.rest.repos.getCombinedStatusForRef({
-        owner: this.owner,
-        repo: this.repo,
-        ref: pr.head.sha,
-      })
+      const { data: combinedStatus } =
+        await this.octokit.rest.repos.getCombinedStatusForRef({
+          owner: this.owner,
+          repo: this.repo,
+          ref: pr.head.sha,
+        })
 
       // Get check runs for the PR
       const { data: checkRuns } = await this.octokit.rest.checks.listForRef({
@@ -507,25 +521,26 @@ export class GitHubIntegration {
       })
 
       const checksStatus = [
-        ...combinedStatus.statuses.map(status => ({
+        ...combinedStatus.statuses.map((status) => ({
           name: status.context,
           status: status.state,
           conclusion: status.state,
         })),
-        ...checkRuns.check_runs.map(check => ({
+        ...checkRuns.check_runs.map((check) => ({
           name: check.name,
-          status: check.status || 'unknown',
-          conclusion: check.conclusion || 'unknown',
-        }))
+          status: check.status || "unknown",
+          conclusion: check.conclusion || "unknown",
+        })),
       ]
 
-      const allChecksPass = 
-        combinedStatus.state === 'success' &&
-        checkRuns.check_runs.every(check => 
-          check.conclusion === 'success' || check.conclusion === 'neutral'
+      const allChecksPass =
+        combinedStatus.state === "success" &&
+        checkRuns.check_runs.every(
+          (check) =>
+            check.conclusion === "success" || check.conclusion === "neutral"
         )
 
-      const readyForDoD = allChecksPass && pr.mergeable_state === 'clean'
+      const readyForDoD = allChecksPass && pr.mergeable_state === "clean"
 
       return {
         allChecksPass,
@@ -547,10 +562,10 @@ export class GitHubIntegration {
    */
   async getDefinitionOfDoneTodos(prNumber: number): Promise<GitHubIssue[]> {
     const issues: GitHubIssue[] = []
-    
+
     try {
       const prStatus = await this.getPRStatus(prNumber)
-      
+
       // Only create DoD todos if all checks are passing
       if (!prStatus.allChecksPass) {
         return issues
@@ -563,14 +578,16 @@ export class GitHubIntegration {
           content: "Verify ALL tests pass (npm test returns 0 exit code)",
           type: "definition_of_done" as const,
           severity: "critical" as const,
-          suggestedFix: "Run 'npm test' and ensure all tests pass with exit code 0",
+          suggestedFix:
+            "Run 'npm test' and ensure all tests pass with exit code 0",
         },
         {
           id: `dod-linting-${prNumber}`,
           content: "Verify ALL linting passes (ESLint clean)",
           type: "definition_of_done" as const,
           severity: "critical" as const,
-          suggestedFix: "Run 'npx eslint . --ext .ts,.tsx --max-warnings 0' and fix all issues",
+          suggestedFix:
+            "Run 'npx eslint . --ext .ts,.tsx --max-warnings 0' and fix all issues",
         },
         {
           id: `dod-typescript-${prNumber}`,
@@ -584,14 +601,16 @@ export class GitHubIntegration {
           content: "Verify ALL changes committed with conventional commits",
           type: "definition_of_done" as const,
           severity: "critical" as const,
-          suggestedFix: "Check git log and ensure all commits follow conventional commit format",
+          suggestedFix:
+            "Check git log and ensure all commits follow conventional commit format",
         },
         {
           id: `dod-pushed-${prNumber}`,
           content: "Verify ALL changes pushed to remote branch",
           type: "definition_of_done" as const,
           severity: "critical" as const,
-          suggestedFix: "Run 'git status' and 'git push' to ensure all changes are pushed",
+          suggestedFix:
+            "Run 'git status' and 'git push' to ensure all changes are pushed",
         },
         {
           id: `dod-ci-checks-${prNumber}`,
@@ -602,17 +621,20 @@ export class GitHubIntegration {
         },
         {
           id: `dod-complete-${prNumber}`,
-          content: "Confirm Definition of Done achieved - 100% of checks passing",
+          content:
+            "Confirm Definition of Done achieved - 100% of checks passing",
           type: "definition_of_done" as const,
           severity: "critical" as const,
-          suggestedFix: "Only mark complete when ALL above verification steps pass",
+          suggestedFix:
+            "Only mark complete when ALL above verification steps pass",
         },
       ]
 
       issues.push(...dodTodos)
 
-      console.log(`✅ Generated ${dodTodos.length} Definition of Done todos for PR #${prNumber}`)
-      
+      console.log(
+        `✅ Generated ${dodTodos.length} Definition of Done todos for PR #${prNumber}`
+      )
     } catch (error) {
       console.error("Error generating Definition of Done todos:", error)
     }

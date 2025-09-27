@@ -133,17 +133,36 @@ async function detectReviewComment(commentData: {
 }): Promise<IssueDetection | null> {
   const body = commentData.body || ""
 
-  // Check if comment contains code suggestions or review feedback
-  if (
-    (body.includes("```") &&
-      (body.includes("suggestion") || body.includes("fix"))) ||
-    body.includes("review") ||
-    body.includes("consider")
-  ) {
+  // Check for code suggestion blocks (most reliable indicator)
+  if (body.includes("```suggestion") || body.includes("```diff")) {
     return {
       type: "review_comment",
       severity: "medium",
-      description: "Code review feedback detected",
+      description: "Code suggestion detected",
+      suggestedFix: extractCodeFromComment(body),
+    }
+  }
+
+  // Check for specific actionable review patterns
+  const actionablePatterns = [
+    /```[\s\S]*?suggestion[\s\S]*?```/i,
+    /```[\s\S]*?fix[\s\S]*?```/i,
+    /should\s+(be|use|have|include|change)/i,
+    /consider\s+(using|changing|adding|removing)/i,
+    /recommend\s+(using|changing|adding)/i,
+    /suggest\s+(using|changing|adding|removing)/i,
+    /instead\s+of/i,
+    /better\s+to/i,
+    /prefer\s+(to|using)/i
+  ]
+
+  const isActionable = actionablePatterns.some(pattern => pattern.test(body))
+  
+  if (isActionable) {
+    return {
+      type: "review_comment",
+      severity: "medium",
+      description: "Actionable review feedback detected",
       suggestedFix: extractCodeFromComment(body),
     }
   }
@@ -169,18 +188,40 @@ async function detectNewComments(
     })
 
     for (const comment of comments.data) {
-      // Check for review suggestions
-      if (
-        (comment.body?.includes("```") &&
-          comment.body.includes("suggestion")) ||
-        comment.body?.includes("review") ||
-        comment.body?.includes("consider")
-      ) {
+      const body = comment.body || ""
+      
+      // Check for code suggestion blocks (most reliable indicator)
+      if (body.includes("```suggestion") || body.includes("```diff")) {
         issues.push({
           type: "review_comment",
           severity: "medium",
-          description: "New code review feedback detected",
-          suggestedFix: extractCodeFromComment(comment.body || ""),
+          description: "New code suggestion detected",
+          suggestedFix: extractCodeFromComment(body),
+        })
+        continue
+      }
+
+      // Check for specific actionable review patterns
+      const actionablePatterns = [
+        /```[\s\S]*?suggestion[\s\S]*?```/i,
+        /```[\s\S]*?fix[\s\S]*?```/i,
+        /should\s+(be|use|have|include|change)/i,
+        /consider\s+(using|changing|adding|removing)/i,
+        /recommend\s+(using|changing|adding)/i,
+        /suggest\s+(using|changing|adding|removing)/i,
+        /instead\s+of/i,
+        /better\s+to/i,
+        /prefer\s+(to|using)/i
+      ]
+
+      const isActionable = actionablePatterns.some(pattern => pattern.test(body))
+      
+      if (isActionable) {
+        issues.push({
+          type: "review_comment",
+          severity: "medium",
+          description: "New actionable review feedback detected",
+          suggestedFix: extractCodeFromComment(body),
         })
       }
     }
