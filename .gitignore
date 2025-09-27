@@ -10,5 +10,5 @@ yarn-error.log*
 .vercel
 
 # Generated files that cause merge conflicts
-coverage/junit.xml
+coverage/
 tsconfig.tsbuildinfo
