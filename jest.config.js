@@ -46,6 +46,7 @@ const customJestConfig = {
     "!**/node_modules/**",
     "!**/__snapshots__/**",
   ],
+  coverageReporters: ["text", "lcov", "html", "json"],
   coverageThreshold: {
     global: {
       branches: 35,
