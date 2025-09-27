@@ -301,31 +301,42 @@ class AnaAnalyzer {
           ? pattern.analyzeRootCause(match, logContent)
           : null
 
-        issues.push({
+        const issue: any = {
           description: `${jobName}: ${description}`,
           priority: pattern.priority,
-          files: files ?? undefined,
-          lineNumbers: lineNumbers ?? undefined,
-          rootCause: rootCauseAnalysis?.rootCause ?? undefined,
-          impact: rootCauseAnalysis?.impact ?? undefined,
-          suggestedFix: rootCauseAnalysis?.suggestedFix ?? undefined,
-          affectedComponents:
-            rootCauseAnalysis?.affectedComponents ?? undefined,
-        })
+        }
+
+        if (files) issue.files = files
+        if (lineNumbers) issue.lineNumbers = lineNumbers
+        if (rootCauseAnalysis?.rootCause)
+          issue.rootCause = rootCauseAnalysis.rootCause
+        if (rootCauseAnalysis?.impact) issue.impact = rootCauseAnalysis.impact
+        if (rootCauseAnalysis?.suggestedFix)
+          issue.suggestedFix = rootCauseAnalysis.suggestedFix
+        if (rootCauseAnalysis?.affectedComponents)
+          issue.affectedComponents = rootCauseAnalysis.affectedComponents
+
+        issues.push(issue)
       }
     }
 
     // If no specific patterns found, perform general failure analysis
     if (issues.length === 0) {
       const generalAnalysis = this.analyzeGeneralFailure(jobName, logContent)
-      issues.push({
+      const generalIssue: any = {
         description: `${jobName} failed - ${generalAnalysis.description}`,
         priority: generalAnalysis.priority,
-        rootCause: generalAnalysis.rootCause ?? undefined,
-        impact: generalAnalysis.impact ?? undefined,
-        suggestedFix: generalAnalysis.suggestedFix ?? undefined,
-        affectedComponents: generalAnalysis.affectedComponents ?? undefined,
-      })
+      }
+
+      if (generalAnalysis.rootCause)
+        generalIssue.rootCause = generalAnalysis.rootCause
+      if (generalAnalysis.impact) generalIssue.impact = generalAnalysis.impact
+      if (generalAnalysis.suggestedFix)
+        generalIssue.suggestedFix = generalAnalysis.suggestedFix
+      if (generalAnalysis.affectedComponents)
+        generalIssue.affectedComponents = generalAnalysis.affectedComponents
+
+      issues.push(generalIssue)
     }
 
     return { issues }
@@ -750,32 +761,46 @@ class AnaAnalyzer {
 
     // Create detailed todos based on analysis
     for (const issueAnalysis of analysis.issues) {
-      issues.push({
+      const bugbotIssue: any = {
         description: issueAnalysis.description,
         priority: issueAnalysis.priority,
-        files: files.length > 0 ? files : undefined,
-        lineNumbers: lineNumbers.length > 0 ? lineNumbers : undefined,
-        rootCause: issueAnalysis.rootCause ?? undefined,
-        impact: issueAnalysis.impact ?? undefined,
-        suggestedFix: issueAnalysis.suggestedFix ?? undefined,
-        affectedComponents: issueAnalysis.affectedComponents ?? undefined,
-      })
+      }
+
+      if (files.length > 0) bugbotIssue.files = files
+      if (lineNumbers.length > 0) bugbotIssue.lineNumbers = lineNumbers
+      if (issueAnalysis.rootCause)
+        bugbotIssue.rootCause = issueAnalysis.rootCause
+      if (issueAnalysis.impact) bugbotIssue.impact = issueAnalysis.impact
+      if (issueAnalysis.suggestedFix)
+        bugbotIssue.suggestedFix = issueAnalysis.suggestedFix
+      if (issueAnalysis.affectedComponents)
+        bugbotIssue.affectedComponents = issueAnalysis.affectedComponents
+
+      issues.push(bugbotIssue)
     }
 
     // If no specific issues were identified, create a general review todo
     if (issues.length === 0) {
-      issues.push({
+      const generalBugbotIssue: any = {
         description: `Cursor Bugbot Review: ${commentBody.substring(0, 200)}${
           commentBody.length > 200 ? "..." : ""
         }`,
         priority: analysis.generalPriority,
-        files: files.length > 0 ? files : undefined,
-        lineNumbers: lineNumbers.length > 0 ? lineNumbers : undefined,
-        rootCause: analysis.generalRootCause ?? undefined,
-        impact: analysis.generalImpact ?? undefined,
-        suggestedFix: analysis.generalSuggestedFix ?? undefined,
-        affectedComponents: analysis.generalAffectedComponents ?? undefined,
-      })
+      }
+
+      if (files.length > 0) generalBugbotIssue.files = files
+      if (lineNumbers.length > 0) generalBugbotIssue.lineNumbers = lineNumbers
+      if (analysis.generalRootCause)
+        generalBugbotIssue.rootCause = analysis.generalRootCause
+      if (analysis.generalImpact)
+        generalBugbotIssue.impact = analysis.generalImpact
+      if (analysis.generalSuggestedFix)
+        generalBugbotIssue.suggestedFix = analysis.generalSuggestedFix
+      if (analysis.generalAffectedComponents)
+        generalBugbotIssue.affectedComponents =
+          analysis.generalAffectedComponents
+
+      issues.push(generalBugbotIssue)
     }
 
     return { issues }
