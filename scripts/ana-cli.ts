@@ -225,8 +225,8 @@ class AnaAnalyzer {
         extractFiles: true,
         extractLines: true,
         analyzeRootCause: (match: RegExpExecArray, logContent: string) => {
-          const fileName = match[1]
-          const lineNum = match[3]
+          const fileName = match[1] || ""
+          const lineNum = match[3] || ""
           return this.analyzeTypeScriptError(fileName, lineNum, logContent)
         },
       },
@@ -236,7 +236,7 @@ class AnaAnalyzer {
         extractFiles: false,
         extractLines: false,
         analyzeRootCause: (match: RegExpExecArray, logContent: string) => {
-          return this.analyzeTestFailure(match[1], logContent)
+          return this.analyzeTestFailure(match[1] || "", logContent)
         },
       },
       {
@@ -245,7 +245,7 @@ class AnaAnalyzer {
         extractFiles: false,
         extractLines: false,
         analyzeRootCause: (match: RegExpExecArray, logContent: string) => {
-          return this.analyzeBuildFailure(match[1], logContent)
+          return this.analyzeBuildFailure(match[1] || "", logContent)
         },
       },
       {
@@ -254,7 +254,7 @@ class AnaAnalyzer {
         extractFiles: false,
         extractLines: false,
         analyzeRootCause: (match: RegExpExecArray, logContent: string) => {
-          return this.analyzeLintError(match[1], logContent)
+          return this.analyzeLintError(match[1] || "", logContent)
         },
       },
       // New patterns for common root causes
@@ -274,7 +274,7 @@ class AnaAnalyzer {
         extractFiles: false,
         extractLines: false,
         analyzeRootCause: (match: RegExpExecArray) => {
-          return this.analyzeEnvironmentVariableIssue(match[1])
+          return this.analyzeEnvironmentVariableIssue(match[1] || "")
         },
       },
       {
@@ -283,7 +283,7 @@ class AnaAnalyzer {
         extractFiles: false,
         extractLines: false,
         analyzeRootCause: (match: RegExpExecArray, logContent: string) => {
-          return this.analyzeImportError(match[1], logContent)
+          return this.analyzeImportError(match[1] || "", logContent)
         },
       },
     ]
@@ -306,10 +306,11 @@ class AnaAnalyzer {
           priority: pattern.priority,
           files: files ?? undefined,
           lineNumbers: lineNumbers ?? undefined,
-          rootCause: rootCauseAnalysis?.rootCause,
-          impact: rootCauseAnalysis?.impact,
-          suggestedFix: rootCauseAnalysis?.suggestedFix,
-          affectedComponents: rootCauseAnalysis?.affectedComponents,
+          rootCause: rootCauseAnalysis?.rootCause ?? undefined,
+          impact: rootCauseAnalysis?.impact ?? undefined,
+          suggestedFix: rootCauseAnalysis?.suggestedFix ?? undefined,
+          affectedComponents:
+            rootCauseAnalysis?.affectedComponents ?? undefined,
         })
       }
     }
@@ -320,10 +321,10 @@ class AnaAnalyzer {
       issues.push({
         description: `${jobName} failed - ${generalAnalysis.description}`,
         priority: generalAnalysis.priority,
-        rootCause: generalAnalysis.rootCause,
-        impact: generalAnalysis.impact,
-        suggestedFix: generalAnalysis.suggestedFix,
-        affectedComponents: generalAnalysis.affectedComponents,
+        rootCause: generalAnalysis.rootCause ?? undefined,
+        impact: generalAnalysis.impact ?? undefined,
+        suggestedFix: generalAnalysis.suggestedFix ?? undefined,
+        affectedComponents: generalAnalysis.affectedComponents ?? undefined,
       })
     }
 
@@ -754,10 +755,10 @@ class AnaAnalyzer {
         priority: issueAnalysis.priority,
         files: files.length > 0 ? files : undefined,
         lineNumbers: lineNumbers.length > 0 ? lineNumbers : undefined,
-        rootCause: issueAnalysis.rootCause,
-        impact: issueAnalysis.impact,
-        suggestedFix: issueAnalysis.suggestedFix,
-        affectedComponents: issueAnalysis.affectedComponents,
+        rootCause: issueAnalysis.rootCause ?? undefined,
+        impact: issueAnalysis.impact ?? undefined,
+        suggestedFix: issueAnalysis.suggestedFix ?? undefined,
+        affectedComponents: issueAnalysis.affectedComponents ?? undefined,
       })
     }
 
@@ -770,10 +771,10 @@ class AnaAnalyzer {
         priority: analysis.generalPriority,
         files: files.length > 0 ? files : undefined,
         lineNumbers: lineNumbers.length > 0 ? lineNumbers : undefined,
-        rootCause: analysis.generalRootCause,
-        impact: analysis.generalImpact,
-        suggestedFix: analysis.generalSuggestedFix,
-        affectedComponents: analysis.generalAffectedComponents,
+        rootCause: analysis.generalRootCause ?? undefined,
+        impact: analysis.generalImpact ?? undefined,
+        suggestedFix: analysis.generalSuggestedFix ?? undefined,
+        affectedComponents: analysis.generalAffectedComponents ?? undefined,
       })
     }
 
