@@ -36,7 +36,7 @@ jobs:
 
       - name: Setup environment
         run: |
-          echo "CURSOR_CLI=CURSOR_CLI" >> .env.local
+          echo "CURSOR_CLI=true" >> .env.local
           echo "GITHUB_ACCESS_TOKEN=${{ secrets.ORG_PAT }}" >> .env.local
           echo "NODE_ENV=production" >> .env.local
         env:
@@ -106,7 +106,7 @@ jobs:
 
       - name: Setup environment
         run: |
-          echo "CURSOR_CLI=CURSOR_CLI" >> .env.local
+          echo "CURSOR_CLI=true" >> .env.local
           echo "GITHUB_ACCESS_TOKEN=${{ secrets.ORG_PAT }}" >> .env.local
           echo "NODE_ENV=production" >> .env.local
         env:
