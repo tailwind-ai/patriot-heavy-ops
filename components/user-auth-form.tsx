@@ -23,10 +23,14 @@ interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {
 type LoginFormData = z.infer<typeof userLoginSchema>
 type RegisterFormData = z.infer<typeof userRegisterSchema>
 
-export function UserAuthForm({ className, mode = "login", ...props }: UserAuthFormProps) {
+export function UserAuthForm({
+  className,
+  mode = "login",
+  ...props
+}: UserAuthFormProps) {
   const isRegisterMode = mode === "register"
   const schema = isRegisterMode ? userRegisterSchema : userLoginSchema
-  
+
   const {
     register,
     handleSubmit,
@@ -93,7 +97,8 @@ export function UserAuthForm({ className, mode = "login", ...props }: UserAuthFo
     } catch (error) {
       toast({
         title: "Something went wrong.",
-        description: error instanceof Error ? error.message : "Please try again.",
+        description:
+          error instanceof Error ? error.message : "Please try again.",
         variant: "destructive",
       })
     }
@@ -118,11 +123,15 @@ export function UserAuthForm({ className, mode = "login", ...props }: UserAuthFo
                 disabled={isLoading || isGitHubLoading}
                 {...register("name")}
               />
-              {isRegisterMode && (errors as FieldErrors<RegisterFormData>)?.name && (
-                <p className="px-1 text-xs text-red-600">
-                  {(errors as FieldErrors<RegisterFormData>).name?.message as string}
-                </p>
-              )}
+              {isRegisterMode &&
+                (errors as FieldErrors<RegisterFormData>)?.name && (
+                  <p className="px-1 text-xs text-red-600">
+                    {
+                      (errors as FieldErrors<RegisterFormData>).name
+                        ?.message as string
+                    }
+                  </p>
+                )}
             </div>
           )}
           <div className="grid gap-1">
@@ -153,7 +162,9 @@ export function UserAuthForm({ className, mode = "login", ...props }: UserAuthFo
               id="password"
               placeholder="Password"
               type="password"
-              autoComplete={isRegisterMode ? "new-password" : "current-password"}
+              autoComplete={
+                isRegisterMode ? "new-password" : "current-password"
+              }
               disabled={isLoading || isGitHubLoading}
               {...register("password")}
             />
@@ -161,6 +172,18 @@ export function UserAuthForm({ className, mode = "login", ...props }: UserAuthFo
               <p className="px-1 text-xs text-red-600">
                 {errors.password.message}
               </p>
+            )}
+            {isRegisterMode && (
+              <div className="px-1 text-xs text-muted-foreground">
+                <p>Password must be at least 12 characters with:</p>
+                <ul className="ml-2 list-inside list-disc">
+                  <li>One uppercase letter</li>
+                  <li>One lowercase letter</li>
+                  <li>One number</li>
+                  <li>One special character</li>
+                  <li>No common words or patterns</li>
+                </ul>
+              </div>
             )}
           </div>
           {isRegisterMode && (
@@ -176,14 +199,22 @@ export function UserAuthForm({ className, mode = "login", ...props }: UserAuthFo
                 disabled={isLoading || isGitHubLoading}
                 {...register("confirmPassword")}
               />
-              {isRegisterMode && (errors as FieldErrors<RegisterFormData>)?.confirmPassword && (
-                <p className="px-1 text-xs text-red-600">
-                  {(errors as FieldErrors<RegisterFormData>).confirmPassword?.message as string}
-                </p>
-              )}
+              {isRegisterMode &&
+                (errors as FieldErrors<RegisterFormData>)?.confirmPassword && (
+                  <p className="px-1 text-xs text-red-600">
+                    {
+                      (errors as FieldErrors<RegisterFormData>).confirmPassword
+                        ?.message as string
+                    }
+                  </p>
+                )}
             </div>
           )}
-          <button type="submit" className={cn(buttonVariants())} disabled={isLoading}>
+          <button
+            type="submit"
+            className={cn(buttonVariants())}
+            disabled={isLoading}
+          >
             {isLoading && (
               <Icons.spinner className="mr-2 size-4 animate-spin" />
             )}

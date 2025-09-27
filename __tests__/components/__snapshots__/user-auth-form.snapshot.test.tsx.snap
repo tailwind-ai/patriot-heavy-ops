@@ -162,6 +162,32 @@ exports[`UserAuthForm Snapshots matches snapshot in register mode 1`] = `
           placeholder="Password"
           type="password"
         />
+        <div
+          class="px-1 text-xs text-muted-foreground"
+        >
+          <p>
+            Password must be at least 12 characters with:
+          </p>
+          <ul
+            class="ml-2 list-inside list-disc"
+          >
+            <li>
+              One uppercase letter
+            </li>
+            <li>
+              One lowercase letter
+            </li>
+            <li>
+              One number
+            </li>
+            <li>
+              One special character
+            </li>
+            <li>
+              No common words or patterns
+            </li>
+          </ul>
+        </div>
       </div>
       <div
         class="grid gap-1"
