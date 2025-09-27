@@ -106,3 +106,56 @@ jobs:
                 body: `🚨 **Integration Tests Failed**\n\n**Last 20 log lines:**\n\`\`\`\n${summary}\n\`\`\`\n\nFull logs available in the uploaded artifact.`
               });
             }
+
+  deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    needs: [test, integration]
+    environment: production
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel@latest
+
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_API_TOKEN }}
+
+      - name: Build Project Artifacts
+        run: vercel build --prod --token=${{ secrets.VERCEL_API_TOKEN }}
+
+      - name: Deploy Project Artifacts to Vercel
+        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_API_TOKEN }}
+
+      - name: Get Deployment URL
+        id: deployment
+        run: |
+          DEPLOYMENT_URL=$(vercel ls --token=${{ secrets.VERCEL_API_TOKEN }} | head -n 2 | tail -n 1 | awk '{print $2}')
+          echo "url=$DEPLOYMENT_URL" >> $GITHUB_OUTPUT
+          echo "🚀 Deployment URL: $DEPLOYMENT_URL"
+
+      - name: Comment deployment URL on PR
+        if: github.event.workflow_run.pull_requests[0]
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const issue_number = context.payload.workflow_run.pull_requests[0].number;
+            const deployment_url = '${{ steps.deployment.outputs.url }}';
+
+            await github.rest.issues.createComment({
+              ...context.repo,
+              issue_number,
+              body: `🚀 **Deployment Successful!**\n\n✅ All CI Tests Passed\n✅ Integration Tests Passed\n✅ Deployed to Production\n\n**Live URL:** ${deployment_url}\n\n*Deployment completed via GitHub Actions CI/CD Pipeline*`
+            });
