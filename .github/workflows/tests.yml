@@ -261,32 +261,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Setup Docker Compose
-        run: |
-          # Verify docker is available
-          if ! command -v docker &> /dev/null; then
-            echo "Docker is not available on this runner"
-            exit 1
-          fi
-
-          # Check if docker compose command exists (newer versions use 'docker compose')
-          if docker compose version &> /dev/null; then
-            echo "Using 'docker compose'"
-            echo "DOCKER_COMPOSE_CMD=docker compose" >> $GITHUB_ENV
-          elif command -v docker-compose &> /dev/null; then
-            echo "Using 'docker-compose'"
-            echo "DOCKER_COMPOSE_CMD=docker-compose" >> $GITHUB_ENV
-          else
-            echo "Neither 'docker compose' nor 'docker-compose' is available"
-            exit 1
-          fi
-
-      - name: Start services with Docker
-        run: ${DOCKER_COMPOSE_CMD} up -d
-
-      - name: Wait for services
-        run: sleep 30
-
       - name: Run integration tests
         run: |
           set -o pipefail
@@ -294,56 +268,16 @@ jobs:
           # Initialize log file
           touch integration-output.log
 
-          # Check if integration test config exists, if not, skip gracefully
-          if [ ! -f "jest.integration.config.js" ]; then
-            echo "Integration test configuration not found. Creating basic config..." | tee -a integration-output.log
-            cat > jest.integration.config.js << 'EOF'
-          const nextJest = require('next/jest')
-
-          const createJestConfig = nextJest({
-            dir: './',
-          })
-
-          const customJestConfig = {
-            setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
-            moduleNameMapping: {
-              '^@/components/(.*)$': '<rootDir>/components/$1',
-              '^@/pages/(.*)$': '<rootDir>/pages/$1',
-              '^@/lib/(.*)$': '<rootDir>/lib/$1',
-              '^@/hooks/(.*)$': '<rootDir>/hooks/$1',
-            },
-            testEnvironment: 'jest-environment-jsdom',
-            testMatch: ['**/__tests__/**/*integration*.test.{js,jsx,ts,tsx}'],
-            collectCoverageFrom: [
-              '**/*.{js,jsx,ts,tsx}',
-              '!**/*.d.ts',
-              '!**/node_modules/**',
-            ],
-          }
-
-          module.exports = createJestConfig(customJestConfig)
-          EOF
-          fi
-
-          # Check if test:integration script exists in package.json
-          if ! npm run test:integration --silent 2>/dev/null; then
-            echo "test:integration script not found in package.json. Checking for integration tests..." | tee -a integration-output.log
-            
-            # Look for integration test files
-            if find __tests__ -name "*integration*.test.*" -type f 2>/dev/null | grep -q .; then
-              echo "Integration test files found but no test:integration script. Running with jest directly..." | tee -a integration-output.log
-              npx jest --config=jest.integration.config.js 2>&1 | tee -a integration-output.log
-              test_exit_code=${PIPESTATUS[0]}
-            else
-              echo "No integration tests found. This is expected if integration tests haven't been implemented yet." | tee -a integration-output.log
-              echo "Integration test setup completed successfully." | tee -a integration-output.log
-              test_exit_code=0
-            fi
-          else
-            # Run integration tests and capture output
+          # Look for integration test files
+          if find __tests__ -name "*integration*.test.*" -type f 2>/dev/null | grep -q .; then
             echo "Running integration tests..." | tee -a integration-output.log
-            npm run test:integration 2>&1 | tee -a integration-output.log
+            # Run integration tests using the main Jest config with pattern matching
+            npm run test -- --ci --watchAll=false --testPathPatterns="integration" --maxWorkers=4 --coverage=false 2>&1 | tee -a integration-output.log
             test_exit_code=${PIPESTATUS[0]}
+          else
+            echo "No integration tests found. This is expected if integration tests haven't been implemented yet." | tee -a integration-output.log
+            echo "Integration test setup completed successfully." | tee -a integration-output.log
+            test_exit_code=0
           fi
 
           # Check if tests actually ran and passed
@@ -353,10 +287,6 @@ jobs:
           fi
 
           echo "Integration tests completed successfully." | tee -a integration-output.log
-
-      - name: Stop services
-        if: always()
-        run: ${DOCKER_COMPOSE_CMD} down
 
       - name: Upload integration logs
         if: always()
