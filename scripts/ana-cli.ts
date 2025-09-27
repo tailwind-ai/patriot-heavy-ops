@@ -128,6 +128,66 @@ class AnaAnalyzer {
   }
 
   /**
+   * Analyze Vercel deployment failure and create Cursor TODOs
+   */
+  async analyzeVercelFailure(
+    checkSuiteId: string,
+    prNumber: number
+  ): Promise<AnaResults> {
+    console.log(
+      `🔍 Ana analyzing Vercel deployment failure for PR #${prNumber}...`
+    )
+
+    try {
+      // Get the check suite details
+      const checkSuite = await this.octokit.rest.checks.getSuite({
+        owner: this.owner,
+        repo: this.repo,
+        check_suite_id: parseInt(checkSuiteId),
+      })
+
+      console.log(`  📝 Check Suite: ${checkSuite.data.app?.name || "Unknown"}`)
+      console.log(`  📝 Status: ${checkSuite.data.status}`)
+      console.log(`  📝 Conclusion: ${checkSuite.data.conclusion}`)
+
+      // Create a todo for the Vercel deployment failure
+      const todo: AnaTodo = {
+        id: `vercel-${checkSuiteId}-${Date.now()}`,
+        content: `Vercel deployment failed for PR #${prNumber}. Check deployment logs and configuration.`,
+        priority: "high",
+        issueType: "ci_failure",
+        relatedPR: `#${prNumber}`,
+        createdAt: new Date().toISOString(),
+        rootCause: "Vercel deployment process failed",
+        impact: "Application not deployed to production environment",
+        suggestedFix:
+          "Check Vercel logs, environment variables, build configuration, and deployment settings",
+        affectedComponents: ["deployment", "production"],
+      }
+
+      // Add to Cursor TODO list
+      await this.addToCursorTodo(todo)
+
+      const results: AnaResults = {
+        todos: [todo],
+        summary: `Vercel deployment failure analysis found 1 issue`,
+        analysisDate: new Date().toISOString(),
+      }
+
+      // Save results
+      writeFileSync("ana-results.json", JSON.stringify(results, null, 2))
+      console.log(
+        `✅ Ana created 1 TODO from Vercel deployment failure analysis`
+      )
+
+      return results
+    } catch (error) {
+      console.error("❌ Error analyzing Vercel deployment failure:", error)
+      throw error
+    }
+  }
+
+  /**
    * Analyze Cursor Bugbot review and create Cursor TODOs
    */
   async analyzeCursorBugbot(
@@ -1086,10 +1146,25 @@ async function main() {
         await analyzer.analyzeCursorBugbot(prNum, commentId)
         break
 
+      case "analyze-vercel-failure":
+        const checkSuiteId = process.argv[3] || ""
+        const vercelPrNum = parseInt(process.argv[4] || "0")
+
+        if (!checkSuiteId || !vercelPrNum) {
+          console.log(
+            "❌ Usage: npx tsx scripts/ana-cli.ts analyze-vercel-failure <CHECK_SUITE_ID> <PR_NUMBER>"
+          )
+          process.exit(1)
+        }
+
+        await analyzer.analyzeVercelFailure(checkSuiteId, vercelPrNum)
+        break
+
       default:
         console.log("❌ Unknown command. Available commands:")
         console.log("  analyze-ci-failures <WORKFLOW_RUN_ID> <PR_NUMBER>")
         console.log("  analyze-cursor-bugbot <PR_NUMBER> <COMMENT_ID>")
+        console.log("  analyze-vercel-failure <CHECK_SUITE_ID> <PR_NUMBER>")
         process.exit(1)
     }
   } catch (error) {
