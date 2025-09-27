@@ -86,7 +86,7 @@ jobs:
       - name: Run component tests
         run: |
           set -o pipefail
-          npm run test:ci -- --testPathPattern="components|hooks" --maxWorkers=4 2>&1 | tee component-test-output.log
+          npm run test:ci -- --testPathPatterns="components|hooks" --maxWorkers=4 2>&1 | tee component-test-output.log
 
       - name: Upload component test logs
         if: always()
@@ -115,7 +115,7 @@ jobs:
       - name: Run API tests
         run: |
           set -o pipefail
-          npm run test:ci -- --testPathPattern="api" --maxWorkers=4 2>&1 | tee api-test-output.log
+          npm run test:ci -- --testPathPatterns="api" --maxWorkers=4 2>&1 | tee api-test-output.log
 
       - name: Upload API test logs
         if: always()
