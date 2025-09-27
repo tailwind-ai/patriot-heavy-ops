@@ -188,6 +188,127 @@ class AnaAnalyzer {
   }
 
   /**
+   * Analyze Cursor Bugbot check suite completion and create Cursor TODOs
+   */
+  async analyzeCursorBugbotCheck(
+    checkSuiteId: string,
+    prNumber: number
+  ): Promise<AnaResults> {
+    console.log(
+      `🔍 Ana analyzing Cursor Bugbot check suite for PR #${prNumber}...`
+    )
+
+    try {
+      // Get the check suite details
+      const checkSuite = await this.octokit.rest.checks.getSuite({
+        owner: this.owner,
+        repo: this.repo,
+        check_suite_id: parseInt(checkSuiteId),
+      })
+
+      console.log(`  📝 Check Suite: ${checkSuite.data.app?.name || "Unknown"}`)
+      console.log(`  📝 Status: ${checkSuite.data.status}`)
+      console.log(`  📝 Conclusion: ${checkSuite.data.conclusion}`)
+
+      // Get check runs to see what issues were found
+      const checkRuns = await this.octokit.rest.checks.listForSuite({
+        owner: this.owner,
+        repo: this.repo,
+        check_suite_id: parseInt(checkSuiteId),
+      })
+
+      const todos: AnaTodo[] = []
+
+      // Analyze each check run for issues
+      for (const checkRun of checkRuns.data.check_runs) {
+        if (
+          checkRun.conclusion === "failure" ||
+          checkRun.conclusion === "neutral"
+        ) {
+          // Get detailed output from the check run
+          let checkRunDetails
+          try {
+            checkRunDetails = await this.octokit.rest.checks.get({
+              owner: this.owner,
+              repo: this.repo,
+              check_run_id: checkRun.id,
+            })
+          } catch {
+            console.log(
+              `  ⚠️ Could not get details for check run ${checkRun.id}`
+            )
+            continue
+          }
+
+          const output = checkRunDetails.data.output?.summary || ""
+          const title = checkRunDetails.data.output?.title || ""
+
+          // Create a todo for this check run issue
+          const todo: AnaTodo = {
+            id: `cursor-check-${checkRun.id}-${Date.now()}`,
+            content: `Cursor Bugbot found issue: ${title || checkRun.name}${
+              output ? ` - ${output.substring(0, 100)}...` : ""
+            }`,
+            priority: checkRun.conclusion === "failure" ? "high" : "medium",
+            issueType: "cursor_bugbot",
+            relatedPR: `#${prNumber}`,
+            createdAt: new Date().toISOString(),
+            rootCause: "Code analysis identified by Cursor Bugbot",
+            impact:
+              checkRun.conclusion === "failure"
+                ? "Critical issue that may cause runtime problems"
+                : "Code quality or maintainability concern",
+            suggestedFix:
+              "Review Cursor Bugbot analysis and address identified issues",
+            affectedComponents: ["code-quality", "analysis"],
+          }
+
+          todos.push(todo)
+
+          // Add to Cursor TODO list
+          await this.addToCursorTodo(todo)
+        }
+      }
+
+      // If no specific issues found but check suite completed, create a general todo
+      if (todos.length === 0 && checkSuite.data.conclusion === "success") {
+        const todo: AnaTodo = {
+          id: `cursor-check-success-${checkSuiteId}-${Date.now()}`,
+          content: `Cursor Bugbot completed analysis for PR #${prNumber} - no issues found`,
+          priority: "low",
+          issueType: "cursor_bugbot",
+          relatedPR: `#${prNumber}`,
+          createdAt: new Date().toISOString(),
+          rootCause: "Successful code analysis",
+          impact: "No issues detected",
+          suggestedFix: "Continue with current implementation",
+          affectedComponents: ["code-quality"],
+        }
+
+        todos.push(todo)
+        await this.addToCursorTodo(todo)
+      }
+
+      const results: AnaResults = {
+        todos,
+        summary: `Cursor Bugbot check suite analysis found ${todos.length} items`,
+        analysisDate: new Date().toISOString(),
+      }
+
+      // Save results
+      writeFileSync("ana-results.json", JSON.stringify(results, null, 2))
+      console.log(
+        `✅ Ana created ${todos.length} TODOs from Cursor Bugbot check suite analysis`
+      )
+
+      return results
+    } catch (error) {
+      console.error("❌ Error analyzing Cursor Bugbot check suite:", error)
+      throw error
+    }
+  }
+
+  /**
    * Analyze Cursor Bugbot review and create Cursor TODOs
    */
   async analyzeCursorBugbot(
@@ -1160,10 +1281,27 @@ async function main() {
         await analyzer.analyzeVercelFailure(checkSuiteId, vercelPrNum)
         break
 
+      case "analyze-cursor-bugbot-check":
+        const cursorCheckSuiteId = process.argv[3] || ""
+        const cursorPrNum = parseInt(process.argv[4] || "0")
+
+        if (!cursorCheckSuiteId || !cursorPrNum) {
+          console.log(
+            "❌ Usage: npx tsx scripts/ana-cli.ts analyze-cursor-bugbot-check <CHECK_SUITE_ID> <PR_NUMBER>"
+          )
+          process.exit(1)
+        }
+
+        await analyzer.analyzeCursorBugbotCheck(cursorCheckSuiteId, cursorPrNum)
+        break
+
       default:
         console.log("❌ Unknown command. Available commands:")
         console.log("  analyze-ci-failures <WORKFLOW_RUN_ID> <PR_NUMBER>")
         console.log("  analyze-cursor-bugbot <PR_NUMBER> <COMMENT_ID>")
+        console.log(
+          "  analyze-cursor-bugbot-check <CHECK_SUITE_ID> <PR_NUMBER>"
+        )
         console.log("  analyze-vercel-failure <CHECK_SUITE_ID> <PR_NUMBER>")
         process.exit(1)
     }
