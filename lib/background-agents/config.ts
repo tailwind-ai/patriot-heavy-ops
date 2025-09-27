@@ -14,7 +14,7 @@ export const BACKGROUND_AGENT_CONFIG = {
 
     // Comment patterns to detect
     commentPatterns: {
-      copilot: ["copilot", "suggestion", "```"],
+      review: ["review", "suggestion", "```", "consider", "fix"],
       lint: ["lint", "eslint", "error", "warning"],
       test: ["test", "spec", "jest", "vitest"],
       ci: ["ci", "build", "deploy", "vercel"],
@@ -26,7 +26,7 @@ export const BACKGROUND_AGENT_CONFIG = {
     // Severity thresholds
     severityThresholds: {
       low: ["lint_error"],
-      medium: ["copilot_comment", "test_failure"],
+      medium: ["review_comment", "test_failure"],
       high: ["ci_failure", "vercel_failure"],
       critical: ["security", "breaking"],
     },

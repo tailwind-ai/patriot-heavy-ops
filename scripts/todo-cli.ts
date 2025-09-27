@@ -142,7 +142,7 @@ async function initializeTodos() {
 async function initializeFromGitHubPR(prNumber: number) {
   console.log(`🤖 Fetching issues from GitHub PR #${prNumber}...`)
   console.log(`🧹 Clearing previous todos for fresh PR-specific detection...`)
-  console.log(`🔍 Checking for Copilot comments and CI failures...`)
+  console.log(`🔍 Checking for code review feedback and CI failures...`)
 
   const todos = await enhancedTodoManager.initializeFromGitHubPR(prNumber)
   console.log(`✅ Found ${todos.length} issues from GitHub PR #${prNumber}`)
@@ -184,7 +184,7 @@ async function initializeFromGitHubPRWithDoD(prNumber: number) {
   )
   console.log(`🧹 Clearing previous todos for fresh PR-specific detection...`)
   console.log(
-    `🔍 Checking for Copilot comments, CI failures, and DoD requirements...`
+    `🔍 Checking for code review feedback, CI failures, and DoD requirements...`
   )
 
   const todos = await enhancedTodoManager.initializeFromGitHubPRWithDoD(
@@ -457,7 +457,7 @@ async function resolveTodoWithComment(todoId: string, resolution?: string) {
   console.log(`✅ Marked todo ${todoId} as completed`)
 
   // If this todo has GitHub comment info, resolve the conversation
-  if (todo.issueType === "copilot_comment" && todo.relatedPR) {
+  if (todo.issueType === "review_comment" && todo.relatedPR) {
     try {
       const { execSync } = await import("child_process")
       const prNumber = todo.relatedPR.replace("#", "")
@@ -476,11 +476,11 @@ async function resolveTodoWithComment(todoId: string, resolution?: string) {
         console.log(`📝 Found review conversations, attempting to resolve...`)
 
         // Add a resolution comment to the PR
-        const commentBody = `✅ **Copilot Suggestions Resolved**
+        const commentBody = `✅ **Code Review Feedback Resolved**
 
 ${resolutionMessage}
 
-The following Copilot suggestion has been addressed:
+The following code review feedback has been addressed:
 > ${todo.content}
 
 All related review conversations should now be resolved.
@@ -764,7 +764,7 @@ function getPriorityEmoji(priority: string): string {
 
 function getIssueTypeIcon(issueType: string): string {
   switch (issueType) {
-    case "copilot_comment":
+    case "review_comment":
       return "🤖"
     case "ci_failure":
       return "🚨"

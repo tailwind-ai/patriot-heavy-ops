@@ -34,8 +34,8 @@ export class AutomatedFixer {
       let fixResult: FixResult
 
       switch (issue.type) {
-        case "copilot_comment":
-          fixResult = await this.applyCopilotFix(issue)
+        case "review_comment":
+          fixResult = await this.applyReviewFix(issue)
           break
         case "ci_failure":
           fixResult = await this.applyCIFix(issue)
@@ -78,7 +78,7 @@ export class AutomatedFixer {
     }
   }
 
-  private async applyCopilotFix(issue: IssueDetection): Promise<FixResult> {
+  private async applyReviewFix(issue: IssueDetection): Promise<FixResult> {
     if (!issue.suggestedFix || !issue.files?.length) {
       return {
         success: false,
@@ -228,7 +228,7 @@ export class AutomatedFixer {
   }
 
   private applyCodeSuggestion(content: string, suggestion: string): string {
-    // Apply code suggestion from Copilot
+    // Apply code suggestion from review
     const lines = content.split("\n")
 
     // Simple implementation - in practice, this would be more sophisticated

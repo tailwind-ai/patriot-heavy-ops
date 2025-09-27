@@ -17,7 +17,7 @@ export interface GitHubIssue {
   id: string
   content: string
   type:
-    | "copilot_comment"
+    | "review_comment"
     | "ci_failure"
     | "vercel_failure"
     | "lint_error"
@@ -108,10 +108,10 @@ export class GitHubIntegration {
     const issues: GitHubIssue[] = []
 
     for (const comment of comments) {
-      // Skip non-Copilot comments
-      if (comment.user.login !== "Copilot") continue
+      // Skip non-review comments
+      if (!this.isReviewComment(comment)) continue
 
-      const issue = this.parseCopilotComment(comment)
+      const issue = this.parseReviewComment(comment)
       if (issue) {
         issues.push(issue)
       }
@@ -121,17 +121,31 @@ export class GitHubIntegration {
   }
 
   /**
-   * Parse a Copilot comment to extract issue information
+   * Check if a comment is a review comment
    */
-  private parseCopilotComment(comment: GitHubComment): GitHubIssue | null {
+  private isReviewComment(comment: GitHubComment): boolean {
+    const body = comment.body || ""
+    return (
+      body.includes("```") ||
+      body.includes("suggestion") ||
+      body.includes("review") ||
+      body.includes("consider") ||
+      body.includes("fix")
+    )
+  }
+
+  /**
+   * Parse a review comment to extract issue information
+   */
+  private parseReviewComment(comment: GitHubComment): GitHubIssue | null {
     const body = comment.body.toLowerCase()
 
     // Determine issue type based on comment content
-    let type: GitHubIssue["type"] = "copilot_comment"
+    let type: GitHubIssue["type"] = "review_comment"
     let severity: GitHubIssue["severity"] = "medium"
     let suggestedFix: string | undefined
 
-    // Check for specific patterns in Copilot comments
+    // Check for specific patterns in review comments
     if (body.includes("import") && body.includes("type")) {
       type = "lint_error"
       severity = "medium"

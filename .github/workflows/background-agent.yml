@@ -113,7 +113,7 @@ jobs:
           path: .todos.json
           retention-days: 7
 
-  # Monitor Copilot comments and PR events
+  # Monitor PR events and CI status
   background-agent:
     runs-on: ubuntu-latest
     if: github.event.issue.pull_request || github.event_name == 'issue_comment' || github.event_name == 'status' || github.event_name == 'check_run'
@@ -222,7 +222,7 @@ jobs:
                   comment += '---\n';
                   comment += '🤖 *Background Agent has created todos for these issues. Use `npm run todo list` to see all todos and `npm run todo next` to get the next item to work on.*';
                 } else {
-                  comment += '✅ No new issues detected. All GitHub Copilot comments have been processed.';
+                  comment += '✅ No new issues detected. All code review feedback has been processed.';
                 }
               } else {
                 comment += 'ℹ️ No todos file found. Background Agent may not have detected any issues.';

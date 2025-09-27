@@ -13,7 +13,7 @@ export type MockTodoItem = {
   priority: "low" | "medium" | "high" | "critical"
   dependencies: string[]
   issueType:
-    | "copilot_comment"
+    | "review_comment"
     | "ci_failure"
     | "vercel_failure"
     | "lint_error"

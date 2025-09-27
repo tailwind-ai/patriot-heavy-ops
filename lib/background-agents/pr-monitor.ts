@@ -26,7 +26,7 @@ type PRWebhookData = {
 
 export type IssueDetection = {
   type:
-    | "copilot_comment"
+    | "review_comment"
     | "ci_failure"
     | "vercel_failure"
     | "lint_error"
@@ -95,11 +95,11 @@ async function detectIssues(
   const issues: IssueDetection[] = []
 
   try {
-    // Check for Copilot comments and new PR comments
+    // Check for review comments and new PR comments
     if (commentData) {
-      const copilotIssue = await detectCopilotComment(commentData)
-      if (copilotIssue) {
-        issues.push(copilotIssue)
+      const reviewIssue = await detectReviewComment(commentData)
+      if (reviewIssue) {
+        issues.push(reviewIssue)
       }
     }
 
@@ -125,7 +125,7 @@ async function detectIssues(
   return issues
 }
 
-async function detectCopilotComment(
+async function detectReviewComment(
   commentData: {
     id: number
     body: string
@@ -136,16 +136,17 @@ async function detectCopilotComment(
   const body = commentData.body || ""
   const author = commentData.user?.login || ""
 
-  // Check if comment is from Copilot or contains code suggestions
+  // Check if comment contains code suggestions or review feedback
   if (
-    author.includes("copilot") ||
     (body.includes("```") &&
-      (body.includes("suggestion") || body.includes("fix")))
+      (body.includes("suggestion") || body.includes("fix"))) ||
+    body.includes("review") ||
+    body.includes("consider")
   ) {
     return {
-      type: "copilot_comment",
+      type: "review_comment",
       severity: "medium",
-      description: "Copilot code suggestion detected",
+      description: "Code review feedback detected",
       suggestedFix: extractCodeFromComment(body),
     }
   }
@@ -171,15 +172,16 @@ async function detectNewComments(
     })
 
     for (const comment of comments.data) {
-      // Check for Copilot suggestions
+      // Check for review suggestions
       if (
-        comment.user?.login?.includes("copilot") ||
-        (comment.body?.includes("```") && comment.body.includes("suggestion"))
+        (comment.body?.includes("```") && comment.body.includes("suggestion")) ||
+        comment.body?.includes("review") ||
+        comment.body?.includes("consider")
       ) {
         issues.push({
-          type: "copilot_comment",
+          type: "review_comment",
           severity: "medium",
-          description: "New Copilot suggestion detected",
+          description: "New code review feedback detected",
           suggestedFix: extractCodeFromComment(comment.body || ""),
         })
       }

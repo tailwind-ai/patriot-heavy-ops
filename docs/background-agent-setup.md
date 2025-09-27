@@ -6,7 +6,7 @@ This guide explains how to set up and configure the PR Auto-Fix Agent for automa
 
 The Background Agent system automatically:
 
-- Monitors PRs for Copilot comments, CI failures, and Vercel deployment issues
+- Monitors PRs for code review feedback, CI failures, and Vercel deployment issues
 - Detects and extracts code suggestions or error logs
 - Applies automated fixes to code
 - Runs local tests to validate fixes
@@ -125,7 +125,7 @@ You can customize the agent behavior by modifying:
 Once configured, the agent operates automatically:
 
 1. **PR Creation**: When a PR is created on `dev` or `main`
-2. **Comment Detection**: When Copilot or other tools post suggestions
+2. **Comment Detection**: When code review tools or reviewers post suggestions
 3. **CI Failure**: When GitHub Actions or Vercel deployments fail
 4. **Issue Analysis**: Agent analyzes the issue and determines appropriate fixes
 5. **Fix Application**: Agent applies fixes and runs local tests
@@ -137,7 +137,7 @@ Once configured, the agent operates automatically:
 Test the agent by:
 
 1. Creating a test PR with intentional issues
-2. Adding Copilot suggestions as comments
+2. Adding code review suggestions as comments
 3. Triggering CI failures
 4. Observing the agent's response
 

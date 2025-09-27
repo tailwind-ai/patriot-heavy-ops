@@ -667,7 +667,7 @@ export class EnhancedTodoManager {
       lint_error: "fix_lint",
       ci_failure: "fix_build",
       vercel_failure: "fix_deployment",
-      copilot_comment: "refactor_code",
+      review_comment: "refactor_code",
       definition_of_done: "fix_build",
       build_failure: "fix_build",
       deployment_failure: "fix_deployment",
@@ -1138,7 +1138,7 @@ export class EnhancedTodoManager {
         return "high"
       case "vercel_failure":
         return "critical"
-      case "copilot_comment":
+      case "review_comment":
         return "medium"
       case "definition_of_done":
         return "high"
@@ -1219,7 +1219,7 @@ export class EnhancedTodoManager {
    */
   private estimateTime(todo: MockTodoItem): string {
     const baseTime = {
-      copilot_comment: "5-15 min",
+      review_comment: "5-15 min",
       ci_failure: "10-30 min",
       vercel_failure: "15-45 min",
       lint_error: "5-20 min",

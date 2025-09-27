@@ -144,7 +144,7 @@ export class GitOperations {
     
     // Map issue types to source descriptions
     const sourceMap = {
-      copilot_comment: "GitHub Copilot",
+      review_comment: "Code Review",
       ci_failure: "GitHub Actions CI",
       vercel_failure: "Vercel Deployment",
       lint_error: "ESLint",
