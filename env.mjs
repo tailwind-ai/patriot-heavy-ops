@@ -21,6 +21,7 @@ export const env = createEnv({
     STRIPE_PRO_MONTHLY_PLAN_ID: z.string().min(1).optional(),
     GITHUB_WEBHOOK_SECRET: z.string().min(1).optional(),
     CURSOR_API_KEY: z.string().min(1).optional(),
+    CURSOR_CLI: z.string().min(1).optional(),
     VERCEL_API_TOKEN: z.string().min(1).optional(),
   },
   client: {
@@ -43,6 +44,7 @@ export const env = createEnv({
     STRIPE_PRO_MONTHLY_PLAN_ID: process.env.STRIPE_PRO_MONTHLY_PLAN_ID,
     GITHUB_WEBHOOK_SECRET: process.env.GITHUB_WEBHOOK_SECRET,
     CURSOR_API_KEY: process.env.CURSOR_API_KEY,
+    CURSOR_CLI: process.env.CURSOR_CLI,
     VERCEL_API_TOKEN: process.env.VERCEL_API_TOKEN,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
   },

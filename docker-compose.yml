@@ -45,7 +45,7 @@ services:
       GITHUB_CLIENT_ID: your_github_client_id
       GITHUB_CLIENT_SECRET: your_github_client_secret
       # Background Agent GitHub Access
-      GITHUB_ACCESS_TOKEN: ${SAM_PAT_EXP_09_04_2026}
+      GITHUB_ACCESS_TOKEN: "dummy-token-for-development"
       # App configuration
       NODE_ENV: development
     depends_on:
