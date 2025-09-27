@@ -7,14 +7,14 @@
 
 import { Octokit } from "@octokit/rest"
 import { execSync } from "child_process"
-import { writeFileSync, existsSync } from "fs"
+import { writeFileSync } from "fs"
 
 interface AnaTodo {
   id: string
   content: string
   priority: "low" | "medium" | "high" | "critical"
-  files?: string[]
-  lineNumbers?: number[]
+  files?: string[] | undefined
+  lineNumbers?: number[] | undefined
   issueType: "ci_failure" | "cursor_bugbot"
   relatedPR: string
   createdAt: string
@@ -42,12 +42,15 @@ class AnaAnalyzer {
   /**
    * Analyze CI Test failures and create Cursor TODOs
    */
-  async analyzeCIFailures(workflowRunId: string, prNumber: number): Promise<AnaResults> {
+  async analyzeCIFailures(
+    workflowRunId: string,
+    prNumber: number
+  ): Promise<AnaResults> {
     console.log(`🔍 Ana analyzing CI Test failures for PR #${prNumber}...`)
 
     try {
-      // Get workflow run details
-      const workflowRun = await this.octokit.rest.actions.getWorkflowRun({
+      // Get workflow run details (for future use)
+      await this.octokit.rest.actions.getWorkflowRun({
         owner: this.owner,
         repo: this.repo,
         run_id: parseInt(workflowRunId),
@@ -61,7 +64,7 @@ class AnaAnalyzer {
       })
 
       const todos: AnaTodo[] = []
-      let summary = `CI Test workflow failed with ${jobs.data.jobs.length} jobs`
+      const summary = `CI Test workflow failed with ${jobs.data.jobs.length} jobs`
 
       // Analyze each failed job
       for (const job of jobs.data.jobs) {
@@ -69,13 +72,16 @@ class AnaAnalyzer {
           console.log(`  📋 Analyzing failed job: ${job.name}`)
 
           // Get job logs
-          const logs = await this.octokit.rest.actions.downloadJobLogsForWorkflowRun({
-            owner: this.owner,
-            repo: this.repo,
-            job_id: job.id,
-          })
+          const logs =
+            await this.octokit.rest.actions.downloadJobLogsForWorkflowRun({
+              owner: this.owner,
+              repo: this.repo,
+              job_id: job.id,
+            })
 
-          const logContent = Buffer.from(logs.data as ArrayBuffer).toString("utf-8")
+          const logContent = Buffer.from(logs.data as ArrayBuffer).toString(
+            "utf-8"
+          )
           const analysis = this.analyzeJobLogs(job.name, logContent)
 
           // Create todos for each identified issue
@@ -84,8 +90,8 @@ class AnaAnalyzer {
               id: `ci-${workflowRunId}-${job.id}-${Date.now()}`,
               content: issue.description,
               priority: issue.priority,
-              files: issue.files,
-              lineNumbers: issue.lineNumbers,
+              files: issue.files ?? undefined,
+              lineNumbers: issue.lineNumbers ?? undefined,
               issueType: "ci_failure",
               relatedPR: `#${prNumber}`,
               createdAt: new Date().toISOString(),
@@ -106,7 +112,9 @@ class AnaAnalyzer {
 
       // Save results
       writeFileSync("ana-results.json", JSON.stringify(results, null, 2))
-      console.log(`✅ Ana created ${todos.length} TODOs from CI failure analysis`)
+      console.log(
+        `✅ Ana created ${todos.length} TODOs from CI failure analysis`
+      )
 
       return results
     } catch (error) {
@@ -118,7 +126,10 @@ class AnaAnalyzer {
   /**
    * Analyze Cursor Bugbot review and create Cursor TODOs
    */
-  async analyzeCursorBugbot(prNumber: number, commentId: number): Promise<AnaResults> {
+  async analyzeCursorBugbot(
+    prNumber: number,
+    commentId: number
+  ): Promise<AnaResults> {
     console.log(`🔍 Ana analyzing Cursor Bugbot review for PR #${prNumber}...`)
 
     try {
@@ -142,8 +153,8 @@ class AnaAnalyzer {
           id: `cursor-${commentId}-${Date.now()}`,
           content: issue.description,
           priority: issue.priority,
-          files: issue.files,
-          lineNumbers: issue.lineNumbers,
+          files: issue.files ?? undefined,
+          lineNumbers: issue.lineNumbers ?? undefined,
           issueType: "cursor_bugbot",
           relatedPR: `#${prNumber}`,
           createdAt: new Date().toISOString(),
@@ -162,7 +173,9 @@ class AnaAnalyzer {
 
       // Save results
       writeFileSync("ana-results.json", JSON.stringify(results, null, 2))
-      console.log(`✅ Ana created ${todos.length} TODOs from Cursor Bugbot analysis`)
+      console.log(
+        `✅ Ana created ${todos.length} TODOs from Cursor Bugbot analysis`
+      )
 
       return results
     } catch (error) {
@@ -174,19 +187,22 @@ class AnaAnalyzer {
   /**
    * Analyze job logs to extract failure information
    */
-  private analyzeJobLogs(jobName: string, logContent: string): {
+  private analyzeJobLogs(
+    jobName: string,
+    logContent: string
+  ): {
     issues: Array<{
       description: string
       priority: "low" | "medium" | "high" | "critical"
-      files?: string[]
-      lineNumbers?: number[]
+      files?: string[] | undefined
+      lineNumbers?: number[] | undefined
     }>
   } {
     const issues: Array<{
       description: string
       priority: "low" | "medium" | "high" | "critical"
-      files?: string[]
-      lineNumbers?: number[]
+      files?: string[] | undefined
+      lineNumbers?: number[] | undefined
     }> = []
 
     // Common failure patterns
@@ -221,14 +237,15 @@ class AnaAnalyzer {
       let match
       while ((match = pattern.regex.exec(logContent)) !== null) {
         const description = match[1] || `Failure in ${jobName}`
-        const files = pattern.extractFiles ? [match[1]] : undefined
-        const lineNumbers = pattern.extractLines ? [parseInt(match[3])] : undefined
+        const files = pattern.extractFiles && match[1] ? [match[1]] : undefined
+        const lineNumbers =
+          pattern.extractLines && match[3] ? [parseInt(match[3])] : undefined
 
         issues.push({
           description: `${jobName}: ${description}`,
           priority: pattern.priority,
-          files,
-          lineNumbers,
+          files: files ?? undefined,
+          lineNumbers: lineNumbers ?? undefined,
         })
       }
     }
@@ -251,15 +268,15 @@ class AnaAnalyzer {
     issues: Array<{
       description: string
       priority: "low" | "medium" | "high" | "critical"
-      files?: string[]
-      lineNumbers?: number[]
+      files?: string[] | undefined
+      lineNumbers?: number[] | undefined
     }>
   } {
     const issues: Array<{
       description: string
       priority: "low" | "medium" | "high" | "critical"
-      files?: string[]
-      lineNumbers?: number[]
+      files?: string[] | undefined
+      lineNumbers?: number[] | undefined
     }> = []
 
     // Extract file references
@@ -267,29 +284,44 @@ class AnaAnalyzer {
     const files: string[] = []
     let match
     while ((match = filePattern.exec(commentBody)) !== null) {
-      files.push(match[1])
+      if (match[1]) {
+        files.push(match[1])
+      }
     }
 
     // Extract line numbers
     const linePattern = /line\s+(\d+)/gi
     const lineNumbers: number[] = []
     while ((match = linePattern.exec(commentBody)) !== null) {
-      lineNumbers.push(parseInt(match[1]))
+      if (match[1]) {
+        lineNumbers.push(parseInt(match[1]))
+      }
     }
 
     // Determine priority based on comment content
     let priority: "low" | "medium" | "high" | "critical" = "medium"
-    if (commentBody.toLowerCase().includes("critical") || commentBody.toLowerCase().includes("security")) {
+    if (
+      commentBody.toLowerCase().includes("critical") ||
+      commentBody.toLowerCase().includes("security")
+    ) {
       priority = "critical"
-    } else if (commentBody.toLowerCase().includes("error") || commentBody.toLowerCase().includes("bug")) {
+    } else if (
+      commentBody.toLowerCase().includes("error") ||
+      commentBody.toLowerCase().includes("bug")
+    ) {
       priority = "high"
-    } else if (commentBody.toLowerCase().includes("suggestion") || commentBody.toLowerCase().includes("improvement")) {
+    } else if (
+      commentBody.toLowerCase().includes("suggestion") ||
+      commentBody.toLowerCase().includes("improvement")
+    ) {
       priority = "low"
     }
 
     // Create a single todo for the entire Cursor Bugbot review
     issues.push({
-      description: `Cursor Bugbot Review: ${commentBody.substring(0, 200)}${commentBody.length > 200 ? "..." : ""}`,
+      description: `Cursor Bugbot Review: ${commentBody.substring(0, 200)}${
+        commentBody.length > 200 ? "..." : ""
+      }`,
       priority,
       files: files.length > 0 ? files : undefined,
       lineNumbers: lineNumbers.length > 0 ? lineNumbers : undefined,
@@ -305,7 +337,7 @@ class AnaAnalyzer {
     try {
       // Use Cursor CLI to add the todo
       const cursorCommand = `cursor todo add "${todo.content}" --priority ${todo.priority}`
-      
+
       if (todo.files && todo.files.length > 0) {
         const filesArg = todo.files.join(",")
         const fullCommand = `${cursorCommand} --files "${filesArg}"`
@@ -314,7 +346,9 @@ class AnaAnalyzer {
         execSync(cursorCommand, { stdio: "pipe" })
       }
 
-      console.log(`  ✅ Added to Cursor TODO: ${todo.content.substring(0, 50)}...`)
+      console.log(
+        `  ✅ Added to Cursor TODO: ${todo.content.substring(0, 50)}...`
+      )
     } catch (error) {
       console.warn(`  ⚠️  Failed to add to Cursor TODO: ${error}`)
       // Continue processing even if Cursor CLI fails
@@ -331,10 +365,12 @@ async function main() {
     switch (command) {
       case "analyze-ci-failures":
         const workflowRunId = process.argv[3]
-        const prNumber = parseInt(process.argv[4])
+        const prNumber = parseInt(process.argv[4]!)
 
         if (!workflowRunId || !prNumber) {
-          console.log("❌ Usage: npx tsx scripts/ana-cli.ts analyze-ci-failures <WORKFLOW_RUN_ID> <PR_NUMBER>")
+          console.log(
+            "❌ Usage: npx tsx scripts/ana-cli.ts analyze-ci-failures <WORKFLOW_RUN_ID> <PR_NUMBER>"
+          )
           process.exit(1)
         }
 
@@ -342,11 +378,13 @@ async function main() {
         break
 
       case "analyze-cursor-bugbot":
-        const prNum = parseInt(process.argv[3])
-        const commentId = parseInt(process.argv[4])
+        const prNum = parseInt(process.argv[3]!)
+        const commentId = parseInt(process.argv[4]!)
 
         if (!prNum || !commentId) {
-          console.log("❌ Usage: npx tsx scripts/ana-cli.ts analyze-cursor-bugbot <PR_NUMBER> <COMMENT_ID>")
+          console.log(
+            "❌ Usage: npx tsx scripts/ana-cli.ts analyze-cursor-bugbot <PR_NUMBER> <COMMENT_ID>"
+          )
           process.exit(1)
         }
 
