@@ -113,7 +113,10 @@ export class AnaAnalyzer {
     // Analyze database connection issues (only first occurrence to avoid duplicates)
     const dbIssues = this.analyzeVercelDatabaseErrors(logContent, logTimestamp)
     if (dbIssues.length > 0) {
-      issues.push(dbIssues[0]) // Only take the first database issue
+      const firstIssue = dbIssues[0]
+      if (firstIssue) {
+        issues.push(firstIssue) // Only take the first database issue
+      }
     }
 
     // Analyze environment variable issues
@@ -510,9 +513,10 @@ export class AnaAnalyzer {
         : undefined
 
       // For Unicode test, include more context from the log
+      const matchText = match[0]
       const fullLine =
-        logContent.split("\n").find((line) => line.includes(match[0])) ||
-        match[0]
+        logContent.split("\n").find((line) => line.includes(matchText)) ||
+        matchText
 
       issues.push({
         description: `TypeScript Check: ${fullLine.trim()}`,
