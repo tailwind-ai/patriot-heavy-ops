@@ -543,23 +543,15 @@ describe("UserRepository", () => {
           id: true,
           name: true,
           email: true,
-          emailVerified: true,
-          image: true,
           role: true,
-          phone: true,
-          company: true,
-          createdAt: true,
-          updatedAt: true,
           militaryBranch: true,
           yearsOfService: true,
           certifications: true,
           preferredLocations: true,
           isAvailable: true,
-          stripeCustomerId: true,
-          stripeSubscriptionId: true,
-          stripePriceId: true,
-          stripeCurrentPeriodEnd: true,
-          // SECURITY: password field explicitly excluded
+          updatedAt: true,
+          // SECURITY: Only return operator-relevant fields
+          // Exclude sensitive Stripe, image, phone, company, and other unnecessary fields
         },
       })
     })
@@ -672,22 +664,11 @@ describe("UserRepository", () => {
           id: true,
           name: true,
           email: true,
-          emailVerified: true,
-          image: true,
           role: true,
           phone: true,
           company: true,
           createdAt: true,
-          updatedAt: true,
-          militaryBranch: true,
-          yearsOfService: true,
-          certifications: true,
-          preferredLocations: true,
-          isAvailable: true,
-          stripeCustomerId: true,
-          stripeSubscriptionId: true,
-          stripePriceId: true,
-          stripeCurrentPeriodEnd: true,
+          // SECURITY: Exclude sensitive Stripe, emailVerified, image, and updatedAt fields
         },
         orderBy: {
           createdAt: "desc",
@@ -722,22 +703,9 @@ describe("UserRepository", () => {
           name: true,
           email: true,
           emailVerified: true,
-          image: true,
-          role: true,
-          phone: true,
-          company: true,
-          createdAt: true,
           updatedAt: true,
-          militaryBranch: true,
-          yearsOfService: true,
-          certifications: true,
-          preferredLocations: true,
-          isAvailable: true,
-          stripeCustomerId: true,
-          stripeSubscriptionId: true,
-          stripePriceId: true,
-          stripeCurrentPeriodEnd: true,
-          // SECURITY: password field explicitly excluded
+          // SECURITY: Only return fields relevant to email verification
+          // Exclude sensitive Stripe, operator, and other unnecessary fields
         },
       })
     })
