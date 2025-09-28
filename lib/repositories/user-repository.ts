@@ -81,7 +81,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
   /**
    * Find user by ID
    */
-  async findById(id: string): Promise<RepositoryResult<any>> {
+  async findById(id: string): Promise<RepositoryResult<User | null>> {
     const validation = this.validateRequired({ id }, ["id"]);
     if (!validation.success) {
       const errorMessage = typeof validation.error === 'string' 
@@ -111,7 +111,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
   /**
    * Find user by email
    */
-  async findByEmail(email: string): Promise<RepositoryResult<any>> {
+  async findByEmail(email: string): Promise<RepositoryResult<User | null>> {
     const validation = this.validateRequired({ email }, ["email"]);
     if (!validation.success) {
       const errorMessage = typeof validation.error === 'string' 
@@ -147,7 +147,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
   ): Promise<RepositoryResult<User[]>> {
     return this.handleAsync(
       () => {
-        let query: any = {
+        let query: Record<string, unknown> = {
           select: {
             id: true,
             name: true,
@@ -191,7 +191,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
   ): Promise<RepositoryResult<User[]>> {
     return this.handleAsync(
       () => {
-        const whereClause: any = {
+        const whereClause: Record<string, unknown> = {
           role: "OPERATOR",
           isAvailable: true,
         };
@@ -210,7 +210,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
           };
         }
 
-        let query: any = {
+        let query: Record<string, unknown> = {
           where: whereClause,
           select: {
             id: true,
@@ -244,7 +244,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
   /**
    * Create new user
    */
-  async create(data: UserCreateInput): Promise<RepositoryResult<any>> {
+  async create(data: UserCreateInput): Promise<RepositoryResult<User>> {
     const validation = this.validateRequired(data as unknown as Record<string, unknown>, ["email"]);
     if (!validation.success) {
       const errorMessage = typeof validation.error === 'string' 
@@ -276,7 +276,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
   /**
    * Update user
    */
-  async update(id: string, data: UserUpdateInput): Promise<RepositoryResult<any>> {
+  async update(id: string, data: UserUpdateInput): Promise<RepositoryResult<User>> {
     const validation = this.validateRequired({ id }, ["id"]);
     if (!validation.success) {
       const errorMessage = typeof validation.error === 'string' 
@@ -340,7 +340,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
   async count(filters?: FilterOptions): Promise<RepositoryResult<number>> {
     return this.handleAsync(
       () => {
-        let query: any = {};
+        let query: Record<string, unknown> = {};
         
         if (filters) {
           query = this.applyFilters(query, filters);
@@ -360,7 +360,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
   async submitOperatorApplication(
     userId: string,
     applicationData: OperatorApplicationInput
-  ): Promise<RepositoryResult<any>> {
+  ): Promise<RepositoryResult<User>> {
     const validation = this.validateRequired(
       { userId, ...applicationData }, 
       ["userId", "militaryBranch", "yearsOfService"]
@@ -409,7 +409,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
   async setOperatorAvailability(
     operatorId: string,
     isAvailable: boolean
-  ): Promise<RepositoryResult<any>> {
+  ): Promise<RepositoryResult<User>> {
     const validation = this.validateRequired({ operatorId }, ["operatorId"]);
     if (!validation.success) {
       const errorMessage = typeof validation.error === 'string' 
@@ -467,7 +467,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
       stripePriceId?: string;
       stripeCurrentPeriodEnd?: Date;
     }
-  ): Promise<RepositoryResult<any>> {
+  ): Promise<RepositoryResult<User>> {
     const validation = this.validateRequired({ userId }, ["userId"]);
     if (!validation.success) {
       const errorMessage = typeof validation.error === 'string' 
@@ -512,7 +512,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
 
     return this.handleAsync(
       () => {
-        let query: any = {
+        let query: Record<string, unknown> = {
           where: { role },
           select: {
             id: true,
@@ -544,7 +544,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
   /**
    * Verify user email
    */
-  async verifyEmail(userId: string): Promise<RepositoryResult<any>> {
+  async verifyEmail(userId: string): Promise<RepositoryResult<User>> {
     const validation = this.validateRequired({ userId }, ["userId"]);
     if (!validation.success) {
       const errorMessage = typeof validation.error === 'string' 

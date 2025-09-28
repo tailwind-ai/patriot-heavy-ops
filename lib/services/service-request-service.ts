@@ -183,9 +183,9 @@ export class ServiceRequestService extends BaseService {
     ])
     if (!validation.success) {
       return this.createError<number>(
-        validation.error!.code,
-        validation.error!.message,
-        validation.error!.details
+        validation.error?.code || "VALIDATION_ERROR",
+        validation.error?.message || "Validation failed",
+        validation.error?.details
       )
     }
 
@@ -241,9 +241,9 @@ export class ServiceRequestService extends BaseService {
     ])
     if (!validation.success) {
       return this.createError<string>(
-        validation.error!.code,
-        validation.error!.message,
-        validation.error!.details
+        validation.error?.code || "VALIDATION_ERROR",
+        validation.error?.message || "Validation failed",
+        validation.error?.details
       )
     }
 
@@ -304,9 +304,9 @@ export class ServiceRequestService extends BaseService {
     const validation = this.validateRequired({ transport }, ["transport"])
     if (!validation.success) {
       return this.createError<number>(
-        validation.error!.code,
-        validation.error!.message,
-        validation.error!.details
+        validation.error?.code || "VALIDATION_ERROR",
+        validation.error?.message || "Validation failed",
+        validation.error?.details
       )
     }
 
@@ -346,9 +346,9 @@ export class ServiceRequestService extends BaseService {
     )
     if (!validation.success) {
       return this.createError<number>(
-        validation.error!.code,
-        validation.error!.message,
-        validation.error!.details
+        validation.error?.code || "VALIDATION_ERROR",
+        validation.error?.message || "Validation failed",
+        validation.error?.details
       )
     }
 
@@ -419,9 +419,9 @@ export class ServiceRequestService extends BaseService {
     )
     if (!hoursResult.success) {
       return this.createError<ServiceRequestCalculationResult>(
-        hoursResult.error!.code,
-        hoursResult.error!.message,
-        hoursResult.error!.details
+        hoursResult.error?.code || "CALCULATION_ERROR",
+        hoursResult.error?.message || "Hours calculation failed",
+        hoursResult.error?.details
       )
     }
 
@@ -432,24 +432,24 @@ export class ServiceRequestService extends BaseService {
     )
     if (!displayResult.success) {
       return this.createError<ServiceRequestCalculationResult>(
-        displayResult.error!.code,
-        displayResult.error!.message,
-        displayResult.error!.details
+        displayResult.error?.code || "CALCULATION_ERROR",
+        displayResult.error?.message || "Display calculation failed",
+        displayResult.error?.details
       )
     }
 
     // Calculate base cost
     const baseCostResult = this.calculateBaseCost(
-      hoursResult.data!,
+      hoursResult.data as number,
       input.baseRate,
       input.rateType,
       input.equipmentCategory
     )
     if (!baseCostResult.success) {
       return this.createError<ServiceRequestCalculationResult>(
-        baseCostResult.error!.code,
-        baseCostResult.error!.message,
-        baseCostResult.error!.details
+        baseCostResult.error?.code || "CALCULATION_ERROR",
+        baseCostResult.error?.message || "Base cost calculation failed",
+        baseCostResult.error?.details
       )
     }
 
@@ -457,18 +457,18 @@ export class ServiceRequestService extends BaseService {
     const transportResult = this.calculateTransportFee(input.transport)
     if (!transportResult.success) {
       return this.createError<ServiceRequestCalculationResult>(
-        transportResult.error!.code,
-        transportResult.error!.message,
-        transportResult.error!.details
+        transportResult.error?.code || "CALCULATION_ERROR",
+        transportResult.error?.message || "Transport calculation failed",
+        transportResult.error?.details
       )
     }
 
     const result: ServiceRequestCalculationResult = {
-      totalHours: hoursResult.data!,
-      baseCost: baseCostResult.data!,
-      transportFee: transportResult.data!,
-      totalEstimate: baseCostResult.data! + transportResult.data!,
-      durationDisplay: displayResult.data!,
+      totalHours: hoursResult.data as number,
+      baseCost: baseCostResult.data as number,
+      transportFee: transportResult.data as number,
+      totalEstimate: (baseCostResult.data as number) + (transportResult.data as number),
+      durationDisplay: displayResult.data as string,
     }
 
     return this.createSuccess(result)
@@ -486,9 +486,9 @@ export class ServiceRequestService extends BaseService {
     const validation = this.validateRequired({ toStatus }, ["toStatus"])
     if (!validation.success) {
       return this.createError<StatusTransition>(
-        validation.error!.code,
-        validation.error!.message,
-        validation.error!.details
+        validation.error?.code || "VALIDATION_ERROR",
+        validation.error?.message || "Validation failed",
+        validation.error?.details
       )
     }
 
@@ -536,9 +536,9 @@ export class ServiceRequestService extends BaseService {
     ])
     if (!validation.success) {
       return this.createError<string[]>(
-        validation.error!.code,
-        validation.error!.message,
-        validation.error!.details
+        validation.error?.code || "VALIDATION_ERROR",
+        validation.error?.message || "Validation failed",
+        validation.error?.details
       )
     }
 
@@ -608,15 +608,15 @@ export class ServiceRequestService extends BaseService {
    */
   async getServiceRequests(
     options: ServiceRequestListOptions
-  ): Promise<ServiceResult<any[]>> {
+  ): Promise<ServiceResult<ServiceRequest[]>> {
     this.logOperation("getServiceRequests", options as unknown as Record<string, unknown>)
 
     const validation = this.validateRequired(options as unknown as Record<string, unknown>, ["userId", "userRole"])
     if (!validation.success) {
-      return this.createError<any[]>(
-        validation.error!.code,
-        validation.error!.message,
-        validation.error!.details
+      return this.createError<ServiceRequest[]>(
+        validation.error?.code || "VALIDATION_ERROR",
+        validation.error?.message || "Validation failed",
+        validation.error?.details
       )
     }
 
@@ -726,7 +726,7 @@ export class ServiceRequestService extends BaseService {
   async createServiceRequest(
     input: ServiceRequestCreateInputWithOptionalTotal,
     userRole: string
-  ): Promise<ServiceResult<any>> {
+  ): Promise<ServiceResult<ServiceRequest>> {
     this.logOperation("createServiceRequest", { ...input, userId: "[REDACTED]" })
 
     // Check permissions
@@ -756,10 +756,10 @@ export class ServiceRequestService extends BaseService {
       input.requestedDurationValue
     )
     if (!hoursResult.success) {
-      return this.createError<any>(
-        hoursResult.error!.code,
-        hoursResult.error!.message,
-        hoursResult.error!.details
+      return this.createError<ServiceRequest>(
+        hoursResult.error?.code || "CALCULATION_ERROR",
+        hoursResult.error?.message || "Hours calculation failed",
+        hoursResult.error?.details
       )
     }
 
@@ -781,7 +781,7 @@ export class ServiceRequestService extends BaseService {
             equipmentDetail: input.equipmentDetail,
             requestedDurationType: input.requestedDurationType,
             requestedDurationValue: input.requestedDurationValue,
-            requestedTotalHours: hoursResult.data!,
+            requestedTotalHours: hoursResult.data as number,
             rateType: input.rateType,
             baseRate: input.baseRate,
             status: "SUBMITTED",
@@ -807,15 +807,15 @@ export class ServiceRequestService extends BaseService {
    */
   async getServiceRequestById(
     options: ServiceRequestAccessOptions
-  ): Promise<ServiceResult<any>> {
+  ): Promise<ServiceResult<ServiceRequest>> {
     this.logOperation("getServiceRequestById", options as unknown as Record<string, unknown>)
 
     const validation = this.validateRequired(options as unknown as Record<string, unknown>, ["requestId", "userId"])
     if (!validation.success) {
-      return this.createError<any>(
-        validation.error!.code,
-        validation.error!.message,
-        validation.error!.details
+      return this.createError<ServiceRequest>(
+        validation.error?.code || "VALIDATION_ERROR",
+        validation.error?.message || "Validation failed",
+        validation.error?.details
       )
     }
 
@@ -891,15 +891,15 @@ export class ServiceRequestService extends BaseService {
     requestId: string,
     updates: ServiceRequestUpdateInput,
     userId: string
-  ): Promise<ServiceResult<any>> {
+  ): Promise<ServiceResult<ServiceRequest>> {
     this.logOperation("updateServiceRequest", { requestId, updates, userId: "[REDACTED]" })
 
     const validation = this.validateRequired({ requestId, userId }, ["requestId", "userId"])
     if (!validation.success) {
-      return this.createError<any>(
-        validation.error!.code,
-        validation.error!.message,
-        validation.error!.details
+      return this.createError<ServiceRequest>(
+        validation.error?.code || "VALIDATION_ERROR",
+        validation.error?.message || "Validation failed",
+        validation.error?.details
       )
     }
 
@@ -928,7 +928,7 @@ export class ServiceRequestService extends BaseService {
           throw error
         }
 
-        const updateData: any = {
+        const updateData: Record<string, unknown> = {
           updatedAt: new Date(),
         }
         
