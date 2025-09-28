@@ -3,13 +3,24 @@
  *
  * Handles all data operations for users including authentication, profiles, and operator management.
  * Abstracts Prisma operations behind a mobile-compatible interface.
+ *
+ * SECURITY IMPLEMENTATION (GitHub Issue #292):
+ * - All methods use explicit `select` statements to prevent password field exposure
+ * - SafeUser and SafeUserWithAccounts types ensure type safety without password field
+ * - Following .cursorrules.md Platform Mode standards for security and type safety
+ * - Comprehensive security tests prevent regression of password exposure vulnerability
+ *
+ * SECURE QUERY PATTERNS:
+ * - Use `select` instead of `include` for user queries
+ * - Always exclude password field from select statements
+ * - Return SafeUser types instead of full User types
+ * - Minimal field selection based on use case requirements
  */
 
 import { PrismaClient } from "@prisma/client"
 import type { User, UserRole } from "@prisma/client"
 import {
   BaseRepository,
-  CrudRepository,
   FilterOptions,
   PaginationOptions,
   RepositoryResult,
@@ -17,6 +28,53 @@ import {
 } from "./base-repository"
 
 // Type definitions for user operations
+
+/**
+ * SafeUser type - User without password field for security
+ * Following .cursorrules.md Platform Mode type safety standards
+ */
+export type SafeUser = Omit<User, "password">
+
+/**
+ * SafeUser with accounts relation
+ */
+export interface SafeUserWithAccounts extends SafeUser {
+  accounts: Array<{
+    provider: string
+    providerAccountId: string
+  }>
+}
+
+/**
+ * Minimal user info for role-based queries
+ */
+export type UserRoleInfo = Pick<SafeUser, 'id' | 'name' | 'email' | 'role' | 'phone' | 'company' | 'createdAt'> & {
+  // Operator-specific fields (only present when role is OPERATOR, nullable from DB)
+  militaryBranch?: string | null
+  yearsOfService?: number | null
+  certifications?: string[]
+  preferredLocations?: string[]
+  isAvailable?: boolean
+}
+
+/**
+ * Minimal user info for email verification
+ */
+export type UserEmailInfo = Pick<SafeUser, 'id' | 'name' | 'email' | 'emailVerified' | 'updatedAt'>
+
+/**
+ * Minimal operator info for availability updates
+ */
+export type OperatorAvailabilityInfo = Pick<SafeUser, 'id' | 'name' | 'email' | 'role' | 'certifications' | 'preferredLocations' | 'isAvailable' | 'updatedAt'> & {
+  // Nullable operator fields from DB
+  militaryBranch: string | null
+  yearsOfService: number | null
+}
+
+/**
+ * @deprecated Use SafeUserWithAccounts instead
+ * This interface exposes the full User type which may include password
+ */
 export interface UserWithAccounts extends User {
   accounts: Array<{
     provider: string
@@ -71,19 +129,23 @@ export interface UserFilters {
 
 /**
  * User Repository Implementation
+ *
+ * SECURITY NOTE: This repository implements secure patterns by returning SafeUser types
+ * instead of full User types to prevent password field exposure (Issue #292)
  */
-export class UserRepository
-  extends BaseRepository
-  implements CrudRepository<User, UserCreateInput, UserUpdateInput>
-{
+export class UserRepository extends BaseRepository {
   constructor(db: PrismaClient, options?: RepositoryOptions) {
     super(db, "UserRepository", options)
   }
 
   /**
    * Find user by ID
+   * SECURITY FIX: Uses select instead of include to prevent password exposure
+   * Returns SafeUserWithAccounts type following .cursorrules.md Platform Mode standards
    */
-  async findById(id: string): Promise<RepositoryResult<any>> {
+  async findById(
+    id: string
+  ): Promise<RepositoryResult<SafeUserWithAccounts | null>> {
     const validation = this.validateRequired({ id }, ["id"])
     if (!validation.success) {
       const errorMessage =
@@ -97,7 +159,27 @@ export class UserRepository
       () =>
         this.db.user.findUnique({
           where: { id },
-          include: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            emailVerified: true,
+            image: true,
+            role: true,
+            phone: true,
+            company: true,
+            createdAt: true,
+            updatedAt: true,
+            militaryBranch: true,
+            yearsOfService: true,
+            certifications: true,
+            preferredLocations: true,
+            isAvailable: true,
+            stripeCustomerId: true,
+            stripeSubscriptionId: true,
+            stripePriceId: true,
+            stripeCurrentPeriodEnd: true,
+            // SECURITY: password field explicitly excluded
             accounts: {
               select: {
                 provider: true,
@@ -114,8 +196,12 @@ export class UserRepository
 
   /**
    * Find user by email
+   * SECURITY FIX: Uses select instead of include to prevent password exposure
+   * Returns SafeUserWithAccounts type following .cursorrules.md Platform Mode standards
    */
-  async findByEmail(email: string): Promise<RepositoryResult<any>> {
+  async findByEmail(
+    email: string
+  ): Promise<RepositoryResult<SafeUserWithAccounts | null>> {
     const validation = this.validateRequired({ email }, ["email"])
     if (!validation.success) {
       const errorMessage =
@@ -129,7 +215,27 @@ export class UserRepository
       () =>
         this.db.user.findUnique({
           where: { email },
-          include: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            emailVerified: true,
+            image: true,
+            role: true,
+            phone: true,
+            company: true,
+            createdAt: true,
+            updatedAt: true,
+            militaryBranch: true,
+            yearsOfService: true,
+            certifications: true,
+            preferredLocations: true,
+            isAvailable: true,
+            stripeCustomerId: true,
+            stripeSubscriptionId: true,
+            stripePriceId: true,
+            stripeCurrentPeriodEnd: true,
+            // SECURITY: password field explicitly excluded
             accounts: {
               select: {
                 provider: true,
@@ -150,25 +256,34 @@ export class UserRepository
   async findMany(
     filters?: FilterOptions,
     pagination?: PaginationOptions
-  ): Promise<RepositoryResult<User[]>> {
+  ): Promise<RepositoryResult<SafeUser[]>> {
     return this.handleAsync(
       () => {
-        let query: any = {
+        let query = {
           select: {
             id: true,
             name: true,
             email: true,
+            emailVerified: true,
+            image: true,
             role: true,
             phone: true,
             company: true,
-            image: true,
-            isAvailable: true,
             createdAt: true,
             updatedAt: true,
+            militaryBranch: true,
+            yearsOfService: true,
+            certifications: true,
+            preferredLocations: true,
+            isAvailable: true,
+            stripeCustomerId: true,
+            stripeSubscriptionId: true,
+            stripePriceId: true,
+            stripeCurrentPeriodEnd: true,
             // Exclude sensitive fields like password
           },
           orderBy: {
-            createdAt: "desc",
+            createdAt: "desc" as const,
           },
         }
 
@@ -194,12 +309,17 @@ export class UserRepository
   async findAvailableOperators(
     filters?: { preferredLocations?: string[]; certifications?: string[] },
     pagination?: PaginationOptions
-  ): Promise<RepositoryResult<User[]>> {
+  ): Promise<RepositoryResult<SafeUser[]>> {
     return this.handleAsync(
       () => {
-        const whereClause: any = {
-          role: "OPERATOR",
+        const whereClause = {
+          role: "OPERATOR" as const,
           isAvailable: true,
+        } as {
+          role: "OPERATOR"
+          isAvailable: boolean
+          preferredLocations?: { hasSome: string[] }
+          certifications?: { hasSome: string[] }
         }
 
         // Add location filter if provided
@@ -219,22 +339,31 @@ export class UserRepository
           }
         }
 
-        let query: any = {
+        let query = {
           where: whereClause,
           select: {
             id: true,
             name: true,
             email: true,
+            emailVerified: true,
+            image: true,
+            role: true,
             phone: true,
+            company: true,
+            createdAt: true,
+            updatedAt: true,
             militaryBranch: true,
             yearsOfService: true,
             certifications: true,
             preferredLocations: true,
             isAvailable: true,
-            createdAt: true,
+            stripeCustomerId: true,
+            stripeSubscriptionId: true,
+            stripePriceId: true,
+            stripeCurrentPeriodEnd: true,
           },
           orderBy: {
-            yearsOfService: "desc",
+            yearsOfService: "desc" as const,
           },
         }
 
@@ -253,7 +382,7 @@ export class UserRepository
   /**
    * Create new user
    */
-  async create(data: UserCreateInput): Promise<RepositoryResult<any>> {
+  async create(data: UserCreateInput): Promise<RepositoryResult<SafeUser>> {
     const validation = this.validateRequired(
       data as unknown as Record<string, unknown>,
       ["email"]
@@ -277,8 +406,23 @@ export class UserRepository
             id: true,
             name: true,
             email: true,
+            emailVerified: true,
+            image: true,
             role: true,
+            phone: true,
+            company: true,
             createdAt: true,
+            updatedAt: true,
+            militaryBranch: true,
+            yearsOfService: true,
+            certifications: true,
+            preferredLocations: true,
+            isAvailable: true,
+            stripeCustomerId: true,
+            stripeSubscriptionId: true,
+            stripePriceId: true,
+            stripeCurrentPeriodEnd: true,
+            // SECURITY: password field explicitly excluded
           },
         }),
       "USER_CREATE_ERROR",
@@ -293,7 +437,7 @@ export class UserRepository
   async update(
     id: string,
     data: UserUpdateInput
-  ): Promise<RepositoryResult<any>> {
+  ): Promise<RepositoryResult<SafeUser>> {
     const validation = this.validateRequired({ id }, ["id"])
     if (!validation.success) {
       const errorMessage =
@@ -315,11 +459,23 @@ export class UserRepository
             id: true,
             name: true,
             email: true,
+            emailVerified: true,
+            image: true,
             role: true,
             phone: true,
             company: true,
-            image: true,
+            createdAt: true,
             updatedAt: true,
+            militaryBranch: true,
+            yearsOfService: true,
+            certifications: true,
+            preferredLocations: true,
+            isAvailable: true,
+            stripeCustomerId: true,
+            stripeSubscriptionId: true,
+            stripePriceId: true,
+            stripeCurrentPeriodEnd: true,
+            // SECURITY: password field explicitly excluded
           },
         }),
       "USER_UPDATE_ERROR",
@@ -360,7 +516,7 @@ export class UserRepository
   async count(filters?: FilterOptions): Promise<RepositoryResult<number>> {
     return this.handleAsync(
       () => {
-        let query: any = {}
+        let query: { where?: Record<string, unknown> } = {}
 
         if (filters) {
           query = this.applyFilters(query, filters)
@@ -380,7 +536,7 @@ export class UserRepository
   async submitOperatorApplication(
     userId: string,
     applicationData: OperatorApplicationInput
-  ): Promise<RepositoryResult<any>> {
+  ): Promise<RepositoryResult<SafeUser>> {
     const validation = this.validateRequired({ userId, ...applicationData }, [
       "userId",
       "militaryBranch",
@@ -411,13 +567,23 @@ export class UserRepository
             id: true,
             name: true,
             email: true,
+            emailVerified: true,
+            image: true,
             role: true,
+            phone: true,
+            company: true,
+            createdAt: true,
+            updatedAt: true,
             militaryBranch: true,
             yearsOfService: true,
             certifications: true,
             preferredLocations: true,
             isAvailable: true,
-            updatedAt: true,
+            stripeCustomerId: true,
+            stripeSubscriptionId: true,
+            stripePriceId: true,
+            stripeCurrentPeriodEnd: true,
+            // SECURITY: password field explicitly excluded
           },
         }),
       "OPERATOR_APPLICATION_ERROR",
@@ -432,7 +598,7 @@ export class UserRepository
   async setOperatorAvailability(
     operatorId: string,
     isAvailable: boolean
-  ): Promise<RepositoryResult<any>> {
+  ): Promise<RepositoryResult<OperatorAvailabilityInfo>> {
     const validation = this.validateRequired({ operatorId }, ["operatorId"])
     if (!validation.success) {
       const errorMessage =
@@ -469,8 +635,15 @@ export class UserRepository
             id: true,
             name: true,
             email: true,
+            role: true,
+            militaryBranch: true,
+            yearsOfService: true,
+            certifications: true,
+            preferredLocations: true,
             isAvailable: true,
             updatedAt: true,
+            // SECURITY: Only return operator-relevant fields
+            // Exclude sensitive Stripe, image, phone, company, and other unnecessary fields
           },
         })
       },
@@ -491,7 +664,7 @@ export class UserRepository
       stripePriceId?: string
       stripeCurrentPeriodEnd?: Date
     }
-  ): Promise<RepositoryResult<any>> {
+  ): Promise<RepositoryResult<SafeUser>> {
     const validation = this.validateRequired({ userId }, ["userId"])
     if (!validation.success) {
       const errorMessage =
@@ -511,11 +684,25 @@ export class UserRepository
           },
           select: {
             id: true,
+            name: true,
+            email: true,
+            emailVerified: true,
+            image: true,
+            role: true,
+            phone: true,
+            company: true,
+            createdAt: true,
+            updatedAt: true,
+            militaryBranch: true,
+            yearsOfService: true,
+            certifications: true,
+            preferredLocations: true,
+            isAvailable: true,
             stripeCustomerId: true,
             stripeSubscriptionId: true,
             stripePriceId: true,
             stripeCurrentPeriodEnd: true,
-            updatedAt: true,
+            // SECURITY: password field explicitly excluded
           },
         }),
       "USER_STRIPE_UPDATE_ERROR",
@@ -530,7 +717,7 @@ export class UserRepository
   async findByRole(
     role: UserRole,
     pagination?: PaginationOptions
-  ): Promise<RepositoryResult<User[]>> {
+  ): Promise<RepositoryResult<UserRoleInfo[]>> {
     const validation = this.validateRequired({ role }, ["role"])
     if (!validation.success) {
       const errorMessage =
@@ -542,7 +729,7 @@ export class UserRepository
 
     return this.handleAsync(
       () => {
-        let query: any = {
+        let query = {
           where: { role },
           select: {
             id: true,
@@ -551,11 +738,19 @@ export class UserRepository
             role: true,
             phone: true,
             company: true,
-            isAvailable: true,
             createdAt: true,
+            // Only include operator fields if role is OPERATOR
+            ...(role === "OPERATOR" && {
+              militaryBranch: true,
+              yearsOfService: true,
+              certifications: true,
+              preferredLocations: true,
+              isAvailable: true,
+            }),
+            // SECURITY: Exclude sensitive Stripe, emailVerified, image, and updatedAt fields
           },
           orderBy: {
-            createdAt: "desc",
+            createdAt: "desc" as const,
           },
         }
 
@@ -574,7 +769,7 @@ export class UserRepository
   /**
    * Verify user email
    */
-  async verifyEmail(userId: string): Promise<RepositoryResult<any>> {
+  async verifyEmail(userId: string): Promise<RepositoryResult<UserEmailInfo>> {
     const validation = this.validateRequired({ userId }, ["userId"])
     if (!validation.success) {
       const errorMessage =
@@ -594,9 +789,12 @@ export class UserRepository
           },
           select: {
             id: true,
+            name: true,
             email: true,
             emailVerified: true,
             updatedAt: true,
+            // SECURITY: Only return fields relevant to email verification
+            // Exclude sensitive Stripe, operator, and other unnecessary fields
           },
         }),
       "USER_EMAIL_VERIFY_ERROR",

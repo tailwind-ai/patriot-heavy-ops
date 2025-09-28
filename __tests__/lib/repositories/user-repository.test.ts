@@ -50,7 +50,26 @@ describe("UserRepository", () => {
       expect(result.data).toEqual(mockUser)
       expect(mockPrismaClient.user.findUnique).toHaveBeenCalledWith({
         where: { id: "user123" },
-        include: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          emailVerified: true,
+          image: true,
+          role: true,
+          phone: true,
+          company: true,
+          createdAt: true,
+          updatedAt: true,
+          militaryBranch: true,
+          yearsOfService: true,
+          certifications: true,
+          preferredLocations: true,
+          isAvailable: true,
+          stripeCustomerId: true,
+          stripeSubscriptionId: true,
+          stripePriceId: true,
+          stripeCurrentPeriodEnd: true,
           accounts: {
             select: {
               provider: true,
@@ -99,7 +118,26 @@ describe("UserRepository", () => {
       expect(result.data).toEqual(mockUser)
       expect(mockPrismaClient.user.findUnique).toHaveBeenCalledWith({
         where: { email: "john@example.com" },
-        include: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          emailVerified: true,
+          image: true,
+          role: true,
+          phone: true,
+          company: true,
+          createdAt: true,
+          updatedAt: true,
+          militaryBranch: true,
+          yearsOfService: true,
+          certifications: true,
+          preferredLocations: true,
+          isAvailable: true,
+          stripeCustomerId: true,
+          stripeSubscriptionId: true,
+          stripePriceId: true,
+          stripeCurrentPeriodEnd: true,
           accounts: {
             select: {
               provider: true,
@@ -160,13 +198,22 @@ describe("UserRepository", () => {
           id: true,
           name: true,
           email: true,
+          emailVerified: true,
+          image: true,
+          role: true,
           phone: true,
+          company: true,
+          createdAt: true,
+          updatedAt: true,
           militaryBranch: true,
           yearsOfService: true,
           certifications: true,
           preferredLocations: true,
           isAvailable: true,
-          createdAt: true,
+          stripeCustomerId: true,
+          stripeSubscriptionId: true,
+          stripePriceId: true,
+          stripeCurrentPeriodEnd: true,
         },
         orderBy: {
           yearsOfService: "desc",
@@ -249,8 +296,23 @@ describe("UserRepository", () => {
           id: true,
           name: true,
           email: true,
+          emailVerified: true,
+          image: true,
           role: true,
+          phone: true,
+          company: true,
           createdAt: true,
+          updatedAt: true,
+          militaryBranch: true,
+          yearsOfService: true,
+          certifications: true,
+          preferredLocations: true,
+          isAvailable: true,
+          stripeCustomerId: true,
+          stripeSubscriptionId: true,
+          stripePriceId: true,
+          stripeCurrentPeriodEnd: true,
+          // SECURITY: password field explicitly excluded
         },
       })
     })
@@ -276,8 +338,23 @@ describe("UserRepository", () => {
           id: true,
           name: true,
           email: true,
+          emailVerified: true,
+          image: true,
           role: true,
+          phone: true,
+          company: true,
           createdAt: true,
+          updatedAt: true,
+          militaryBranch: true,
+          yearsOfService: true,
+          certifications: true,
+          preferredLocations: true,
+          isAvailable: true,
+          stripeCustomerId: true,
+          stripeSubscriptionId: true,
+          stripePriceId: true,
+          stripeCurrentPeriodEnd: true,
+          // SECURITY: password field explicitly excluded
         },
       })
     })
@@ -327,11 +404,23 @@ describe("UserRepository", () => {
           id: true,
           name: true,
           email: true,
+          emailVerified: true,
+          image: true,
           role: true,
           phone: true,
           company: true,
-          image: true,
+          createdAt: true,
           updatedAt: true,
+          militaryBranch: true,
+          yearsOfService: true,
+          certifications: true,
+          preferredLocations: true,
+          isAvailable: true,
+          stripeCustomerId: true,
+          stripeSubscriptionId: true,
+          stripePriceId: true,
+          stripeCurrentPeriodEnd: true,
+          // SECURITY: password field explicitly excluded
         },
       })
     })
@@ -383,13 +472,23 @@ describe("UserRepository", () => {
           id: true,
           name: true,
           email: true,
+          emailVerified: true,
+          image: true,
           role: true,
+          phone: true,
+          company: true,
+          createdAt: true,
+          updatedAt: true,
           militaryBranch: true,
           yearsOfService: true,
           certifications: true,
           preferredLocations: true,
           isAvailable: true,
-          updatedAt: true,
+          stripeCustomerId: true,
+          stripeSubscriptionId: true,
+          stripePriceId: true,
+          stripeCurrentPeriodEnd: true,
+          // SECURITY: password field explicitly excluded
         },
       })
     })
@@ -444,8 +543,15 @@ describe("UserRepository", () => {
           id: true,
           name: true,
           email: true,
+          role: true,
+          militaryBranch: true,
+          yearsOfService: true,
+          certifications: true,
+          preferredLocations: true,
           isAvailable: true,
           updatedAt: true,
+          // SECURITY: Only return operator-relevant fields
+          // Exclude sensitive Stripe, image, phone, company, and other unnecessary fields
         },
       })
     })
@@ -505,11 +611,25 @@ describe("UserRepository", () => {
         },
         select: {
           id: true,
+          name: true,
+          email: true,
+          emailVerified: true,
+          image: true,
+          role: true,
+          phone: true,
+          company: true,
+          createdAt: true,
+          updatedAt: true,
+          militaryBranch: true,
+          yearsOfService: true,
+          certifications: true,
+          preferredLocations: true,
+          isAvailable: true,
           stripeCustomerId: true,
           stripeSubscriptionId: true,
           stripePriceId: true,
           stripeCurrentPeriodEnd: true,
-          updatedAt: true,
+          // SECURITY: password field explicitly excluded
         },
       })
     })
@@ -547,8 +667,8 @@ describe("UserRepository", () => {
           role: true,
           phone: true,
           company: true,
-          isAvailable: true,
           createdAt: true,
+          // SECURITY: Exclude sensitive Stripe, emailVerified, image, and updatedAt fields
         },
         orderBy: {
           createdAt: "desc",
@@ -580,9 +700,12 @@ describe("UserRepository", () => {
         },
         select: {
           id: true,
+          name: true,
           email: true,
           emailVerified: true,
           updatedAt: true,
+          // SECURITY: Only return fields relevant to email verification
+          // Exclude sensitive Stripe, operator, and other unnecessary fields
         },
       })
     })
