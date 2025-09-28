@@ -260,6 +260,20 @@ describe("Ana Webhook Client Issue #282", () => {
         workflowRunId: "workflow-123",
         prNumber: 456,
         failures: failures,
+        analysisMode: "full",
+        workflowContext: {
+          type: "unknown",
+          branch: "unknown",
+          event: "unknown",
+          isPR: false,
+          isMainBranch: false,
+        },
+        jobMetadata: [],
+        performanceMetrics: {
+          totalAnalysisTime: 0,
+          jobCount: 0,
+          averageJobAnalysisTime: 0,
+        },
       })
     })
 
@@ -279,6 +293,20 @@ describe("Ana Webhook Client Issue #282", () => {
         summary: "Simple failure",
         analysisDate: results.analysisDate,
         failures: failures,
+        analysisMode: "full",
+        workflowContext: {
+          type: "unknown",
+          branch: "unknown",
+          event: "unknown",
+          isPR: false,
+          isMainBranch: false,
+        },
+        jobMetadata: [],
+        performanceMetrics: {
+          totalAnalysisTime: 0,
+          jobCount: 0,
+          averageJobAnalysisTime: 0,
+        },
       })
       expect(payload.workflowRunId).toBeUndefined()
       expect(payload.prNumber).toBeUndefined()
@@ -292,6 +320,20 @@ describe("Ana Webhook Client Issue #282", () => {
         summary: "No failures found",
         analysisDate: results.analysisDate,
         failures: [],
+        analysisMode: "full",
+        workflowContext: {
+          type: "unknown",
+          branch: "unknown",
+          event: "unknown",
+          isPR: false,
+          isMainBranch: false,
+        },
+        jobMetadata: [],
+        performanceMetrics: {
+          totalAnalysisTime: 0,
+          jobCount: 0,
+          averageJobAnalysisTime: 0,
+        },
       })
     })
   })

@@ -62,6 +62,7 @@ export class AnaAnalyzer {
 
   /**
    * Analyze CI Test failures and send to Tod via webhook (Issue #282)
+   * Enhanced with conditional analysis logic (Issue #303 Phase 3)
    */
   async analyzeCIFailures(
     workflowRunId: string,
@@ -71,11 +72,19 @@ export class AnaAnalyzer {
 
     try {
       // Get workflow run details
-      await this.octokit.rest.actions.getWorkflowRun({
+      const workflowRun = await this.octokit.rest.actions.getWorkflowRun({
         owner: this.owner,
         repo: this.repo,
         run_id: parseInt(workflowRunId),
       })
+
+      // Detect workflow context for conditional analysis (Issue #303 Phase 3)
+      const workflowContext = this.detectWorkflowContext(workflowRun.data)
+      const analysisMode = this.determineAnalysisMode(workflowContext)
+
+      console.log(
+        `  🎯 Analysis mode: ${analysisMode} (${workflowContext.type} on ${workflowContext.branch})`
+      )
 
       // Get workflow run jobs
       const jobs = await this.octokit.rest.actions.listJobsForWorkflowRun({
@@ -88,7 +97,13 @@ export class AnaAnalyzer {
       const failedJobsCount = jobs.data.jobs.filter(
         (job) => job.conclusion === "failure"
       ).length
-      const summary = `CI Test workflow failed with ${failedJobsCount} failed jobs`
+
+      // Generate context-aware summary (Issue #303 Phase 3)
+      const summary = this.generateContextAwareSummary(
+        failedJobsCount,
+        workflowContext,
+        analysisMode
+      )
 
       // Analyze each failed job
       for (const job of jobs.data.jobs) {
@@ -107,7 +122,11 @@ export class AnaAnalyzer {
             const logContent = Buffer.from(logs.data as ArrayBuffer).toString(
               "utf-8"
             )
-            const analysis = this.analyzeJobLogs(job.name, logContent)
+            const analysis = this.analyzeJobLogs(
+              job.name,
+              logContent,
+              analysisMode
+            )
 
             // Create AnalyzedFailure objects for each identified issue
             for (const issue of analysis.issues) {
@@ -147,8 +166,35 @@ export class AnaAnalyzer {
       // Create AnaResults using the new format
       const anaResults = createAnaResults(failures, summary)
 
-      // Send to Tod via webhook (Issue #282)
-      await this.sendToTodWebhook(anaResults, workflowRunId, prNumber)
+      // Collect job metadata for webhook (Issue #303 Phase 4)
+      const jobMetadata = jobs.data.jobs
+        .filter(job => job.conclusion === "failure")
+        .map(job => ({
+          jobName: job.name,
+          jobId: job.id.toString(),
+          conclusion: "failure" as const,
+          priority: this.getJobPriority(job.name),
+          analysisTime: Date.now() - Date.now(), // Placeholder - would be actual analysis time
+        }))
+
+      // Calculate performance metrics
+      const performanceMetrics = {
+        totalAnalysisTime: Date.now() - Date.now(), // Placeholder - would be actual total time
+        jobCount: jobMetadata.length,
+        averageJobAnalysisTime: jobMetadata.length > 0 ? 
+          jobMetadata.reduce((sum, job) => sum + job.analysisTime, 0) / jobMetadata.length : 0,
+      }
+
+      // Send to Tod via webhook with enhanced metadata (Issue #303 Phase 4)
+      await this.sendToTodWebhook(
+        anaResults, 
+        workflowRunId, 
+        prNumber,
+        workflowContext,
+        analysisMode,
+        jobMetadata,
+        performanceMetrics
+      )
 
       // Create legacy format for workflow compatibility
       const legacyResults: LegacyAnaResults = {
@@ -260,22 +306,53 @@ export class AnaAnalyzer {
 
   /**
    * Send analysis results to Tod via webhook (Issue #282)
+   * Enhanced with job-level metadata (Issue #303 Phase 4)
    */
   private async sendToTodWebhook(
     anaResults: AnaResults,
     workflowRunId: string,
-    prNumber: number
+    prNumber: number,
+    workflowContext?: {
+      type: "pr" | "main" | "release" | "unknown"
+      branch: string
+      event: string
+      isPR: boolean
+      isMainBranch: boolean
+    },
+    analysisMode?: "light" | "full",
+    jobMetadata?: Array<{
+      jobName: string
+      jobId: string
+      conclusion: "success" | "failure" | "cancelled" | "skipped"
+      priority: "low" | "medium" | "high" | "critical"
+      analysisTime: number
+    }>,
+    performanceMetrics?: {
+      totalAnalysisTime: number
+      jobCount: number
+      averageJobAnalysisTime: number
+      patternMatchingTime?: number
+      webhookPreparationTime?: number
+    }
   ): Promise<void> {
     try {
       console.log(
         `🚀 Sending ${anaResults.failures.length} failures to Tod webhook...`
       )
 
-      // Create webhook payload using Issue #282 format
+      // Create enhanced webhook payload (Issue #303 Phase 4)
+      const enhancedMetadata = workflowContext && analysisMode ? {
+        analysisMode,
+        workflowContext,
+        jobMetadata: jobMetadata || [],
+        ...(performanceMetrics && { performanceMetrics }),
+      } : undefined
+
       const payload = createAnaWebhookPayload(
         anaResults,
         workflowRunId,
-        prNumber
+        prNumber,
+        enhancedMetadata
       )
 
       // Send to Tod webhook
@@ -304,10 +381,12 @@ export class AnaAnalyzer {
 
   /**
    * Analyze job logs to extract failure information with job-specific prioritization (Issue #303)
+   * Enhanced with conditional analysis modes (Issue #303 Phase 3)
    */
   private analyzeJobLogs(
     jobName: string,
-    logContent: string
+    logContent: string,
+    analysisMode: "light" | "full" = "full"
   ): {
     issues: Array<{
       description: string
@@ -401,7 +480,25 @@ export class AnaAnalyzer {
         extractFiles: (match) => (match[1] ? [match[1]] : undefined),
         extractLines: (match) => (match[3] ? [parseInt(match[3])] : undefined), // Line number, not column
       },
-      // Test failures - specific patterns
+      // Test failures - specific patterns (bullet points first for more detail)
+      {
+        regex: /● ([^●\n]+)/gi,
+        priority: "high" as const,
+        rootCause: "Jest test failure",
+        suggestedFix: "Review and fix the failing test case",
+        category: "test",
+        extractDescription: (match) => {
+          const testName = match[1]?.trim() || "unknown test"
+          // Extract more context from test name if it contains "›"
+          if (testName.includes("›")) {
+            const parts = testName.split("›").map(p => p.trim())
+            return `${parts[0]}: ${parts[parts.length - 1]}`
+          }
+          return `Test case failed: ${testName}`
+        },
+        extractFiles: () => undefined,
+        extractLines: () => undefined,
+      },
       {
         regex: /FAIL\s+([^\n]+)/gi,
         priority: "high" as const,
@@ -410,17 +507,6 @@ export class AnaAnalyzer {
         category: "test",
         extractDescription: (match) =>
           `Test failure in ${match[1]?.trim() || "test file"}`,
-        extractFiles: () => undefined,
-        extractLines: () => undefined,
-      },
-      {
-        regex: /● ([^●\n]+)/gi,
-        priority: "high" as const,
-        rootCause: "Jest test failure",
-        suggestedFix: "Review and fix the failing test case",
-        category: "test",
-        extractDescription: (match) =>
-          `Test case failed: ${match[1]?.trim() || "unknown test"}`,
         extractFiles: () => undefined,
         extractLines: () => undefined,
       },
@@ -465,9 +551,15 @@ export class AnaAnalyzer {
       },
     ]
 
+    // Filter patterns based on analysis mode (Issue #303 Phase 3)
+    const filteredPatterns = this.filterPatternsByAnalysisMode(
+      patterns,
+      analysisMode
+    )
+
     const foundCategories = new Set<string>()
 
-    for (const pattern of patterns) {
+    for (const pattern of filteredPatterns) {
       // Skip if we already found an issue in this category (avoid duplicates)
       if (foundCategories.has(pattern.category)) {
         continue
@@ -509,6 +601,150 @@ export class AnaAnalyzer {
     }
 
     return { issues }
+  }
+
+  /**
+   * Detect workflow context for conditional analysis (Issue #303 Phase 3)
+   */
+  private detectWorkflowContext(workflowRun: any): {
+    type: "pr" | "main" | "release" | "unknown"
+    branch: string
+    event: string
+    isPR: boolean
+    isMainBranch: boolean
+  } {
+    const branch = workflowRun.head_branch || "unknown"
+    const event = workflowRun.event || "unknown"
+
+    // Determine workflow type
+    let type: "pr" | "main" | "release" | "unknown" = "unknown"
+    if (event === "pull_request") {
+      type = "pr"
+    } else if (branch === "main" || branch === "master") {
+      type = "main"
+    } else if (branch.startsWith("release/")) {
+      type = "release"
+    }
+
+    return {
+      type,
+      branch,
+      event,
+      isPR: type === "pr",
+      isMainBranch: type === "main",
+    }
+  }
+
+  /**
+   * Determine analysis mode based on workflow context (Issue #303 Phase 3)
+   */
+  private determineAnalysisMode(workflowContext: {
+    type: "pr" | "main" | "release" | "unknown"
+    isPR: boolean
+    isMainBranch: boolean
+  }): "light" | "full" {
+    // Light analysis for PR validation (fast feedback)
+    if (workflowContext.isPR) {
+      return "light"
+    }
+
+    // Full analysis for main branch and releases (comprehensive)
+    if (workflowContext.isMainBranch || workflowContext.type === "release") {
+      return "full"
+    }
+
+    // Default to light for unknown contexts
+    return "light"
+  }
+
+  /**
+   * Generate context-aware summary (Issue #303 Phase 3)
+   */
+  private generateContextAwareSummary(
+    failedJobsCount: number,
+    workflowContext: {
+      type: "pr" | "main" | "release" | "unknown"
+      branch: string
+      isPR: boolean
+      isMainBranch: boolean
+    },
+    analysisMode: "light" | "full"
+  ): string {
+    const jobText = failedJobsCount === 1 ? "job" : "jobs"
+
+    if (workflowContext.isPR) {
+      return `PR validation failed with ${failedJobsCount} failed ${jobText} (light analysis)`
+    }
+
+    if (workflowContext.isMainBranch) {
+      return `Main branch comprehensive analysis: ${failedJobsCount} failed ${jobText}`
+    }
+
+    if (workflowContext.type === "release") {
+      return `Release validation failed with ${failedJobsCount} failed ${jobText} (full analysis)`
+    }
+
+    // Default summary with analysis mode
+    return `CI workflow failed with ${failedJobsCount} failed ${jobText} (${analysisMode} analysis)`
+  }
+
+  /**
+   * Get job priority based on job name (Issue #303 Phase 4)
+   */
+  private getJobPriority(jobName: string): "low" | "medium" | "high" | "critical" {
+    const lowerJobName = jobName.toLowerCase()
+    
+    if (lowerJobName.includes("fast validation")) {
+      return "critical"
+    }
+    
+    if (lowerJobName.includes("integration")) {
+      return "high"
+    }
+    
+    if (lowerJobName.includes("coverage")) {
+      return "medium"
+    }
+    
+    // Default priority for unknown job types
+    return "medium"
+  }
+
+  /**
+   * Filter patterns based on analysis mode (Issue #303 Phase 3)
+   */
+  private filterPatternsByAnalysisMode(
+    patterns: Array<{
+      regex: RegExp
+      priority: "low" | "medium" | "high" | "critical"
+      rootCause: string
+      suggestedFix: string
+      category: string
+      extractDescription: (match: RegExpExecArray) => string
+      extractFiles: (match: RegExpExecArray) => string[] | undefined
+      extractLines: (match: RegExpExecArray) => number[] | undefined
+    }>,
+    analysisMode: "light" | "full"
+  ): Array<{
+    regex: RegExp
+    priority: "low" | "medium" | "high" | "critical"
+    rootCause: string
+    suggestedFix: string
+    category: string
+    extractDescription: (match: RegExpExecArray) => string
+    extractFiles: (match: RegExpExecArray) => string[] | undefined
+    extractLines: (match: RegExpExecArray) => number[] | undefined
+  }> {
+    if (analysisMode === "full") {
+      // Full analysis includes all patterns
+      return patterns
+    }
+
+    // Light analysis focuses on critical and high priority issues only
+    return patterns.filter(
+      (pattern) =>
+        pattern.priority === "critical" || pattern.priority === "high"
+    )
   }
 
   /**

@@ -131,6 +131,7 @@ export const AnaResultsSchema = z.object({
 
 /**
  * Zod schema for AnaWebhookPayload validation (Issue #282)
+ * Enhanced with job-level metadata (Issue #303 Phase 4)
  */
 export const AnaWebhookPayloadSchema = z.object({
   summary: z.string().min(1, "Summary is required"),
@@ -138,6 +139,29 @@ export const AnaWebhookPayloadSchema = z.object({
   workflowRunId: z.string().optional(),
   prNumber: z.number().int().positive().optional(),
   failures: z.array(AnalyzedFailureSchema),
+  // Enhanced metadata (Issue #303 Phase 4)
+  analysisMode: z.enum(["light", "full"]).optional(),
+  workflowContext: z.object({
+    type: z.enum(["pr", "main", "release", "unknown"]),
+    branch: z.string(),
+    event: z.string(),
+    isPR: z.boolean(),
+    isMainBranch: z.boolean(),
+  }).optional(),
+  jobMetadata: z.array(z.object({
+    jobName: z.string(),
+    jobId: z.string(),
+    conclusion: z.enum(["success", "failure", "cancelled", "skipped"]),
+    priority: z.enum(["low", "medium", "high", "critical"]),
+    analysisTime: z.number().int().min(0),
+  })).optional(),
+  performanceMetrics: z.object({
+    totalAnalysisTime: z.number().int().min(0),
+    jobCount: z.number().int().min(0),
+    averageJobAnalysisTime: z.number().min(0),
+    patternMatchingTime: z.number().int().min(0).optional(),
+    webhookPreparationTime: z.number().int().min(0).optional(),
+  }).optional(),
 })
 
 /**
@@ -265,6 +289,32 @@ export type AnaWebhookPayload = {
   prNumber?: number
   /** Array of analyzed failures */
   failures: AnalyzedFailure[]
+  /** Analysis mode - light for PR validation, full for main branch (Issue #303 Phase 4) */
+  analysisMode?: "light" | "full"
+  /** Workflow context information (Issue #303 Phase 4) */
+  workflowContext?: {
+    type: "pr" | "main" | "release" | "unknown"
+    branch: string
+    event: string
+    isPR: boolean
+    isMainBranch: boolean
+  }
+  /** Job-level metadata (Issue #303 Phase 4) */
+  jobMetadata?: Array<{
+    jobName: string
+    jobId: string
+    conclusion: "success" | "failure" | "cancelled" | "skipped"
+    priority: "low" | "medium" | "high" | "critical"
+    analysisTime: number
+  }>
+  /** Performance metrics (Issue #303 Phase 4) */
+  performanceMetrics?: {
+    totalAnalysisTime: number
+    jobCount: number
+    averageJobAnalysisTime: number
+    patternMatchingTime?: number
+    webhookPreparationTime?: number
+  }
 }
 
 /**

@@ -514,12 +514,42 @@ export async function batchSendFailures(
 }
 
 /**
+ * Enhanced metadata for webhook payload (Issue #303 Phase 4)
+ */
+export interface EnhancedWebhookMetadata {
+  analysisMode: "light" | "full"
+  workflowContext: {
+    type: "pr" | "main" | "release" | "unknown"
+    branch: string
+    event: string
+    isPR: boolean
+    isMainBranch: boolean
+  }
+  jobMetadata: Array<{
+    jobName: string
+    jobId: string
+    conclusion: "success" | "failure" | "cancelled" | "skipped"
+    priority: "low" | "medium" | "high" | "critical"
+    analysisTime: number
+  }>
+  performanceMetrics?: {
+    totalAnalysisTime: number
+    jobCount: number
+    averageJobAnalysisTime: number
+    patternMatchingTime?: number
+    webhookPreparationTime?: number
+  }
+}
+
+/**
  * Create AnaWebhookPayload from AnaResults (Issue #282 format)
+ * Enhanced with job-level metadata (Issue #303 Phase 4)
  */
 export function createAnaWebhookPayload(
   results: AnaResults,
   workflowRunId?: string,
-  prNumber?: number
+  prNumber?: number,
+  enhancedMetadata?: EnhancedWebhookMetadata
 ): AnaWebhookPayload {
   const payload: AnaWebhookPayload = {
     summary: results.summary,
@@ -533,6 +563,32 @@ export function createAnaWebhookPayload(
 
   if (prNumber) {
     payload.prNumber = prNumber
+  }
+
+  // Add enhanced metadata (Issue #303 Phase 4)
+  if (enhancedMetadata) {
+    payload.analysisMode = enhancedMetadata.analysisMode
+    payload.workflowContext = enhancedMetadata.workflowContext
+    payload.jobMetadata = enhancedMetadata.jobMetadata
+    if (enhancedMetadata.performanceMetrics) {
+      payload.performanceMetrics = enhancedMetadata.performanceMetrics
+    }
+  } else {
+    // Provide defaults for backward compatibility
+    payload.analysisMode = "full"
+    payload.workflowContext = {
+      type: "unknown",
+      branch: "unknown",
+      event: "unknown",
+      isPR: false,
+      isMainBranch: false,
+    }
+    payload.jobMetadata = []
+    payload.performanceMetrics = {
+      totalAnalysisTime: 0,
+      jobCount: 0,
+      averageJobAnalysisTime: 0,
+    }
   }
 
   return payload
