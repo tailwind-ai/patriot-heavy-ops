@@ -10,7 +10,9 @@
 
 import { readFileSync } from "fs"
 import { join } from "path"
-import * as yaml from "js-yaml"
+
+// eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires
+const yaml = require("js-yaml")
 
 describe("Conditional Coverage CI Configuration", () => {
   const workflowPath = join(process.cwd(), ".github/workflows/tests.yml")

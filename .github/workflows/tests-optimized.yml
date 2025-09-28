@@ -1,0 +1,120 @@
+name: Optimized CI Tests
+
+on:
+  pull_request:
+    branches: [main, dev]
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      run_coverage:
+        description: "Run coverage analysis"
+        required: false
+        default: false
+        type: boolean
+
+concurrency:
+  group: ci-optimized-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Fast validation job - TypeScript + ESLint + Unit tests (<1 minute target)
+  fast-validation:
+    name: Fast Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: TypeScript check
+        run: npx tsc --noEmit
+
+      - name: ESLint check
+        run: npm run lint
+
+      - name: Unit tests
+        run: |
+          npm test -- \
+            --ci \
+            --passWithNoTests \
+            --testPathIgnorePatterns="(components|hooks|api|integration)" \
+            --maxWorkers=4
+
+  # Integration tests job - Component + API + Integration tests (<2 minutes target)
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    needs: [fast-validation]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Component tests
+        run: |
+          npm test -- \
+            --ci \
+            --passWithNoTests \
+            --testPathPatterns="(components|hooks)" \
+            --maxWorkers=4
+
+      - name: API tests
+        run: |
+          npm test -- \
+            --ci \
+            --passWithNoTests \
+            --testPathPatterns="api" \
+            --maxWorkers=4
+
+      - name: Integration tests
+        run: |
+          npm test -- \
+            --ci \
+            --passWithNoTests \
+            --testPathPatterns="integration" \
+            --maxWorkers=4
+
+  # Coverage job - Conditional coverage generation (main branch or manual trigger)
+  coverage:
+    name: Coverage Analysis
+    runs-on: ubuntu-latest
+    needs: [fast-validation, integration-tests]
+    if: github.ref == 'refs/heads/main' || github.event.inputs.run_coverage == 'true'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate coverage
+        run: npm run test:coverage -- --ci --passWithNoTests
+
+      - name: Upload coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
