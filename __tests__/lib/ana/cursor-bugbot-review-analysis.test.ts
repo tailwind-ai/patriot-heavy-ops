@@ -178,7 +178,7 @@ describe("Ana Cursor Bugbot Review Analysis (Issue #280)", () => {
           }
 
           const result = analyzer.analyzeCursorBugbotReview(reviewData, 123)
-          expect(result.failures[0].priority).toBe(testCase.expectedPriority)
+          expect(result.failures[0]?.priority).toBe(testCase.expectedPriority)
         }
       })
 
@@ -253,7 +253,8 @@ describe("Ana Cursor Bugbot Review Analysis (Issue #280)", () => {
 
       // Verify exact AnalyzedFailure interface compliance
       const failure = result.failures[0]
-      expect(failure).toMatchObject({
+      expect(failure).toBeDefined()
+      expect(failure!).toMatchObject({
         id: expect.stringMatching(/^bugbot-review-12345-comment-67890-\d+$/),
         type: "bugbot_issue",
         content: "Security Issue",
@@ -285,7 +286,7 @@ describe("Ana Cursor Bugbot Review Analysis (Issue #280)", () => {
         "createdAt",
       ]
 
-      Object.keys(failure).forEach((key) => {
+      Object.keys(failure!).forEach((key) => {
         expect(allowedFields).toContain(key)
       })
     })
@@ -366,7 +367,7 @@ describe("Ana Cursor Bugbot Review Analysis (Issue #280)", () => {
       expect(result.failures).toHaveLength(1)
 
       const issue = result.failures[0]
-      expect(issue.rootCause).toContain("🚀 ñáéíóú 中文 العربية")
+      expect(issue?.rootCause).toContain("🚀 ñáéíóú 中文 العربية")
     })
   })
 
