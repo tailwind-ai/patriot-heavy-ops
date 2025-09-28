@@ -8,6 +8,9 @@ on:
   # Monitor Cursor Bugbot completion (when it posts comments)
   issue_comment:
     types: [created]
+  # Monitor Cursor Bugbot reviews (Issue #280 Fix)
+  pull_request_review:
+    types: [submitted]
 
 permissions:
   actions: read
@@ -97,7 +100,11 @@ jobs:
   # Analyze Cursor Bugbot reviews and add to Cursor TODO list
   analyze-cursor-bugbot:
     runs-on: ubuntu-latest
-    if: github.event_name == 'issue_comment' && contains(github.event.comment.body, 'Cursor Bugbot')
+    if: |
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, 'Cursor Bugbot')) ||
+      (github.event_name == 'pull_request_review' && 
+       github.event.review.user.login == 'cursor' &&
+       github.event.review.state == 'COMMENTED')
 
     steps:
       - name: Checkout code
@@ -124,49 +131,84 @@ jobs:
           TOD_WEBHOOK_ENDPOINT: ${{ secrets.TOD_WEBHOOK_ENDPOINT }}
           ANA_WEBHOOK_SECRET: ${{ secrets.ANA_WEBHOOK_SECRET }}
 
-      - name: Check if comment is on a PR
-        id: check-pr
+      - name: Validate Cursor Bugbot event
+        id: validate-event
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.ORG_PAT }}
           script: |
-            // Check if this comment is on a PR
-            if (!context.payload.issue.pull_request) {
-              console.log("Comment is not on a PR, skipping");
-              return { is_pr: false, pr_number: null };
+            if (context.eventName === 'pull_request_review') {
+              // Handle pull_request_review event (Issue #280 Fix)
+              const review = context.payload.review;
+              const prNumber = context.payload.pull_request.number;
+              
+              console.log(`Found Cursor Bugbot review on PR #${prNumber}, Review ID: ${review.id}`);
+              return { 
+                is_valid: true, 
+                pr_number: prNumber.toString(),
+                review_id: review.id.toString(),
+                event_type: 'review'
+              };
+            } else if (context.eventName === 'issue_comment') {
+              // Handle legacy issue_comment event (backward compatibility)
+              if (!context.payload.issue.pull_request) {
+                console.log("Comment is not on a PR, skipping");
+                return { is_valid: false };
+              }
+
+              const prNumber = context.payload.issue.number;
+              const commentId = context.payload.comment.id;
+              
+              console.log(`Found Cursor Bugbot comment on PR #${prNumber}, Comment ID: ${commentId}`);
+              return { 
+                is_valid: true, 
+                pr_number: prNumber.toString(),
+                comment_id: commentId.toString(),
+                event_type: 'comment'
+              };
+            } else {
+              console.log("Unknown event type, skipping");
+              return { is_valid: false };
             }
 
-            const prNumber = context.payload.issue.number;
-            console.log(`Found Cursor Bugbot comment on PR #${prNumber}`);
-            return { is_pr: true, pr_number: prNumber.toString() };
-
       - name: Analyze Cursor Bugbot review and send to Tod webhook
-        if: steps.check-pr.outputs.is_pr == 'true'
+        if: steps.validate-event.outputs.is_valid == 'true'
         run: |
-          echo "🔍 Ana analyzing Cursor Bugbot review..."
-          echo "PR: ${{ steps.check-pr.outputs.pr_number }}"
-          echo "Comment ID: ${{ github.event.comment.id }}"
+          echo "🔍 Ana analyzing Cursor Bugbot..."
+          echo "PR: ${{ steps.validate-event.outputs.pr_number }}"
+          echo "Event Type: ${{ steps.validate-event.outputs.event_type }}"
           echo "Webhook Endpoint: ${{ secrets.TOD_WEBHOOK_ENDPOINT || 'http://localhost:3001/webhook/ana-failures' }}"
 
           # Set up GitHub CLI authentication
           echo "${{ secrets.ORG_PAT }}" | gh auth login --with-token
 
-          # Analyze Cursor Bugbot comment and send to Tod via webhook (Issue #282)
-          if ! npx tsx scripts/ana-cli.ts analyze-cursor-bugbot ${{ steps.check-pr.outputs.pr_number }} ${{ github.event.comment.id }}; then
-            echo "❌ Ana Bugbot analysis failed, but continuing workflow"
-            echo '{"todos": [], "summary": "Ana Bugbot analysis failed", "analysisDate": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'"}' > ana-results.json
+          # Choose analysis method based on event type (Issue #280 Fix)
+          if [ "${{ steps.validate-event.outputs.event_type }}" = "review" ]; then
+            echo "Review ID: ${{ steps.validate-event.outputs.review_id }}"
+            # Use new pull_request_review method (Issue #280)
+            if ! npx tsx scripts/ana-cli.ts analyze-cursor-bugbot-review ${{ steps.validate-event.outputs.pr_number }} ${{ steps.validate-event.outputs.review_id }}; then
+              echo "❌ Ana Bugbot review analysis failed, but continuing workflow"
+              echo '{"todos": [], "summary": "Ana Bugbot review analysis failed", "analysisDate": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'"}' > ana-results.json
+            fi
+          else
+            echo "Comment ID: ${{ steps.validate-event.outputs.comment_id }}"
+            # Use legacy issue_comment method (backward compatibility)
+            if ! npx tsx scripts/ana-cli.ts analyze-cursor-bugbot ${{ steps.validate-event.outputs.pr_number }} ${{ steps.validate-event.outputs.comment_id }}; then
+              echo "❌ Ana Bugbot comment analysis failed, but continuing workflow"
+              echo '{"todos": [], "summary": "Ana Bugbot comment analysis failed", "analysisDate": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'"}' > ana-results.json
+            fi
           fi
 
       - name: Upload analysis results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ana-cursor-analysis-${{ github.event.comment.id }}
+          name: ana-cursor-analysis-${{ steps.validate-event.outputs.pr_number }}-${{ steps.validate-event.outputs.event_type }}
           path: ana-results.json
           retention-days: 7
 
       - name: Comment on PR with webhook integration status
-        if: steps.check-pr.outputs.is_pr == 'true'
+        if: steps.validate-event.outputs.is_valid == 'true'
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.ORG_PAT }}
