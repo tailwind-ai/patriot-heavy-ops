@@ -5,12 +5,117 @@ on:
     branches: [main, dev]
   push:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      run_coverage:
+        description: "Run coverage analysis"
+        required: false
+        default: false
+        type: boolean
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+  # Fast PR validation (no coverage for quick feedback)
+  pr-validation:
+    name: PR Validation
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run TypeScript check
+        run: npx tsc --noEmit
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Run tests (no coverage)
+        run: npm test -- --ci --passWithNoTests --maxWorkers=4
+
+      - name: Run manual coverage (if requested)
+        if: github.event.inputs.run_coverage == 'true'
+        run: npm run test:coverage -- --ci --passWithNoTests --coverageDirectory=coverage
+
+      - name: Upload manual coverage
+        if: github.event.inputs.run_coverage == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage/
+
+  # Full validation with coverage for main branch and releases
+  main-validation:
+    name: Main Branch Validation
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.event_name == 'release'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run TypeScript check
+        run: npx tsc --noEmit
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Run tests with coverage
+        run: npm run test:coverage -- --ci --passWithNoTests
+
+      - name: Upload coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage/
+
+  # Release branch validation
+  release-validation:
+    name: Release Branch Validation
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/heads/release/')
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests with coverage
+        run: npm run test:coverage -- --ci --passWithNoTests
+
+      - name: Upload coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage/
+
   # Fast feedback jobs that run in parallel
   lint:
     name: Lint & Type Check
@@ -155,7 +260,7 @@ jobs:
     name: Generate Coverage Report
     runs-on: ubuntu-latest
     needs: [unit-tests, component-tests, api-tests]
-    if: always()
+    if: github.ref == 'refs/heads/main' || github.event_name == 'release' || github.event.inputs.run_coverage == 'true'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -241,6 +346,9 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       [
+        pr-validation,
+        main-validation,
+        release-validation,
         lint,
         unit-tests,
         component-tests,
@@ -260,6 +368,9 @@ jobs:
           }
 
           # Check each job result
+          pr_validation_ok=$(is_job_ok "${{ needs.pr-validation.result }}" && echo "true" || echo "false")
+          main_validation_ok=$(is_job_ok "${{ needs.main-validation.result }}" && echo "true" || echo "false")
+          release_validation_ok=$(is_job_ok "${{ needs.release-validation.result }}" && echo "true" || echo "false")
           lint_ok=$(is_job_ok "${{ needs.lint.result }}" && echo "true" || echo "false")
           unit_tests_ok=$(is_job_ok "${{ needs.unit-tests.result }}" && echo "true" || echo "false")
           component_tests_ok=$(is_job_ok "${{ needs.component-tests.result }}" && echo "true" || echo "false")
@@ -269,6 +380,9 @@ jobs:
           coverage_ok=$(is_job_ok "${{ needs.coverage.result }}" && echo "true" || echo "false")
 
           echo "Job Results:"
+          echo "  pr-validation: ${{ needs.pr-validation.result }} (ok: $pr_validation_ok)"
+          echo "  main-validation: ${{ needs.main-validation.result }} (ok: $main_validation_ok)"
+          echo "  release-validation: ${{ needs.release-validation.result }} (ok: $release_validation_ok)"
           echo "  lint: ${{ needs.lint.result }} (ok: $lint_ok)"
           echo "  unit-tests: ${{ needs.unit-tests.result }} (ok: $unit_tests_ok)"
           echo "  component-tests: ${{ needs.component-tests.result }} (ok: $component_tests_ok)"
@@ -277,7 +391,7 @@ jobs:
           echo "  integration: ${{ needs.integration.result }} (ok: $integration_ok)"
           echo "  coverage: ${{ needs.coverage.result }} (ok: $coverage_ok)"
 
-          if [[ "$lint_ok" == "true" && "$unit_tests_ok" == "true" && "$component_tests_ok" == "true" && "$api_tests_ok" == "true" && "$build_ok" == "true" && "$integration_ok" == "true" && "$coverage_ok" == "true" ]]; then
+          if [[ "$pr_validation_ok" == "true" && "$main_validation_ok" == "true" && "$release_validation_ok" == "true" && "$lint_ok" == "true" && "$unit_tests_ok" == "true" && "$component_tests_ok" == "true" && "$api_tests_ok" == "true" && "$build_ok" == "true" && "$integration_ok" == "true" && "$coverage_ok" == "true" ]]; then
             echo "All CI checks passed!"
             exit 0
           else
@@ -292,6 +406,9 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const jobs = {
+              "pr-validation": "${{ needs.pr-validation.result }}",
+              "main-validation": "${{ needs.main-validation.result }}",
+              "release-validation": "${{ needs.release-validation.result }}",
               lint: "${{ needs.lint.result }}",
               "unit-tests": "${{ needs.unit-tests.result }}",
               "component-tests": "${{ needs.component-tests.result }}",
