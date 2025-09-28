@@ -12,7 +12,7 @@ import {
   type WebhookResult,
   validateAnaResults,
   validateAnalyzedFailure,
-} from './types'
+} from "./types"
 
 /**
  * Default configuration for webhook client
@@ -29,7 +29,7 @@ const DEFAULT_CONFIG: Required<WebhookClientConfig> = {
 export class AnaWebhookClient {
   private readonly endpoint: string
   private readonly config: Required<WebhookClientConfig>
-  private readonly version = '1.0.0'
+  private readonly version = "1.0.0"
 
   constructor(endpoint: string, config: WebhookClientConfig = {}) {
     this.endpoint = endpoint
@@ -48,13 +48,15 @@ export class AnaWebhookClient {
     if (!validation.success) {
       return {
         success: false,
-        error: `Invalid AnaResults data: ${validation.error.issues.map(i => i.message).join(', ')}`,
+        error: `Invalid AnaResults data: ${validation.error.issues
+          .map((i) => i.message)
+          .join(", ")}`,
       }
     }
 
     const payload: TodWebhookPayload = {
-      source: 'ana',
-      type: 'analysis_results',
+      source: "ana",
+      type: "analysis_results",
       data: results,
       metadata: {
         relatedPR,
@@ -78,13 +80,15 @@ export class AnaWebhookClient {
     if (!validation.success) {
       return {
         success: false,
-        error: `Invalid AnalyzedFailure data: ${validation.error.issues.map(i => i.message).join(', ')}`,
+        error: `Invalid AnalyzedFailure data: ${validation.error.issues
+          .map((i) => i.message)
+          .join(", ")}`,
       }
     }
 
     const payload: TodWebhookPayload = {
-      source: 'ana',
-      type: 'single_failure',
+      source: "ana",
+      type: "single_failure",
       data: failure,
       metadata: {
         relatedPR,
@@ -111,7 +115,7 @@ export class AnaWebhookClient {
         return { success: true, data: response }
       } catch (error) {
         lastError = error instanceof Error ? error : new Error(String(error))
-        
+
         // Don't retry on validation errors (4xx status codes)
         if (this.isClientError(lastError)) {
           break
@@ -127,24 +131,26 @@ export class AnaWebhookClient {
 
     return {
       success: false,
-      error: lastError?.message || 'Unknown webhook error',
+      error: lastError?.message || "Unknown webhook error",
     }
   }
 
   /**
    * Make HTTP request to Tod webhook
    */
-  private async makeHttpRequest(payload: TodWebhookPayload): Promise<TodWebhookResponse> {
+  private async makeHttpRequest(
+    payload: TodWebhookPayload
+  ): Promise<TodWebhookResponse> {
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), this.config.timeout)
 
     try {
       const response = await fetch(this.endpoint, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'User-Agent': 'Ana-Webhook-Client/1.0',
-          'X-Ana-Version': this.version,
+          "Content-Type": "application/json",
+          "User-Agent": "Ana-Webhook-Client/1.0",
+          "X-Ana-Version": this.version,
           ...this.config.headers,
         },
         body: JSON.stringify(payload),
@@ -157,7 +163,7 @@ export class AnaWebhookClient {
       if (!response.ok) {
         const errorText = await response.text()
         let errorMessage = `HTTP ${response.status}: ${response.statusText}`
-        
+
         try {
           const errorData = JSON.parse(errorText)
           if (errorData.error) {
@@ -176,7 +182,7 @@ export class AnaWebhookClient {
       // Parse response
       const responseText = await response.text()
       if (!responseText) {
-        throw new Error('Empty response from Tod webhook')
+        throw new Error("Empty response from Tod webhook")
       }
 
       try {
@@ -187,15 +193,15 @@ export class AnaWebhookClient {
       }
     } catch (error) {
       clearTimeout(timeoutId)
-      
+
       if (error instanceof Error) {
         // Handle specific error types
-        if (error.name === 'AbortError') {
+        if (error.name === "AbortError") {
           throw new Error(`Request timeout after ${this.config.timeout}ms`)
         }
         throw error
       }
-      
+
       throw new Error(`Network error: ${String(error)}`)
     }
   }
@@ -206,12 +212,12 @@ export class AnaWebhookClient {
   private isClientError(error: Error): boolean {
     const message = error.message.toLowerCase()
     return (
-      message.includes('http 4') ||
-      message.includes('validation') ||
-      message.includes('bad request') ||
-      message.includes('unauthorized') ||
-      message.includes('forbidden') ||
-      message.includes('not found')
+      message.includes("http 4") ||
+      message.includes("validation") ||
+      message.includes("bad request") ||
+      message.includes("unauthorized") ||
+      message.includes("forbidden") ||
+      message.includes("not found")
     )
   }
 
@@ -219,7 +225,7 @@ export class AnaWebhookClient {
    * Sleep for specified milliseconds
    */
   private sleep(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms))
+    return new Promise((resolve) => setTimeout(resolve, ms))
   }
 
   /**
@@ -231,10 +237,10 @@ export class AnaWebhookClient {
       const timeoutId = setTimeout(() => controller.abort(), 5000) // 5 second timeout for test
 
       const response = await fetch(this.endpoint, {
-        method: 'HEAD',
+        method: "HEAD",
         headers: {
-          'User-Agent': 'Ana-Webhook-Client/1.0',
-          'X-Ana-Version': this.version,
+          "User-Agent": "Ana-Webhook-Client/1.0",
+          "X-Ana-Version": this.version,
           ...this.config.headers,
         },
         signal: controller.signal,
@@ -244,7 +250,7 @@ export class AnaWebhookClient {
 
       return {
         success: true,
-        data: { status: response.ok ? 'connected' : 'error' },
+        data: { status: response.ok ? "connected" : "error" },
       }
     } catch (error) {
       return {
@@ -276,11 +282,14 @@ export function createWebhookClient(
   endpoint?: string,
   config?: WebhookClientConfig
 ): AnaWebhookClient {
-  const webhookEndpoint = endpoint || process.env.TOD_WEBHOOK_ENDPOINT || 'http://localhost:3001/webhook/ana'
-  
+  const webhookEndpoint =
+    endpoint ||
+    process.env.TOD_WEBHOOK_ENDPOINT ||
+    "http://localhost:3001/webhook/ana"
+
   const defaultConfig: WebhookClientConfig = {
-    timeout: parseInt(process.env.WEBHOOK_TIMEOUT || '30000'),
-    retries: parseInt(process.env.WEBHOOK_RETRIES || '2'),
+    timeout: parseInt(process.env.WEBHOOK_TIMEOUT || "30000"),
+    retries: parseInt(process.env.WEBHOOK_RETRIES || "2"),
     headers: {},
   }
 
@@ -289,7 +298,7 @@ export function createWebhookClient(
   if (authToken) {
     defaultConfig.headers = {
       ...defaultConfig.headers,
-      'Authorization': `Bearer ${authToken}`,
+      Authorization: `Bearer ${authToken}`,
     }
   }
 
@@ -312,22 +321,30 @@ export async function batchSendFailures(
   // Process failures in batches
   for (let i = 0; i < failures.length; i += batchSize) {
     const batch = failures.slice(i, i + batchSize)
-    
+
     // Send batch concurrently
-    const promises = batch.map(failure => 
+    const promises = batch.map((failure) =>
       client.sendSingleFailure(failure, relatedPR)
     )
 
     const results = await Promise.allSettled(promises)
-    
+
     for (const result of results) {
-      if (result.status === 'fulfilled' && result.value.success) {
+      if (result.status === "fulfilled" && result.value.success) {
         totalSent++
       } else {
-        const error = result.status === 'rejected' 
-          ? result.reason 
-          : result.value.success ? 'Unknown error' : result.value.error
-        errors.push(String(error))
+        let error: string
+        if (result.status === "rejected") {
+          error = String(result.reason)
+        } else {
+          const webhookResult = result.value
+          if (webhookResult.success) {
+            error = "Unknown error"
+          } else {
+            error = (webhookResult as { success: false; error: string }).error
+          }
+        }
+        errors.push(error)
       }
     }
   }
@@ -340,7 +357,7 @@ export async function batchSendFailures(
   } else {
     return {
       success: false,
-      error: `Failed to send ${errors.length} failures: ${errors.join(', ')}`,
+      error: `Failed to send ${errors.length} failures: ${errors.join(", ")}`,
     }
   }
 }
@@ -349,18 +366,18 @@ export async function batchSendFailures(
  * Utility function to create webhook payload for testing
  */
 export function createTestWebhookPayload(
-  type: 'analysis_results' | 'single_failure',
+  type: "analysis_results" | "single_failure",
   data: AnaResults | AnalyzedFailure,
-  relatedPR = '#test'
+  relatedPR = "#test"
 ): TodWebhookPayload {
   return {
-    source: 'ana',
+    source: "ana",
     type,
     data,
     metadata: {
       relatedPR,
       timestamp: new Date().toISOString(),
-      version: '1.0.0',
+      version: "1.0.0",
     },
   }
 }
