@@ -20,6 +20,7 @@ import {
   RepositoryResult,
   RepositoryOptions,
 } from "./base-repository"
+import { transportOptions } from "../validations/service-request"
 
 // Type definitions for service request operations
 export interface ServiceRequestWithUser extends ServiceRequest {
@@ -238,7 +239,7 @@ export class ServiceRequestRepository
             },
           },
           orderBy: {
-            createdAt: "desc",
+            createdAt: "desc" as const,
           },
         }
 
@@ -285,6 +286,14 @@ export class ServiceRequestRepository
       return this.createError("VALIDATION_ERROR", errorMessage)
     }
 
+    // Validate transport option
+    if (!this.validateTransportOption(data.transport)) {
+      return this.createError(
+        "VALIDATION_ERROR",
+        `Invalid transport option: ${data.transport}. Must be one of: ${transportOptions.join(", ")}`
+      )
+    }
+
     return this.handleAsync(
       () =>
         this.db.serviceRequest.create({
@@ -292,12 +301,18 @@ export class ServiceRequestRepository
             ...data,
             status: "SUBMITTED" as const,
             transport: data.transport as TransportOption,
+            equipmentCategory: data.equipmentCategory as any,
+            requestedDurationType: data.requestedDurationType as any,
+            rateType: data.rateType as any,
           },
-          select: {
-            id: true,
-            title: true,
-            status: true,
-            createdAt: true,
+          include: {
+            user: {
+              select: {
+                name: true,
+                email: true,
+                company: true,
+              },
+            },
           },
         }),
       "SERVICE_REQUEST_CREATE_ERROR",
@@ -491,6 +506,13 @@ export class ServiceRequestRepository
   }
 
   /**
+   * Validate transport option value
+   */
+  private validateTransportOption(transport: string): transport is TransportOption {
+    return transportOptions.includes(transport as TransportOption)
+  }
+
+  /**
    * Build where clause with additional filters
    */
   private buildWhereClause(
@@ -520,12 +542,12 @@ export class ServiceRequestRepository
     }
 
     if (filters.startDateFrom || filters.startDateTo) {
-      additionalFilters.startDate = {}
+      additionalFilters.startDate = {} as any
       if (filters.startDateFrom) {
-        additionalFilters.startDate.gte = filters.startDateFrom
+        (additionalFilters.startDate as any).gte = filters.startDateFrom
       }
       if (filters.startDateTo) {
-        additionalFilters.startDate.lte = filters.startDateTo
+        (additionalFilters.startDate as any).lte = filters.startDateTo
       }
     }
 
