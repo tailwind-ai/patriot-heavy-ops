@@ -292,12 +292,19 @@ describe("ServiceRequestRepository", () => {
         data: {
           ...mockCreateInput,
           status: "SUBMITTED",
+          transport: "WE_HANDLE_IT",
+          equipmentCategory: "SKID_STEERS_TRACK_LOADERS",
+          requestedDurationType: "FULL_DAY",
+          rateType: "DAILY",
         },
-        select: {
-          id: true,
-          title: true,
-          status: true,
-          createdAt: true,
+        include: {
+          user: {
+            select: {
+              name: true,
+              email: true,
+              company: true,
+            },
+          },
         },
       })
     })
@@ -309,6 +316,22 @@ describe("ServiceRequestRepository", () => {
 
       expect(result.success).toBe(false)
       expect(result.error?.code).toBe("VALIDATION_ERROR")
+      expect(mockPrismaClient.serviceRequest.create).not.toHaveBeenCalled()
+    })
+
+    it("should handle invalid transport option", async () => {
+      const invalidInput = { ...mockCreateInput, transport: "INVALID_OPTION" }
+
+      const result = await repository.create(invalidInput)
+
+      expect(result.success).toBe(false)
+      expect(result.error?.code).toBe("VALIDATION_ERROR")
+      expect(result.error?.message).toContain(
+        "Invalid transport option: INVALID_OPTION"
+      )
+      expect(result.error?.message).toContain(
+        "Must be one of: WE_HANDLE_IT, YOU_HANDLE_IT"
+      )
       expect(mockPrismaClient.serviceRequest.create).not.toHaveBeenCalled()
     })
   })
