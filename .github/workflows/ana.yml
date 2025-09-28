@@ -39,8 +39,12 @@ jobs:
           echo "CURSOR_CLI=CURSOR_CLI" >> .env.local
           echo "GITHUB_ACCESS_TOKEN=${{ secrets.ORG_PAT }}" >> .env.local
           echo "NODE_ENV=production" >> .env.local
+          echo "TOD_WEBHOOK_ENDPOINT=${{ secrets.TOD_WEBHOOK_ENDPOINT || 'http://localhost:3001/webhook/ana-failures' }}" >> .env.local
+          echo "ANA_WEBHOOK_SECRET=${{ secrets.ANA_WEBHOOK_SECRET || 'dev-secret-key' }}" >> .env.local
         env:
           GITHUB_ACCESS_TOKEN: ${{ secrets.ORG_PAT }}
+          TOD_WEBHOOK_ENDPOINT: ${{ secrets.TOD_WEBHOOK_ENDPOINT }}
+          ANA_WEBHOOK_SECRET: ${{ secrets.ANA_WEBHOOK_SECRET }}
 
       - name: Find associated PR
         id: find-pr
@@ -64,19 +68,23 @@ jobs:
             console.log(`Found PR #${prNumber} for failed CI Test workflow`);
             return { pr_number: prNumber.toString() };
 
-      - name: Analyze CI Test failures
+      - name: Analyze CI Test failures and send to Tod webhook
         if: steps.find-pr.outputs.pr_number != 'null'
         run: |
           echo "🔍 Ana analyzing CI Test failures..."
           echo "Workflow: ${{ github.event.workflow_run.name }}"
           echo "Run ID: ${{ github.event.workflow_run.id }}"
           echo "PR: ${{ steps.find-pr.outputs.pr_number }}"
+          echo "Webhook Endpoint: ${{ secrets.TOD_WEBHOOK_ENDPOINT || 'http://localhost:3001/webhook/ana-failures' }}"
 
           # Set up GitHub CLI authentication
           echo "${{ secrets.ORG_PAT }}" | gh auth login --with-token
 
-          # Analyze workflow logs and create Cursor TODOs
-          npx tsx scripts/ana-cli.ts analyze-ci-failures ${{ github.event.workflow_run.id }} ${{ steps.find-pr.outputs.pr_number }}
+          # Analyze workflow logs and send to Tod via webhook (Issue #282)
+          if ! npx tsx scripts/ana-cli.ts analyze-ci-failures ${{ github.event.workflow_run.id }} ${{ steps.find-pr.outputs.pr_number }}; then
+            echo "❌ Ana analysis failed, but continuing workflow"
+            echo '{"todos": [], "summary": "Ana analysis failed", "analysisDate": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'"}' > ana-results.json
+          fi
 
       - name: Upload analysis results
         if: always()
@@ -109,8 +117,12 @@ jobs:
           echo "CURSOR_CLI=CURSOR_CLI" >> .env.local
           echo "GITHUB_ACCESS_TOKEN=${{ secrets.ORG_PAT }}" >> .env.local
           echo "NODE_ENV=production" >> .env.local
+          echo "TOD_WEBHOOK_ENDPOINT=${{ secrets.TOD_WEBHOOK_ENDPOINT || 'http://localhost:3001/webhook/ana-failures' }}" >> .env.local
+          echo "ANA_WEBHOOK_SECRET=${{ secrets.ANA_WEBHOOK_SECRET || 'dev-secret-key' }}" >> .env.local
         env:
           GITHUB_ACCESS_TOKEN: ${{ secrets.ORG_PAT }}
+          TOD_WEBHOOK_ENDPOINT: ${{ secrets.TOD_WEBHOOK_ENDPOINT }}
+          ANA_WEBHOOK_SECRET: ${{ secrets.ANA_WEBHOOK_SECRET }}
 
       - name: Check if comment is on a PR
         id: check-pr
@@ -128,18 +140,22 @@ jobs:
             console.log(`Found Cursor Bugbot comment on PR #${prNumber}`);
             return { is_pr: true, pr_number: prNumber.toString() };
 
-      - name: Analyze Cursor Bugbot review
+      - name: Analyze Cursor Bugbot review and send to Tod webhook
         if: steps.check-pr.outputs.is_pr == 'true'
         run: |
           echo "🔍 Ana analyzing Cursor Bugbot review..."
           echo "PR: ${{ steps.check-pr.outputs.pr_number }}"
           echo "Comment ID: ${{ github.event.comment.id }}"
+          echo "Webhook Endpoint: ${{ secrets.TOD_WEBHOOK_ENDPOINT || 'http://localhost:3001/webhook/ana-failures' }}"
 
           # Set up GitHub CLI authentication
           echo "${{ secrets.ORG_PAT }}" | gh auth login --with-token
 
-          # Analyze Cursor Bugbot comment and create Cursor TODOs
-          npx tsx scripts/ana-cli.ts analyze-cursor-bugbot ${{ steps.check-pr.outputs.pr_number }} ${{ github.event.comment.id }}
+          # Analyze Cursor Bugbot comment and send to Tod via webhook (Issue #282)
+          if ! npx tsx scripts/ana-cli.ts analyze-cursor-bugbot ${{ steps.check-pr.outputs.pr_number }} ${{ github.event.comment.id }}; then
+            echo "❌ Ana Bugbot analysis failed, but continuing workflow"
+            echo '{"todos": [], "summary": "Ana Bugbot analysis failed", "analysisDate": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'"}' > ana-results.json
+          fi
 
       - name: Upload analysis results
         if: always()
@@ -149,7 +165,7 @@ jobs:
           path: ana-results.json
           retention-days: 7
 
-      - name: Comment on PR with analysis summary
+      - name: Comment on PR with webhook integration status
         if: steps.check-pr.outputs.is_pr == 'true'
         uses: actions/github-script@v7
         with:
@@ -176,7 +192,7 @@ jobs:
                   });
                   
                   comment += '---\n';
-                  comment += '🤖 *Ana has added these items to your Cursor TODO list. Check Cursor for the full list.*';
+                  comment += '🤖 *Ana has sent these items to Tod webhook for Cursor TODO integration (Issue #282). Check Cursor for the full list.*';
                 } else {
                   comment += '✅ No new issues detected from Cursor Bugbot review.';
                 }

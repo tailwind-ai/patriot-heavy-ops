@@ -6,12 +6,14 @@
 import {
   type AnaResults,
   type AnalyzedFailure,
+  type AnaWebhookPayload,
   type TodWebhookPayload,
   type TodWebhookResponse,
   type WebhookClientConfig,
   type WebhookResult,
   validateAnaResults,
   validateAnalyzedFailure,
+  validateAnaWebhookPayload,
 } from "./types"
 
 /**
@@ -37,7 +39,28 @@ export class AnaWebhookClient {
   }
 
   /**
-   * Send analysis results to Tod webhook
+   * Send analysis results to Tod webhook using Issue #282 format
+   */
+  async sendToTod(
+    payload: AnaWebhookPayload
+  ): Promise<WebhookResult<TodWebhookResponse>> {
+    // Validate input data according to Issue #282 specification
+    const validation = validateAnaWebhookPayload(payload)
+    if (!validation.success) {
+      return {
+        success: false,
+        error: `Invalid AnaWebhookPayload data: ${validation.error.issues
+          .map((i) => i.message)
+          .join(", ")}`,
+      }
+    }
+
+    return this.sendWebhookRequestV2(payload)
+  }
+
+  /**
+   * Send analysis results to Tod webhook (legacy format)
+   * @deprecated Use sendToTod instead for Issue #282 compliance
    */
   async sendAnalysisResults(
     results: AnaResults,
@@ -101,7 +124,43 @@ export class AnaWebhookClient {
   }
 
   /**
-   * Send webhook request with retry logic
+   * Send webhook request with retry logic (Issue #282 format)
+   */
+  private async sendWebhookRequestV2(
+    payload: AnaWebhookPayload
+  ): Promise<WebhookResult<TodWebhookResponse>> {
+    let lastError: Error | null = null
+    const maxAttempts = this.config.retries + 1
+
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        const response = await this.makeHttpRequestV2(payload)
+        return { success: true, data: response }
+      } catch (error) {
+        lastError = error instanceof Error ? error : new Error(String(error))
+
+        // Don't retry on validation errors (4xx status codes)
+        if (this.isClientError(lastError)) {
+          break
+        }
+
+        // Wait before retry (exponential backoff)
+        if (attempt < maxAttempts) {
+          const delay = Math.min(1000 * Math.pow(2, attempt - 1), 10000) // Max 10 seconds
+          await this.sleep(delay)
+        }
+      }
+    }
+
+    return {
+      success: false,
+      error: lastError?.message || "Unknown webhook error",
+    }
+  }
+
+  /**
+   * Send webhook request with retry logic (legacy format)
+   * @deprecated Use sendWebhookRequestV2 instead
    */
   private async sendWebhookRequest(
     payload: TodWebhookPayload
@@ -136,7 +195,85 @@ export class AnaWebhookClient {
   }
 
   /**
-   * Make HTTP request to Tod webhook
+   * Make HTTP request to Tod webhook (Issue #282 format)
+   */
+  private async makeHttpRequestV2(
+    payload: AnaWebhookPayload
+  ): Promise<TodWebhookResponse> {
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), this.config.timeout)
+
+    try {
+      const timestamp = new Date().toISOString()
+      const body = JSON.stringify(payload)
+      const signature = this.generateSignature(body)
+
+      const response = await fetch(this.endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "User-Agent": "Ana-Webhook-Client/1.0",
+          "X-Ana-Version": this.version,
+          "X-Ana-Signature": signature,
+          "X-Ana-Timestamp": timestamp,
+          ...this.config.headers,
+        },
+        body,
+        signal: controller.signal,
+      })
+
+      clearTimeout(timeoutId)
+
+      // Handle HTTP error status codes
+      if (!response.ok) {
+        const errorText = await response.text()
+        let errorMessage = `HTTP ${response.status}: ${response.statusText}`
+
+        try {
+          const errorData = JSON.parse(errorText)
+          if (errorData.error) {
+            errorMessage += ` - ${errorData.error}`
+          }
+        } catch {
+          // If error response is not JSON, include raw text
+          if (errorText) {
+            errorMessage += ` - ${errorText}`
+          }
+        }
+
+        throw new Error(errorMessage)
+      }
+
+      // Parse response
+      const responseText = await response.text()
+      if (!responseText) {
+        throw new Error("Empty response from Tod webhook")
+      }
+
+      try {
+        const responseData = JSON.parse(responseText) as TodWebhookResponse
+        return responseData
+      } catch (parseError) {
+        throw new Error(`Invalid JSON response from Tod webhook: ${parseError}`)
+      }
+    } catch (error) {
+      clearTimeout(timeoutId)
+
+      if (error instanceof Error) {
+        // Handle specific error types
+        if (error.name === "AbortError") {
+          throw new Error(`Request timeout after ${this.config.timeout}ms`)
+        }
+        throw error
+      }
+
+      throw new Error(`Network error: ${String(error)}`)
+    }
+  }
+
+  /**
+   * Make HTTP request to Tod webhook (legacy format)
+   * @deprecated Use makeHttpRequestV2 instead
    */
   private async makeHttpRequest(
     payload: TodWebhookPayload
@@ -204,6 +341,28 @@ export class AnaWebhookClient {
 
       throw new Error(`Network error: ${String(error)}`)
     }
+  }
+
+  /**
+   * Generate signature for webhook security (Issue #282)
+   */
+  private generateSignature(body: string): string {
+    // For development mode, return a simple signature
+    // In production, this should use HMAC-SHA256 with a secret key
+    const secret = process.env.ANA_WEBHOOK_SECRET || "dev-secret-key"
+    
+    // Simple signature for development - in production use proper HMAC
+    if (process.env.NODE_ENV === "development") {
+      return `sha256=dev-${Buffer.from(body + secret).toString('base64').substring(0, 16)}`
+    }
+    
+    // TODO: Implement proper HMAC-SHA256 signature in production
+    // const crypto = require('crypto')
+    // const hmac = crypto.createHmac('sha256', secret)
+    // hmac.update(body)
+    // return `sha256=${hmac.digest('hex')}`
+    
+    return `sha256=dev-${Buffer.from(body + secret).toString('base64').substring(0, 16)}`
   }
 
   /**
@@ -359,7 +518,33 @@ export async function batchSendFailures(
 }
 
 /**
- * Utility function to create webhook payload for testing
+ * Create AnaWebhookPayload from AnaResults (Issue #282 format)
+ */
+export function createAnaWebhookPayload(
+  results: AnaResults,
+  workflowRunId?: string,
+  prNumber?: number
+): AnaWebhookPayload {
+  const payload: AnaWebhookPayload = {
+    summary: results.summary,
+    analysisDate: results.analysisDate,
+    failures: results.failures,
+  }
+
+  if (workflowRunId) {
+    payload.workflowRunId = workflowRunId
+  }
+
+  if (prNumber) {
+    payload.prNumber = prNumber
+  }
+
+  return payload
+}
+
+/**
+ * Utility function to create webhook payload for testing (legacy format)
+ * @deprecated Use createAnaWebhookPayload instead
  */
 export function createTestWebhookPayload(
   type: "analysis_results" | "single_failure",

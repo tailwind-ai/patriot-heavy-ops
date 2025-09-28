@@ -165,16 +165,54 @@ class TodWebhookServer {
   }
 
   private validateSignature(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _signature: string,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _timestamp: string,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _body: string
+    signature: string,
+    timestamp: string,
+    body: string
   ): boolean {
-    // TODO: Implement proper signature validation
-    // For now, accept all requests (development mode)
-    console.log("⚠️  Signature validation disabled (development mode)")
+    // For development mode, use simple validation
+    if (process.env.NODE_ENV === "development") {
+      console.log("⚠️  Using development signature validation")
+      
+      if (!signature || !timestamp) {
+        console.log("❌ Missing signature or timestamp headers")
+        return false
+      }
+
+      // Simple validation for development
+      const secret = process.env.ANA_WEBHOOK_SECRET || "dev-secret-key"
+      const expectedSignature = `sha256=dev-${Buffer.from(body + secret).toString('base64').substring(0, 16)}`
+      
+      if (signature !== expectedSignature) {
+        console.log(`❌ Signature mismatch. Expected: ${expectedSignature}, Got: ${signature}`)
+        return false
+      }
+
+      // Check timestamp is recent (within 5 minutes)
+      const timestampMs = new Date(timestamp).getTime()
+      const now = Date.now()
+      const fiveMinutes = 5 * 60 * 1000
+
+      if (Math.abs(now - timestampMs) > fiveMinutes) {
+        console.log("❌ Timestamp too old or invalid")
+        return false
+      }
+
+      return true
+    }
+
+    // TODO: Implement proper HMAC-SHA256 signature validation for production
+    // const crypto = require('crypto')
+    // const secret = process.env.ANA_WEBHOOK_SECRET
+    // if (!secret) return false
+    // 
+    // const expectedSignature = crypto
+    //   .createHmac('sha256', secret)
+    //   .update(body)
+    //   .digest('hex')
+    // 
+    // return signature === `sha256=${expectedSignature}`
+
+    console.log("⚠️  Production signature validation not implemented")
     return true
   }
 

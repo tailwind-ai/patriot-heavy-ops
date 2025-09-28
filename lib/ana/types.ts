@@ -13,7 +13,7 @@ export type Priority = "low" | "medium" | "high" | "critical"
 /**
  * Types of failures Ana can analyze
  */
-export type FailureType = "ci_failure" | "vercel_failure"
+export type FailureType = "ci_failure" | "vercel_failure" | "bugbot_issue"
 
 /**
  * Core interface for analyzed failure data
@@ -93,9 +93,9 @@ export type AnaResults = {
  */
 export const AnalyzedFailureSchema = z.object({
   id: z.string().min(1, "ID is required"),
-  type: z.enum(["ci_failure", "vercel_failure"], {
+  type: z.enum(["ci_failure", "vercel_failure", "bugbot_issue"], {
     errorMap: () => ({
-      message: "Type must be either ci_failure or vercel_failure",
+      message: "Type must be ci_failure, vercel_failure, or bugbot_issue",
     }),
   }),
   content: z.string().min(1, "Content is required"),
@@ -130,6 +130,17 @@ export const AnaResultsSchema = z.object({
 })
 
 /**
+ * Zod schema for AnaWebhookPayload validation (Issue #282)
+ */
+export const AnaWebhookPayloadSchema = z.object({
+  summary: z.string().min(1, "Summary is required"),
+  analysisDate: z.string().datetime("Invalid datetime format"),
+  workflowRunId: z.string().optional(),
+  prNumber: z.number().int().positive().optional(),
+  failures: z.array(AnalyzedFailureSchema),
+})
+
+/**
  * Validate AnalyzedFailure object
  */
 export function validateAnalyzedFailure(data: unknown) {
@@ -141,6 +152,13 @@ export function validateAnalyzedFailure(data: unknown) {
  */
 export function validateAnaResults(data: unknown) {
   return AnaResultsSchema.safeParse(data)
+}
+
+/**
+ * Validate AnaWebhookPayload object (Issue #282)
+ */
+export function validateAnaWebhookPayload(data: unknown) {
+  return AnaWebhookPayloadSchema.safeParse(data)
 }
 
 /**
@@ -234,7 +252,24 @@ export type AnalysisResult = {
 }
 
 /**
- * Webhook payload for Tod communication
+ * Ana → Tod Webhook Payload (Issue #282 specification)
+ */
+export type AnaWebhookPayload = {
+  /** Summary of the analysis */
+  summary: string
+  /** ISO timestamp when analysis was performed */
+  analysisDate: string
+  /** GitHub workflow run ID (optional) */
+  workflowRunId?: string
+  /** Associated PR number (optional) */
+  prNumber?: number
+  /** Array of analyzed failures */
+  failures: AnalyzedFailure[]
+}
+
+/**
+ * Legacy webhook payload for Tod communication (deprecated)
+ * @deprecated Use AnaWebhookPayload instead
  */
 export type TodWebhookPayload = {
   source: "ana"
@@ -376,7 +411,7 @@ export function isPriority(value: unknown): value is Priority {
 export function isFailureType(value: unknown): value is FailureType {
   return (
     typeof value === "string" &&
-    ["ci_failure", "vercel_failure"].includes(value)
+    ["ci_failure", "vercel_failure", "bugbot_issue"].includes(value)
   )
 }
 

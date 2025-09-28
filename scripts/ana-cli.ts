@@ -1,27 +1,36 @@
 #!/usr/bin/env tsx
 
 /**
- * Ana CLI - Simplified Background Agent
- * Analyzes CI failures and Cursor Bugbot reviews, adds items to Cursor TODO list
+ * Ana CLI - GitHub Workflow Integration
+ * Analyzes CI failures and Cursor Bugbot reviews, sends to Tod via webhook (Issue #282)
  */
 
 import { Octokit } from "@octokit/rest"
-import { execSync } from "child_process"
 import { writeFileSync } from "fs"
+import { 
+  createAnalyzedFailure, 
+  createAnaResults, 
+  type AnalyzedFailure,
+  type AnaResults,
+  type FailureType 
+} from "../lib/ana/types"
+import { 
+  AnaWebhookClient, 
+  createAnaWebhookPayload 
+} from "../lib/ana/webhook-client"
 
-interface AnaTodo {
-  id: string
-  content: string
-  priority: "low" | "medium" | "high" | "critical"
-  files?: string[] | undefined
-  lineNumbers?: number[] | undefined
-  issueType: "ci_failure" | "cursor_bugbot"
-  relatedPR: string
-  createdAt: string
-}
-
-interface AnaResults {
-  todos: AnaTodo[]
+// Legacy interface for backward compatibility with workflow output
+interface LegacyAnaResults {
+  todos: Array<{
+    id: string
+    content: string
+    priority: "low" | "medium" | "high" | "critical"
+    files?: string[]
+    lineNumbers?: number[]
+    issueType: "ci_failure" | "cursor_bugbot" | "bugbot_issue"
+    relatedPR: string
+    createdAt: string
+  }>
   summary: string
   analysisDate: string
 }
@@ -30,6 +39,7 @@ class AnaAnalyzer {
   private octokit: Octokit
   private owner: string
   private repo: string
+  private webhookClient: AnaWebhookClient
 
   constructor() {
     this.octokit = new Octokit({
@@ -37,20 +47,29 @@ class AnaAnalyzer {
     })
     this.owner = "samuelhenry"
     this.repo = "patriot-heavy-ops"
+    
+    // Initialize webhook client for Issue #282 integration
+    const webhookEndpoint = process.env.TOD_WEBHOOK_ENDPOINT || "http://localhost:3001/webhook/ana-failures"
+    this.webhookClient = new AnaWebhookClient(webhookEndpoint, {
+      timeout: 30000,
+      retries: 2,
+    })
+    
+    console.log(`🔗 Ana webhook client initialized: ${webhookEndpoint}`)
   }
 
   /**
-   * Analyze CI Test failures and create Cursor TODOs
+   * Analyze CI Test failures and send to Tod via webhook (Issue #282)
    */
   async analyzeCIFailures(
     workflowRunId: string,
     prNumber: number
-  ): Promise<AnaResults> {
+  ): Promise<LegacyAnaResults> {
     console.log(`🔍 Ana analyzing CI Test failures for PR #${prNumber}...`)
 
     try {
-      // Get workflow run details (for future use)
-      await this.octokit.rest.actions.getWorkflowRun({
+      // Get workflow run details
+      const workflowRun = await this.octokit.rest.actions.getWorkflowRun({
         owner: this.owner,
         repo: this.repo,
         run_id: parseInt(workflowRunId),
@@ -63,60 +82,85 @@ class AnaAnalyzer {
         run_id: parseInt(workflowRunId),
       })
 
-      const todos: AnaTodo[] = []
-      const summary = `CI Test workflow failed with ${jobs.data.jobs.length} jobs`
+      const failures: AnalyzedFailure[] = []
+      const failedJobsCount = jobs.data.jobs.filter(job => job.conclusion === "failure").length
+      const summary = `CI Test workflow failed with ${failedJobsCount} failed jobs`
 
       // Analyze each failed job
       for (const job of jobs.data.jobs) {
         if (job.conclusion === "failure") {
           console.log(`  📋 Analyzing failed job: ${job.name}`)
 
-          // Get job logs
-          const logs =
-            await this.octokit.rest.actions.downloadJobLogsForWorkflowRun({
+          try {
+            // Get job logs
+            const logs = await this.octokit.rest.actions.downloadJobLogsForWorkflowRun({
               owner: this.owner,
               repo: this.repo,
               job_id: job.id,
             })
 
-          const logContent = Buffer.from(logs.data as ArrayBuffer).toString(
-            "utf-8"
-          )
-          const analysis = this.analyzeJobLogs(job.name, logContent)
+            const logContent = Buffer.from(logs.data as ArrayBuffer).toString("utf-8")
+            const analysis = this.analyzeJobLogs(job.name, logContent)
 
-          // Create todos for each identified issue
-          for (const issue of analysis.issues) {
-            const todo: AnaTodo = {
-              id: `ci-${workflowRunId}-${job.id}-${Date.now()}`,
-              content: issue.description,
-              priority: issue.priority,
-              files: issue.files ?? undefined,
-              lineNumbers: issue.lineNumbers ?? undefined,
-              issueType: "ci_failure",
-              relatedPR: `#${prNumber}`,
-              createdAt: new Date().toISOString(),
+            // Create AnalyzedFailure objects for each identified issue
+            for (const issue of analysis.issues) {
+              const failure = createAnalyzedFailure({
+                type: "ci_failure" as FailureType,
+                content: issue.description,
+                priority: issue.priority,
+                files: issue.files,
+                lineNumbers: issue.lineNumbers,
+                rootCause: issue.rootCause,
+                impact: `Job '${job.name}' failed in workflow run ${workflowRunId}`,
+                suggestedFix: issue.suggestedFix,
+                relatedPR: `#${prNumber}`,
+              })
+              failures.push(failure)
             }
-            todos.push(todo)
-
-            // Add to Cursor TODO list
-            await this.addToCursorTodo(todo)
+          } catch (logError) {
+            console.warn(`  ⚠️  Could not fetch logs for job ${job.name}:`, logError)
+            
+            // Create a generic failure for jobs we can't analyze
+            const failure = createAnalyzedFailure({
+              type: "ci_failure" as FailureType,
+              content: `${job.name} failed - logs unavailable`,
+              priority: "medium",
+              impact: `Job '${job.name}' failed but logs could not be retrieved`,
+              suggestedFix: "Check the GitHub Actions workflow logs manually",
+              relatedPR: `#${prNumber}`,
+            })
+            failures.push(failure)
           }
         }
       }
 
-      const results: AnaResults = {
-        todos,
-        summary,
-        analysisDate: new Date().toISOString(),
+      // Create AnaResults using the new format
+      const anaResults = createAnaResults(failures, summary)
+
+      // Send to Tod via webhook (Issue #282)
+      await this.sendToTodWebhook(anaResults, workflowRunId, prNumber)
+
+      // Create legacy format for workflow compatibility
+      const legacyResults: LegacyAnaResults = {
+        todos: failures.map(failure => ({
+          id: failure.id,
+          content: failure.content,
+          priority: failure.priority,
+          files: failure.files || [],
+          lineNumbers: failure.lineNumbers || [],
+          issueType: "ci_failure" as const,
+          relatedPR: `#${prNumber}`,
+          createdAt: failure.createdAt,
+        })),
+        summary: anaResults.summary,
+        analysisDate: anaResults.analysisDate,
       }
 
-      // Save results
-      writeFileSync("ana-results.json", JSON.stringify(results, null, 2))
-      console.log(
-        `✅ Ana created ${todos.length} TODOs from CI failure analysis`
-      )
+      // Save results for workflow artifact
+      writeFileSync("ana-results.json", JSON.stringify(legacyResults, null, 2))
+      console.log(`✅ Ana analyzed ${failures.length} failures and sent to Tod webhook`)
 
-      return results
+      return legacyResults
     } catch (error) {
       console.error("❌ Error analyzing CI failures:", error)
       throw error
@@ -124,12 +168,12 @@ class AnaAnalyzer {
   }
 
   /**
-   * Analyze Cursor Bugbot review and create Cursor TODOs
+   * Analyze Cursor Bugbot review and send to Tod via webhook (Issue #282)
    */
   async analyzeCursorBugbot(
     prNumber: number,
     commentId: number
-  ): Promise<AnaResults> {
+  ): Promise<LegacyAnaResults> {
     console.log(`🔍 Ana analyzing Cursor Bugbot review for PR #${prNumber}...`)
 
     try {
@@ -145,41 +189,87 @@ class AnaAnalyzer {
 
       // Analyze the comment for issues
       const analysis = this.analyzeCursorBugbotComment(commentBody)
-      const todos: AnaTodo[] = []
+      const failures: AnalyzedFailure[] = []
 
-      // Create todos for each identified issue
+      // Create AnalyzedFailure objects for each identified issue
       for (const issue of analysis.issues) {
-        const todo: AnaTodo = {
-          id: `cursor-${commentId}-${Date.now()}`,
+        const failure = createAnalyzedFailure({
+          type: "bugbot_issue" as FailureType,
           content: issue.description,
           priority: issue.priority,
-          files: issue.files ?? undefined,
-          lineNumbers: issue.lineNumbers ?? undefined,
-          issueType: "cursor_bugbot",
+          files: issue.files,
+          lineNumbers: issue.lineNumbers,
+          rootCause: "Code quality issue identified by Cursor Bugbot",
+          impact: "Code quality and maintainability concerns",
+          suggestedFix: issue.suggestedFix || "Review and address the Cursor Bugbot feedback",
           relatedPR: `#${prNumber}`,
-          createdAt: new Date().toISOString(),
-        }
-        todos.push(todo)
-
-        // Add to Cursor TODO list
-        await this.addToCursorTodo(todo)
+        })
+        failures.push(failure)
       }
 
-      const results: AnaResults = {
-        todos,
-        summary: `Cursor Bugbot review analysis found ${todos.length} issues`,
-        analysisDate: new Date().toISOString(),
+      const summary = `Cursor Bugbot review analysis found ${failures.length} issues`
+      
+      // Create AnaResults using the new format
+      const anaResults = createAnaResults(failures, summary)
+
+      // Send to Tod via webhook (Issue #282)
+      await this.sendToTodWebhook(anaResults, `comment-${commentId}`, prNumber)
+
+      // Create legacy format for workflow compatibility
+      const legacyResults: LegacyAnaResults = {
+        todos: failures.map(failure => ({
+          id: failure.id,
+          content: failure.content,
+          priority: failure.priority,
+          files: failure.files || [],
+          lineNumbers: failure.lineNumbers || [],
+          issueType: "bugbot_issue" as const,
+          relatedPR: `#${prNumber}`,
+          createdAt: failure.createdAt,
+        })),
+        summary: anaResults.summary,
+        analysisDate: anaResults.analysisDate,
       }
 
-      // Save results
-      writeFileSync("ana-results.json", JSON.stringify(results, null, 2))
-      console.log(
-        `✅ Ana created ${todos.length} TODOs from Cursor Bugbot analysis`
-      )
+      // Save results for workflow artifact
+      writeFileSync("ana-results.json", JSON.stringify(legacyResults, null, 2))
+      console.log(`✅ Ana analyzed ${failures.length} Bugbot issues and sent to Tod webhook`)
 
-      return results
+      return legacyResults
     } catch (error) {
       console.error("❌ Error analyzing Cursor Bugbot review:", error)
+      throw error
+    }
+  }
+
+  /**
+   * Send analysis results to Tod via webhook (Issue #282)
+   */
+  private async sendToTodWebhook(
+    anaResults: AnaResults,
+    workflowRunId: string,
+    prNumber: number
+  ): Promise<void> {
+    try {
+      console.log(`🚀 Sending ${anaResults.failures.length} failures to Tod webhook...`)
+      
+      // Create webhook payload using Issue #282 format
+      const payload = createAnaWebhookPayload(anaResults, workflowRunId, prNumber)
+      
+      // Send to Tod webhook
+      const result = await this.webhookClient.sendToTod(payload)
+      
+      if (result.success) {
+        console.log(`✅ Successfully sent to Tod webhook: ${result.data?.message || 'Success'}`)
+        if (result.data?.todosCreated) {
+          console.log(`   📋 Created ${result.data.todosCreated} TODOs in Cursor`)
+        }
+      } else {
+        console.error(`❌ Failed to send to Tod webhook: ${result.error}`)
+        throw new Error(`Webhook failed: ${result.error}`)
+      }
+    } catch (error) {
+      console.error("❌ Error sending to Tod webhook:", error)
       throw error
     }
   }
@@ -196,6 +286,8 @@ class AnaAnalyzer {
       priority: "low" | "medium" | "high" | "critical"
       files?: string[] | undefined
       lineNumbers?: number[] | undefined
+      rootCause?: string
+      suggestedFix?: string
     }>
   } {
     const issues: Array<{
@@ -203,33 +295,43 @@ class AnaAnalyzer {
       priority: "low" | "medium" | "high" | "critical"
       files?: string[] | undefined
       lineNumbers?: number[] | undefined
+      rootCause?: string
+      suggestedFix?: string
     }> = []
 
-    // Common failure patterns
+    // Enhanced failure patterns with root cause and suggested fixes
     const patterns = [
       {
         regex: /error\s+in\s+([^\s]+\.(ts|tsx|js|jsx)):(\d+):(\d+)/gi,
         priority: "high" as const,
         extractFiles: true,
         extractLines: true,
+        rootCause: "TypeScript compilation error",
+        suggestedFix: "Fix TypeScript errors in the specified file and line",
       },
       {
         regex: /test\s+failed[:\s]+([^\n]+)/gi,
         priority: "high" as const,
         extractFiles: false,
         extractLines: false,
+        rootCause: "Jest test failure",
+        suggestedFix: "Review and fix the failing test case",
       },
       {
         regex: /build\s+failed[:\s]+([^\n]+)/gi,
         priority: "critical" as const,
         extractFiles: false,
         extractLines: false,
+        rootCause: "Build process failure",
+        suggestedFix: "Check build configuration and resolve compilation errors",
       },
       {
         regex: /lint\s+error[:\s]+([^\n]+)/gi,
         priority: "medium" as const,
         extractFiles: false,
         extractLines: false,
+        rootCause: "ESLint error",
+        suggestedFix: "Fix linting errors or update ESLint configuration",
       },
     ]
 
@@ -246,6 +348,8 @@ class AnaAnalyzer {
           priority: pattern.priority,
           files: files ?? undefined,
           lineNumbers: lineNumbers ?? undefined,
+          rootCause: pattern.rootCause,
+          suggestedFix: pattern.suggestedFix,
         })
       }
     }
@@ -255,6 +359,8 @@ class AnaAnalyzer {
       issues.push({
         description: `${jobName} failed - check logs for details`,
         priority: "medium",
+        rootCause: "Unknown failure in CI job",
+        suggestedFix: "Review the full job logs to identify the root cause",
       })
     }
 
@@ -270,6 +376,7 @@ class AnaAnalyzer {
       priority: "low" | "medium" | "high" | "critical"
       files?: string[] | undefined
       lineNumbers?: number[] | undefined
+      suggestedFix?: string
     }>
   } {
     const issues: Array<{
@@ -277,6 +384,7 @@ class AnaAnalyzer {
       priority: "low" | "medium" | "high" | "critical"
       files?: string[] | undefined
       lineNumbers?: number[] | undefined
+      suggestedFix?: string
     }> = []
 
     // Extract file references
@@ -317,6 +425,15 @@ class AnaAnalyzer {
       priority = "low"
     }
 
+    // Extract suggested fix from comment
+    let suggestedFix = "Review and address the Cursor Bugbot feedback"
+    if (commentBody.toLowerCase().includes("suggestion")) {
+      const suggestionMatch = commentBody.match(/suggestion[:\s]*([^\n.]+)/i)
+      if (suggestionMatch && suggestionMatch[1]) {
+        suggestedFix = suggestionMatch[1].trim()
+      }
+    }
+
     // Create a single todo for the entire Cursor Bugbot review
     issues.push({
       description: `Cursor Bugbot Review: ${commentBody.substring(0, 200)}${
@@ -325,35 +442,12 @@ class AnaAnalyzer {
       priority,
       files: files.length > 0 ? files : undefined,
       lineNumbers: lineNumbers.length > 0 ? lineNumbers : undefined,
+      suggestedFix,
     })
 
     return { issues }
   }
 
-  /**
-   * Add todo to Cursor TODO list using Cursor CLI
-   */
-  private async addToCursorTodo(todo: AnaTodo): Promise<void> {
-    try {
-      // Use Cursor CLI to add the todo
-      const cursorCommand = `cursor todo add "${todo.content}" --priority ${todo.priority}`
-
-      if (todo.files && todo.files.length > 0) {
-        const filesArg = todo.files.join(",")
-        const fullCommand = `${cursorCommand} --files "${filesArg}"`
-        execSync(fullCommand, { stdio: "pipe" })
-      } else {
-        execSync(cursorCommand, { stdio: "pipe" })
-      }
-
-      console.log(
-        `  ✅ Added to Cursor TODO: ${todo.content.substring(0, 50)}...`
-      )
-    } catch (error) {
-      console.warn(`  ⚠️  Failed to add to Cursor TODO: ${error}`)
-      // Continue processing even if Cursor CLI fails
-    }
-  }
 }
 
 async function main() {
