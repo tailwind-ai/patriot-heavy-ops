@@ -233,28 +233,31 @@ export class UserRepository extends BaseRepository {
   ): Promise<RepositoryResult<SafeUser[]>> {
     return this.handleAsync(
       () => {
-        let query: {
-          select: Record<string, boolean>
-          orderBy: Record<string, string>
-          where?: Record<string, unknown>
-          skip?: number
-          take?: number
-        } = {
+        let query = {
           select: {
             id: true,
             name: true,
             email: true,
+            emailVerified: true,
+            image: true,
             role: true,
             phone: true,
             company: true,
-            image: true,
-            isAvailable: true,
             createdAt: true,
             updatedAt: true,
+            militaryBranch: true,
+            yearsOfService: true,
+            certifications: true,
+            preferredLocations: true,
+            isAvailable: true,
+            stripeCustomerId: true,
+            stripeSubscriptionId: true,
+            stripePriceId: true,
+            stripeCurrentPeriodEnd: true,
             // Exclude sensitive fields like password
           },
           orderBy: {
-            createdAt: "desc",
+            createdAt: "desc" as const,
           },
         }
 
@@ -283,14 +286,14 @@ export class UserRepository extends BaseRepository {
   ): Promise<RepositoryResult<SafeUser[]>> {
     return this.handleAsync(
       () => {
-        const whereClause: {
-          role: string
+        const whereClause = {
+          role: "OPERATOR" as const,
+          isAvailable: true,
+        } as {
+          role: "OPERATOR"
           isAvailable: boolean
           preferredLocations?: { hasSome: string[] }
           certifications?: { hasSome: string[] }
-        } = {
-          role: "OPERATOR",
-          isAvailable: true,
         }
 
         // Add location filter if provided
@@ -310,28 +313,31 @@ export class UserRepository extends BaseRepository {
           }
         }
 
-        let query: {
-          where: Record<string, unknown>
-          select: Record<string, boolean>
-          orderBy: Record<string, string>
-          skip?: number
-          take?: number
-        } = {
+        let query = {
           where: whereClause,
           select: {
             id: true,
             name: true,
             email: true,
+            emailVerified: true,
+            image: true,
+            role: true,
             phone: true,
+            company: true,
+            createdAt: true,
+            updatedAt: true,
             militaryBranch: true,
             yearsOfService: true,
             certifications: true,
             preferredLocations: true,
             isAvailable: true,
-            createdAt: true,
+            stripeCustomerId: true,
+            stripeSubscriptionId: true,
+            stripePriceId: true,
+            stripeCurrentPeriodEnd: true,
           },
           orderBy: {
-            yearsOfService: "desc",
+            yearsOfService: "desc" as const,
           },
         }
 
@@ -705,26 +711,31 @@ export class UserRepository extends BaseRepository {
 
     return this.handleAsync(
       () => {
-        let query: {
-          where: { role: UserRole }
-          select: Record<string, boolean>
-          orderBy: Record<string, string>
-          skip?: number
-          take?: number
-        } = {
+        let query = {
           where: { role },
           select: {
             id: true,
             name: true,
             email: true,
+            emailVerified: true,
+            image: true,
             role: true,
             phone: true,
             company: true,
-            isAvailable: true,
             createdAt: true,
+            updatedAt: true,
+            militaryBranch: true,
+            yearsOfService: true,
+            certifications: true,
+            preferredLocations: true,
+            isAvailable: true,
+            stripeCustomerId: true,
+            stripeSubscriptionId: true,
+            stripePriceId: true,
+            stripeCurrentPeriodEnd: true,
           },
           orderBy: {
-            createdAt: "desc",
+            createdAt: "desc" as const,
           },
         }
 
