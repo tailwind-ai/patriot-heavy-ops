@@ -24,77 +24,6 @@ export interface UserWithAccounts extends User {
   }>
 }
 
-// Partial user types for specific operations
-export type UserSummary = Pick<
-  User,
-  | "id"
-  | "name"
-  | "email"
-  | "role"
-  | "phone"
-  | "company"
-  | "image"
-  | "isAvailable"
-  | "createdAt"
-  | "updatedAt"
->
-
-export type UserProfile = Pick<
-  User,
-  "id" | "name" | "email" | "role" | "createdAt"
->
-
-export type UserUpdate = Pick<
-  User,
-  "id" | "name" | "email" | "role" | "updatedAt" | "image" | "phone" | "company"
->
-
-export type OperatorProfile = Pick<
-  User,
-  | "id"
-  | "name"
-  | "email"
-  | "role"
-  | "updatedAt"
-  | "militaryBranch"
-  | "yearsOfService"
-  | "certifications"
-  | "preferredLocations"
-  | "isAvailable"
->
-
-export type UserAvailabilityUpdate = Pick<
-  User,
-  "id" | "name" | "email" | "updatedAt" | "isAvailable"
->
-
-export type UserStripeUpdate = Pick<
-  User,
-  | "id"
-  | "updatedAt"
-  | "stripeCustomerId"
-  | "stripeSubscriptionId"
-  | "stripePriceId"
-  | "stripeCurrentPeriodEnd"
->
-
-export type OperatorSummary = Pick<
-  User,
-  | "id"
-  | "name"
-  | "email"
-  | "role"
-  | "createdAt"
-  | "phone"
-  | "company"
-  | "isAvailable"
->
-
-export type UserEmailVerification = Pick<
-  User,
-  "id" | "email" | "updatedAt" | "emailVerified"
->
-
 export interface UserCreateInput {
   name?: string
   email: string
@@ -154,7 +83,7 @@ export class UserRepository
   /**
    * Find user by ID
    */
-  async findById(id: string): Promise<RepositoryResult<User | null>> {
+  async findById(id: string): Promise<RepositoryResult<any>> {
     const validation = this.validateRequired({ id }, ["id"])
     if (!validation.success) {
       const errorMessage =
@@ -186,7 +115,7 @@ export class UserRepository
   /**
    * Find user by email
    */
-  async findByEmail(email: string): Promise<RepositoryResult<User | null>> {
+  async findByEmail(email: string): Promise<RepositoryResult<any>> {
     const validation = this.validateRequired({ email }, ["email"])
     if (!validation.success) {
       const errorMessage =
@@ -224,31 +153,22 @@ export class UserRepository
   ): Promise<RepositoryResult<User[]>> {
     return this.handleAsync(
       () => {
-        let query = {
+        let query: any = {
           select: {
             id: true,
             name: true,
             email: true,
-            password: true,
-            emailVerified: true,
-            image: true,
             role: true,
             phone: true,
             company: true,
+            image: true,
+            isAvailable: true,
             createdAt: true,
             updatedAt: true,
-            militaryBranch: true,
-            yearsOfService: true,
-            certifications: true,
-            preferredLocations: true,
-            isAvailable: true,
-            stripeCustomerId: true,
-            stripeSubscriptionId: true,
-            stripePriceId: true,
-            stripeCurrentPeriodEnd: true,
+            // Exclude sensitive fields like password
           },
           orderBy: {
-            createdAt: "desc" as const,
+            createdAt: "desc",
           },
         }
 
@@ -277,13 +197,8 @@ export class UserRepository
   ): Promise<RepositoryResult<User[]>> {
     return this.handleAsync(
       () => {
-        const whereClause: {
-          role: UserRole;
-          isAvailable: boolean;
-          preferredLocations?: { hasSome: string[] };
-          certifications?: { hasSome: string[] };
-        } = {
-          role: "OPERATOR" as UserRole,
+        const whereClause: any = {
+          role: "OPERATOR",
           isAvailable: true,
         }
 
@@ -304,32 +219,22 @@ export class UserRepository
           }
         }
 
-        let query = {
+        let query: any = {
           where: whereClause,
           select: {
             id: true,
             name: true,
             email: true,
-            password: true,
-            emailVerified: true,
-            image: true,
-            role: true,
             phone: true,
-            company: true,
-            createdAt: true,
-            updatedAt: true,
             militaryBranch: true,
             yearsOfService: true,
             certifications: true,
             preferredLocations: true,
             isAvailable: true,
-            stripeCustomerId: true,
-            stripeSubscriptionId: true,
-            stripePriceId: true,
-            stripeCurrentPeriodEnd: true,
+            createdAt: true,
           },
           orderBy: {
-            createdAt: "desc" as const,
+            yearsOfService: "desc",
           },
         }
 
@@ -348,7 +253,7 @@ export class UserRepository
   /**
    * Create new user
    */
-  async create(data: UserCreateInput): Promise<RepositoryResult<User>> {
+  async create(data: UserCreateInput): Promise<RepositoryResult<any>> {
     const validation = this.validateRequired(
       data as unknown as Record<string, unknown>,
       ["email"]
@@ -372,23 +277,8 @@ export class UserRepository
             id: true,
             name: true,
             email: true,
-            password: true,
-            emailVerified: true,
-            image: true,
             role: true,
-            phone: true,
-            company: true,
             createdAt: true,
-            updatedAt: true,
-            militaryBranch: true,
-            yearsOfService: true,
-            certifications: true,
-            preferredLocations: true,
-            isAvailable: true,
-            stripeCustomerId: true,
-            stripeSubscriptionId: true,
-            stripePriceId: true,
-            stripeCurrentPeriodEnd: true,
           },
         }),
       "USER_CREATE_ERROR",
@@ -403,7 +293,7 @@ export class UserRepository
   async update(
     id: string,
     data: UserUpdateInput
-  ): Promise<RepositoryResult<User>> {
+  ): Promise<RepositoryResult<any>> {
     const validation = this.validateRequired({ id }, ["id"])
     if (!validation.success) {
       const errorMessage =
@@ -425,23 +315,11 @@ export class UserRepository
             id: true,
             name: true,
             email: true,
-            password: true,
-            emailVerified: true,
-            image: true,
             role: true,
             phone: true,
             company: true,
-            createdAt: true,
+            image: true,
             updatedAt: true,
-            militaryBranch: true,
-            yearsOfService: true,
-            certifications: true,
-            preferredLocations: true,
-            isAvailable: true,
-            stripeCustomerId: true,
-            stripeSubscriptionId: true,
-            stripePriceId: true,
-            stripeCurrentPeriodEnd: true,
           },
         }),
       "USER_UPDATE_ERROR",
@@ -482,7 +360,7 @@ export class UserRepository
   async count(filters?: FilterOptions): Promise<RepositoryResult<number>> {
     return this.handleAsync(
       () => {
-        let query = {}
+        let query: any = {}
 
         if (filters) {
           query = this.applyFilters(query, filters)
@@ -502,7 +380,7 @@ export class UserRepository
   async submitOperatorApplication(
     userId: string,
     applicationData: OperatorApplicationInput
-  ): Promise<RepositoryResult<User>> {
+  ): Promise<RepositoryResult<any>> {
     const validation = this.validateRequired({ userId, ...applicationData }, [
       "userId",
       "militaryBranch",
@@ -533,23 +411,13 @@ export class UserRepository
             id: true,
             name: true,
             email: true,
-            password: true,
-            emailVerified: true,
-            image: true,
             role: true,
-            phone: true,
-            company: true,
-            createdAt: true,
-            updatedAt: true,
             militaryBranch: true,
             yearsOfService: true,
             certifications: true,
             preferredLocations: true,
             isAvailable: true,
-            stripeCustomerId: true,
-            stripeSubscriptionId: true,
-            stripePriceId: true,
-            stripeCurrentPeriodEnd: true,
+            updatedAt: true,
           },
         }),
       "OPERATOR_APPLICATION_ERROR",
@@ -564,7 +432,7 @@ export class UserRepository
   async setOperatorAvailability(
     operatorId: string,
     isAvailable: boolean
-  ): Promise<RepositoryResult<User>> {
+  ): Promise<RepositoryResult<any>> {
     const validation = this.validateRequired({ operatorId }, ["operatorId"])
     if (!validation.success) {
       const errorMessage =
@@ -601,23 +469,8 @@ export class UserRepository
             id: true,
             name: true,
             email: true,
-            password: true,
-            emailVerified: true,
-            image: true,
-            role: true,
-            phone: true,
-            company: true,
-            createdAt: true,
-            updatedAt: true,
-            militaryBranch: true,
-            yearsOfService: true,
-            certifications: true,
-            preferredLocations: true,
             isAvailable: true,
-            stripeCustomerId: true,
-            stripeSubscriptionId: true,
-            stripePriceId: true,
-            stripeCurrentPeriodEnd: true,
+            updatedAt: true,
           },
         })
       },
@@ -638,7 +491,7 @@ export class UserRepository
       stripePriceId?: string
       stripeCurrentPeriodEnd?: Date
     }
-  ): Promise<RepositoryResult<User>> {
+  ): Promise<RepositoryResult<any>> {
     const validation = this.validateRequired({ userId }, ["userId"])
     if (!validation.success) {
       const errorMessage =
@@ -658,25 +511,11 @@ export class UserRepository
           },
           select: {
             id: true,
-            name: true,
-            email: true,
-            password: true,
-            emailVerified: true,
-            image: true,
-            role: true,
-            phone: true,
-            company: true,
-            createdAt: true,
-            updatedAt: true,
-            militaryBranch: true,
-            yearsOfService: true,
-            certifications: true,
-            preferredLocations: true,
-            isAvailable: true,
             stripeCustomerId: true,
             stripeSubscriptionId: true,
             stripePriceId: true,
             stripeCurrentPeriodEnd: true,
+            updatedAt: true,
           },
         }),
       "USER_STRIPE_UPDATE_ERROR",
@@ -703,32 +542,20 @@ export class UserRepository
 
     return this.handleAsync(
       () => {
-        let query = {
+        let query: any = {
           where: { role },
           select: {
             id: true,
             name: true,
             email: true,
-            password: true,
-            emailVerified: true,
-            image: true,
             role: true,
             phone: true,
             company: true,
-            createdAt: true,
-            updatedAt: true,
-            militaryBranch: true,
-            yearsOfService: true,
-            certifications: true,
-            preferredLocations: true,
             isAvailable: true,
-            stripeCustomerId: true,
-            stripeSubscriptionId: true,
-            stripePriceId: true,
-            stripeCurrentPeriodEnd: true,
+            createdAt: true,
           },
           orderBy: {
-            createdAt: "desc" as const,
+            createdAt: "desc",
           },
         }
 
@@ -747,7 +574,7 @@ export class UserRepository
   /**
    * Verify user email
    */
-  async verifyEmail(userId: string): Promise<RepositoryResult<User>> {
+  async verifyEmail(userId: string): Promise<RepositoryResult<any>> {
     const validation = this.validateRequired({ userId }, ["userId"])
     if (!validation.success) {
       const errorMessage =
@@ -767,25 +594,9 @@ export class UserRepository
           },
           select: {
             id: true,
-            name: true,
             email: true,
-            password: true,
             emailVerified: true,
-            image: true,
-            role: true,
-            phone: true,
-            company: true,
-            createdAt: true,
             updatedAt: true,
-            militaryBranch: true,
-            yearsOfService: true,
-            certifications: true,
-            preferredLocations: true,
-            isAvailable: true,
-            stripeCustomerId: true,
-            stripeSubscriptionId: true,
-            stripePriceId: true,
-            stripeCurrentPeriodEnd: true,
           },
         }),
       "USER_EMAIL_VERIFY_ERROR",
