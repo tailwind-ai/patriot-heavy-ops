@@ -123,7 +123,7 @@ describe('Ana Data Structures', () => {
       const result = validateAnalyzedFailure(invalidFailure)
       expect(result.success).toBe(false)
       if (!result.success) {
-        expect(result.error.issues[0]?.message).toContain('Type must be either ci_failure or vercel_failure')
+        expect(result.error.issues[0]?.message).toContain('Type must be ci_failure, vercel_failure, or bugbot_issue')
       }
     })
 

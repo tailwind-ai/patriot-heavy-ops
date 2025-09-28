@@ -46,6 +46,9 @@ services:
       GITHUB_CLIENT_SECRET: your_github_client_secret
       # Background Agent GitHub Access
       GITHUB_ACCESS_TOKEN: "dummy-token-for-development"
+      # Issue #282: Ana → Tod Webhook Integration
+      TOD_WEBHOOK_ENDPOINT: "http://localhost:3000/api/webhooks/ana-failures"
+      ANA_WEBHOOK_SECRET: "dev-secret-key"
       # App configuration
       NODE_ENV: development
     depends_on:

@@ -23,6 +23,9 @@ export const env = createEnv({
     CURSOR_API_KEY: z.string().min(1).optional(),
     CURSOR_CLI: z.string().min(1).optional(),
     VERCEL_API_TOKEN: z.string().min(1).optional(),
+    // Issue #282: Ana → Tod Webhook Integration
+    TOD_WEBHOOK_ENDPOINT: z.string().url().optional(),
+    ANA_WEBHOOK_SECRET: z.string().min(1).optional(),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z.string().min(1),
@@ -47,6 +50,9 @@ export const env = createEnv({
     CURSOR_API_KEY: process.env.CURSOR_API_KEY,
     CURSOR_CLI: process.env.CURSOR_CLI,
     VERCEL_API_TOKEN: process.env.VERCEL_API_TOKEN,
+    // Issue #282: Ana → Tod Webhook Integration
+    TOD_WEBHOOK_ENDPOINT: process.env.TOD_WEBHOOK_ENDPOINT,
+    ANA_WEBHOOK_SECRET: process.env.ANA_WEBHOOK_SECRET,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
   },
