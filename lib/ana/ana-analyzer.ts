@@ -97,7 +97,10 @@ export class AnaAnalyzer {
       logTimestamp
     )
     if (memoryIssues.length > 0) {
-      issues.push(memoryIssues[0]) // Only take the first memory issue
+      const firstIssue = memoryIssues[0]
+      if (firstIssue) {
+        issues.push(firstIssue) // Only take the first memory issue
+      }
     }
 
     // Analyze Next.js build errors
@@ -134,7 +137,10 @@ export class AnaAnalyzer {
       logTimestamp
     )
     if (depIssues.length > 0) {
-      issues.push(depIssues[0]) // Only take the first dependency issue
+      const firstIssue = depIssues[0]
+      if (firstIssue) {
+        issues.push(firstIssue) // Only take the first dependency issue
+      }
     }
 
     // Analyze static generation errors
@@ -799,15 +805,17 @@ export class AnaAnalyzer {
     while ((match = pattern.regex.exec(logContent)) !== null) {
       const missingModule = match[1]
       const fromFile = match[2]
-      issues.push({
-        description: `Vercel Deploy: Cannot resolve module '${missingModule}' from '${fromFile}'`,
-        priority: pattern.priority,
-        files: [fromFile],
-        rootCause: pattern.rootCause,
-        suggestedFix:
-          "Check import paths and ensure all required components exist",
-        timestamp: timestamp || undefined,
-      })
+      if (missingModule && fromFile) {
+        issues.push({
+          description: `Vercel Deploy: Cannot resolve module '${missingModule}' from '${fromFile}'`,
+          priority: pattern.priority,
+          files: [fromFile],
+          rootCause: pattern.rootCause,
+          suggestedFix:
+            "Check import paths and ensure all required components exist",
+          timestamp: timestamp || undefined,
+        })
+      }
     }
 
     return issues
