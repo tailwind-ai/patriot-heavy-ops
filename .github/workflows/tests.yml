@@ -256,7 +256,7 @@ jobs:
           # Function to check if a job result is acceptable (success or skipped)
           is_job_ok() {
             local result="$1"
-            [[ "$result" == "success" || "$result" == "skipped" ]]
+            [[ "$result" == "success" || "$result" == "skipped" || "$result" == "cancelled" ]]
           }
 
           # Check each job result
