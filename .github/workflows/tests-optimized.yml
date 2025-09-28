@@ -91,12 +91,12 @@ jobs:
             --testPathPatterns="integration" \
             --maxWorkers=4
 
-  # Coverage job - Conditional coverage generation (main/release branches only)
+  # Coverage job - Conditional coverage generation (main branch or manual trigger)
   coverage:
     name: Coverage Analysis
     runs-on: ubuntu-latest
     needs: [fast-validation, integration-tests]
-    if: github.ref == 'refs/heads/main' || github.event_name == 'release'
+    if: github.ref == 'refs/heads/main' || github.event.inputs.run_coverage == 'true'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
