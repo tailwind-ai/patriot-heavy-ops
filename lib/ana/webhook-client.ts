@@ -3,6 +3,7 @@
  * Handles webhook calls to Tod with retry logic and error handling
  */
 
+import { createHmac } from "crypto"
 import {
   type AnaResults,
   type AnalyzedFailure,
@@ -347,22 +348,17 @@ export class AnaWebhookClient {
    * Generate signature for webhook security (Issue #282)
    */
   private generateSignature(body: string): string {
-    // For development mode, return a simple signature
-    // In production, this should use HMAC-SHA256 with a secret key
     const secret = process.env.ANA_WEBHOOK_SECRET || "dev-secret-key"
     
-    // Simple signature for development - in production use proper HMAC
+    // Simple signature for development mode
     if (process.env.NODE_ENV === "development") {
       return `sha256=dev-${Buffer.from(body + secret).toString('base64').substring(0, 16)}`
     }
     
-    // TODO: Implement proper HMAC-SHA256 signature in production
-    // const crypto = require('crypto')
-    // const hmac = crypto.createHmac('sha256', secret)
-    // hmac.update(body)
-    // return `sha256=${hmac.digest('hex')}`
-    
-    return `sha256=dev-${Buffer.from(body + secret).toString('base64').substring(0, 16)}`
+    // Production HMAC-SHA256 signature
+    const hmac = createHmac('sha256', secret)
+    hmac.update(body)
+    return `sha256=${hmac.digest('hex')}`
   }
 
   /**
