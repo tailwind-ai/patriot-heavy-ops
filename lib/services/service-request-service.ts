@@ -15,6 +15,7 @@ import { BaseService, ServiceResult, ServiceLogger } from "./base-service"
 import { db } from "../db"
 import { hasPermissionSafe } from "../permissions"
 import { serviceRequestSchema, serviceRequestUpdateSchema } from "../validations/service-request"
+import type { ServiceRequest } from "@prisma/client"
 
 // Type definitions for service request business logic
 export type DurationType = "HALF_DAY" | "FULL_DAY" | "MULTI_DAY" | "WEEKLY"

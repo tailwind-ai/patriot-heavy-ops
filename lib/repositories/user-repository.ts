@@ -147,7 +147,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
   ): Promise<RepositoryResult<User[]>> {
     return this.handleAsync(
       () => {
-        let query: Record<string, unknown> = {
+        let query = {
           select: {
             id: true,
             name: true,
@@ -191,7 +191,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
   ): Promise<RepositoryResult<User[]>> {
     return this.handleAsync(
       () => {
-        const whereClause: Record<string, unknown> = {
+        const whereClause = {
           role: "OPERATOR",
           isAvailable: true,
         };
@@ -210,7 +210,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
           };
         }
 
-        let query: Record<string, unknown> = {
+        let query = {
           where: whereClause,
           select: {
             id: true,
@@ -340,7 +340,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
   async count(filters?: FilterOptions): Promise<RepositoryResult<number>> {
     return this.handleAsync(
       () => {
-        let query: Record<string, unknown> = {};
+        let query = {};
         
         if (filters) {
           query = this.applyFilters(query, filters);
@@ -512,7 +512,7 @@ export class UserRepository extends BaseRepository implements CrudRepository<Use
 
     return this.handleAsync(
       () => {
-        let query: Record<string, unknown> = {
+        let query = {
           where: { role },
           select: {
             id: true,

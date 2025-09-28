@@ -10,6 +10,7 @@ import type {
   ServiceRequest,
   ServiceRequestStatus,
   UserRole,
+  TransportOption,
 } from "@prisma/client"
 import {
   BaseRepository,
@@ -226,7 +227,7 @@ export class ServiceRequestRepository
   ): Promise<RepositoryResult<ServiceRequest[]>> {
     return this.handleAsync(
       () => {
-        let query: Record<string, unknown> = {
+        let query = {
           include: {
             user: {
               select: {
@@ -290,6 +291,7 @@ export class ServiceRequestRepository
           data: {
             ...data,
             status: "SUBMITTED" as const,
+            transport: data.transport as TransportOption,
           },
           select: {
             id: true,
@@ -367,7 +369,7 @@ export class ServiceRequestRepository
   async count(filters?: FilterOptions): Promise<RepositoryResult<number>> {
     return this.handleAsync(
       () => {
-        let query: Record<string, unknown> = {}
+        let query = {}
 
         if (filters) {
           query = this.applyFilters(query, filters)
