@@ -235,7 +235,7 @@ describe("CI Performance Measurement", () => {
       // Should only run on main/release (not on every PR)
       expect(coverage.if).toBeDefined()
       expect(coverage.if).toContain("github.ref == 'refs/heads/main'")
-      expect(coverage.if).toContain("github.event_name == 'release'")
+      expect(coverage.if).toContain("github.event.inputs.run_coverage == 'true'")
     })
   })
 

@@ -17,11 +17,14 @@
 
 import { readFileSync, existsSync } from "fs"
 import { join } from "path"
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+// eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires
 const yaml = require("js-yaml")
 
 describe("Optimized CI Workflow Architecture", () => {
-  const optimizedWorkflowPath = join(process.cwd(), ".github/workflows/tests-optimized.yml")
+  const optimizedWorkflowPath = join(
+    process.cwd(),
+    ".github/workflows/tests-optimized.yml"
+  )
   let optimizedConfig: any
 
   beforeAll(() => {
@@ -44,7 +47,7 @@ describe("Optimized CI Workflow Architecture", () => {
 
       // Count main jobs (excluding status check job)
       const mainJobs = Object.keys(optimizedConfig.jobs).filter(
-        job => !job.includes("status") && !job.includes("check")
+        (job) => !job.includes("status") && !job.includes("check")
       )
       expect(mainJobs).toHaveLength(3)
     })
@@ -89,18 +92,18 @@ describe("Optimized CI Workflow Architecture", () => {
 
     it("should target <1 minute execution time", () => {
       const fastValidation = optimizedConfig.jobs["fast-validation"]
-      
+
       // Verify optimizations for speed
       const unitTestStep = fastValidation.steps.find(
         (step: any) => step.name === "Unit tests"
       )
-      
+
       // Should use maxWorkers for parallel execution
       expect(unitTestStep.run).toContain("--maxWorkers=4")
-      
+
       // Should exclude slower test types
       expect(unitTestStep.run).toContain("--testPathIgnorePatterns")
-      
+
       // Should not run coverage (adds overhead)
       expect(unitTestStep.run).not.toContain("--coverage")
     })
@@ -146,15 +149,15 @@ describe("Optimized CI Workflow Architecture", () => {
 
     it("should target <2 minutes execution time", () => {
       const integrationTests = optimizedConfig.jobs["integration-tests"]
-      
+
       // Should depend on fast-validation to run sequentially
       expect(integrationTests.needs).toContain("fast-validation")
-      
+
       // All test steps should use maxWorkers for parallel execution
-      const testSteps = integrationTests.steps.filter(
-        (step: any) => step.name?.includes("tests")
+      const testSteps = integrationTests.steps.filter((step: any) =>
+        step.name?.includes("tests")
       )
-      
+
       testSteps.forEach((step: any) => {
         expect(step.run).toContain("--maxWorkers=4")
       })
@@ -165,13 +168,15 @@ describe("Optimized CI Workflow Architecture", () => {
     it("should be conditional and depend on both validation jobs", () => {
       const coverage = optimizedConfig.jobs.coverage
       expect(coverage.name).toBe("Coverage Analysis")
-      
+
       expect(coverage.needs).toContain("fast-validation")
       expect(coverage.needs).toContain("integration-tests")
-      
+
       // Should be conditional
       expect(coverage.if).toContain("github.ref == 'refs/heads/main'")
-      expect(coverage.if).toContain("github.event_name == 'release'")
+      expect(coverage.if).toContain(
+        "github.event.inputs.run_coverage == 'true'"
+      )
     })
 
     it("should generate full coverage report", () => {
@@ -206,7 +211,9 @@ describe("Optimized CI Workflow Architecture", () => {
       // No job should have more than 2 dependencies
       Object.values(optimizedConfig.jobs).forEach((job: any) => {
         if (job.needs) {
-          expect(Array.isArray(job.needs) ? job.needs.length : 1).toBeLessThanOrEqual(2)
+          expect(
+            Array.isArray(job.needs) ? job.needs.length : 1
+          ).toBeLessThanOrEqual(2)
         }
       })
     })
@@ -216,17 +223,17 @@ describe("Optimized CI Workflow Architecture", () => {
     it("should reduce setup overhead with fewer jobs", () => {
       // Should have exactly 3 main jobs (vs 6+ in current architecture)
       const mainJobs = Object.keys(optimizedConfig.jobs).filter(
-        job => !job.includes("status") && !job.includes("check")
+        (job) => !job.includes("status") && !job.includes("check")
       )
       expect(mainJobs).toHaveLength(3)
     })
 
     it("should use consistent Node.js setup across all jobs", () => {
       Object.values(optimizedConfig.jobs).forEach((job: any) => {
-        const nodeSetup = job.steps?.find(
-          (step: any) => step.uses?.includes("setup-node")
+        const nodeSetup = job.steps?.find((step: any) =>
+          step.uses?.includes("setup-node")
         )
-        
+
         if (nodeSetup) {
           expect(nodeSetup.with["node-version"]).toBe("20")
           expect(nodeSetup.with.cache).toBe("npm")
@@ -239,7 +246,7 @@ describe("Optimized CI Workflow Architecture", () => {
         const installStep = job.steps?.find(
           (step: any) => step.name === "Install dependencies"
         )
-        
+
         if (installStep) {
           expect(installStep.run).toBe("npm ci")
         }
