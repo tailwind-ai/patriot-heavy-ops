@@ -139,102 +139,135 @@ export const VERCEL_FAILURE_LOGS = {
   `,
 } as const
 
-export const EXPECTED_VERCEL_ANALYSIS = {
-  BUILD_TIMEOUT: {
-    issueCount: 1,
-    priorities: ['critical'],
-    rootCauses: ['Vercel build timeout'],
-    suggestedFixes: ['Optimize build process to complete within time limit, consider build caching'],
-  },
+type ExpectedVercelAnalysis = {
+  issueCount: number
+  priorities: readonly string[]
+  rootCauses: readonly string[]
+  suggestedFixes?: readonly string[]
+  files?: readonly string[]
+  lineNumbers?: readonly number[]
+}
 
-  MEMORY_LIMIT_EXCEEDED: {
-    issueCount: 1,
-    priorities: ['critical'],
-    rootCauses: ['Memory limit exceeded'],
-    suggestedFixes: ['Reduce memory usage during build, optimize large dependencies'],
-  },
+export const EXPECTED_VERCEL_ANALYSIS: Record<string, ExpectedVercelAnalysis> =
+  {
+    BUILD_TIMEOUT: {
+      issueCount: 1,
+      priorities: ["critical"],
+      rootCauses: ["Vercel build timeout"],
+      suggestedFixes: [
+        "Optimize build process to complete within time limit, consider build caching",
+      ],
+    },
 
-  ENVIRONMENT_VARIABLE_MISSING: {
-    issueCount: 1,
-    priorities: ['high'],
-    rootCauses: ['Missing environment variable'],
-    suggestedFixes: ['Add DATABASE_URL environment variable in Vercel dashboard'],
-  },
+    MEMORY_LIMIT_EXCEEDED: {
+      issueCount: 1,
+      priorities: ["critical"],
+      rootCauses: ["Memory limit exceeded"],
+      suggestedFixes: [
+        "Reduce memory usage during build, optimize large dependencies",
+      ],
+    },
 
-  DEPENDENCY_INSTALLATION_FAILED: {
-    issueCount: 1,
-    priorities: ['high'],
-    rootCauses: ['Dependency resolution conflict'],
-    suggestedFixes: ['Fix peer dependency conflicts, update package versions'],
-  },
+    ENVIRONMENT_VARIABLE_MISSING: {
+      issueCount: 1,
+      priorities: ["high"],
+      rootCauses: ["Missing environment variable"],
+      suggestedFixes: [
+        "Add DATABASE_URL environment variable in Vercel dashboard",
+      ],
+    },
 
-  NEXT_JS_BUILD_ERROR: {
-    issueCount: 1,
-    priorities: ['critical'],
-    rootCauses: ['Next.js build failure - missing module'],
-    suggestedFixes: ['Check import paths and ensure all required components exist'],
-  },
+    DEPENDENCY_INSTALLATION_FAILED: {
+      issueCount: 1,
+      priorities: ["high"],
+      rootCauses: ["Dependency resolution conflict"],
+      suggestedFixes: [
+        "Fix peer dependency conflicts, update package versions",
+      ],
+    },
 
-  FUNCTION_SIZE_LIMIT: {
-    issueCount: 1,
-    priorities: ['high'],
-    rootCauses: ['Serverless function size limit exceeded'],
-    suggestedFixes: ['Reduce function bundle size or use Edge Runtime'],
-  },
+    NEXT_JS_BUILD_ERROR: {
+      issueCount: 1,
+      priorities: ["critical"],
+      rootCauses: ["Next.js build failure - missing module"],
+      suggestedFixes: [
+        "Check import paths and ensure all required components exist",
+      ],
+    },
 
-  STATIC_GENERATION_ERROR: {
-    issueCount: 1,
-    priorities: ['high'],
-    rootCauses: ['Static page generation failure'],
-    suggestedFixes: ['Fix getStaticProps error in /products/[id] page'],
-  },
+    FUNCTION_SIZE_LIMIT: {
+      issueCount: 1,
+      priorities: ["high"],
+      rootCauses: ["Serverless function size limit exceeded"],
+      suggestedFixes: ["Reduce function bundle size or use Edge Runtime"],
+    },
 
-  PRISMA_MIGRATION_ERROR: {
-    issueCount: 1,
-    priorities: ['high'],
-    rootCauses: ['Database connection failure'],
-    suggestedFixes: ['Configure database connection for build environment'],
-  },
+    STATIC_GENERATION_ERROR: {
+      issueCount: 1,
+      priorities: ["high"],
+      rootCauses: ["Static page generation failure"],
+      suggestedFixes: ["Fix getStaticProps error in /products/[id] page"],
+    },
 
-  TYPESCRIPT_BUILD_ERROR: {
-    issueCount: 2,
-    priorities: ['high', 'high'],
-    files: ['pages/api/users.ts', 'components/Button.tsx'],
-    lineNumbers: [45, 23],
-    rootCauses: ['TypeScript compilation error', 'TypeScript compilation error'],
-  },
+    PRISMA_MIGRATION_ERROR: {
+      issueCount: 1,
+      priorities: ["high"],
+      rootCauses: ["Database connection failure"],
+      suggestedFixes: ["Configure database connection for build environment"],
+    },
 
-  EDGE_RUNTIME_ERROR: {
-    issueCount: 1,
-    priorities: ['high'],
-    files: ['api/edge-function.js'],
-    rootCauses: ['Edge Runtime compatibility issue'],
-    suggestedFixes: ['Replace Node.js modules with Edge Runtime compatible alternatives'],
-  },
+    TYPESCRIPT_BUILD_ERROR: {
+      issueCount: 2,
+      priorities: ["high", "high"],
+      files: ["pages/api/users.ts", "components/Button.tsx"],
+      lineNumbers: [45, 23],
+      rootCauses: [
+        "TypeScript compilation error",
+        "TypeScript compilation error",
+      ],
+    },
 
-  MIXED_VERCEL_ERRORS: {
-    issueCount: 3,
-    priorities: ['high', 'high', 'high'],
-    rootCauses: [
-      'Missing environment variable',
-      'TypeScript compilation error',
-      'Serverless function size limit exceeded',
-    ],
-  },
-} as const
+    EDGE_RUNTIME_ERROR: {
+      issueCount: 1,
+      priorities: ["high"],
+      files: ["api/edge-function.js"],
+      rootCauses: ["Edge Runtime compatibility issue"],
+      suggestedFixes: [
+        "Replace Node.js modules with Edge Runtime compatible alternatives",
+      ],
+    },
+
+    MIXED_VERCEL_ERRORS: {
+      issueCount: 3,
+      priorities: ["high", "high", "high"],
+      rootCauses: [
+        "Missing environment variable",
+        "TypeScript compilation error",
+        "Serverless function size limit exceeded",
+      ],
+    },
+  } as const
 
 /**
  * Helper function to get Vercel log content by scenario name
  */
-export function getVercelLogContent(scenario: keyof typeof VERCEL_FAILURE_LOGS): string {
+export function getVercelLogContent(
+  scenario: keyof typeof VERCEL_FAILURE_LOGS
+): string {
   return VERCEL_FAILURE_LOGS[scenario]
 }
 
 /**
  * Helper function to get expected Vercel analysis results
  */
-export function getExpectedVercelResults(scenario: keyof typeof EXPECTED_VERCEL_ANALYSIS) {
-  return EXPECTED_VERCEL_ANALYSIS[scenario]
+export function getExpectedVercelResults(
+  scenario: keyof typeof EXPECTED_VERCEL_ANALYSIS
+): ExpectedVercelAnalysis {
+  const result = EXPECTED_VERCEL_ANALYSIS[scenario]
+  if (!result) {
+    throw new Error(`No expected results found for scenario: ${scenario}`)
+  }
+  return result
 }
 
 /**

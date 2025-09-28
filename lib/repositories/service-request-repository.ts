@@ -11,6 +11,9 @@ import type {
   ServiceRequestStatus,
   UserRole,
   TransportOption,
+  EquipmentCategory,
+  DurationType,
+  RateType,
 } from "@prisma/client"
 import {
   BaseRepository,
@@ -301,9 +304,9 @@ export class ServiceRequestRepository
             ...data,
             status: "SUBMITTED" as const,
             transport: data.transport as TransportOption,
-            equipmentCategory: data.equipmentCategory as any,
-            requestedDurationType: data.requestedDurationType as any,
-            rateType: data.rateType as any,
+            equipmentCategory: data.equipmentCategory as EquipmentCategory,
+            requestedDurationType: data.requestedDurationType as DurationType,
+            rateType: data.rateType as RateType,
           },
           include: {
             user: {
@@ -542,13 +545,14 @@ export class ServiceRequestRepository
     }
 
     if (filters.startDateFrom || filters.startDateTo) {
-      additionalFilters.startDate = {} as any
+      const dateFilter: { gte?: Date; lte?: Date } = {}
       if (filters.startDateFrom) {
-        (additionalFilters.startDate as any).gte = filters.startDateFrom
+        dateFilter.gte = filters.startDateFrom
       }
       if (filters.startDateTo) {
-        (additionalFilters.startDate as any).lte = filters.startDateTo
+        dateFilter.lte = filters.startDateTo
       }
+      additionalFilters.startDate = dateFilter
     }
 
     // Combine base where with additional filters

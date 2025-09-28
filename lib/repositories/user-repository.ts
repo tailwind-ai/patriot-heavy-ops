@@ -277,7 +277,12 @@ export class UserRepository
   ): Promise<RepositoryResult<User[]>> {
     return this.handleAsync(
       () => {
-        const whereClause: any = {
+        const whereClause: {
+          role: UserRole;
+          isAvailable: boolean;
+          preferredLocations?: { hasSome: string[] };
+          certifications?: { hasSome: string[] };
+        } = {
           role: "OPERATOR" as UserRole,
           isAvailable: true,
         }

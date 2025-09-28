@@ -32,7 +32,7 @@ describe("AnaAnalyzer - Vercel Deployment Analysis", () => {
         description: expect.stringContaining("build timed out"),
         priority: expected.priorities[0],
         rootCause: expected.rootCauses[0],
-        suggestedFix: (expected as any).suggestedFixes?.[0],
+        ...(expected.suggestedFixes?.[0] && { suggestedFix: expected.suggestedFixes[0] }),
       })
     })
 
@@ -49,7 +49,7 @@ describe("AnaAnalyzer - Vercel Deployment Analysis", () => {
         description: expect.stringContaining("memory"),
         priority: expected.priorities[0],
         rootCause: expected.rootCauses[0],
-        suggestedFix: (expected as any).suggestedFixes?.[0],
+        ...(expected.suggestedFixes?.[0] && { suggestedFix: expected.suggestedFixes[0] }),
       })
     })
 
@@ -66,7 +66,7 @@ describe("AnaAnalyzer - Vercel Deployment Analysis", () => {
         description: expect.stringContaining("DATABASE_URL"),
         priority: expected.priorities[0],
         rootCause: expected.rootCauses[0],
-        suggestedFix: (expected as any).suggestedFixes?.[0],
+        ...(expected.suggestedFixes?.[0] && { suggestedFix: expected.suggestedFixes[0] }),
       })
     })
 
@@ -85,7 +85,7 @@ describe("AnaAnalyzer - Vercel Deployment Analysis", () => {
         description: expect.stringContaining("dependency"),
         priority: expected.priorities[0],
         rootCause: expected.rootCauses[0],
-        suggestedFix: (expected as any).suggestedFixes?.[0],
+        ...(expected.suggestedFixes?.[0] && { suggestedFix: expected.suggestedFixes[0] }),
       })
     })
 
@@ -102,7 +102,7 @@ describe("AnaAnalyzer - Vercel Deployment Analysis", () => {
         description: expect.stringContaining("MissingComponent"),
         priority: expected.priorities[0],
         rootCause: expected.rootCauses[0],
-        suggestedFix: (expected as any).suggestedFixes?.[0],
+        ...(expected.suggestedFixes?.[0] && { suggestedFix: expected.suggestedFixes[0] }),
       })
     })
 
@@ -119,7 +119,7 @@ describe("AnaAnalyzer - Vercel Deployment Analysis", () => {
         description: expect.stringContaining("52.1 MB"),
         priority: expected.priorities[0],
         rootCause: expected.rootCauses[0],
-        suggestedFix: (expected as any).suggestedFixes?.[0],
+        ...(expected.suggestedFixes?.[0] && { suggestedFix: expected.suggestedFixes[0] }),
       })
     })
 
@@ -136,7 +136,7 @@ describe("AnaAnalyzer - Vercel Deployment Analysis", () => {
         description: expect.stringContaining("/products/[id]"),
         priority: expected.priorities[0],
         rootCause: expected.rootCauses[0],
-        suggestedFix: (expected as any).suggestedFixes?.[0],
+        ...(expected.suggestedFixes?.[0] && { suggestedFix: expected.suggestedFixes[0] }),
       })
     })
 
@@ -153,7 +153,7 @@ describe("AnaAnalyzer - Vercel Deployment Analysis", () => {
         description: expect.stringContaining("database"),
         priority: expected.priorities[0],
         rootCause: expected.rootCauses[0],
-        suggestedFix: (expected as any).suggestedFixes?.[0],
+        ...(expected.suggestedFixes?.[0] && { suggestedFix: expected.suggestedFixes[0] }),
       })
     })
 
@@ -169,8 +169,8 @@ describe("AnaAnalyzer - Vercel Deployment Analysis", () => {
       expect(result.issues[0]).toMatchObject({
         description: expect.stringContaining("pages/api/users.ts"),
         priority: expected.priorities[0],
-        files: (expected as any).files?.[0] ? [(expected as any).files[0]] : undefined,
-        lineNumbers: (expected as any).lineNumbers?.[0] ? [(expected as any).lineNumbers[0]] : undefined,
+        ...(expected.files?.[0] && { files: [expected.files[0]] }),
+        ...(expected.lineNumbers?.[0] && { lineNumbers: [expected.lineNumbers[0]] }),
         rootCause: expected.rootCauses[0],
       })
     })
@@ -187,9 +187,9 @@ describe("AnaAnalyzer - Vercel Deployment Analysis", () => {
       expect(result.issues[0]).toMatchObject({
         description: expect.stringContaining("Edge Runtime"),
         priority: expected.priorities[0],
-        files: (expected as any).files?.[0] ? [(expected as any).files[0]] : undefined,
+        ...(expected.files?.[0] && { files: [expected.files[0]] }),
         rootCause: expected.rootCauses[0],
-        suggestedFix: (expected as any).suggestedFixes?.[0],
+        ...(expected.suggestedFixes?.[0] && { suggestedFix: expected.suggestedFixes[0] }),
       })
     })
 

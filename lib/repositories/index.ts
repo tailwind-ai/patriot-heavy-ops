@@ -23,7 +23,6 @@ export {
 export { 
   ServiceRequestRepository,
   type ServiceRequestCreateInput,
-  type ServiceRequestUpdateInput,
   type ServiceRequestWithUser
 } from "./service-request-repository"
 
@@ -152,6 +151,13 @@ export class RepositoryFactory {
 import type { RepositoryOptions } from "./base-repository"
 import { ServiceRequestRepository } from "./service-request-repository"
 import { UserRepository } from "./user-repository"
+import type { 
+  ServiceRequestCreateInput
+} from "./service-request-repository"
+import type { 
+  UserCreateInput, 
+  UserUpdateInput 
+} from "./user-repository"
 
 /**
  * Convenience functions for common repository operations
