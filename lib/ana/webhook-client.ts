@@ -570,7 +570,9 @@ export function createAnaWebhookPayload(
     payload.analysisMode = enhancedMetadata.analysisMode
     payload.workflowContext = enhancedMetadata.workflowContext
     payload.jobMetadata = enhancedMetadata.jobMetadata
-    payload.performanceMetrics = enhancedMetadata.performanceMetrics
+    if (enhancedMetadata.performanceMetrics) {
+      payload.performanceMetrics = enhancedMetadata.performanceMetrics
+    }
   } else {
     // Provide defaults for backward compatibility
     payload.analysisMode = "full"

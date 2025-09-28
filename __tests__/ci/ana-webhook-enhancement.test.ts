@@ -9,7 +9,10 @@
  * - Backward compatibility is maintained
  */
 
-import { AnaWebhookClient, createAnaWebhookPayload } from "../../lib/ana/webhook-client"
+import {
+  AnaWebhookClient,
+  createAnaWebhookPayload,
+} from "../../lib/ana/webhook-client"
 import { createAnaResults, createAnalyzedFailure } from "../../lib/ana/types"
 
 // Mock fetch for webhook testing
@@ -20,10 +23,13 @@ describe("Ana Webhook Enhancement (Issue #303 Phase 4)", () => {
   const mockFetch = global.fetch as jest.MockedFunction<typeof fetch>
 
   beforeEach(() => {
-    webhookClient = new AnaWebhookClient("http://localhost:3001/webhook/ana-failures", {
-      timeout: 30000,
-      retries: 2,
-    })
+    webhookClient = new AnaWebhookClient(
+      "http://localhost:3001/webhook/ana-failures",
+      {
+        timeout: 30000,
+        retries: 2,
+      }
+    )
     mockFetch.mockClear()
   })
 
@@ -43,7 +49,10 @@ describe("Ana Webhook Enhancement (Issue #303 Phase 4)", () => {
         }),
       ]
 
-      const anaResults = createAnaResults(failures, "PR validation failed with 1 failed job (light analysis)")
+      const anaResults = createAnaResults(
+        failures,
+        "PR validation failed with 1 failed job (light analysis)"
+      )
 
       const payload = createAnaWebhookPayload(anaResults, "12345", 123, {
         analysisMode: "light",
@@ -74,7 +83,7 @@ describe("Ana Webhook Enhancement (Issue #303 Phase 4)", () => {
 
       // Should include analysis mode
       expect(payload.analysisMode).toBe("light")
-      
+
       // Should include workflow context
       expect(payload.workflowContext).toEqual({
         type: "pr",
@@ -86,7 +95,7 @@ describe("Ana Webhook Enhancement (Issue #303 Phase 4)", () => {
 
       // Should include job metadata
       expect(payload.jobMetadata).toHaveLength(1)
-      expect(payload.jobMetadata[0]).toEqual({
+      expect(payload.jobMetadata?.[0]).toEqual({
         jobName: "Fast Validation",
         jobId: "1",
         conclusion: "failure",
@@ -96,15 +105,16 @@ describe("Ana Webhook Enhancement (Issue #303 Phase 4)", () => {
 
       // Should include performance metrics
       expect(payload.performanceMetrics).toBeDefined()
-      expect(payload.performanceMetrics.totalAnalysisTime).toBeGreaterThan(0)
-      expect(payload.performanceMetrics.jobCount).toBe(1)
+      expect(payload.performanceMetrics?.totalAnalysisTime).toBeGreaterThan(0)
+      expect(payload.performanceMetrics?.jobCount).toBe(1)
     })
 
     it("should include comprehensive metadata for main branch analysis", () => {
       const failures = [
         createAnalyzedFailure({
           type: "ci_failure",
-          content: "Integration Tests: Test case failed: Authentication flow › should handle invalid credentials",
+          content:
+            "Integration Tests: Test case failed: Authentication flow › should handle invalid credentials",
           priority: "high",
           rootCause: "Jest test failure",
           impact: "Job 'Integration Tests' failed in workflow run 12346",
@@ -113,7 +123,8 @@ describe("Ana Webhook Enhancement (Issue #303 Phase 4)", () => {
         }),
         createAnalyzedFailure({
           type: "ci_failure",
-          content: "Coverage Analysis: Coverage threshold not met: Statements at 75% (required: 80%)",
+          content:
+            "Coverage Analysis: Coverage threshold not met: Statements at 75% (required: 80%)",
           priority: "medium",
           rootCause: "Coverage threshold failure",
           impact: "Job 'Coverage Analysis' failed in workflow run 12346",
@@ -122,7 +133,10 @@ describe("Ana Webhook Enhancement (Issue #303 Phase 4)", () => {
         }),
       ]
 
-      const anaResults = createAnaResults(failures, "Main branch comprehensive analysis: 2 failed jobs")
+      const anaResults = createAnaResults(
+        failures,
+        "Main branch comprehensive analysis: 2 failed jobs"
+      )
 
       const payload = createAnaWebhookPayload(anaResults, "12346", 124, {
         analysisMode: "full",
@@ -160,20 +174,28 @@ describe("Ana Webhook Enhancement (Issue #303 Phase 4)", () => {
 
       // Should include full analysis mode
       expect(payload.analysisMode).toBe("full")
-      
+
       // Should include main branch context
-      expect(payload.workflowContext.type).toBe("main")
-      expect(payload.workflowContext.isMainBranch).toBe(true)
+      expect(payload.workflowContext?.type).toBe("main")
+      expect(payload.workflowContext?.isMainBranch).toBe(true)
 
       // Should include multiple job metadata
       expect(payload.jobMetadata).toHaveLength(2)
-      expect(payload.jobMetadata.map(j => j.jobName)).toContain("Integration Tests")
-      expect(payload.jobMetadata.map(j => j.jobName)).toContain("Coverage Analysis")
+      expect(payload.jobMetadata?.map((j) => j.jobName)).toContain(
+        "Integration Tests"
+      )
+      expect(payload.jobMetadata?.map((j) => j.jobName)).toContain(
+        "Coverage Analysis"
+      )
 
       // Should include comprehensive performance metrics
-      expect(payload.performanceMetrics.totalAnalysisTime).toBeGreaterThan(4000) // Sum of job times
-      expect(payload.performanceMetrics.jobCount).toBe(2)
-      expect(payload.performanceMetrics.averageJobAnalysisTime).toBeGreaterThan(2000)
+      expect(payload.performanceMetrics?.totalAnalysisTime).toBeGreaterThan(
+        4000
+      ) // Sum of job times
+      expect(payload.performanceMetrics?.jobCount).toBe(2)
+      expect(
+        payload.performanceMetrics?.averageJobAnalysisTime
+      ).toBeGreaterThan(2000)
     })
   })
 
@@ -186,7 +208,8 @@ describe("Ana Webhook Enhancement (Issue #303 Phase 4)", () => {
           priority: "critical",
           rootCause: "Build process failure",
           impact: "Job 'Fast Validation' failed",
-          suggestedFix: "Check build configuration and resolve compilation errors",
+          suggestedFix:
+            "Check build configuration and resolve compilation errors",
           relatedPR: "#125",
         }),
       ]
@@ -230,7 +253,7 @@ describe("Ana Webhook Enhancement (Issue #303 Phase 4)", () => {
       })
 
       // Should meet performance requirements for light analysis
-      expect(payload.performanceMetrics.totalAnalysisTime).toBeLessThan(30000) // <30 seconds for PR
+      expect(payload.performanceMetrics?.totalAnalysisTime).toBeLessThan(30000) // <30 seconds for PR
     })
 
     it("should track performance for full analysis mode", () => {
@@ -276,8 +299,10 @@ describe("Ana Webhook Enhancement (Issue #303 Phase 4)", () => {
       })
 
       // Should allow longer analysis time for main branch
-      expect(payload.performanceMetrics.totalAnalysisTime).toBeGreaterThan(1000)
-      expect(payload.performanceMetrics.totalAnalysisTime).toBeLessThan(60000) // Still reasonable
+      expect(payload.performanceMetrics?.totalAnalysisTime).toBeGreaterThan(
+        1000
+      )
+      expect(payload.performanceMetrics?.totalAnalysisTime).toBeLessThan(60000) // Still reasonable
     })
   })
 
@@ -285,11 +310,12 @@ describe("Ana Webhook Enhancement (Issue #303 Phase 4)", () => {
     it("should send enhanced payload to Tod webhook", async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        text: async () => JSON.stringify({
-          success: true,
-          message: "Analysis received",
-          todosCreated: 2,
-        }),
+        text: async () =>
+          JSON.stringify({
+            success: true,
+            message: "Analysis received",
+            todosCreated: 2,
+          }),
         json: async () => ({
           success: true,
           message: "Analysis received",
@@ -332,7 +358,9 @@ describe("Ana Webhook Enhancement (Issue #303 Phase 4)", () => {
       const result = await webhookClient.sendToTod(payload)
 
       expect(result.success).toBe(true)
-      expect(result.data?.todosCreated).toBe(2)
+      if (result.success) {
+        expect(result.data?.todosCreated).toBe(2)
+      }
       expect(mockFetch).toHaveBeenCalledWith(
         "http://localhost:3001/webhook/ana-failures",
         expect.objectContaining({
@@ -346,7 +374,9 @@ describe("Ana Webhook Enhancement (Issue #303 Phase 4)", () => {
     })
 
     it("should handle webhook errors gracefully", async () => {
-      mockFetch.mockRejectedValueOnce(new Error("HTTP 500: Internal Server Error"))
+      mockFetch.mockRejectedValueOnce(
+        new Error("HTTP 500: Internal Server Error")
+      )
 
       const payload = {
         workflowRunId: "12350",
@@ -375,7 +405,9 @@ describe("Ana Webhook Enhancement (Issue #303 Phase 4)", () => {
       const result = await webhookClient.sendToTod(payload)
 
       expect(result.success).toBe(false)
-      expect(result.error).toBeDefined()
+      if (!result.success) {
+        expect(result.error).toBeDefined()
+      }
     })
   })
 
@@ -415,10 +447,11 @@ describe("Ana Webhook Enhancement (Issue #303 Phase 4)", () => {
     it("should work with existing Tod webhook endpoint", async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        text: async () => JSON.stringify({
-          success: true,
-          message: "Legacy format accepted",
-        }),
+        text: async () =>
+          JSON.stringify({
+            success: true,
+            message: "Legacy format accepted",
+          }),
         json: async () => ({
           success: true,
           message: "Legacy format accepted",
@@ -484,8 +517,8 @@ describe("Ana Webhook Enhancement (Issue #303 Phase 4)", () => {
       })
 
       expect(payload.analysisMode).toBe("light")
-      expect(payload.workflowContext.isPR).toBe(true)
-      expect(payload.jobMetadata[0].priority).toBe("critical")
+      expect(payload.workflowContext?.isPR).toBe(true)
+      expect(payload.jobMetadata?.[0]?.priority).toBe("critical")
     })
 
     it("should include full analysis metadata", () => {
@@ -524,8 +557,8 @@ describe("Ana Webhook Enhancement (Issue #303 Phase 4)", () => {
       })
 
       expect(payload.analysisMode).toBe("full")
-      expect(payload.workflowContext.isMainBranch).toBe(true)
-      expect(payload.jobMetadata[0].analysisTime).toBeGreaterThan(1000)
+      expect(payload.workflowContext?.isMainBranch).toBe(true)
+      expect(payload.jobMetadata?.[0]?.analysisTime).toBeGreaterThan(1000)
     })
   })
 })

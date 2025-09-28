@@ -345,7 +345,7 @@ export class AnaAnalyzer {
         analysisMode,
         workflowContext,
         jobMetadata: jobMetadata || [],
-        performanceMetrics,
+        ...(performanceMetrics && { performanceMetrics }),
       } : undefined
 
       const payload = createAnaWebhookPayload(
