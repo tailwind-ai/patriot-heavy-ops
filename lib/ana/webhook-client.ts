@@ -338,11 +338,7 @@ export async function batchSendFailures(
           error = String(result.reason)
         } else {
           const webhookResult = result.value
-          if (webhookResult.success) {
-            error = "Unknown error"
-          } else {
-            error = (webhookResult as { success: false; error: string }).error
-          }
+          error = webhookResult.success ? "Unknown error" : webhookResult.error
         }
         errors.push(error)
       }
