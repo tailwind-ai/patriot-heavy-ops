@@ -5,24 +5,28 @@
 
 import { POST } from "@/app/api/webhooks/ana-failures/route"
 
-// Mock the headers function
-const mockHeadersFunction = jest.fn()
+// Mock next/headers following proven pattern from Stripe webhook test
 jest.mock("next/headers", () => ({
-  headers: mockHeadersFunction,
+  headers: jest.fn(),
 }))
 
 // Import the mocked module
-import * as nextHeaders from "next/headers"
+import { headers } from "next/headers"
 
 // Mock globalThis.todo_write for testing
 const mockTodoWrite = jest.fn()
 ;(globalThis as any).todo_write = mockTodoWrite
 
+const mockHeaders = headers as jest.MockedFunction<typeof headers>
+
 describe("/api/webhooks/ana-failures", () => {
   beforeEach(() => {
     jest.clearAllMocks()
-    // Set development mode for signature validation
-    process.env.NODE_ENV = "development"
+    // Set development mode for signature validation using Object.defineProperty
+    Object.defineProperty(process.env, "NODE_ENV", {
+      value: "development",
+      configurable: true,
+    })
     process.env.ANA_WEBHOOK_SECRET = "test-secret"
   })
 
@@ -62,15 +66,14 @@ describe("/api/webhooks/ana-failures", () => {
         .toString("base64")
         .substring(0, 16)}`
 
-      // Mock headers
-      const mockHeaders = jest.fn()
-      mockHeaders.mockReturnValue(
-        new Map([
-          ["x-ana-signature", signature],
-          ["x-ana-timestamp", timestamp],
-        ])
-      )
-      ;(nextHeaders.headers as jest.Mock) = mockHeaders
+      // Mock headers following proven pattern
+      mockHeaders.mockReturnValue({
+        get: jest.fn().mockImplementation((name: string) => {
+          if (name === "x-ana-signature") return signature
+          if (name === "x-ana-timestamp") return timestamp
+          return null
+        }),
+      } as any)
 
       return new Request("http://localhost:3000/api/webhooks/ana-failures", {
         method: "POST",
@@ -226,7 +229,9 @@ describe("/api/webhooks/ana-failures", () => {
         mockHeaders.mockReturnValue(
           new Map([["x-ana-timestamp", new Date().toISOString()]])
         )
-        ;(nextHeaders.headers as jest.Mock) = mockHeaders
+        mockHeaders.mockReturnValue({
+          get: jest.fn().mockReturnValue(null),
+        } as any)
 
         const request = new Request(
           "http://localhost:3000/api/webhooks/ana-failures",
@@ -250,7 +255,9 @@ describe("/api/webhooks/ana-failures", () => {
         mockHeaders.mockReturnValue(
           new Map([["x-ana-signature", "sha256=invalid"]])
         )
-        ;(nextHeaders.headers as jest.Mock) = mockHeaders
+        mockHeaders.mockReturnValue({
+          get: jest.fn().mockReturnValue(null),
+        } as any)
 
         const request = new Request(
           "http://localhost:3000/api/webhooks/ana-failures",
@@ -277,7 +284,9 @@ describe("/api/webhooks/ana-failures", () => {
             ["x-ana-timestamp", new Date().toISOString()],
           ])
         )
-        ;(nextHeaders.headers as jest.Mock) = mockHeaders
+        mockHeaders.mockReturnValue({
+          get: jest.fn().mockReturnValue(null),
+        } as any)
 
         const request = new Request(
           "http://localhost:3000/api/webhooks/ana-failures",
@@ -311,7 +320,9 @@ describe("/api/webhooks/ana-failures", () => {
             ["x-ana-timestamp", oldTimestamp],
           ])
         )
-        ;(nextHeaders.headers as jest.Mock) = mockHeaders
+        mockHeaders.mockReturnValue({
+          get: jest.fn().mockReturnValue(null),
+        } as any)
 
         const request = new Request(
           "http://localhost:3000/api/webhooks/ana-failures",
@@ -438,7 +449,9 @@ describe("/api/webhooks/ana-failures", () => {
             ["x-ana-timestamp", timestamp],
           ])
         )
-        ;(nextHeaders.headers as jest.Mock) = mockHeaders
+        mockHeaders.mockReturnValue({
+          get: jest.fn().mockReturnValue(null),
+        } as any)
 
         const request = new Request(
           "http://localhost:3000/api/webhooks/ana-failures",

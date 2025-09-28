@@ -25,7 +25,10 @@ describe("Ana Webhook Client Issue #282", () => {
   beforeEach(() => {
     jest.clearAllMocks()
     client = new AnaWebhookClient(testEndpoint, { timeout: 5000, retries: 1 })
-    process.env.NODE_ENV = "development"
+    Object.defineProperty(process.env, 'NODE_ENV', {
+      value: 'development',
+      configurable: true
+    })
     process.env.ANA_WEBHOOK_SECRET = "test-secret"
   })
 
@@ -72,11 +75,13 @@ describe("Ana Webhook Client Issue #282", () => {
       const result = await client.sendToTod(validPayload)
 
       expect(result.success).toBe(true)
-      expect(result.data).toEqual({
-        success: true,
-        message: "Created 1 TODOs from Ana analysis",
-        todosCreated: 1,
-      })
+      if (result.success) {
+        expect(result.data).toEqual({
+          success: true,
+          message: "Created 1 TODOs from Ana analysis",
+          todosCreated: 1,
+        })
+      }
 
       // Verify fetch was called with correct parameters
       expect(mockFetch).toHaveBeenCalledWith(
@@ -106,7 +111,9 @@ describe("Ana Webhook Client Issue #282", () => {
       const result = await client.sendToTod(invalidPayload)
 
       expect(result.success).toBe(false)
-      expect(result.error).toContain("Invalid AnaWebhookPayload data")
+      if (!result.success) {
+        expect(result.error).toContain("Invalid AnaWebhookPayload data")
+      }
       expect(mockFetch).not.toHaveBeenCalled()
     })
 
@@ -122,7 +129,9 @@ describe("Ana Webhook Client Issue #282", () => {
       const result = await client.sendToTod(validPayload)
 
       expect(result.success).toBe(false)
-      expect(result.error).toContain("HTTP 500: Internal Server Error")
+      if (!result.success) {
+        expect(result.error).toContain("HTTP 500: Internal Server Error")
+      }
       // Should retry once (retries: 1)
       expect(mockFetch).toHaveBeenCalledTimes(2)
     })
@@ -141,8 +150,10 @@ describe("Ana Webhook Client Issue #282", () => {
       const result = await client.sendToTod(validPayload)
 
       expect(result.success).toBe(false)
-      expect(result.error).toContain("HTTP 400: Bad Request")
-      expect(result.error).toContain("Invalid payload format")
+      if (!result.success) {
+        expect(result.error).toContain("HTTP 400: Bad Request")
+        expect(result.error).toContain("Invalid payload format")
+      }
       // Should not retry on client errors
       expect(mockFetch).toHaveBeenCalledTimes(1)
     })
@@ -154,7 +165,9 @@ describe("Ana Webhook Client Issue #282", () => {
       const result = await client.sendToTod(validPayload)
 
       expect(result.success).toBe(false)
-      expect(result.error).toBe("Network error")
+      if (!result.success) {
+        expect(result.error).toBe("Network error")
+      }
       // Should retry once
       expect(mockFetch).toHaveBeenCalledTimes(2)
     })
@@ -167,7 +180,9 @@ describe("Ana Webhook Client Issue #282", () => {
       const result = await client.sendToTod(validPayload)
 
       expect(result.success).toBe(false)
-      expect(result.error).toContain("Request timeout after")
+      if (!result.success) {
+        expect(result.error).toContain("Request timeout after")
+      }
     })
 
     it("should include signature and timestamp headers", async () => {
@@ -198,7 +213,9 @@ describe("Ana Webhook Client Issue #282", () => {
       const result = await client.sendToTod(validPayload)
 
       expect(result.success).toBe(false)
-      expect(result.error).toContain("Empty response")
+      if (!result.success) {
+        expect(result.error).toContain("Empty response")
+      }
     })
 
     it("should handle malformed JSON response", async () => {
@@ -212,7 +229,9 @@ describe("Ana Webhook Client Issue #282", () => {
       const result = await client.sendToTod(validPayload)
 
       expect(result.success).toBe(false)
-      expect(result.error).toContain("Invalid JSON")
+      if (!result.success) {
+        expect(result.error).toContain("Invalid JSON")
+      }
     })
   })
 

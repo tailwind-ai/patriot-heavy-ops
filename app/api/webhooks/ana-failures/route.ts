@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server"
+import { NextResponse } from "next/server"
 import { headers } from "next/headers"
 
 /**
@@ -50,7 +50,7 @@ interface CursorTodoItem {
   }
 }
 
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   try {
     // Get headers for signature validation
     const headersList = await headers()
@@ -63,10 +63,7 @@ export async function POST(req: NextRequest) {
     // Validate signature and timestamp (Issue #282 security requirement)
     if (!validateSignature(signature, timestamp, body)) {
       console.error("❌ Invalid webhook signature from Ana")
-      return NextResponse.json(
-        { error: "Invalid signature" },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: "Invalid signature" }, { status: 401 })
     }
 
     // Parse payload
@@ -258,12 +255,16 @@ async function todo_write(params: {
   // This method will be available when running as a Cursor Background Agent
   // For now, we'll simulate the behavior for development/testing
 
-  if (typeof (globalThis as Record<string, unknown>).todo_write === "function") {
+  if (
+    typeof (globalThis as Record<string, unknown>).todo_write === "function"
+  ) {
     // Running as Cursor Background Agent - use native API
-    await ((globalThis as Record<string, unknown>).todo_write as (params: {
-      merge: boolean
-      todos: CursorTodoItem[]
-    }) => Promise<void>)(params)
+    await (
+      (globalThis as Record<string, unknown>).todo_write as (params: {
+        merge: boolean
+        todos: CursorTodoItem[]
+      }) => Promise<void>
+    )(params)
   } else {
     // Development mode - simulate TODO creation
     console.log(`🔧 Development Mode: Simulating todo_write call`)
