@@ -48,7 +48,10 @@ export interface SafeUserWithAccounts extends SafeUser {
 /**
  * Minimal user info for role-based queries
  */
-export type UserRoleInfo = Pick<SafeUser, 'id' | 'name' | 'email' | 'role' | 'phone' | 'company' | 'createdAt'> & {
+export type UserRoleInfo = Pick<
+  SafeUser,
+  "id" | "name" | "email" | "role" | "phone" | "company" | "createdAt"
+> & {
   // Operator-specific fields (only present when role is OPERATOR, nullable from DB)
   militaryBranch?: string | null
   yearsOfService?: number | null
@@ -60,12 +63,25 @@ export type UserRoleInfo = Pick<SafeUser, 'id' | 'name' | 'email' | 'role' | 'ph
 /**
  * Minimal user info for email verification
  */
-export type UserEmailInfo = Pick<SafeUser, 'id' | 'name' | 'email' | 'emailVerified' | 'updatedAt'>
+export type UserEmailInfo = Pick<
+  SafeUser,
+  "id" | "name" | "email" | "emailVerified" | "updatedAt"
+>
 
 /**
  * Minimal operator info for availability updates
  */
-export type OperatorAvailabilityInfo = Pick<SafeUser, 'id' | 'name' | 'email' | 'role' | 'certifications' | 'preferredLocations' | 'isAvailable' | 'updatedAt'> & {
+export type OperatorAvailabilityInfo = Pick<
+  SafeUser,
+  | "id"
+  | "name"
+  | "email"
+  | "role"
+  | "certifications"
+  | "preferredLocations"
+  | "isAvailable"
+  | "updatedAt"
+> & {
   // Nullable operator fields from DB
   militaryBranch: string | null
   yearsOfService: number | null
@@ -259,7 +275,7 @@ export class UserRepository extends BaseRepository {
   ): Promise<RepositoryResult<SafeUser[]>> {
     return this.handleAsync(
       () => {
-        let query = {
+        let query: any = {
           select: {
             id: true,
             name: true,
@@ -339,7 +355,7 @@ export class UserRepository extends BaseRepository {
           }
         }
 
-        let query = {
+        let query: any = {
           where: whereClause,
           select: {
             id: true,
@@ -729,7 +745,7 @@ export class UserRepository extends BaseRepository {
 
     return this.handleAsync(
       () => {
-        let query = {
+        let query: any = {
           where: { role },
           select: {
             id: true,
