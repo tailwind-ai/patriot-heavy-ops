@@ -157,7 +157,7 @@ export function createAnalyzedFailure(
     data.id ||
     `${data.type.replace("_", "-")}-${Date.now()}-${Math.random()
       .toString(36)
-      .substr(2, 9)}`
+      .substring(2, 11)}`
 
   return {
     ...data,
@@ -405,7 +405,7 @@ export function extractTimestamp(logContent: string): string | undefined {
  */
 export function generateFailureId(type: FailureType, suffix?: string): string {
   const timestamp = Date.now()
-  const random = Math.random().toString(36).substr(2, 9)
+  const random = Math.random().toString(36).substring(2, 11)
   const typePart = type.replace("_", "-")
   const suffixPart = suffix ? `-${suffix}` : ""
 

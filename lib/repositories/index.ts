@@ -23,6 +23,7 @@ export {
 export { 
   ServiceRequestRepository,
   type ServiceRequestCreateInput,
+  type ServiceRequestUpdateInput,
   type ServiceRequestWithUser
 } from "./service-request-repository"
 
@@ -152,7 +153,9 @@ import type { RepositoryOptions } from "./base-repository"
 import { ServiceRequestRepository } from "./service-request-repository"
 import { UserRepository } from "./user-repository"
 import type { 
-  ServiceRequestCreateInput
+  ServiceRequestCreateInput,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  ServiceRequestUpdateInput
 } from "./service-request-repository"
 import type { 
   UserCreateInput, 
