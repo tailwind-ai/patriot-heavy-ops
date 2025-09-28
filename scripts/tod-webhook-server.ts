@@ -8,7 +8,7 @@
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const express = require("express")
 import type { Request, Response, NextFunction, Application } from "express"
-// import { createHash, timingSafeEqual } from 'crypto' // TODO: Implement signature validation
+import { createHmac, timingSafeEqual } from "crypto"
 
 // Ana → Tod Data Contract (from Issue #282)
 export interface AnaWebhookPayload {
@@ -172,7 +172,7 @@ class TodWebhookServer {
     // For development mode, use simple validation
     if (process.env.NODE_ENV === "development") {
       console.log("⚠️  Using development signature validation")
-      
+
       if (!signature || !timestamp) {
         console.log("❌ Missing signature or timestamp headers")
         return false
@@ -180,10 +180,14 @@ class TodWebhookServer {
 
       // Simple validation for development
       const secret = process.env.ANA_WEBHOOK_SECRET || "dev-secret-key"
-      const expectedSignature = `sha256=dev-${Buffer.from(body + secret).toString('base64').substring(0, 16)}`
-      
+      const expectedSignature = `sha256=dev-${Buffer.from(body + secret)
+        .toString("base64")
+        .substring(0, 16)}`
+
       if (signature !== expectedSignature) {
-        console.log(`❌ Signature mismatch. Expected: ${expectedSignature}, Got: ${signature}`)
+        console.log(
+          `❌ Signature mismatch. Expected: ${expectedSignature}, Got: ${signature}`
+        )
         return false
       }
 
@@ -200,19 +204,64 @@ class TodWebhookServer {
       return true
     }
 
-    // TODO: Implement proper HMAC-SHA256 signature validation for production
-    // const crypto = require('crypto')
-    // const secret = process.env.ANA_WEBHOOK_SECRET
-    // if (!secret) return false
-    // 
-    // const expectedSignature = crypto
-    //   .createHmac('sha256', secret)
-    //   .update(body)
-    //   .digest('hex')
-    // 
-    // return signature === `sha256=${expectedSignature}`
+    // Production HMAC-SHA256 signature validation
+    console.log("🔒 Using production HMAC-SHA256 signature validation")
 
-    console.log("⚠️  Production signature validation not implemented")
+    if (!signature || !timestamp) {
+      console.log("❌ Missing signature or timestamp headers")
+      return false
+    }
+
+    const secret = process.env.ANA_WEBHOOK_SECRET
+    if (!secret) {
+      console.log("❌ ANA_WEBHOOK_SECRET not configured")
+      return false
+    }
+
+    // Verify signature format
+    if (!signature.startsWith("sha256=")) {
+      console.log("❌ Invalid signature format")
+      return false
+    }
+
+    // Extract signature hash
+    const providedSignature = signature.substring(7) // Remove 'sha256=' prefix
+
+    // Generate expected signature
+    const expectedSignature = createHmac("sha256", secret)
+      .update(body)
+      .digest("hex")
+
+    // Use timing-safe comparison to prevent timing attacks
+    const providedBuffer = Buffer.from(providedSignature, "hex")
+    const expectedBuffer = Buffer.from(expectedSignature, "hex")
+
+    if (providedBuffer.length !== expectedBuffer.length) {
+      console.log("❌ Signature length mismatch")
+      return false
+    }
+
+    if (!timingSafeEqual(providedBuffer, expectedBuffer)) {
+      console.log("❌ Signature verification failed")
+      return false
+    }
+
+    // Check timestamp is recent (within 5 minutes)
+    const timestampMs = new Date(timestamp).getTime()
+    const now = Date.now()
+    const fiveMinutes = 5 * 60 * 1000
+
+    if (isNaN(timestampMs)) {
+      console.log("❌ Invalid timestamp format")
+      return false
+    }
+
+    if (Math.abs(now - timestampMs) > fiveMinutes) {
+      console.log("❌ Timestamp too old or invalid")
+      return false
+    }
+
+    console.log("✅ Signature and timestamp validation passed")
     return true
   }
 
