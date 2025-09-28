@@ -1,10 +1,11 @@
 name: CI Tests (Backup)
 
 on:
-  pull_request:
-    branches: [main, dev]
-  push:
-    branches: [main]
+  # Disabled - this is a backup workflow for rollback purposes only
+  # pull_request:
+  #   branches: [main, dev]
+  # push:
+  #   branches: [main]
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
