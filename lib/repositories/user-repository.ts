@@ -3,13 +3,13 @@
  *
  * Handles all data operations for users including authentication, profiles, and operator management.
  * Abstracts Prisma operations behind a mobile-compatible interface.
- * 
+ *
  * SECURITY IMPLEMENTATION (GitHub Issue #292):
  * - All methods use explicit `select` statements to prevent password field exposure
  * - SafeUser and SafeUserWithAccounts types ensure type safety without password field
  * - Following .cursorrules.md Platform Mode standards for security and type safety
  * - Comprehensive security tests prevent regression of password exposure vulnerability
- * 
+ *
  * SECURE QUERY PATTERNS:
  * - Use `select` instead of `include` for user queries
  * - Always exclude password field from select statements
@@ -21,7 +21,6 @@ import { PrismaClient } from "@prisma/client"
 import type { User, UserRole } from "@prisma/client"
 import {
   BaseRepository,
-  CrudRepository,
   FilterOptions,
   PaginationOptions,
   RepositoryResult,
@@ -34,7 +33,7 @@ import {
  * SafeUser type - User without password field for security
  * Following .cursorrules.md Platform Mode type safety standards
  */
-export type SafeUser = Omit<User, 'password'>
+export type SafeUser = Omit<User, "password">
 
 /**
  * SafeUser with accounts relation
@@ -104,12 +103,11 @@ export interface UserFilters {
 
 /**
  * User Repository Implementation
- * 
+ *
  * SECURITY NOTE: This repository implements secure patterns by returning SafeUser types
  * instead of full User types to prevent password field exposure (Issue #292)
  */
-export class UserRepository extends BaseRepository
-{
+export class UserRepository extends BaseRepository {
   constructor(db: PrismaClient, options?: RepositoryOptions) {
     super(db, "UserRepository", options)
   }
@@ -119,7 +117,9 @@ export class UserRepository extends BaseRepository
    * SECURITY FIX: Uses select instead of include to prevent password exposure
    * Returns SafeUserWithAccounts type following .cursorrules.md Platform Mode standards
    */
-  async findById(id: string): Promise<RepositoryResult<SafeUserWithAccounts | null>> {
+  async findById(
+    id: string
+  ): Promise<RepositoryResult<SafeUserWithAccounts | null>> {
     const validation = this.validateRequired({ id }, ["id"])
     if (!validation.success) {
       const errorMessage =
@@ -173,7 +173,9 @@ export class UserRepository extends BaseRepository
    * SECURITY FIX: Uses select instead of include to prevent password exposure
    * Returns SafeUserWithAccounts type following .cursorrules.md Platform Mode standards
    */
-  async findByEmail(email: string): Promise<RepositoryResult<SafeUserWithAccounts | null>> {
+  async findByEmail(
+    email: string
+  ): Promise<RepositoryResult<SafeUserWithAccounts | null>> {
     const validation = this.validateRequired({ email }, ["email"])
     if (!validation.success) {
       const errorMessage =
@@ -231,7 +233,13 @@ export class UserRepository extends BaseRepository
   ): Promise<RepositoryResult<SafeUser[]>> {
     return this.handleAsync(
       () => {
-        let query: any = {
+        let query: {
+          select: Record<string, boolean>
+          orderBy: Record<string, string>
+          where?: Record<string, unknown>
+          skip?: number
+          take?: number
+        } = {
           select: {
             id: true,
             name: true,
@@ -275,7 +283,12 @@ export class UserRepository extends BaseRepository
   ): Promise<RepositoryResult<SafeUser[]>> {
     return this.handleAsync(
       () => {
-        const whereClause: any = {
+        const whereClause: {
+          role: string
+          isAvailable: boolean
+          preferredLocations?: { hasSome: string[] }
+          certifications?: { hasSome: string[] }
+        } = {
           role: "OPERATOR",
           isAvailable: true,
         }
@@ -297,7 +310,13 @@ export class UserRepository extends BaseRepository
           }
         }
 
-        let query: any = {
+        let query: {
+          where: Record<string, unknown>
+          select: Record<string, boolean>
+          orderBy: Record<string, string>
+          skip?: number
+          take?: number
+        } = {
           where: whereClause,
           select: {
             id: true,
@@ -465,7 +484,7 @@ export class UserRepository extends BaseRepository
   async count(filters?: FilterOptions): Promise<RepositoryResult<number>> {
     return this.handleAsync(
       () => {
-        let query: any = {}
+        let query: { where?: Record<string, unknown> } = {}
 
         if (filters) {
           query = this.applyFilters(query, filters)
@@ -686,7 +705,13 @@ export class UserRepository extends BaseRepository
 
     return this.handleAsync(
       () => {
-        let query: any = {
+        let query: {
+          where: { role: UserRole }
+          select: Record<string, boolean>
+          orderBy: Record<string, string>
+          skip?: number
+          take?: number
+        } = {
           where: { role },
           select: {
             id: true,
