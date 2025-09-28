@@ -275,7 +275,7 @@ export class AnaAnalyzer {
   }
 
   /**
-   * Analyze job logs to extract failure information
+   * Analyze job logs to extract failure information with job-specific prioritization (Issue #303)
    */
   private analyzeJobLogs(
     jobName: string,
@@ -299,66 +299,151 @@ export class AnaAnalyzer {
       suggestedFix?: string
     }> = []
 
-    // Enhanced failure patterns with root cause and suggested fixes
-    const patterns = [
+    // Job-specific priority mapping (Issue #303 Phase 2)
+    const getJobSpecificPriority = (basePriority: "low" | "medium" | "high" | "critical"): "low" | "medium" | "high" | "critical" => {
+      // Fast Validation jobs get higher priority for quick feedback
+      if (jobName.toLowerCase().includes("fast validation")) {
+        if (basePriority === "high") return "critical"
+        if (basePriority === "medium") return "high"
+        return basePriority
+      }
+      
+      // Integration Tests get high priority
+      if (jobName.toLowerCase().includes("integration")) {
+        if (basePriority === "medium") return "high"
+        return basePriority
+      }
+      
+      // Coverage jobs get medium priority (not blocking)
+      if (jobName.toLowerCase().includes("coverage")) {
+        if (basePriority === "high") return "medium"
+        if (basePriority === "critical") return "medium"
+        return basePriority
+      }
+      
+      return basePriority
+    }
+
+    // Enhanced failure patterns with job-specific analysis - ordered by specificity
+    const patterns: Array<{
+      regex: RegExp
+      priority: "low" | "medium" | "high" | "critical"
+      extractFiles: boolean
+      extractLines: boolean
+      rootCause: string
+      suggestedFix: string
+      category: string
+    }> = [
+      // TypeScript errors - most specific first
       {
-        regex: /error\s+in\s+([^\s]+\.(ts|tsx|js|jsx)):(\d+):(\d+)/gi,
+        regex: /error\s+TS\d+:.*?Argument of type.*?\n.*?([^\s]+\.(ts|tsx|js|jsx)):(\d+):(\d+)/gi,
+        priority: "high" as const,
+        extractFiles: true,
+        extractLines: true,
+        rootCause: "TypeScript compilation error",
+        suggestedFix: "Fix TypeScript type mismatch in the specified file and line",
+        category: "typescript",
+      },
+      {
+        regex: /([^\s]+\.(ts|tsx|js|jsx)):(\d+):(\d+)/gi,
         priority: "high" as const,
         extractFiles: true,
         extractLines: true,
         rootCause: "TypeScript compilation error",
         suggestedFix: "Fix TypeScript errors in the specified file and line",
+        category: "typescript",
       },
+      // Test failures - specific patterns
       {
-        regex: /test\s+failed[:\s]+([^\n]+)/gi,
+        regex: /FAIL\s+([^\n]+)/gi,
         priority: "high" as const,
         extractFiles: false,
         extractLines: false,
         rootCause: "Jest test failure",
         suggestedFix: "Review and fix the failing test case",
+        category: "test",
       },
       {
-        regex: /build\s+failed[:\s]+([^\n]+)/gi,
+        regex: /● ([^●\n]+)/gi,
+        priority: "high" as const,
+        extractFiles: false,
+        extractLines: false,
+        rootCause: "Jest test failure",
+        suggestedFix: "Review and fix the failing test case",
+        category: "test",
+      },
+      // Build failures
+      {
+        regex: /npm run build failed/gi,
         priority: "critical" as const,
         extractFiles: false,
         extractLines: false,
         rootCause: "Build process failure",
         suggestedFix: "Check build configuration and resolve compilation errors",
+        category: "build",
       },
+      // ESLint errors
       {
-        regex: /lint\s+error[:\s]+([^\n]+)/gi,
+        regex: /ESLint found (\d+) errors?/gi,
         priority: "medium" as const,
         extractFiles: false,
         extractLines: false,
         rootCause: "ESLint error",
         suggestedFix: "Fix linting errors or update ESLint configuration",
+        category: "lint",
+      },
+      // Coverage failures - consolidated pattern
+      {
+        regex: /Coverage threshold not met[\s\S]*?(Statements|Branches|Functions|Lines):\s+(\d+)%\s+\(threshold:\s+(\d+)%\)/gi,
+        priority: "medium" as const,
+        extractFiles: false,
+        extractLines: false,
+        rootCause: "Coverage threshold failure",
+        suggestedFix: "Increase test coverage or adjust coverage thresholds",
+        category: "coverage",
       },
     ]
+
+    const foundCategories = new Set<string>()
 
     for (const pattern of patterns) {
       let match
       while ((match = pattern.regex.exec(logContent)) !== null) {
-        const description = match[1] || `Failure in ${jobName}`
+        // Skip if we already found an issue in this category (avoid duplicates)
+        if (foundCategories.has(pattern.category)) {
+          continue
+        }
+
+        const description = match[1] || match[0] || `Failure in ${jobName}`
         const files = pattern.extractFiles && match[1] ? [match[1]] : undefined
         const lineNumbers =
           pattern.extractLines && match[3] ? [parseInt(match[3])] : undefined
 
+        // Apply job-specific priority adjustment
+        const adjustedPriority = getJobSpecificPriority(pattern.priority)
+
         issues.push({
           description: `${jobName}: ${description}`,
-          priority: pattern.priority,
+          priority: adjustedPriority,
           files: files ?? undefined,
           lineNumbers: lineNumbers ?? undefined,
           rootCause: pattern.rootCause,
           suggestedFix: pattern.suggestedFix,
         })
+
+        foundCategories.add(pattern.category)
+        break // Only take the first match per pattern to avoid duplicates
       }
     }
 
-    // If no specific patterns found, create a general failure todo
+    // If no specific patterns found, create a general failure todo with job-specific priority
     if (issues.length === 0) {
+      const basePriority = "medium" as const
+      const adjustedPriority = getJobSpecificPriority(basePriority)
+      
       issues.push({
         description: `${jobName} failed - check logs for details`,
-        priority: "medium",
+        priority: adjustedPriority,
         rootCause: "Unknown failure in CI job",
         suggestedFix: "Review the full job logs to identify the root cause",
       })
