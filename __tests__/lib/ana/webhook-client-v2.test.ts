@@ -9,7 +9,6 @@ import {
 } from "@/lib/ana/webhook-client"
 import {
   type AnaWebhookPayload,
-  type AnaResults,
   createAnaResults,
   createAnalyzedFailure,
 } from "@/lib/ana/types"
@@ -20,14 +19,14 @@ global.fetch = mockFetch
 
 describe("Ana Webhook Client Issue #282", () => {
   let client: AnaWebhookClient
-  const testEndpoint = "http://localhost:3001/webhook/ana-failures"
+  const testEndpoint = "http://localhost:3000/api/webhooks/ana-failures"
 
   beforeEach(() => {
     jest.clearAllMocks()
     client = new AnaWebhookClient(testEndpoint, { timeout: 5000, retries: 1 })
-    Object.defineProperty(process.env, 'NODE_ENV', {
-      value: 'development',
-      configurable: true
+    Object.defineProperty(process.env, "NODE_ENV", {
+      value: "development",
+      configurable: true,
     })
     process.env.ANA_WEBHOOK_SECRET = "test-secret"
   })
@@ -141,9 +140,11 @@ describe("Ana Webhook Client Issue #282", () => {
         ok: false,
         status: 400,
         statusText: "Bad Request",
-        text: jest.fn().mockResolvedValue(
-          JSON.stringify({ error: "Invalid payload format" })
-        ),
+        text: jest
+          .fn()
+          .mockResolvedValue(
+            JSON.stringify({ error: "Invalid payload format" })
+          ),
       }
       mockFetch.mockResolvedValueOnce(mockClientErrorResponse)
 
@@ -337,8 +338,8 @@ describe("Ana Webhook Client Issue #282", () => {
       }
       mockFetch.mockResolvedValue(mockResponse)
 
-      const payload2 = { 
-        ...testPayload, 
+      const payload2 = {
+        ...testPayload,
         summary: "Different summary",
         failures: [
           createAnalyzedFailure({

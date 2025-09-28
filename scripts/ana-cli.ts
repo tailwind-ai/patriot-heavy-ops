@@ -49,7 +49,7 @@ class AnaAnalyzer {
     this.repo = "patriot-heavy-ops"
     
     // Initialize webhook client for Issue #282 integration
-    const webhookEndpoint = process.env.TOD_WEBHOOK_ENDPOINT || "http://localhost:3001/webhook/ana-failures"
+    const webhookEndpoint = process.env.TOD_WEBHOOK_ENDPOINT || "http://localhost:3000/api/webhooks/ana-failures"
     this.webhookClient = new AnaWebhookClient(webhookEndpoint, {
       timeout: 30000,
       retries: 2,
