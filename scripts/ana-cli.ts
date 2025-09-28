@@ -7,16 +7,16 @@
 
 import { Octokit } from "@octokit/rest"
 import { writeFileSync } from "fs"
-import { 
-  createAnalyzedFailure, 
-  createAnaResults, 
+import {
+  createAnalyzedFailure,
+  createAnaResults,
   type AnalyzedFailure,
   type AnaResults,
-  type FailureType 
+  type FailureType,
 } from "../lib/ana/types"
-import { 
-  AnaWebhookClient, 
-  createAnaWebhookPayload 
+import {
+  AnaWebhookClient,
+  createAnaWebhookPayload,
 } from "../lib/ana/webhook-client"
 
 // Legacy interface for backward compatibility with workflow output
@@ -47,14 +47,16 @@ export class AnaAnalyzer {
     })
     this.owner = "samuelhenry"
     this.repo = "patriot-heavy-ops"
-    
+
     // Initialize webhook client for Issue #282 integration
-    const webhookEndpoint = process.env.TOD_WEBHOOK_ENDPOINT || "http://localhost:3000/api/webhooks/ana-failures"
+    const webhookEndpoint =
+      process.env.TOD_WEBHOOK_ENDPOINT ||
+      "http://localhost:3000/api/webhooks/ana-failures"
     this.webhookClient = new AnaWebhookClient(webhookEndpoint, {
       timeout: 30000,
       retries: 2,
     })
-    
+
     console.log(`🔗 Ana webhook client initialized: ${webhookEndpoint}`)
   }
 
@@ -69,7 +71,7 @@ export class AnaAnalyzer {
 
     try {
       // Get workflow run details
-      const workflowRun = await this.octokit.rest.actions.getWorkflowRun({
+      await this.octokit.rest.actions.getWorkflowRun({
         owner: this.owner,
         repo: this.repo,
         run_id: parseInt(workflowRunId),
@@ -83,7 +85,9 @@ export class AnaAnalyzer {
       })
 
       const failures: AnalyzedFailure[] = []
-      const failedJobsCount = jobs.data.jobs.filter(job => job.conclusion === "failure").length
+      const failedJobsCount = jobs.data.jobs.filter(
+        (job) => job.conclusion === "failure"
+      ).length
       const summary = `CI Test workflow failed with ${failedJobsCount} failed jobs`
 
       // Analyze each failed job
@@ -93,13 +97,16 @@ export class AnaAnalyzer {
 
           try {
             // Get job logs
-            const logs = await this.octokit.rest.actions.downloadJobLogsForWorkflowRun({
-              owner: this.owner,
-              repo: this.repo,
-              job_id: job.id,
-            })
+            const logs =
+              await this.octokit.rest.actions.downloadJobLogsForWorkflowRun({
+                owner: this.owner,
+                repo: this.repo,
+                job_id: job.id,
+              })
 
-            const logContent = Buffer.from(logs.data as ArrayBuffer).toString("utf-8")
+            const logContent = Buffer.from(logs.data as ArrayBuffer).toString(
+              "utf-8"
+            )
             const analysis = this.analyzeJobLogs(job.name, logContent)
 
             // Create AnalyzedFailure objects for each identified issue
@@ -118,8 +125,11 @@ export class AnaAnalyzer {
               failures.push(failure)
             }
           } catch (logError) {
-            console.warn(`  ⚠️  Could not fetch logs for job ${job.name}:`, logError)
-            
+            console.warn(
+              `  ⚠️  Could not fetch logs for job ${job.name}:`,
+              logError
+            )
+
             // Create a generic failure for jobs we can't analyze
             const failure = createAnalyzedFailure({
               type: "ci_failure" as FailureType,
@@ -142,7 +152,7 @@ export class AnaAnalyzer {
 
       // Create legacy format for workflow compatibility
       const legacyResults: LegacyAnaResults = {
-        todos: failures.map(failure => ({
+        todos: failures.map((failure) => ({
           id: failure.id,
           content: failure.content,
           priority: failure.priority,
@@ -158,7 +168,9 @@ export class AnaAnalyzer {
 
       // Save results for workflow artifact
       writeFileSync("ana-results.json", JSON.stringify(legacyResults, null, 2))
-      console.log(`✅ Ana analyzed ${failures.length} failures and sent to Tod webhook`)
+      console.log(
+        `✅ Ana analyzed ${failures.length} failures and sent to Tod webhook`
+      )
 
       return legacyResults
     } catch (error) {
@@ -201,14 +213,16 @@ export class AnaAnalyzer {
           lineNumbers: issue.lineNumbers,
           rootCause: "Code quality issue identified by Cursor Bugbot",
           impact: "Code quality and maintainability concerns",
-          suggestedFix: issue.suggestedFix || "Review and address the Cursor Bugbot feedback",
+          suggestedFix:
+            issue.suggestedFix ||
+            "Review and address the Cursor Bugbot feedback",
           relatedPR: `#${prNumber}`,
         })
         failures.push(failure)
       }
 
       const summary = `Cursor Bugbot review analysis found ${failures.length} issues`
-      
+
       // Create AnaResults using the new format
       const anaResults = createAnaResults(failures, summary)
 
@@ -217,7 +231,7 @@ export class AnaAnalyzer {
 
       // Create legacy format for workflow compatibility
       const legacyResults: LegacyAnaResults = {
-        todos: failures.map(failure => ({
+        todos: failures.map((failure) => ({
           id: failure.id,
           content: failure.content,
           priority: failure.priority,
@@ -233,7 +247,9 @@ export class AnaAnalyzer {
 
       // Save results for workflow artifact
       writeFileSync("ana-results.json", JSON.stringify(legacyResults, null, 2))
-      console.log(`✅ Ana analyzed ${failures.length} Bugbot issues and sent to Tod webhook`)
+      console.log(
+        `✅ Ana analyzed ${failures.length} Bugbot issues and sent to Tod webhook`
+      )
 
       return legacyResults
     } catch (error) {
@@ -251,18 +267,30 @@ export class AnaAnalyzer {
     prNumber: number
   ): Promise<void> {
     try {
-      console.log(`🚀 Sending ${anaResults.failures.length} failures to Tod webhook...`)
-      
+      console.log(
+        `🚀 Sending ${anaResults.failures.length} failures to Tod webhook...`
+      )
+
       // Create webhook payload using Issue #282 format
-      const payload = createAnaWebhookPayload(anaResults, workflowRunId, prNumber)
-      
+      const payload = createAnaWebhookPayload(
+        anaResults,
+        workflowRunId,
+        prNumber
+      )
+
       // Send to Tod webhook
       const result = await this.webhookClient.sendToTod(payload)
-      
+
       if (result.success) {
-        console.log(`✅ Successfully sent to Tod webhook: ${result.data?.message || 'Success'}`)
+        console.log(
+          `✅ Successfully sent to Tod webhook: ${
+            result.data?.message || "Success"
+          }`
+        )
         if (result.data?.todosCreated) {
-          console.log(`   📋 Created ${result.data.todosCreated} TODOs in Cursor`)
+          console.log(
+            `   📋 Created ${result.data.todosCreated} TODOs in Cursor`
+          )
         }
       } else {
         console.error(`❌ Failed to send to Tod webhook: ${result.error}`)
@@ -275,7 +303,7 @@ export class AnaAnalyzer {
   }
 
   /**
-   * Analyze job logs to extract failure information
+   * Analyze job logs to extract failure information with job-specific prioritization (Issue #303)
    */
   private analyzeJobLogs(
     jobName: string,
@@ -299,66 +327,182 @@ export class AnaAnalyzer {
       suggestedFix?: string
     }> = []
 
-    // Enhanced failure patterns with root cause and suggested fixes
-    const patterns = [
+    // Job-specific priority mapping (Issue #303 Phase 2)
+    const getJobSpecificPriority = (
+      basePriority: "low" | "medium" | "high" | "critical"
+    ): "low" | "medium" | "high" | "critical" => {
+      // Fast Validation jobs get higher priority for quick feedback
+      if (jobName.toLowerCase().includes("fast validation")) {
+        if (basePriority === "high") return "critical"
+        if (basePriority === "medium") return "high"
+        return basePriority
+      }
+
+      // Integration Tests get high priority
+      if (jobName.toLowerCase().includes("integration")) {
+        if (basePriority === "medium") return "high"
+        return basePriority
+      }
+
+      // Coverage jobs get medium priority (not blocking)
+      if (jobName.toLowerCase().includes("coverage")) {
+        if (basePriority === "high") return "medium"
+        if (basePriority === "critical") return "medium"
+        return basePriority
+      }
+
+      return basePriority
+    }
+
+    // Enhanced failure patterns with job-specific analysis - ordered by specificity
+    const patterns: Array<{
+      regex: RegExp
+      priority: "low" | "medium" | "high" | "critical"
+      rootCause: string
+      suggestedFix: string
+      category: string
+      extractDescription: (match: RegExpExecArray) => string
+      extractFiles: (match: RegExpExecArray) => string[] | undefined
+      extractLines: (match: RegExpExecArray) => number[] | undefined
+    }> = [
+      // TypeScript errors - most specific first
       {
-        regex: /error\s+in\s+([^\s]+\.(ts|tsx|js|jsx)):(\d+):(\d+)/gi,
+        regex: /TypeScript error in ([^\s]+\.(ts|tsx|js|jsx)):(\d+):(\d+)/gi,
         priority: "high" as const,
-        extractFiles: true,
-        extractLines: true,
+        rootCause: "TypeScript compilation error",
+        suggestedFix: "Fix TypeScript error in the specified file and line",
+        category: "typescript",
+        extractDescription: (match) => `TypeScript error in ${match[1]}`,
+        extractFiles: (match) => (match[1] ? [match[1]] : undefined),
+        extractLines: (match) => (match[3] ? [parseInt(match[3])] : undefined), // Line number, not column
+      },
+      {
+        regex:
+          /error\s+TS\d+:\s*([^\n]+)[\s\S]*?([^\s]+\.(ts|tsx|js|jsx)):(\d+):(\d+)/gi,
+        priority: "high" as const,
+        rootCause: "TypeScript compilation error",
+        suggestedFix:
+          "Fix TypeScript type mismatch in the specified file and line",
+        category: "typescript",
+        extractDescription: (match) =>
+          `TypeScript error: ${match[1]?.trim() || "Compilation error"}`,
+        extractFiles: (match) => (match[2] ? [match[2]] : undefined),
+        extractLines: (match) => (match[4] ? [parseInt(match[4])] : undefined), // Line number, not column
+      },
+      {
+        regex:
+          /([^\s]+\.(ts|tsx|js|jsx)):(\d+):(\d+)[\s\S]*?error\s+TS\d+:\s*([^\n]+)/gi,
+        priority: "high" as const,
         rootCause: "TypeScript compilation error",
         suggestedFix: "Fix TypeScript errors in the specified file and line",
+        category: "typescript",
+        extractDescription: (match) =>
+          `TypeScript error: ${match[5]?.trim() || "Compilation error"}`,
+        extractFiles: (match) => (match[1] ? [match[1]] : undefined),
+        extractLines: (match) => (match[3] ? [parseInt(match[3])] : undefined), // Line number, not column
       },
+      // Test failures - specific patterns
       {
-        regex: /test\s+failed[:\s]+([^\n]+)/gi,
+        regex: /FAIL\s+([^\n]+)/gi,
         priority: "high" as const,
-        extractFiles: false,
-        extractLines: false,
         rootCause: "Jest test failure",
         suggestedFix: "Review and fix the failing test case",
+        category: "test",
+        extractDescription: (match) =>
+          `Test failure in ${match[1]?.trim() || "test file"}`,
+        extractFiles: () => undefined,
+        extractLines: () => undefined,
       },
       {
-        regex: /build\s+failed[:\s]+([^\n]+)/gi,
+        regex: /● ([^●\n]+)/gi,
+        priority: "high" as const,
+        rootCause: "Jest test failure",
+        suggestedFix: "Review and fix the failing test case",
+        category: "test",
+        extractDescription: (match) =>
+          `Test case failed: ${match[1]?.trim() || "unknown test"}`,
+        extractFiles: () => undefined,
+        extractLines: () => undefined,
+      },
+      // Build failures
+      {
+        regex: /npm run build failed/gi,
         priority: "critical" as const,
-        extractFiles: false,
-        extractLines: false,
         rootCause: "Build process failure",
-        suggestedFix: "Check build configuration and resolve compilation errors",
+        suggestedFix:
+          "Check build configuration and resolve compilation errors",
+        category: "build",
+        extractDescription: () => "Build process failed",
+        extractFiles: () => undefined,
+        extractLines: () => undefined,
       },
+      // ESLint errors
       {
-        regex: /lint\s+error[:\s]+([^\n]+)/gi,
+        regex: /ESLint found (\d+) errors?/gi,
         priority: "medium" as const,
-        extractFiles: false,
-        extractLines: false,
         rootCause: "ESLint error",
         suggestedFix: "Fix linting errors or update ESLint configuration",
+        category: "lint",
+        extractDescription: (match) =>
+          `ESLint found ${match[1] || "multiple"} error${
+            match[1] === "1" ? "" : "s"
+          }`,
+        extractFiles: () => undefined,
+        extractLines: () => undefined,
+      },
+      // Coverage failures - consolidated pattern
+      {
+        regex:
+          /Coverage threshold not met[\s\S]*?(Statements|Branches|Functions|Lines):\s+(\d+)%\s+\(threshold:\s+(\d+)%\)/gi,
+        priority: "medium" as const,
+        rootCause: "Coverage threshold failure",
+        suggestedFix: "Increase test coverage or adjust coverage thresholds",
+        category: "coverage",
+        extractDescription: (match) =>
+          `Coverage threshold not met: ${match[1]} at ${match[2]}% (required: ${match[3]}%)`,
+        extractFiles: () => undefined,
+        extractLines: () => undefined,
       },
     ]
 
+    const foundCategories = new Set<string>()
+
     for (const pattern of patterns) {
-      let match
-      while ((match = pattern.regex.exec(logContent)) !== null) {
-        const description = match[1] || `Failure in ${jobName}`
-        const files = pattern.extractFiles && match[1] ? [match[1]] : undefined
-        const lineNumbers =
-          pattern.extractLines && match[3] ? [parseInt(match[3])] : undefined
+      // Skip if we already found an issue in this category (avoid duplicates)
+      if (foundCategories.has(pattern.category)) {
+        continue
+      }
+
+      const match = pattern.regex.exec(logContent)
+      if (match) {
+        const description = pattern.extractDescription(match)
+        const files = pattern.extractFiles(match)
+        const lineNumbers = pattern.extractLines(match)
+
+        // Apply job-specific priority adjustment
+        const adjustedPriority = getJobSpecificPriority(pattern.priority)
 
         issues.push({
           description: `${jobName}: ${description}`,
-          priority: pattern.priority,
+          priority: adjustedPriority,
           files: files ?? undefined,
           lineNumbers: lineNumbers ?? undefined,
           rootCause: pattern.rootCause,
           suggestedFix: pattern.suggestedFix,
         })
+
+        foundCategories.add(pattern.category)
       }
     }
 
-    // If no specific patterns found, create a general failure todo
+    // If no specific patterns found, create a general failure todo with job-specific priority
     if (issues.length === 0) {
+      const basePriority = "medium" as const
+      const adjustedPriority = getJobSpecificPriority(basePriority)
+
       issues.push({
         description: `${jobName} failed - check logs for details`,
-        priority: "medium",
+        priority: adjustedPriority,
         rootCause: "Unknown failure in CI job",
         suggestedFix: "Review the full job logs to identify the root cause",
       })
@@ -369,9 +513,9 @@ export class AnaAnalyzer {
 
   /**
    * Analyze Cursor Bugbot review (Issue #280 Fix)
-   * 
+   *
    * CRITICAL FIX: Handles pull_request_review events instead of issue_comment
-   * 
+   *
    * @param prNumber - Pull request number
    * @param reviewId - Review ID (not comment ID)
    * @returns Analysis results for Tod webhook
@@ -380,7 +524,9 @@ export class AnaAnalyzer {
     prNumber: number,
     reviewId: number
   ): Promise<LegacyAnaResults> {
-    console.log(`🔍 Ana analyzing Cursor Bugbot review #${reviewId} for PR #${prNumber}...`)
+    console.log(
+      `🔍 Ana analyzing Cursor Bugbot review #${reviewId} for PR #${prNumber}...`
+    )
 
     try {
       // Get the review details
@@ -393,23 +539,30 @@ export class AnaAnalyzer {
 
       // Validate this is a Cursor bot review
       if (!review.data.user || review.data.user.login !== "cursor") {
-        throw new Error(`Review is not from Cursor bot (user: ${review.data.user?.login || 'unknown'})`)
+        throw new Error(
+          `Review is not from Cursor bot (user: ${
+            review.data.user?.login || "unknown"
+          })`
+        )
       }
 
       // Validate this is a comment review
       if (review.data.state !== "COMMENTED") {
-        throw new Error(`Review is not a comment review (state: ${review.data.state})`)
+        throw new Error(
+          `Review is not a comment review (state: ${review.data.state})`
+        )
       }
 
       console.log(`  ✅ Validated Cursor bot review #${reviewId}`)
 
       // Get all review comments
-      const reviewComments = await this.octokit.rest.pulls.listCommentsForReview({
-        owner: this.owner,
-        repo: this.repo,
-        pull_number: prNumber,
-        review_id: reviewId,
-      })
+      const reviewComments =
+        await this.octokit.rest.pulls.listCommentsForReview({
+          owner: this.owner,
+          repo: this.repo,
+          pull_number: prNumber,
+          review_id: reviewId,
+        })
 
       console.log(`  📝 Found ${reviewComments.data.length} review comments`)
 
@@ -417,8 +570,12 @@ export class AnaAnalyzer {
 
       // Process each review comment
       for (const comment of reviewComments.data) {
-        const analysis = this.analyzeCursorBugbotReviewComment(comment.body || "", comment.path, comment.line)
-        
+        const analysis = this.analyzeCursorBugbotReviewComment(
+          comment.body || "",
+          comment.path,
+          comment.line
+        )
+
         if (analysis.issue) {
           const failure = createAnalyzedFailure({
             id: `bugbot-review-${reviewId}-comment-${comment.id}-${Date.now()}`,
@@ -429,7 +586,9 @@ export class AnaAnalyzer {
             lineNumbers: comment.line ? [comment.line] : undefined,
             rootCause: analysis.issue.description,
             impact: "Code quality and maintainability concerns",
-            suggestedFix: analysis.issue.suggestedFix || "Review and address the Cursor Bugbot feedback",
+            suggestedFix:
+              analysis.issue.suggestedFix ||
+              "Review and address the Cursor Bugbot feedback",
             relatedPR: `#${prNumber}`,
           })
           failures.push(failure)
@@ -438,12 +597,15 @@ export class AnaAnalyzer {
 
       // Sort failures by priority (critical > high > medium > low)
       const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 }
-      failures.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority])
+      failures.sort(
+        (a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]
+      )
 
-      const summary = failures.length > 0 
-        ? `Cursor Bugbot review analysis found ${failures.length} issues`
-        : "Cursor Bugbot review analysis - No issues found"
-      
+      const summary =
+        failures.length > 0
+          ? `Cursor Bugbot review analysis found ${failures.length} issues`
+          : "Cursor Bugbot review analysis - No issues found"
+
       console.log(`  📊 Analysis complete: ${failures.length} issues found`)
 
       // Create AnaResults using the new format
@@ -454,7 +616,7 @@ export class AnaAnalyzer {
 
       // Create legacy format for workflow compatibility
       const legacyResults: LegacyAnaResults = {
-        todos: failures.map(failure => ({
+        todos: failures.map((failure) => ({
           id: failure.id,
           content: failure.content,
           priority: failure.priority,
@@ -472,28 +634,29 @@ export class AnaAnalyzer {
       }
 
       return legacyResults
-
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error)
-      
-      if (errorMessage.includes("Review is not from Cursor bot") || 
-          errorMessage.includes("Review is not a comment review")) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error)
+
+      if (
+        errorMessage.includes("Review is not from Cursor bot") ||
+        errorMessage.includes("Review is not a comment review")
+      ) {
         // Re-throw validation errors as-is
         throw error
       }
-      
+
       if (errorMessage.includes("Not Found") || errorMessage.includes("404")) {
         throw new Error(`Failed to fetch review: Review #${reviewId} not found`)
       }
-      
+
       throw new Error(`Failed to fetch review: ${errorMessage}`)
     }
   }
 
-
   /**
    * Analyze individual Cursor Bugbot review comment (Issue #280)
-   * 
+   *
    * Parses structured Bugbot comment format:
    * ### Bug: Title
    * <!-- **Severity** -->
@@ -503,8 +666,10 @@ export class AnaAnalyzer {
    */
   private analyzeCursorBugbotReviewComment(
     commentBody: string,
-    filePath?: string,
-    lineNumber?: number | null
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _filePath?: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _lineNumber?: number | null
   ): {
     issue?: {
       title: string
@@ -515,10 +680,13 @@ export class AnaAnalyzer {
   } {
     // Extract bug title from ### Bug: format
     const titleMatch = commentBody.match(/###\s+(Bug|Suggestion):\s*([^\n]+)/i)
-    const title = titleMatch?.[2]?.trim() || commentBody.substring(0, 100).trim()
+    const title =
+      titleMatch?.[2]?.trim() || commentBody.substring(0, 100).trim()
 
     // Extract severity from <!-- **Severity** --> format
-    const severityMatch = commentBody.match(/<!--\s*\*\*\s*(Critical|High|Medium|Low)\s+Severity\s*\*\*\s*-->/i)
+    const severityMatch = commentBody.match(
+      /<!--\s*\*\*\s*(Critical|High|Medium|Low)\s+Severity\s*\*\*\s*-->/i
+    )
     let priority: "low" | "medium" | "high" | "critical" = "medium" // Default
 
     if (severityMatch?.[1]) {
@@ -534,17 +702,24 @@ export class AnaAnalyzer {
         priority = "critical"
       } else if (lowerBody.includes("error") || lowerBody.includes("bug")) {
         priority = "high"
-      } else if (lowerBody.includes("suggestion") || lowerBody.includes("improvement")) {
+      } else if (
+        lowerBody.includes("suggestion") ||
+        lowerBody.includes("improvement")
+      ) {
         priority = "low"
       }
     }
 
     // Extract description from <!-- DESCRIPTION START --> blocks
-    const descriptionMatch = commentBody.match(/<!--\s*DESCRIPTION\s+START\s*-->\s*([\s\S]*?)\s*<!--\s*DESCRIPTION\s+END\s*-->/i)
+    const descriptionMatch = commentBody.match(
+      /<!--\s*DESCRIPTION\s+START\s*-->\s*([\s\S]*?)\s*<!--\s*DESCRIPTION\s+END\s*-->/i
+    )
     const description = descriptionMatch?.[1]?.trim() || commentBody.trim()
 
     // Extract suggested fix
-    const suggestedFixMatch = commentBody.match(/\*\*Suggested\s+Fix\*\*:\s*([^\n]+)/i)
+    const suggestedFixMatch = commentBody.match(
+      /\*\*Suggested\s+Fix\*\*:\s*([^\n]+)/i
+    )
     const suggestedFix = suggestedFixMatch?.[1]?.trim()
 
     const issue: {
@@ -627,7 +802,7 @@ export class AnaAnalyzer {
     let suggestedFix = "Review and address the Cursor Bugbot feedback"
     if (commentBody.toLowerCase().includes("suggestion")) {
       const suggestionMatch = commentBody.match(/suggestion[:\s]*([^\n.]+)/i)
-      if (suggestionMatch && suggestionMatch[1]) {
+      if (suggestionMatch?.[1]) {
         suggestedFix = suggestionMatch[1].trim()
       }
     }
@@ -645,7 +820,6 @@ export class AnaAnalyzer {
 
     return { issues }
   }
-
 }
 
 async function main() {
