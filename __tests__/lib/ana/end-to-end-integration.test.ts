@@ -125,6 +125,9 @@ describe('Ana End-to-End Integration', () => {
       const logContent = 'error in src/components/Button.tsx:45:12'
       const analysis = analyzer.analyzeJobLogs('TypeScript Check', logContent)
       const failure = analysis.issues[0]
+      if (!failure) {
+        throw new Error('Expected at least one issue from analysis')
+      }
 
       // Convert to AnalyzedFailure format
       const analyzedFailure = analyzer.createAnalyzedFailure(failure, 'ci_failure')
@@ -293,6 +296,9 @@ describe('Ana End-to-End Integration', () => {
       
       sentData.failures.forEach((failure, index) => {
         const originalIssue = analysis.issues[index]
+        if (!originalIssue) {
+          throw new Error(`Expected issue at index ${index}`)
+        }
         expect(failure.content).toContain(originalIssue.description)
         expect(failure.priority).toBe(originalIssue.priority)
         expect(failure.files).toEqual(originalIssue.files)

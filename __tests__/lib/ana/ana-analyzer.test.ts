@@ -310,8 +310,8 @@ describe("AnaAnalyzer", () => {
         suggestedFix: expect.any(String),
       })
       // files and lineNumbers should be undefined for generic errors
-      expect(result.issues[0].files).toBeUndefined()
-      expect(result.issues[0].lineNumbers).toBeUndefined()
+      expect(result.issues[0]?.files).toBeUndefined()
+      expect(result.issues[0]?.lineNumbers).toBeUndefined()
     })
   })
 
@@ -322,7 +322,7 @@ describe("AnaAnalyzer", () => {
       const result = analyzer.analyzeJobLogs("Malformed", logContent)
 
       expect(result.issues).toHaveLength(1)
-      expect(result.issues[0].priority).toBe("medium")
+      expect(result.issues[0]?.priority).toBe("medium")
     })
 
     it("should handle very large log files efficiently", () => {
@@ -340,7 +340,7 @@ describe("AnaAnalyzer", () => {
       const logContent = "error in src/components/special-chars@#$.tsx:10:5"
       const result = analyzer.analyzeJobLogs("Special Chars", logContent)
 
-      expect(result.issues[0].files).toEqual([
+      expect(result.issues[0]?.files).toEqual([
         "src/components/special-chars@#$.tsx",
       ])
     })
@@ -349,8 +349,10 @@ describe("AnaAnalyzer", () => {
       const logContent = "error in src/测试.ts:10:5 - Unicode error message 🚨"
       const result = analyzer.analyzeJobLogs("Unicode Test", logContent)
 
-      expect(result.issues[0].files).toEqual(["src/测试.ts"])
-      expect(result.issues[0].description).toContain("Unicode error message 🚨")
+      expect(result.issues[0]?.files).toEqual(["src/测试.ts"])
+      expect(result.issues[0]?.description).toContain(
+        "Unicode error message 🚨"
+      )
     })
   })
 })

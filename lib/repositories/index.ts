@@ -170,7 +170,7 @@ export const repositories = {
   /**
    * Create a new service request
    */
-  createServiceRequest: (data: any) => {
+  createServiceRequest: (data: ServiceRequestCreateInput) => {
     return RepositoryFactory.getServiceRequestRepository().create(data)
   },
 
@@ -191,14 +191,14 @@ export const repositories = {
   /**
    * Create a new user
    */
-  createUser: (data: any) => {
+  createUser: (data: UserCreateInput) => {
     return RepositoryFactory.getUserRepository().create(data)
   },
 
   /**
    * Update user profile
    */
-  updateUser: (id: string, data: any) => {
+  updateUser: (id: string, data: UserUpdateInput) => {
     return RepositoryFactory.getUserRepository().update(id, data)
   },
 

@@ -123,7 +123,7 @@ describe('Ana Data Structures', () => {
       const result = validateAnalyzedFailure(invalidFailure)
       expect(result.success).toBe(false)
       if (!result.success) {
-        expect(result.error.issues[0].message).toContain('Type must be either ci_failure or vercel_failure')
+        expect(result.error.issues[0]?.message).toContain('Type must be either ci_failure or vercel_failure')
       }
     })
 
@@ -139,7 +139,7 @@ describe('Ana Data Structures', () => {
       const result = validateAnalyzedFailure(invalidFailure)
       expect(result.success).toBe(false)
       if (!result.success) {
-        expect(result.error.issues[0].message).toContain('Priority must be low, medium, high, or critical')
+        expect(result.error.issues[0]?.message).toContain('Priority must be low, medium, high, or critical')
       }
     })
 
@@ -155,7 +155,7 @@ describe('Ana Data Structures', () => {
       const result = validateAnalyzedFailure(invalidFailure)
       expect(result.success).toBe(false)
       if (!result.success) {
-        expect(result.error.issues[0].message).toContain('Invalid datetime')
+        expect(result.error.issues[0]?.message).toContain('Invalid datetime')
       }
     })
 

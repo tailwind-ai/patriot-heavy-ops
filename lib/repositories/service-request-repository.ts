@@ -84,7 +84,7 @@ export class ServiceRequestRepository extends BaseRepository implements CrudRepo
   /**
    * Find service request by ID
    */
-  async findById(id: string): Promise<RepositoryResult<any>> {
+  async findById(id: string): Promise<RepositoryResult<ServiceRequest | null>> {
     const validation = this.validateRequired({ id }, ["id"]);
     if (!validation.success) {
       const errorMessage = typeof validation.error === 'string' 
@@ -243,7 +243,7 @@ export class ServiceRequestRepository extends BaseRepository implements CrudRepo
   /**
    * Create new service request
    */
-  async create(data: ServiceRequestCreateInput): Promise<RepositoryResult<any>> {
+  async create(data: ServiceRequestCreateInput): Promise<RepositoryResult<ServiceRequest>> {
     const validation = this.validateRequired(data as unknown as Record<string, unknown>, [
       "title", "contactName", "contactEmail", "contactPhone", 
       "jobSite", "equipmentCategory", "equipmentDetail", "userId"
@@ -277,7 +277,7 @@ export class ServiceRequestRepository extends BaseRepository implements CrudRepo
   /**
    * Update service request
    */
-  async update(id: string, data: ServiceRequestUpdateInput): Promise<RepositoryResult<any>> {
+  async update(id: string, data: ServiceRequestUpdateInput): Promise<RepositoryResult<ServiceRequest>> {
     const validation = this.validateRequired({ id }, ["id"]);
     if (!validation.success) {
       const errorMessage = typeof validation.error === 'string' 
@@ -354,7 +354,7 @@ export class ServiceRequestRepository extends BaseRepository implements CrudRepo
     changedBy: string,
     reason?: string,
     notes?: string
-  ): Promise<RepositoryResult<any>> {
+  ): Promise<RepositoryResult<ServiceRequest>> {
     const validation = this.validateRequired({ id, newStatus, changedBy }, ["id", "newStatus", "changedBy"]);
     if (!validation.success) {
       const errorMessage = typeof validation.error === 'string' 
@@ -450,7 +450,7 @@ export class ServiceRequestRepository extends BaseRepository implements CrudRepo
   /**
    * Build where clause with additional filters
    */
-  private buildWhereClause(baseWhere: any, filters?: ServiceRequestFilters) {
+  private buildWhereClause(baseWhere: Record<string, unknown>, filters?: ServiceRequestFilters) {
     if (!filters) {
       return baseWhere;
     }
