@@ -1,0 +1,161 @@
+{
+  "singleSecurityIssue": {
+    "review": {
+      "id": 12345,
+      "user": { "login": "cursor" },
+      "state": "COMMENTED",
+      "body": "## Cursor Bugbot Analysis\n\nFound potential security vulnerability in authentication middleware."
+    },
+    "comments": [
+      {
+        "id": 67890,
+        "path": "lib/auth/middleware.ts",
+        "line": 45,
+        "body": "### Bug: Authentication Bypass\n<!-- **Critical Severity** -->\n<!-- DESCRIPTION START -->\nPotential authentication bypass vulnerability detected in middleware validation.\n<!-- DESCRIPTION END -->\n\n**Impact**: Could allow unauthorized access to protected routes.\n\n**Suggested Fix**: Add proper input validation and sanitization before authentication checks."
+      }
+    ]
+  },
+  "multipleIssues": {
+    "review": {
+      "id": 23456,
+      "user": { "login": "cursor" },
+      "state": "COMMENTED", 
+      "body": "## Cursor Bugbot Analysis\n\nFound multiple issues in this PR that need attention."
+    },
+    "comments": [
+      {
+        "id": 78901,
+        "path": "lib/auth/middleware.ts",
+        "line": 45,
+        "body": "### Bug: Authentication Bypass\n<!-- **Critical Severity** -->\n<!-- DESCRIPTION START -->\nSecurity vulnerability in authentication flow.\n<!-- DESCRIPTION END -->"
+      },
+      {
+        "id": 78902,
+        "path": "components/UserForm.tsx",
+        "line": 23,
+        "body": "### Suggestion: Performance Improvement\n<!-- **Low Severity** -->\n<!-- DESCRIPTION START -->\nConsider memoizing this component to prevent unnecessary re-renders.\n<!-- DESCRIPTION END -->"
+      },
+      {
+        "id": 78903,
+        "path": "lib/utils/validation.ts",
+        "line": 67,
+        "body": "### Bug: Input Validation Missing\n<!-- **High Severity** -->\n<!-- DESCRIPTION START -->\nUser input is not properly validated before processing.\n<!-- DESCRIPTION END -->"
+      }
+    ]
+  },
+  "performanceIssues": {
+    "review": {
+      "id": 34567,
+      "user": { "login": "cursor" },
+      "state": "COMMENTED",
+      "body": "## Cursor Bugbot Analysis\n\nDetected performance optimization opportunities."
+    },
+    "comments": [
+      {
+        "id": 89012,
+        "path": "components/DataTable.tsx",
+        "line": 156,
+        "body": "### Suggestion: Virtualization Needed\n<!-- **Medium Severity** -->\n<!-- DESCRIPTION START -->\nLarge dataset rendering without virtualization causes performance issues.\n<!-- DESCRIPTION END -->\n\n**Impact**: Poor user experience with large datasets.\n\n**Suggested Fix**: Implement react-window or similar virtualization library."
+      },
+      {
+        "id": 89013,
+        "path": "hooks/useApiData.ts",
+        "line": 34,
+        "body": "### Bug: Memory Leak\n<!-- **High Severity** -->\n<!-- DESCRIPTION START -->\nEffect cleanup not properly implemented, causing memory leaks.\n<!-- DESCRIPTION END -->"
+      }
+    ]
+  },
+  "codeQualityIssues": {
+    "review": {
+      "id": 45678,
+      "user": { "login": "cursor" },
+      "state": "COMMENTED",
+      "body": "## Cursor Bugbot Analysis\n\nCode quality improvements needed."
+    },
+    "comments": [
+      {
+        "id": 90123,
+        "path": "lib/services/user-service.ts",
+        "line": 89,
+        "body": "### Suggestion: Type Safety\n<!-- **Medium Severity** -->\n<!-- DESCRIPTION START -->\nConsider using stricter TypeScript types for better type safety.\n<!-- DESCRIPTION END -->"
+      },
+      {
+        "id": 90124,
+        "path": "components/Button.tsx",
+        "line": 12,
+        "body": "### Suggestion: Accessibility\n<!-- **Low Severity** -->\n<!-- DESCRIPTION START -->\nMissing ARIA labels for screen reader accessibility.\n<!-- DESCRIPTION END -->"
+      }
+    ]
+  },
+  "malformedComments": {
+    "review": {
+      "id": 56789,
+      "user": { "login": "cursor" },
+      "state": "COMMENTED",
+      "body": "## Cursor Bugbot Analysis\n\nSome comments may not follow standard format."
+    },
+    "comments": [
+      {
+        "id": 1234,
+        "path": "test.ts",
+        "line": 1,
+        "body": "This is a malformed comment without proper structure or severity markers."
+      },
+      {
+        "id": 1235,
+        "path": "another-test.ts",
+        "line": 5,
+        "body": "### Bug: Missing Severity\nThis comment has a title but no severity marker."
+      },
+      {
+        "id": 1236,
+        "path": "third-test.ts",
+        "line": 10,
+        "body": "<!-- **High Severity** -->\nThis comment has severity but no title."
+      }
+    ]
+  },
+  "emptyReview": {
+    "review": {
+      "id": 67890,
+      "user": { "login": "cursor" },
+      "state": "COMMENTED",
+      "body": "## Cursor Bugbot Analysis\n\nNo issues found in this PR. Great work!"
+    },
+    "comments": []
+  },
+  "invalidUser": {
+    "review": {
+      "id": 78901,
+      "user": { "login": "not-cursor" },
+      "state": "COMMENTED",
+      "body": "This is not a Cursor Bugbot review."
+    },
+    "comments": []
+  },
+  "invalidState": {
+    "review": {
+      "id": 89012,
+      "user": { "login": "cursor" },
+      "state": "APPROVED",
+      "body": "Changes approved."
+    },
+    "comments": []
+  },
+  "unicodeAndSpecialChars": {
+    "review": {
+      "id": 90123,
+      "user": { "login": "cursor" },
+      "state": "COMMENTED",
+      "body": "## Cursor Bugbot Analysis\n\nFound issues with special characters and Unicode."
+    },
+    "comments": [
+      {
+        "id": 12345,
+        "path": "lib/utils/unicode-test.ts",
+        "line": 42,
+        "body": "### Bug: Unicode Handling\n<!-- **Medium Severity** -->\n<!-- DESCRIPTION START -->\nImproper handling of Unicode characters: 🚀 ñáéíóú 中文 العربية\n<!-- DESCRIPTION END -->\n\n**Special chars**: @#$%^&*()[]{}|\\:;\"'<>,.?/~`"
+      }
+    ]
+  }
+}

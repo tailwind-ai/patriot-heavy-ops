@@ -35,7 +35,7 @@ interface LegacyAnaResults {
   analysisDate: string
 }
 
-class AnaAnalyzer {
+export class AnaAnalyzer {
   private octokit: Octokit
   private owner: string
   private repo: string
@@ -368,6 +368,203 @@ class AnaAnalyzer {
   }
 
   /**
+   * Analyze Cursor Bugbot review (Issue #280 Fix)
+   * 
+   * CRITICAL FIX: Handles pull_request_review events instead of issue_comment
+   * 
+   * @param prNumber - Pull request number
+   * @param reviewId - Review ID (not comment ID)
+   * @returns Analysis results for Tod webhook
+   */
+  async analyzeCursorBugbotReview(
+    prNumber: number,
+    reviewId: number
+  ): Promise<LegacyAnaResults> {
+    console.log(`🔍 Ana analyzing Cursor Bugbot review #${reviewId} for PR #${prNumber}...`)
+
+    try {
+      // Get the review details
+      const review = await this.octokit.rest.pulls.getReview({
+        owner: this.owner,
+        repo: this.repo,
+        pull_number: prNumber,
+        review_id: reviewId,
+      })
+
+      // Validate this is a Cursor bot review
+      if (!review.data.user || review.data.user.login !== "cursor") {
+        throw new Error(`Review is not from Cursor bot (user: ${review.data.user?.login || 'unknown'})`)
+      }
+
+      // Validate this is a comment review
+      if (review.data.state !== "COMMENTED") {
+        throw new Error(`Review is not a comment review (state: ${review.data.state})`)
+      }
+
+      console.log(`  ✅ Validated Cursor bot review #${reviewId}`)
+
+      // Get all review comments
+      const reviewComments = await this.octokit.rest.pulls.listCommentsForReview({
+        owner: this.owner,
+        repo: this.repo,
+        pull_number: prNumber,
+        review_id: reviewId,
+      })
+
+      console.log(`  📝 Found ${reviewComments.data.length} review comments`)
+
+      const failures: AnalyzedFailure[] = []
+
+      // Process each review comment
+      for (const comment of reviewComments.data) {
+        const analysis = this.analyzeCursorBugbotReviewComment(comment.body || "", comment.path, comment.line)
+        
+        if (analysis.issue) {
+          const failure = createAnalyzedFailure({
+            id: `bugbot-review-${reviewId}-comment-${comment.id}-${Date.now()}`,
+            type: "bugbot_issue" as FailureType,
+            content: analysis.issue.title,
+            priority: analysis.issue.priority,
+            files: comment.path ? [comment.path] : undefined,
+            lineNumbers: comment.line ? [comment.line] : undefined,
+            rootCause: analysis.issue.description,
+            impact: "Code quality and maintainability concerns",
+            suggestedFix: analysis.issue.suggestedFix || "Review and address the Cursor Bugbot feedback",
+            relatedPR: `#${prNumber}`,
+          })
+          failures.push(failure)
+        }
+      }
+
+      // Sort failures by priority (critical > high > medium > low)
+      const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 }
+      failures.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority])
+
+      const summary = failures.length > 0 
+        ? `Cursor Bugbot review analysis found ${failures.length} issues`
+        : "Cursor Bugbot review analysis - No issues found"
+      
+      console.log(`  📊 Analysis complete: ${failures.length} issues found`)
+
+      // Create AnaResults using the new format
+      const anaResults = createAnaResults(failures, summary)
+
+      // Send to Tod via webhook (Issue #282)
+      await this.sendToTodWebhook(anaResults, `review-${reviewId}`, prNumber)
+
+      // Create legacy format for workflow compatibility
+      const legacyResults: LegacyAnaResults = {
+        todos: failures.map(failure => ({
+          id: failure.id,
+          content: failure.content,
+          priority: failure.priority,
+          files: failure.files || [],
+          lineNumbers: failure.lineNumbers || [],
+          issueType: "bugbot_issue" as const,
+          rootCause: failure.rootCause,
+          impact: failure.impact,
+          suggestedFix: failure.suggestedFix,
+          relatedPR: failure.relatedPR || "",
+          createdAt: failure.createdAt,
+        })),
+        summary,
+        analysisDate: new Date().toISOString(),
+      }
+
+      return legacyResults
+
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      
+      if (errorMessage.includes("Review is not from Cursor bot") || 
+          errorMessage.includes("Review is not a comment review")) {
+        // Re-throw validation errors as-is
+        throw error
+      }
+      
+      if (errorMessage.includes("Not Found") || errorMessage.includes("404")) {
+        throw new Error(`Failed to fetch review: Review #${reviewId} not found`)
+      }
+      
+      throw new Error(`Failed to fetch review: ${errorMessage}`)
+    }
+  }
+
+  /**
+   * Analyze individual Cursor Bugbot review comment (Issue #280)
+   * 
+   * Parses structured Bugbot comment format:
+   * ### Bug: Title
+   * <!-- **Severity** -->
+   * <!-- DESCRIPTION START -->
+   * Description text
+   * <!-- DESCRIPTION END -->
+   */
+  private analyzeCursorBugbotReviewComment(
+    commentBody: string,
+    filePath?: string,
+    lineNumber?: number | null
+  ): {
+    issue?: {
+      title: string
+      priority: "low" | "medium" | "high" | "critical"
+      description: string
+      suggestedFix?: string
+    }
+  } {
+    // Extract bug title from ### Bug: format
+    const titleMatch = commentBody.match(/###\s+(Bug|Suggestion):\s*([^\n]+)/i)
+    const title = titleMatch?.[2]?.trim() || commentBody.substring(0, 100).trim()
+
+    // Extract severity from <!-- **Severity** --> format
+    const severityMatch = commentBody.match(/<!--\s*\*\*\s*(Critical|High|Medium|Low)\s+Severity\s*\*\*\s*-->/i)
+    let priority: "low" | "medium" | "high" | "critical" = "medium" // Default
+
+    if (severityMatch?.[1]) {
+      const severity = severityMatch[1].toLowerCase()
+      if (severity === "critical") priority = "critical"
+      else if (severity === "high") priority = "high"
+      else if (severity === "medium") priority = "medium"
+      else if (severity === "low") priority = "low"
+    } else {
+      // Fallback: determine priority based on content keywords
+      const lowerBody = commentBody.toLowerCase()
+      if (lowerBody.includes("critical") || lowerBody.includes("security")) {
+        priority = "critical"
+      } else if (lowerBody.includes("error") || lowerBody.includes("bug")) {
+        priority = "high"
+      } else if (lowerBody.includes("suggestion") || lowerBody.includes("improvement")) {
+        priority = "low"
+      }
+    }
+
+    // Extract description from <!-- DESCRIPTION START --> blocks
+    const descriptionMatch = commentBody.match(/<!--\s*DESCRIPTION\s+START\s*-->\s*([\s\S]*?)\s*<!--\s*DESCRIPTION\s+END\s*-->/i)
+    const description = descriptionMatch?.[1]?.trim() || commentBody.trim()
+
+    // Extract suggested fix
+    const suggestedFixMatch = commentBody.match(/\*\*Suggested\s+Fix\*\*:\s*([^\n]+)/i)
+    const suggestedFix = suggestedFixMatch?.[1]?.trim()
+
+    const issue: {
+      title: string
+      priority: "low" | "medium" | "high" | "critical"
+      description: string
+      suggestedFix?: string
+    } = {
+      title,
+      priority,
+      description,
+    }
+
+    if (suggestedFix) {
+      issue.suggestedFix = suggestedFix
+    }
+
+    return { issue }
+  }
+
+  /**
    * Analyze Cursor Bugbot comment for issues
    */
   private analyzeCursorBugbotComment(commentBody: string): {
@@ -459,16 +656,16 @@ async function main() {
     switch (command) {
       case "analyze-ci-failures":
         const workflowRunId = process.argv[3]
-        const prNumber = parseInt(process.argv[4]!)
+        const prNumberCI = parseInt(process.argv[4]!)
 
-        if (!workflowRunId || !prNumber) {
+        if (!workflowRunId || !prNumberCI) {
           console.log(
             "❌ Usage: npx tsx scripts/ana-cli.ts analyze-ci-failures <WORKFLOW_RUN_ID> <PR_NUMBER>"
           )
           process.exit(1)
         }
 
-        await analyzer.analyzeCIFailures(workflowRunId, prNumber)
+        await analyzer.analyzeCIFailures(workflowRunId, prNumberCI)
         break
 
       case "analyze-cursor-bugbot":
@@ -485,10 +682,25 @@ async function main() {
         await analyzer.analyzeCursorBugbot(prNum, commentId)
         break
 
+      case "analyze-cursor-bugbot-review":
+        const prNumberReview = parseInt(process.argv[3]!)
+        const reviewId = parseInt(process.argv[4]!)
+
+        if (!prNumberReview || !reviewId) {
+          console.log(
+            "❌ Usage: npx tsx scripts/ana-cli.ts analyze-cursor-bugbot-review <PR_NUMBER> <REVIEW_ID>"
+          )
+          process.exit(1)
+        }
+
+        await analyzer.analyzeCursorBugbotReview(prNumberReview, reviewId)
+        break
+
       default:
         console.log("❌ Unknown command. Available commands:")
         console.log("  analyze-ci-failures <WORKFLOW_RUN_ID> <PR_NUMBER>")
         console.log("  analyze-cursor-bugbot <PR_NUMBER> <COMMENT_ID>")
+        console.log("  analyze-cursor-bugbot-review <PR_NUMBER> <REVIEW_ID>")
         process.exit(1)
     }
   } catch (error) {
