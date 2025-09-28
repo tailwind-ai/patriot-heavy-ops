@@ -848,9 +848,9 @@ export class AnaAnalyzer {
 
   /**
    * Analyze Cursor Bugbot review data (Issue #280)
-   * 
+   *
    * Processes review comments from Cursor Bugbot and generates AnalyzedFailure objects
-   * 
+   *
    * @param reviewData - Review data with comments
    * @param prNumber - Pull request number
    * @returns Analysis results in AnaResults format
@@ -874,23 +874,35 @@ export class AnaAnalyzer {
   ): AnaResults {
     // Validate this is a Cursor bot review
     if (!reviewData.review.user || reviewData.review.user.login !== "cursor") {
-      throw new Error(`Review is not from Cursor bot (user: ${reviewData.review.user?.login || 'unknown'})`)
+      throw new Error(
+        `Review is not from Cursor bot (user: ${
+          reviewData.review.user?.login || "unknown"
+        })`
+      )
     }
 
     // Validate this is a comment review
     if (reviewData.review.state !== "COMMENTED") {
-      throw new Error(`Review is not a comment review (state: ${reviewData.review.state})`)
+      throw new Error(
+        `Review is not a comment review (state: ${reviewData.review.state})`
+      )
     }
 
     const failures: AnalyzedFailure[] = []
 
     // Process each review comment
     for (const comment of reviewData.comments) {
-      const analysis = this.analyzeCursorBugbotReviewComment(comment.body || "", comment.path, comment.line)
-      
+      const analysis = this.analyzeCursorBugbotReviewComment(
+        comment.body || "",
+        comment.path,
+        comment.line
+      )
+
       if (analysis.issue) {
         const failure = createAnalyzedFailure({
-          id: `bugbot-review-${reviewData.review.id}-comment-${comment.id}-${Date.now()}`,
+          id: `bugbot-review-${reviewData.review.id}-comment-${
+            comment.id
+          }-${Date.now()}`,
           type: "bugbot_issue" as FailureType,
           content: analysis.issue.title,
           priority: analysis.issue.priority,
@@ -898,7 +910,9 @@ export class AnaAnalyzer {
           lineNumbers: comment.line ? [comment.line] : undefined,
           rootCause: analysis.issue.description,
           impact: "Code quality and maintainability concerns",
-          suggestedFix: analysis.issue.suggestedFix || "Review and address the Cursor Bugbot feedback",
+          suggestedFix:
+            analysis.issue.suggestedFix ||
+            "Review and address the Cursor Bugbot feedback",
           relatedPR: `#${prNumber}`,
         })
         failures.push(failure)
@@ -907,18 +921,21 @@ export class AnaAnalyzer {
 
     // Sort failures by priority (critical > high > medium > low)
     const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 }
-    failures.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority])
+    failures.sort(
+      (a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]
+    )
 
-    const summary = failures.length > 0 
-      ? `Cursor Bugbot review analysis found ${failures.length} issues`
-      : "Cursor Bugbot review analysis - No issues found"
+    const summary =
+      failures.length > 0
+        ? `Cursor Bugbot review analysis found ${failures.length} issues`
+        : "Cursor Bugbot review analysis - No issues found"
 
     return createAnaResults(failures, summary)
   }
 
   /**
    * Analyze individual Cursor Bugbot review comment (Issue #280)
-   * 
+   *
    * Parses structured Bugbot comment format:
    * ### Bug: Title
    * <!-- **Severity** -->
@@ -928,7 +945,9 @@ export class AnaAnalyzer {
    */
   analyzeCursorBugbotReviewComment(
     commentBody: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     filePath?: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     lineNumber?: number | null
   ): {
     issue?: {
@@ -940,10 +959,13 @@ export class AnaAnalyzer {
   } {
     // Extract bug title from ### Bug: format
     const titleMatch = commentBody.match(/###\s+(Bug|Suggestion):\s*([^\n]+)/i)
-    const title = titleMatch?.[2]?.trim() || commentBody.substring(0, 100).trim()
+    const title =
+      titleMatch?.[2]?.trim() || commentBody.substring(0, 100).trim()
 
     // Extract severity from <!-- **Severity** --> format
-    const severityMatch = commentBody.match(/<!--\s*\*\*\s*(Critical|High|Medium|Low)\s+Severity\s*\*\*\s*-->/i)
+    const severityMatch = commentBody.match(
+      /<!--\s*\*\*\s*(Critical|High|Medium|Low)\s+Severity\s*\*\*\s*-->/i
+    )
     let priority: "low" | "medium" | "high" | "critical" = "medium" // Default
 
     if (severityMatch?.[1]) {
@@ -959,17 +981,24 @@ export class AnaAnalyzer {
         priority = "critical"
       } else if (lowerBody.includes("error") || lowerBody.includes("bug")) {
         priority = "high"
-      } else if (lowerBody.includes("suggestion") || lowerBody.includes("improvement")) {
+      } else if (
+        lowerBody.includes("suggestion") ||
+        lowerBody.includes("improvement")
+      ) {
         priority = "low"
       }
     }
 
     // Extract description from <!-- DESCRIPTION START --> blocks
-    const descriptionMatch = commentBody.match(/<!--\s*DESCRIPTION\s+START\s*-->\s*([\s\S]*?)\s*<!--\s*DESCRIPTION\s+END\s*-->/i)
+    const descriptionMatch = commentBody.match(
+      /<!--\s*DESCRIPTION\s+START\s*-->\s*([\s\S]*?)\s*<!--\s*DESCRIPTION\s+END\s*-->/i
+    )
     const description = descriptionMatch?.[1]?.trim() || commentBody.trim()
 
     // Extract suggested fix
-    const suggestedFixMatch = commentBody.match(/\*\*Suggested\s+Fix\*\*:\s*([^\n]+)/i)
+    const suggestedFixMatch = commentBody.match(
+      /\*\*Suggested\s+Fix\*\*:\s*([^\n]+)/i
+    )
     const suggestedFix = suggestedFixMatch?.[1]?.trim()
 
     const issue: {
@@ -989,5 +1018,4 @@ export class AnaAnalyzer {
 
     return { issue }
   }
-
 }
