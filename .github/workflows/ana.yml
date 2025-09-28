@@ -3,7 +3,7 @@ name: Ana
 on:
   # Monitor CI Test workflow completion
   workflow_run:
-    workflows: ["CI Tests"]
+    workflows: ["CI Tests", "Optimized CI Tests"]
     types: [completed]
   # Monitor Cursor Bugbot completion (when it posts comments)
   issue_comment:
