@@ -50,7 +50,26 @@ describe("UserRepository", () => {
       expect(result.data).toEqual(mockUser)
       expect(mockPrismaClient.user.findUnique).toHaveBeenCalledWith({
         where: { id: "user123" },
-        include: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          emailVerified: true,
+          image: true,
+          role: true,
+          phone: true,
+          company: true,
+          createdAt: true,
+          updatedAt: true,
+          militaryBranch: true,
+          yearsOfService: true,
+          certifications: true,
+          preferredLocations: true,
+          isAvailable: true,
+          stripeCustomerId: true,
+          stripeSubscriptionId: true,
+          stripePriceId: true,
+          stripeCurrentPeriodEnd: true,
           accounts: {
             select: {
               provider: true,
@@ -99,7 +118,26 @@ describe("UserRepository", () => {
       expect(result.data).toEqual(mockUser)
       expect(mockPrismaClient.user.findUnique).toHaveBeenCalledWith({
         where: { email: "john@example.com" },
-        include: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          emailVerified: true,
+          image: true,
+          role: true,
+          phone: true,
+          company: true,
+          createdAt: true,
+          updatedAt: true,
+          militaryBranch: true,
+          yearsOfService: true,
+          certifications: true,
+          preferredLocations: true,
+          isAvailable: true,
+          stripeCustomerId: true,
+          stripeSubscriptionId: true,
+          stripePriceId: true,
+          stripeCurrentPeriodEnd: true,
           accounts: {
             select: {
               provider: true,
