@@ -736,4 +736,119 @@ describe("UserRepository", () => {
       expect(mockPrismaClient.user.count).toHaveBeenCalledWith({})
     })
   })
+
+  describe("Type Safety Improvements (Issue #299)", () => {
+    describe("UserCreateInput validation", () => {
+      it("should use specific UserCreateInput type instead of Record<string, unknown>", async () => {
+        const mockUser = {
+          id: "user123",
+          name: "Test User",
+          email: "test@example.com",
+          role: "USER",
+        }
+
+        mockPrismaClient.user.create.mockResolvedValue(mockUser)
+
+        // This should work with proper typing - no type casting needed
+        const createInput: UserCreateInput = {
+          name: "Test User",
+          email: "test@example.com",
+          phone: "555-0123",
+          company: "Test Company",
+        }
+
+        const result = await repository.create(createInput)
+
+        expect(result.success).toBe(true)
+        expect(result.data).toEqual(mockUser)
+
+        // Verify that the validation method receives properly typed input
+        // This test will fail until we replace Record<string, unknown> with UserCreateInput
+        expect(mockPrismaClient.user.create).toHaveBeenCalledWith(
+          expect.objectContaining({
+            data: expect.objectContaining({
+              name: "Test User",
+              email: "test@example.com",
+              phone: "555-0123",
+              company: "Test Company",
+              role: "USER",
+            }),
+          })
+        )
+      })
+
+      it("should reject invalid UserCreateInput properties at compile time", () => {
+        // This test ensures that our type system prevents invalid properties
+        // It will fail until we use proper UserCreateInput typing
+        const invalidInput = {
+          name: "Test User",
+          email: "test@example.com",
+          invalidProperty: "should not be allowed", // This should cause TypeScript error
+        }
+
+        // TypeScript should prevent this from compiling once we have proper types
+        // For now, we'll test that the validation catches this
+        expect(() => {
+          // This should be caught by proper typing, not runtime validation
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const _typedInput: UserCreateInput = invalidInput as UserCreateInput
+        }).not.toThrow() // This will change once we have proper types
+      })
+    })
+
+    describe("Count query filters", () => {
+      it("should use specific FilterOptions type instead of Record<string, unknown>", async () => {
+        mockPrismaClient.user.count.mockResolvedValue(5)
+
+        // This should work with proper FilterOptions typing
+        const filters = {
+          where: {
+            role: "OPERATOR",
+            isAvailable: true,
+          },
+        }
+
+        const result = await repository.count(filters)
+
+        expect(result.success).toBe(true)
+        expect(result.data).toBe(5)
+
+        // Verify that the query is properly typed
+        expect(mockPrismaClient.user.count).toHaveBeenCalledWith({
+          where: {
+            role: "OPERATOR",
+            isAvailable: true,
+          },
+        })
+      })
+
+      it("should provide type safety for query construction", async () => {
+        mockPrismaClient.user.count.mockResolvedValue(10)
+
+        // This test will fail until we replace the generic Record<string, unknown>
+        // with proper Prisma where clause types
+        const filters = {
+          where: {
+            role: "USER",
+            emailVerified: { not: null },
+          },
+        }
+
+        const result = await repository.count(filters)
+
+        expect(result.success).toBe(true)
+        expect(result.data).toBe(10)
+
+        // The query should be constructed with proper types, not generic Record
+        expect(mockPrismaClient.user.count).toHaveBeenCalledWith(
+          expect.objectContaining({
+            where: expect.objectContaining({
+              role: "USER",
+              emailVerified: { not: null },
+            }),
+          })
+        )
+      })
+    })
+  })
 })

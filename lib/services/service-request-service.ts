@@ -33,7 +33,7 @@ export type EquipmentCategory =
 
 export type TransportOption = "WE_HANDLE_IT" | "YOU_HANDLE_IT"
 
-export interface ServiceRequestCalculationInput {
+export interface ServiceRequestCalculationInput extends Record<string, unknown> {
   durationType: DurationType
   durationValue: number
   baseRate: number
@@ -101,12 +101,12 @@ export interface ServiceRequestUpdateInput {
   internalNotes?: string
 }
 
-export interface ServiceRequestListOptions {
+export interface ServiceRequestListOptions extends Record<string, unknown> {
   userId: string
   userRole: string
 }
 
-export interface ServiceRequestAccessOptions {
+export interface ServiceRequestAccessOptions extends Record<string, unknown> {
   requestId: string
   userId: string
   userRole?: string
@@ -410,7 +410,7 @@ export class ServiceRequestService extends BaseService {
   ): ServiceResult<ServiceRequestCalculationResult> {
     this.logOperation(
       "calculateServiceRequestPricing",
-      input as unknown as Record<string, unknown>
+      input
     )
 
     // Calculate total hours
@@ -610,9 +610,9 @@ export class ServiceRequestService extends BaseService {
   async getServiceRequests(
     options: ServiceRequestListOptions
   ): Promise<ServiceResult<ServiceRequest[]>> {
-    this.logOperation("getServiceRequests", options as unknown as Record<string, unknown>)
+    this.logOperation("getServiceRequests", options)
 
-    const validation = this.validateRequired(options as unknown as Record<string, unknown>, ["userId", "userRole"])
+    const validation = this.validateRequired(options, ["userId", "userRole"])
     if (!validation.success) {
       return this.createError<ServiceRequest[]>(
         validation.error?.code || "VALIDATION_ERROR",
@@ -909,9 +909,9 @@ export class ServiceRequestService extends BaseService {
   async getServiceRequestById(
     options: ServiceRequestAccessOptions
   ): Promise<ServiceResult<ServiceRequest>> {
-    this.logOperation("getServiceRequestById", options as unknown as Record<string, unknown>)
+    this.logOperation("getServiceRequestById", options)
 
-    const validation = this.validateRequired(options as unknown as Record<string, unknown>, ["requestId", "userId"])
+    const validation = this.validateRequired(options, ["requestId", "userId"])
     if (!validation.success) {
       return this.createError<ServiceRequest>(
         validation.error?.code || "VALIDATION_ERROR",

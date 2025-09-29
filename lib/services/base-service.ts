@@ -139,8 +139,8 @@ export abstract class BaseService {
   /**
    * Validate required parameters
    */
-  protected validateRequired(
-    params: Record<string, unknown>,
+  protected validateRequired<T extends Record<string, unknown>>(
+    params: T,
     requiredFields: string[]
   ): ServiceResult<void> {
     const missing = requiredFields.filter(field => 
