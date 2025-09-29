@@ -69,10 +69,7 @@ export class AuthService extends BaseService {
       ["email", "password"]
     )
     if (!validation.success) {
-      return this.createError(
-        "VALIDATION_ERROR",
-validation.error.message
-      )
+      return this.createError("VALIDATION_ERROR", validation.error.message)
     }
 
     return this.handleAsync(
@@ -129,10 +126,7 @@ validation.error.message
       "password",
     ])
     if (!validation.success) {
-      return this.createError(
-        "VALIDATION_ERROR",
-validation.error.message
-      )
+      return this.createError("VALIDATION_ERROR", validation.error.message)
     }
 
     return this.handleAsync(
@@ -183,10 +177,7 @@ validation.error.message
 
     const validation = this.validateRequired({ userId }, ["userId"])
     if (!validation.success) {
-      return this.createError(
-        "VALIDATION_ERROR",
-validation.error.message
-      )
+      return this.createError("VALIDATION_ERROR", validation.error.message)
     }
 
     return this.handleAsync(
@@ -223,10 +214,7 @@ validation.error.message
 
     const validation = this.validateRequired({ email }, ["email"])
     if (!validation.success) {
-      return this.createError(
-        "VALIDATION_ERROR",
-validation.error.message
-      )
+      return this.createError("VALIDATION_ERROR", validation.error.message)
     }
 
     return this.handleAsync(
@@ -265,10 +253,7 @@ validation.error.message
 
     const validation = this.validateRequired({ userId }, ["userId"])
     if (!validation.success) {
-      return this.createError(
-        "VALIDATION_ERROR",
-validation.error.message
-      )
+      return this.createError("VALIDATION_ERROR", validation.error.message)
     }
 
     return this.handleAsync(
@@ -323,8 +308,12 @@ validation.error.message
           },
         })
 
-        if (!user || !user.password) {
-          throw new Error("User not found or password not set")
+        if (!user) {
+          throw new Error("User not found")
+        }
+
+        if (!user.password) {
+          throw new Error("Password not set for user")
         }
 
         // Verify current password
@@ -412,11 +401,9 @@ validation.error.message
     // Validate the update data
     const validation = userNameSchema.safeParse(updates)
     if (!validation.success) {
-      return this.createError(
-        "VALIDATION_ERROR",
-        "Invalid profile data",
-        { issues: validation.error.issues }
-      )
+      return this.createError("VALIDATION_ERROR", "Invalid profile data", {
+        issues: validation.error.issues,
+      })
     }
 
     return this.handleAsync(
