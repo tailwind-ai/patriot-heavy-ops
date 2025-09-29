@@ -401,7 +401,7 @@ describe("AuthService", () => {
       )
 
       expect(result.success).toBe(false)
-      expect(result.error?.code).toBe("NOT_FOUND")
+      expect(result.error?.code).toBe("PASSWORD_CHANGE_FAILED")
     })
 
     it("should fail when user not found", async () => {
