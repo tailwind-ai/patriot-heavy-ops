@@ -17,9 +17,17 @@ jest.mock("next/navigation", () => ({
   useRouter: () => mockRouterFunctions,
 }))
 
-// Mock next/link
+// Mock next/link with proper types
 jest.mock("next/link", () => {
-  return function MockLink({ children, href, className }: any) {
+  return function MockLink({ 
+    children, 
+    href, 
+    className 
+  }: { 
+    children: React.ReactNode
+    href: string
+    className?: string 
+  }) {
     return (
       <a href={href} className={className}>
         {children}
@@ -230,7 +238,7 @@ describe("ServiceRequestOperations", () => {
                 resolve({
                   ok: true,
                   json: () => Promise.resolve({ message: "Success" }),
-                } as any),
+                } as Response),
               100
             )
           )
@@ -495,7 +503,7 @@ describe("ServiceRequestOperations", () => {
                 resolve({
                   ok: true,
                   json: () => Promise.resolve({ message: "Success" }),
-                } as any),
+                } as Response),
               100
             )
           )

@@ -31,7 +31,7 @@ describe("ServiceRequestForm Component", () => {
   const mockHookReturn = {
     form: {
       register: jest.fn(() => ({})),
-      handleSubmit: jest.fn((fn) => (e: any) => {
+      handleSubmit: jest.fn((fn) => (e: React.FormEvent) => {
         e.preventDefault()
         fn({})
       }),

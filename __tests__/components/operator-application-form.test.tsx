@@ -28,7 +28,7 @@ describe("OperatorApplicationForm Component", () => {
 
   const mockHookReturn = {
     form: {
-      handleSubmit: jest.fn((fn) => (e: any) => {
+      handleSubmit: jest.fn((fn) => (e: React.FormEvent) => {
         e.preventDefault()
         fn({})
       }),
