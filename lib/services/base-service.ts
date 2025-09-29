@@ -1,9 +1,9 @@
 /**
  * Base Service Class
- * 
+ *
  * Abstract base class for all services in the platform-agnostic service layer.
  * Provides common patterns for error handling, logging, and service lifecycle.
- * 
+ *
  * Design Principles:
  * - Zero Next.js/React dependencies for mobile compatibility
  * - Framework-agnostic implementation
@@ -13,6 +13,7 @@
 
 import {
   type ApplicationError,
+  type AppError,
   type Result,
   createSuccess,
   createError,
@@ -22,27 +23,26 @@ import {
   createValidationError,
   createAuthenticationError,
   createAuthorizationError,
-  ERROR_CODES,
-} from '../types/errors'
+} from "../types/errors"
 
 // Legacy interface for backward compatibility
 export interface ServiceError {
-  code: string;
-  message: string;
-  details?: Record<string, unknown>;
-  timestamp: Date;
+  code: string
+  message: string
+  details?: Record<string, unknown>
+  timestamp: Date
 }
 
 // Enhanced ServiceResult with discriminated union for better type safety
-export type ServiceResult<T> = 
+export type ServiceResult<T> =
   | { success: true; data: T; error?: never }
   | { success: false; data?: never; error: ServiceError }
 
 export interface ServiceLogger {
-  info(message: string, meta?: Record<string, unknown>): void;
-  warn(message: string, meta?: Record<string, unknown>): void;
-  error(message: string, meta?: Record<string, unknown>): void;
-  debug(message: string, meta?: Record<string, unknown>): void;
+  info(message: string, meta?: Record<string, unknown>): void
+  warn(message: string, meta?: Record<string, unknown>): void
+  error(message: string, meta?: Record<string, unknown>): void
+  debug(message: string, meta?: Record<string, unknown>): void
 }
 
 /**
@@ -52,23 +52,23 @@ export interface ServiceLogger {
 export class ConsoleLogger implements ServiceLogger {
   info(message: string, meta?: Record<string, unknown>): void {
     // eslint-disable-next-line no-console
-    console.info(`[INFO] ${message}`, meta ? JSON.stringify(meta) : '');
+    console.info(`[INFO] ${message}`, meta ? JSON.stringify(meta) : "")
   }
 
   warn(message: string, meta?: Record<string, unknown>): void {
     // eslint-disable-next-line no-console
-    console.warn(`[WARN] ${message}`, meta ? JSON.stringify(meta) : '');
+    console.warn(`[WARN] ${message}`, meta ? JSON.stringify(meta) : "")
   }
 
   error(message: string, meta?: Record<string, unknown>): void {
     // eslint-disable-next-line no-console
-    console.error(`[ERROR] ${message}`, meta ? JSON.stringify(meta) : '');
+    console.error(`[ERROR] ${message}`, meta ? JSON.stringify(meta) : "")
   }
 
   debug(message: string, meta?: Record<string, unknown>): void {
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === "development") {
       // eslint-disable-next-line no-console
-      console.debug(`[DEBUG] ${message}`, meta ? JSON.stringify(meta) : '');
+      console.debug(`[DEBUG] ${message}`, meta ? JSON.stringify(meta) : "")
     }
   }
 }
@@ -78,12 +78,12 @@ export class ConsoleLogger implements ServiceLogger {
  * All platform services should extend this class
  */
 export abstract class BaseService {
-  protected logger: ServiceLogger;
-  protected serviceName: string;
+  protected logger: ServiceLogger
+  protected serviceName: string
 
   constructor(serviceName: string, logger?: ServiceLogger) {
-    this.serviceName = serviceName;
-    this.logger = logger || new ConsoleLogger();
+    this.serviceName = serviceName
+    this.logger = logger || new ConsoleLogger()
   }
 
   /**
@@ -99,17 +99,17 @@ export abstract class BaseService {
       message,
       ...(details && { details }),
       timestamp: new Date(),
-    };
+    }
 
     this.logger.error(`${this.serviceName} Error: ${message}`, {
       code,
       details,
-    });
+    })
 
     return {
       success: false,
       error,
-    };
+    }
   }
 
   /**
@@ -121,10 +121,11 @@ export abstract class BaseService {
       severity: error.severity,
       retryable: error.retryable,
       details: error.details,
-    });
+    })
 
     // Cast to AppError since ApplicationError is the base type
-    return createError<T>(error as any);
+    // This is safe because all factory functions return proper AppError types
+    return createError<T>(error as AppError)
   }
 
   /**
@@ -134,14 +135,14 @@ export abstract class BaseService {
     return {
       success: true,
       data,
-    };
+    }
   }
 
   /**
    * Create enhanced success result using new error system
    */
   protected createEnhancedSuccess<T>(data: T): Result<T> {
-    return createSuccess<T>(data);
+    return createSuccess<T>(data)
   }
 
   /**
@@ -152,10 +153,10 @@ export abstract class BaseService {
     errorMessage: string
   ): Promise<Result<T>> {
     try {
-      const result = await operation();
-      return this.createEnhancedSuccess(result);
+      const result = await operation()
+      return this.createEnhancedSuccess(result)
     } catch (error) {
-      return this.handleEnhancedError<T>(error, errorMessage);
+      return this.handleEnhancedError<T>(error, errorMessage)
     }
   }
 
@@ -168,10 +169,10 @@ export abstract class BaseService {
     errorMessage: string
   ): Promise<ServiceResult<T>> {
     try {
-      const result = await operation();
-      return this.createSuccess(result);
+      const result = await operation()
+      return this.createSuccess(result)
     } catch (error) {
-      return this.handleError<T>(error, errorCode, errorMessage);
+      return this.handleError<T>(error, errorCode, errorMessage)
     }
   }
 
@@ -183,64 +184,83 @@ export abstract class BaseService {
     fallbackCode: string,
     fallbackMessage: string
   ): ServiceResult<T> {
-    const details = error instanceof Error 
-      ? { originalError: error.message, stack: error.stack }
-      : { originalError: String(error) };
+    const details =
+      error instanceof Error
+        ? { originalError: error.message, stack: error.stack }
+        : { originalError: String(error) }
 
     // Handle specific error types with enhanced categorization
     if (error instanceof Error) {
       // Database errors
-      if (error.name === "PrismaClientKnownRequestError" || 
-          error.message.includes("database") ||
-          error.message.includes("connection")) {
-        return this.createError<T>("DATABASE_ERROR", error.message, details);
+      if (
+        error.name === "PrismaClientKnownRequestError" ||
+        error.message.includes("database") ||
+        error.message.includes("connection")
+      ) {
+        return this.createError<T>("DATABASE_ERROR", error.message, details)
       }
 
       // Network/API errors
-      if (error.name === "FetchError" || 
-          error.message.includes("fetch") ||
-          error.message.includes("network")) {
-        return this.createError<T>("NETWORK_ERROR", error.message, details);
+      if (
+        error.name === "FetchError" ||
+        error.message.includes("fetch") ||
+        error.message.includes("network")
+      ) {
+        return this.createError<T>("NETWORK_ERROR", error.message, details)
       }
 
       // Authentication errors
-      if (error.name === "INVALID_CREDENTIALS" ||
-          error.message.includes("authentication") ||
-          error.message.includes("login")) {
-        return this.createError<T>("AUTHENTICATION_ERROR", error.message, details);
+      if (
+        error.name === "INVALID_CREDENTIALS" ||
+        error.message.includes("authentication") ||
+        error.message.includes("login")
+      ) {
+        return this.createError<T>(
+          "AUTHENTICATION_ERROR",
+          error.message,
+          details
+        )
       }
 
       // Authorization errors
-      if (error.name === "ACCESS_DENIED" ||
-          error.message.includes("permission") ||
-          error.message.includes("unauthorized")) {
-        return this.createError<T>("ACCESS_DENIED", error.message, details);
+      if (
+        error.name === "ACCESS_DENIED" ||
+        error.message.includes("permission") ||
+        error.message.includes("unauthorized")
+      ) {
+        return this.createError<T>("ACCESS_DENIED", error.message, details)
       }
 
       // Validation errors
-      if (error.name === "ValidationError" ||
-          error.message.includes("validation") ||
-          error.message.includes("invalid")) {
-        return this.createError<T>("VALIDATION_ERROR", error.message, details);
+      if (
+        error.name === "ValidationError" ||
+        error.message.includes("validation") ||
+        error.message.includes("invalid")
+      ) {
+        return this.createError<T>("VALIDATION_ERROR", error.message, details)
       }
 
       // Not found errors
-      if (error.name === "NOT_FOUND" ||
-          error.message.includes("not found") ||
-          error.message.includes("does not exist")) {
-        return this.createError<T>("NOT_FOUND", error.message, details);
+      if (
+        error.name === "NOT_FOUND" ||
+        error.message.includes("not found") ||
+        error.message.includes("does not exist")
+      ) {
+        return this.createError<T>("NOT_FOUND", error.message, details)
       }
 
       // System errors
-      if (error.message.includes("memory") ||
-          error.message.includes("timeout") ||
-          error.message.includes("system")) {
-        return this.createError<T>("SYSTEM_ERROR", error.message, details);
+      if (
+        error.message.includes("memory") ||
+        error.message.includes("timeout") ||
+        error.message.includes("system")
+      ) {
+        return this.createError<T>("SYSTEM_ERROR", error.message, details)
       }
     }
 
     // Fallback to provided error code and message
-    return this.createError<T>(fallbackCode, fallbackMessage, details);
+    return this.createError<T>(fallbackCode, fallbackMessage, details)
   }
 
   /**
@@ -250,65 +270,98 @@ export abstract class BaseService {
     error: unknown,
     fallbackMessage: string
   ): Result<T> {
-    const details = error instanceof Error 
-      ? { originalError: error.message, stack: error.stack }
-      : { originalError: String(error) };
+    const details =
+      error instanceof Error
+        ? { originalError: error.message, stack: error.stack }
+        : { originalError: String(error) }
 
     // Handle specific error types with enhanced categorization
     if (error instanceof Error) {
       // Database errors
-      if (error.name === "PrismaClientKnownRequestError" || 
-          error.message.includes("database") ||
-          error.message.includes("connection")) {
-        const dbError = createDatabaseError(error.message, 'DATABASE_ERROR', { details });
-        return this.createEnhancedError<T>(dbError);
+      if (
+        error.name === "PrismaClientKnownRequestError" ||
+        error.message.includes("database") ||
+        error.message.includes("connection")
+      ) {
+        const dbError = createDatabaseError(error.message, "DATABASE_ERROR", {
+          details,
+        })
+        return this.createEnhancedError<T>(dbError)
       }
 
       // Network/API errors
-      if (error.name === "FetchError" || 
-          error.message.includes("fetch") ||
-          error.message.includes("network")) {
-        const networkError = createNetworkError(error.message, 'NETWORK_ERROR', { details });
-        return this.createEnhancedError<T>(networkError);
+      if (
+        error.name === "FetchError" ||
+        error.message.includes("fetch") ||
+        error.message.includes("network")
+      ) {
+        const networkError = createNetworkError(
+          error.message,
+          "NETWORK_ERROR",
+          { details }
+        )
+        return this.createEnhancedError<T>(networkError)
       }
 
       // Authentication errors
-      if (error.name === "INVALID_CREDENTIALS" ||
-          error.message.includes("authentication") ||
-          error.message.includes("login") ||
-          error.message.includes("password")) {
-        const authError = createAuthenticationError(error.message, 'AUTHENTICATION_ERROR', { details });
-        return this.createEnhancedError<T>(authError);
+      if (
+        error.name === "INVALID_CREDENTIALS" ||
+        error.message.includes("authentication") ||
+        error.message.includes("login") ||
+        error.message.includes("password")
+      ) {
+        const authError = createAuthenticationError(
+          error.message,
+          "AUTHENTICATION_ERROR",
+          { details }
+        )
+        return this.createEnhancedError<T>(authError)
       }
 
       // Authorization errors
-      if (error.name === "ACCESS_DENIED" ||
-          error.message.includes("permission") ||
-          error.message.includes("unauthorized")) {
-        const authzError = createAuthorizationError(error.message, 'ACCESS_DENIED', { details });
-        return this.createEnhancedError<T>(authzError);
+      if (
+        error.name === "ACCESS_DENIED" ||
+        error.message.includes("permission") ||
+        error.message.includes("unauthorized")
+      ) {
+        const authzError = createAuthorizationError(
+          error.message,
+          "ACCESS_DENIED",
+          { details }
+        )
+        return this.createEnhancedError<T>(authzError)
       }
 
       // Validation errors
-      if (error.name === "ValidationError" ||
-          error.message.includes("validation") ||
-          error.message.includes("invalid")) {
-        const validationError = createValidationError(error.message, { details });
-        return this.createEnhancedError<T>(validationError);
+      if (
+        error.name === "ValidationError" ||
+        error.message.includes("validation") ||
+        error.message.includes("invalid")
+      ) {
+        const validationError = createValidationError(error.message, {
+          details,
+        })
+        return this.createEnhancedError<T>(validationError)
       }
 
       // System errors
-      if (error.message.includes("memory") ||
-          error.message.includes("timeout") ||
-          error.message.includes("system")) {
-        const systemError = createSystemError(error.message, 'SYSTEM_ERROR', { details });
-        return this.createEnhancedError<T>(systemError);
+      if (
+        error.message.includes("memory") ||
+        error.message.includes("timeout") ||
+        error.message.includes("system")
+      ) {
+        const systemError = createSystemError(error.message, "SYSTEM_ERROR", {
+          details,
+        })
+        return this.createEnhancedError<T>(systemError)
       }
     }
 
     // Fallback to system error
-    const systemError = createSystemError(fallbackMessage, 'SYSTEM_ERROR', { details });
-    return this.createEnhancedError<T>(systemError);
+    const systemError = createSystemError(fallbackMessage, "SYSTEM_ERROR", {
+      details,
+    })
+    return this.createEnhancedError<T>(systemError)
   }
 
   /**
@@ -321,28 +374,28 @@ export abstract class BaseService {
     maxRetries: number = 3,
     retryDelay: number = 1000
   ): Promise<ServiceResult<T>> {
-    let lastError: unknown;
-    
+    let lastError: unknown
+
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
-        const result = await operation();
-        return this.createSuccess(result);
+        const result = await operation()
+        return this.createSuccess(result)
       } catch (error) {
-        lastError = error;
-        
+        lastError = error
+
         // Check if error is retryable
-        const isRetryable = this.isRetryableError(error);
-        
+        const isRetryable = this.isRetryableError(error)
+
         if (!isRetryable || attempt === maxRetries) {
-          break;
+          break
         }
-        
+
         // Wait before retry with exponential backoff
-        await this.delay(retryDelay * Math.pow(2, attempt - 1));
+        await this.delay(retryDelay * Math.pow(2, attempt - 1))
       }
     }
-    
-    return this.handleError<T>(lastError, errorCode, errorMessage);
+
+    return this.handleError<T>(lastError, errorCode, errorMessage)
   }
 
   /**
@@ -350,37 +403,43 @@ export abstract class BaseService {
    */
   private isRetryableError(error: unknown): boolean {
     if (!(error instanceof Error)) {
-      return false;
+      return false
     }
 
     // Network errors are typically retryable
-    if (error.name === "FetchError" || 
-        error.message.includes("network") ||
-        error.message.includes("timeout") ||
-        error.message.includes("connection")) {
-      return true;
+    if (
+      error.name === "FetchError" ||
+      error.message.includes("network") ||
+      error.message.includes("timeout") ||
+      error.message.includes("connection")
+    ) {
+      return true
     }
 
     // Database connection errors are retryable
-    if (error.message.includes("database connection") ||
-        error.message.includes("connection refused")) {
-      return true;
+    if (
+      error.message.includes("database connection") ||
+      error.message.includes("connection refused")
+    ) {
+      return true
     }
 
     // System overload errors are retryable
-    if (error.message.includes("overload") ||
-        error.message.includes("rate limit")) {
-      return true;
+    if (
+      error.message.includes("overload") ||
+      error.message.includes("rate limit")
+    ) {
+      return true
     }
 
-    return false;
+    return false
   }
 
   /**
    * Utility method for delays in retry logic
    */
   private delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms))
   }
 
   /**
@@ -390,32 +449,38 @@ export abstract class BaseService {
     params: T,
     requiredFields: string[]
   ): ServiceResult<void> {
-    const missing = requiredFields.filter(field => 
-      params[field] === undefined || params[field] === null || params[field] === ''
-    );
+    const missing = requiredFields.filter(
+      (field) =>
+        params[field] === undefined ||
+        params[field] === null ||
+        params[field] === ""
+    )
 
     if (missing.length > 0) {
       return this.createError<void>(
-        'VALIDATION_ERROR',
-        'Missing required parameters',
+        "VALIDATION_ERROR",
+        "Missing required parameters",
         { missingFields: missing }
-      );
+      )
     }
 
-    return this.createSuccess(undefined);
+    return this.createSuccess(undefined)
   }
 
   /**
    * Log service operation
    */
-  protected logOperation(operation: string, meta?: Record<string, unknown>): void {
-    this.logger.info(`${this.serviceName}: ${operation}`, meta);
+  protected logOperation(
+    operation: string,
+    meta?: Record<string, unknown>
+  ): void {
+    this.logger.info(`${this.serviceName}: ${operation}`, meta)
   }
 
   /**
    * Get service name for identification
    */
   public getServiceName(): string {
-    return this.serviceName;
+    return this.serviceName
   }
 }
