@@ -13,7 +13,6 @@
 
 import { PrismaClient } from "@prisma/client"
 import {
-  ServiceResult,
   ServiceError,
   ServiceLogger,
   ConsoleLogger,
@@ -38,15 +37,20 @@ export interface FilterOptions {
   select?: Record<string, unknown>
 }
 
-export type RepositoryResult<T> = ServiceResult<T> & {
-  pagination?: {
-    page: number
-    limit: number
-    total: number
-    hasNext: boolean
-    hasPrev: boolean
-  }
-}
+export type RepositoryResult<T> =
+  | {
+      success: true
+      data: T
+      error?: never
+      pagination?: {
+        page: number
+        limit: number
+        total: number
+        hasNext: boolean
+        hasPrev: boolean
+      }
+    }
+  | { success: false; data?: never; error: ServiceError; pagination?: never }
 
 /**
  * Abstract base repository class
@@ -104,13 +108,19 @@ export abstract class BaseRepository {
    */
   protected createSuccess<T>(
     data: T,
-    pagination?: RepositoryResult<T>["pagination"]
+    pagination?: {
+      page: number
+      limit: number
+      total: number
+      hasNext: boolean
+      hasPrev: boolean
+    }
   ): RepositoryResult<T> {
     return {
       success: true,
       data,
       ...(pagination && { pagination }),
-    }
+    } as RepositoryResult<T>
   }
 
   /**
@@ -188,7 +198,13 @@ export abstract class BaseRepository {
     page: number,
     limit: number,
     total: number
-  ): RepositoryResult<unknown>["pagination"] {
+  ): {
+    page: number
+    limit: number
+    total: number
+    hasNext: boolean
+    hasPrev: boolean
+  } {
     return {
       page,
       limit,
