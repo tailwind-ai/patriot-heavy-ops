@@ -81,25 +81,26 @@ describe("Ana Workflow Monitoring Configuration (Issue #303)", () => {
     it("should be able to detect which workflow triggered the analysis", () => {
       const analysisJob = anaWorkflowConfig.jobs["analyze-ci-failures"]
       
-      // Should have a step that logs the workflow name for debugging
+      // Should have a step that logs event information for debugging (Issue #326)
       const analysisStep = analysisJob.steps.find((step: any) =>
-        step.name?.includes("Analyze CI") && step.run?.includes("github.event.workflow_run.name")
+        step.name?.includes("Analyze CI") && step.run?.includes("github.event_name")
       )
       
       expect(analysisStep).toBeDefined()
-      expect(analysisStep.run).toContain("${{ github.event.workflow_run.name }}")
+      expect(analysisStep.run).toContain("${{ github.event_name }}")
     })
 
     it("should pass workflow information to ana-cli.ts", () => {
       const analysisJob = anaWorkflowConfig.jobs["analyze-ci-failures"]
       
-      // Should call ana-cli.ts with workflow run ID and PR number
+      // Should call ana-cli.ts with workflow run ID and PR number (Issue #326)
       const cliStep = analysisJob.steps.find((step: any) =>
         step.run?.includes("npx tsx scripts/ana-cli.ts analyze-ci-failures")
       )
       
       expect(cliStep).toBeDefined()
-      expect(cliStep.run).toContain("${{ github.event.workflow_run.id }}")
+      // Should use extracted workflow run ID (supports both workflow_run and check_suite events)
+      expect(cliStep.run).toContain("${{ steps.extract-workflow-run-id.outputs.workflow_run_id }}")
       expect(cliStep.run).toContain("${{ steps.find-pr.outputs.pr_number }}")
     })
   })
