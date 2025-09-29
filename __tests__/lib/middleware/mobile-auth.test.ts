@@ -54,8 +54,8 @@ describe("Mobile Authentication Middleware", () => {
         role: mockUser.role,
       })
 
-      // Set up database mock after reset
-      ;(mockDb.user.findUnique as jest.Mock).mockImplementation((args: any) => {
+      // Set up database mock after reset with proper typing
+      ;(mockDb.user.findUnique as jest.Mock).mockImplementation((args: { where: { id: string } }) => {
         if (args.where.id === mockUser.id) {
           return Promise.resolve(mockUser)
         }
@@ -166,8 +166,8 @@ describe("Mobile Authentication Middleware", () => {
         userId: "nonexistent-user",
         email: "test@example.com",
       })
-      // Ensure database returns null for this specific user
-      ;(mockDb.user.findUnique as jest.Mock).mockImplementation((args: any) => {
+      // Ensure database returns null for this specific user with proper typing
+      ;(mockDb.user.findUnique as jest.Mock).mockImplementation((args: { where: { id: string } }) => {
         if (args.where.id === "nonexistent-user") {
           return Promise.resolve(null)
         }

@@ -342,8 +342,8 @@ describe("useOperatorApplicationForm", () => {
   })
 
   it("should set loading states correctly during submission", async () => {
-    let resolvePromise: (value: any) => void
-    const promise = new Promise((resolve) => {
+    let resolvePromise: (value: { ok: boolean; json: () => Promise<{ success: boolean }> }) => void
+    const promise = new Promise<{ ok: boolean; json: () => Promise<{ success: boolean }> }>((resolve) => {
       resolvePromise = resolve
     })
 
