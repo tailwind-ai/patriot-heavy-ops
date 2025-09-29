@@ -159,7 +159,8 @@ describe("session management", () => {
 
       const result = await getCurrentUserWithRole()
 
-      expect(result.role).toBe("OPERATOR")
+      expect(result).not.toBeNull()
+      expect(result!.role).toBe("OPERATOR")
     })
   })
 
