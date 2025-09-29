@@ -5,8 +5,16 @@
  * Extracted to avoid code duplication and ensure consistency across the application.
  */
 
-// Input interfaces (from API responses with string dates)
-interface ServiceRequestInput {
+/**
+ * Additional properties that may be present in API responses
+ * More specific than generic record types for better type safety
+ */
+type AdditionalProperties = {
+  [key: string]: string | number | boolean | null | undefined | object | unknown[]
+}
+
+// Input types (from API responses with string dates)
+type ServiceRequestInput = {
   id: string
   title: string
   status: string
@@ -20,30 +28,27 @@ interface ServiceRequestInput {
   estimatedCost: number
   createdAt: string
   updatedAt: string
-  [key: string]: unknown
-}
+} & AdditionalProperties
 
-interface AssignmentInput {
+type AssignmentInput = {
   id: string
   serviceRequestId: string
   operatorId: string
   assignedAt: string
   status: string
   serviceRequest: ServiceRequestInput
-  [key: string]: unknown
-}
+} & AdditionalProperties
 
-interface UserInput {
+type UserInput = {
   id: string
   name: string | null
   email: string
   role: string
   company: string | null
   createdAt: string
-  [key: string]: unknown
-}
+} & AdditionalProperties
 
-interface DashboardDataInput {
+type DashboardDataInput = {
   stats: {
     totalRequests: number
     activeRequests: number
@@ -55,8 +60,8 @@ interface DashboardDataInput {
   users?: UserInput[]
 }
 
-// Output interfaces (with Date objects)
-interface ServiceRequestOutput {
+// Output types (with Date objects)
+type ServiceRequestOutput = {
   id: string
   title: string
   status: string
@@ -70,30 +75,27 @@ interface ServiceRequestOutput {
   estimatedCost: number
   createdAt: Date
   updatedAt: Date
-  [key: string]: unknown
-}
+} & AdditionalProperties
 
-interface AssignmentOutput {
+type AssignmentOutput = {
   id: string
   serviceRequestId: string
   operatorId: string
   assignedAt: Date
   status: string
   serviceRequest: ServiceRequestOutput
-  [key: string]: unknown
-}
+} & AdditionalProperties
 
-interface UserOutput {
+type UserOutput = {
   id: string
   name: string | null
   email: string
   role: string
   company: string | null
   createdAt: Date
-  [key: string]: unknown
-}
+} & AdditionalProperties
 
-interface DashboardDataOutput {
+type DashboardDataOutput = {
   stats: {
     totalRequests: number
     activeRequests: number

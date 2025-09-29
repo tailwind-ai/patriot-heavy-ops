@@ -7,14 +7,14 @@
 
 import { logger } from "./logger"
 
-export interface NotificationOptions {
+export type NotificationOptions = {
   title?: string
   description: string
   variant?: "default" | "destructive" | "success" | "warning"
   duration?: number
 }
 
-export interface NotificationCallbacks {
+export type NotificationCallbacks = {
   showNotification: (options: NotificationOptions) => void
   showSuccess: (message: string, title?: string) => void
   showError: (message: string, title?: string) => void

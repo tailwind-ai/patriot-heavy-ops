@@ -12,7 +12,16 @@ export enum LogLevel {
   ERROR = 3,
 }
 
-interface LoggerConfig {
+/**
+ * Context object for logging - allows structured data with logging
+ * More specific than generic record types for better type safety
+ * Includes unknown for error objects and other dynamic content
+ */
+export type LogContext = {
+  [key: string]: string | number | boolean | null | undefined | unknown | LogContext | LogContext[]
+}
+
+type LoggerConfig = {
   level: LogLevel
   enableConsole: boolean
   enableRemote: boolean
@@ -36,7 +45,7 @@ class Logger {
     return level >= this.config.level
   }
 
-  private formatMessage(level: string, message: string, context?: Record<string, unknown>): string {
+  private formatMessage(level: string, message: string, context?: LogContext): string {
     const timestamp = new Date().toISOString()
     const contextStr = context ? ` ${JSON.stringify(context)}` : ''
     return `[${timestamp}] ${level}: ${message}${contextStr}`
@@ -58,7 +67,7 @@ class Logger {
     return isMobile ? `${browserType}-mobile` : `${browserType}-desktop`
   }
 
-  private async sendToRemote(level: string, message: string, context?: Record<string, unknown>) {
+  private async sendToRemote(level: string, message: string, context?: LogContext) {
     if (!this.config.enableRemote || !this.config.remoteEndpoint) {
       return
     }
@@ -86,7 +95,7 @@ class Logger {
     }
   }
 
-  debug(message: string, context?: Record<string, unknown>) {
+  debug(message: string, context?: LogContext) {
     if (!this.shouldLog(LogLevel.DEBUG)) return
 
     const formatted = this.formatMessage('DEBUG', message, context)
@@ -99,7 +108,7 @@ class Logger {
     this.sendToRemote('DEBUG', message, context)
   }
 
-  info(message: string, context?: Record<string, unknown>) {
+  info(message: string, context?: LogContext) {
     if (!this.shouldLog(LogLevel.INFO)) return
 
     const formatted = this.formatMessage('INFO', message, context)
@@ -112,7 +121,7 @@ class Logger {
     this.sendToRemote('INFO', message, context)
   }
 
-  warn(message: string, context?: Record<string, unknown>) {
+  warn(message: string, context?: LogContext) {
     if (!this.shouldLog(LogLevel.WARN)) return
 
     const formatted = this.formatMessage('WARN', message, context)
@@ -125,7 +134,7 @@ class Logger {
     this.sendToRemote('WARN', message, context)
   }
 
-  error(message: string, context?: Record<string, unknown>) {
+  error(message: string, context?: LogContext) {
     if (!this.shouldLog(LogLevel.ERROR)) return
 
     const formatted = this.formatMessage('ERROR', message, context)
@@ -142,7 +151,7 @@ class Logger {
    * Development-only warning for guidance messages
    * Only logs in development environment to avoid production noise
    */
-  devWarn(message: string, context?: Record<string, unknown>) {
+  devWarn(message: string, context?: LogContext) {
     if (process.env.NODE_ENV === 'development') {
       this.warn(`[DEV] ${message}`, context)
     }
