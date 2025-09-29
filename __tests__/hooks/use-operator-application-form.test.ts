@@ -108,6 +108,8 @@ describe("useOperatorApplicationForm", () => {
 
     await waitFor(() => {
       expect(result.current.suggestions).toHaveLength(1)
+      // Defensive programming: Check array length before accessing elements
+      expect(result.current.suggestions.length).toBeGreaterThan(0)
       expect(result.current.suggestions[0]).toMatchObject({
         placeId: "place-1",
         displayName: "123 Main St, City, State",

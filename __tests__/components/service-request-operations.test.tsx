@@ -69,6 +69,8 @@ describe("ServiceRequestOperations", () => {
       render(<ServiceRequestOperations serviceRequest={mockServiceRequest} />)
 
       const trigger = screen.getByRole("button")
+      // Defensive programming: Assert element exists before checking properties
+      expect(trigger).toBeDefined()
       expect(trigger).toBeInTheDocument()
       expect(screen.getByText("Open")).toBeInTheDocument()
     })

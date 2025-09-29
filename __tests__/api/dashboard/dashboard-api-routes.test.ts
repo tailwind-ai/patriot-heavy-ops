@@ -89,7 +89,10 @@ describe("Dashboard API Routes", () => {
 
       // Assert
       expect(response.status).toBe(200)
+      // Defensive programming: Assert data exists before accessing properties
+      expect(data).toBeDefined()
       expect(data.data).toEqual(mockDashboardData)
+      expect(data.meta).toBeDefined()
       expect(data.meta.authMethod).toBe("session")
       expect(mockDashboardService.getDashboardData).toHaveBeenCalledWith(
         expect.objectContaining({
