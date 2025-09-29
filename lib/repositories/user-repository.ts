@@ -164,7 +164,7 @@ export class UserRepository extends BaseRepository {
   ): Promise<RepositoryResult<SafeUserWithAccounts | null>> {
     const validation = this.validateRequired({ id }, ["id"])
     if (!validation.success) {
-      return validation
+      return validation as RepositoryResult<SafeUserWithAccounts | null>
     }
 
     return this.handleAsync(
@@ -216,7 +216,7 @@ export class UserRepository extends BaseRepository {
   ): Promise<RepositoryResult<SafeUserWithAccounts | null>> {
     const validation = this.validateRequired({ email }, ["email"])
     if (!validation.success) {
-      return validation
+      return validation as RepositoryResult<SafeUserWithAccounts | null>
     }
 
     return this.handleAsync(
@@ -396,7 +396,7 @@ export class UserRepository extends BaseRepository {
       ["email"]
     )
     if (!validation.success) {
-      return validation
+      return validation as RepositoryResult<SafeUser>
     }
 
     return this.handleAsync(
@@ -444,7 +444,7 @@ export class UserRepository extends BaseRepository {
   ): Promise<RepositoryResult<SafeUser>> {
     const validation = this.validateRequired({ id }, ["id"])
     if (!validation.success) {
-      return validation
+      return validation as RepositoryResult<SafeUser>
     }
 
     return this.handleAsync(
@@ -490,7 +490,7 @@ export class UserRepository extends BaseRepository {
   async delete(id: string): Promise<RepositoryResult<boolean>> {
     const validation = this.validateRequired({ id }, ["id"])
     if (!validation.success) {
-      return validation
+      return validation as RepositoryResult<boolean>
     }
 
     return this.handleAsync(
@@ -539,7 +539,7 @@ export class UserRepository extends BaseRepository {
       "yearsOfService",
     ])
     if (!validation.success) {
-      return validation
+      return validation as RepositoryResult<SafeUser>
     }
 
     return this.handleAsync(
@@ -593,7 +593,7 @@ export class UserRepository extends BaseRepository {
   ): Promise<RepositoryResult<OperatorAvailabilityInfo>> {
     const validation = this.validateRequired({ operatorId }, ["operatorId"])
     if (!validation.success) {
-      return validation
+      return validation as RepositoryResult<OperatorAvailabilityInfo>
     }
 
     return this.handleAsync(
@@ -655,7 +655,7 @@ export class UserRepository extends BaseRepository {
   ): Promise<RepositoryResult<SafeUser>> {
     const validation = this.validateRequired({ userId }, ["userId"])
     if (!validation.success) {
-      return validation
+      return validation as RepositoryResult<SafeUser>
     }
 
     return this.handleAsync(
@@ -704,7 +704,7 @@ export class UserRepository extends BaseRepository {
   ): Promise<RepositoryResult<UserRoleInfo[]>> {
     const validation = this.validateRequired({ role }, ["role"])
     if (!validation.success) {
-      return validation
+      return validation as RepositoryResult<UserRoleInfo[]>
     }
 
     return this.handleAsync(
@@ -752,7 +752,7 @@ export class UserRepository extends BaseRepository {
   async verifyEmail(userId: string): Promise<RepositoryResult<UserEmailInfo>> {
     const validation = this.validateRequired({ userId }, ["userId"])
     if (!validation.success) {
-      return validation
+      return validation as RepositoryResult<UserEmailInfo>
     }
 
     return this.handleAsync(

@@ -103,7 +103,7 @@ export class ServiceRequestRepository
   async findById(id: string): Promise<RepositoryResult<ServiceRequest | null>> {
     const validation = this.validateRequired({ id }, ["id"])
     if (!validation.success) {
-      return validation
+      return validation as RepositoryResult<ServiceRequest | null>
     }
 
     return this.handleAsync(
@@ -163,7 +163,7 @@ export class ServiceRequestRepository
       "userRole",
     ])
     if (!validation.success) {
-      return validation
+      return validation as RepositoryResult<ServiceRequestWithUser[]>
     }
 
     return this.handleAsync(
@@ -271,7 +271,7 @@ export class ServiceRequestRepository
       "userId",
     ])
     if (!validation.success) {
-      return validation
+      return validation as RepositoryResult<ServiceRequest>
     }
 
     // Validate transport option
@@ -320,7 +320,7 @@ export class ServiceRequestRepository
   ): Promise<RepositoryResult<ServiceRequest>> {
     const validation = this.validateRequired({ id }, ["id"])
     if (!validation.success) {
-      return validation
+      return validation as RepositoryResult<ServiceRequest>
     }
 
     return this.handleAsync(
@@ -344,7 +344,7 @@ export class ServiceRequestRepository
   async delete(id: string): Promise<RepositoryResult<boolean>> {
     const validation = this.validateRequired({ id }, ["id"])
     if (!validation.success) {
-      return validation
+      return validation as RepositoryResult<boolean>
     }
 
     return this.handleAsync(
@@ -396,7 +396,7 @@ export class ServiceRequestRepository
       "changedBy",
     ])
     if (!validation.success) {
-      return validation
+      return validation as RepositoryResult<ServiceRequest>
     }
 
     return this.handleAsync(
