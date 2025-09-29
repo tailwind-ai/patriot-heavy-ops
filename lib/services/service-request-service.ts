@@ -184,9 +184,9 @@ export class ServiceRequestService extends BaseService {
     ])
     if (!validation.success) {
       return this.createError<number>(
-        validation.error?.code || "VALIDATION_ERROR",
-        validation.error?.message || "Validation failed",
-        validation.error?.details
+        validation.error.code,
+        validation.error.message,
+        validation.error.details
       )
     }
 
@@ -242,9 +242,9 @@ export class ServiceRequestService extends BaseService {
     ])
     if (!validation.success) {
       return this.createError<string>(
-        validation.error?.code || "VALIDATION_ERROR",
-        validation.error?.message || "Validation failed",
-        validation.error?.details
+        validation.error.code,
+        validation.error.message,
+        validation.error.details
       )
     }
 
@@ -305,9 +305,9 @@ export class ServiceRequestService extends BaseService {
     const validation = this.validateRequired({ transport }, ["transport"])
     if (!validation.success) {
       return this.createError<number>(
-        validation.error?.code || "VALIDATION_ERROR",
-        validation.error?.message || "Validation failed",
-        validation.error?.details
+        validation.error.code,
+        validation.error.message,
+        validation.error.details
       )
     }
 
@@ -347,9 +347,9 @@ export class ServiceRequestService extends BaseService {
     )
     if (!validation.success) {
       return this.createError<number>(
-        validation.error?.code || "VALIDATION_ERROR",
-        validation.error?.message || "Validation failed",
-        validation.error?.details
+        validation.error.code,
+        validation.error.message,
+        validation.error.details
       )
     }
 
@@ -420,9 +420,9 @@ export class ServiceRequestService extends BaseService {
     )
     if (!hoursResult.success) {
       return this.createError<ServiceRequestCalculationResult>(
-        hoursResult.error?.code || "CALCULATION_ERROR",
-        hoursResult.error?.message || "Hours calculation failed",
-        hoursResult.error?.details
+        hoursResult.error.code,
+        hoursResult.error.message,
+        hoursResult.error.details
       )
     }
 
@@ -433,9 +433,9 @@ export class ServiceRequestService extends BaseService {
     )
     if (!displayResult.success) {
       return this.createError<ServiceRequestCalculationResult>(
-        displayResult.error?.code || "CALCULATION_ERROR",
-        displayResult.error?.message || "Display calculation failed",
-        displayResult.error?.details
+        displayResult.error.code,
+        displayResult.error.message,
+        displayResult.error.details
       )
     }
 
@@ -448,9 +448,9 @@ export class ServiceRequestService extends BaseService {
     )
     if (!baseCostResult.success) {
       return this.createError<ServiceRequestCalculationResult>(
-        baseCostResult.error?.code || "CALCULATION_ERROR",
-        baseCostResult.error?.message || "Base cost calculation failed",
-        baseCostResult.error?.details
+        baseCostResult.error.code,
+        baseCostResult.error.message,
+        baseCostResult.error.details
       )
     }
 
@@ -458,9 +458,9 @@ export class ServiceRequestService extends BaseService {
     const transportResult = this.calculateTransportFee(input.transport)
     if (!transportResult.success) {
       return this.createError<ServiceRequestCalculationResult>(
-        transportResult.error?.code || "CALCULATION_ERROR",
-        transportResult.error?.message || "Transport calculation failed",
-        transportResult.error?.details
+        transportResult.error.code,
+        transportResult.error.message,
+        transportResult.error.details
       )
     }
 
@@ -487,9 +487,9 @@ export class ServiceRequestService extends BaseService {
     const validation = this.validateRequired({ toStatus }, ["toStatus"])
     if (!validation.success) {
       return this.createError<StatusTransition>(
-        validation.error?.code || "VALIDATION_ERROR",
-        validation.error?.message || "Validation failed",
-        validation.error?.details
+        validation.error.code,
+        validation.error.message,
+        validation.error.details
       )
     }
 
@@ -537,9 +537,9 @@ export class ServiceRequestService extends BaseService {
     ])
     if (!validation.success) {
       return this.createError<string[]>(
-        validation.error?.code || "VALIDATION_ERROR",
-        validation.error?.message || "Validation failed",
-        validation.error?.details
+        validation.error.code,
+        validation.error.message,
+        validation.error.details
       )
     }
 
@@ -615,9 +615,9 @@ export class ServiceRequestService extends BaseService {
     const validation = this.validateRequired(options, ["userId", "userRole"])
     if (!validation.success) {
       return this.createError<ServiceRequest[]>(
-        validation.error?.code || "VALIDATION_ERROR",
-        validation.error?.message || "Validation failed",
-        validation.error?.details
+        validation.error.code,
+        validation.error.message,
+        validation.error.details
       )
     }
 
@@ -827,9 +827,9 @@ export class ServiceRequestService extends BaseService {
     )
     if (!hoursResult.success) {
       return this.createError<ServiceRequest>(
-        hoursResult.error?.code || "CALCULATION_ERROR",
-        hoursResult.error?.message || "Hours calculation failed",
-        hoursResult.error?.details
+        hoursResult.error.code,
+        hoursResult.error.message,
+        hoursResult.error.details
       )
     }
 
@@ -914,9 +914,9 @@ export class ServiceRequestService extends BaseService {
     const validation = this.validateRequired(options, ["requestId", "userId"])
     if (!validation.success) {
       return this.createError<ServiceRequest>(
-        validation.error?.code || "VALIDATION_ERROR",
-        validation.error?.message || "Validation failed",
-        validation.error?.details
+        validation.error.code,
+        validation.error.message,
+        validation.error.details
       )
     }
 
@@ -930,7 +930,7 @@ export class ServiceRequestService extends BaseService {
 
         if (!hasAccess.success) {
           // Database error in access verification
-          throw new Error(hasAccess.error?.message || "Database error")
+          throw new Error(hasAccess.error.message)
         }
         if (!hasAccess.data) {
           // No access (count = 0)
@@ -998,9 +998,9 @@ export class ServiceRequestService extends BaseService {
     const validation = this.validateRequired({ requestId, userId }, ["requestId", "userId"])
     if (!validation.success) {
       return this.createError<ServiceRequest>(
-        validation.error?.code || "VALIDATION_ERROR",
-        validation.error?.message || "Validation failed",
-        validation.error?.details
+        validation.error.code,
+        validation.error.message,
+        validation.error.details
       )
     }
 
@@ -1020,7 +1020,7 @@ export class ServiceRequestService extends BaseService {
         const hasAccess = await this.verifyUserHasAccessToRequest(requestId, userId)
         if (!hasAccess.success) {
           // Database error in access verification
-          throw new Error(hasAccess.error?.message || "Database error")
+          throw new Error(hasAccess.error.message)
         }
         if (!hasAccess.data) {
           // No access (count = 0)
@@ -1114,7 +1114,7 @@ export class ServiceRequestService extends BaseService {
         const hasAccess = await this.verifyUserHasAccessToRequest(requestId, userId)
         if (!hasAccess.success) {
           // Database error in access verification
-          throw new Error(hasAccess.error?.message || "Database error")
+          throw new Error(hasAccess.error.message)
         }
         if (!hasAccess.data) {
           // No access (count = 0)

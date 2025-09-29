@@ -71,7 +71,7 @@ export class AuthService extends BaseService {
     if (!validation.success) {
       return this.createError(
         "VALIDATION_ERROR",
-        validation.error?.message || "Validation failed"
+validation.error.message
       )
     }
 
@@ -131,7 +131,7 @@ export class AuthService extends BaseService {
     if (!validation.success) {
       return this.createError(
         "VALIDATION_ERROR",
-        validation.error?.message || "Validation failed"
+validation.error.message
       )
     }
 
@@ -185,7 +185,7 @@ export class AuthService extends BaseService {
     if (!validation.success) {
       return this.createError(
         "VALIDATION_ERROR",
-        validation.error?.message || "Validation failed"
+validation.error.message
       )
     }
 
@@ -225,7 +225,7 @@ export class AuthService extends BaseService {
     if (!validation.success) {
       return this.createError(
         "VALIDATION_ERROR",
-        validation.error?.message || "Validation failed"
+validation.error.message
       )
     }
 
@@ -267,7 +267,7 @@ export class AuthService extends BaseService {
     if (!validation.success) {
       return this.createError(
         "VALIDATION_ERROR",
-        validation.error?.message || "Validation failed"
+validation.error.message
       )
     }
 
@@ -323,7 +323,7 @@ export class AuthService extends BaseService {
           },
         })
 
-        if (!user?.password) {
+        if (!user || !user.password) {
           throw new Error("User not found or password not set")
         }
 
