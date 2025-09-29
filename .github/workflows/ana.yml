@@ -59,11 +59,32 @@ jobs:
               // For check_suite events, we need to find the workflow run from check runs
               const checkSuite = context.payload.check_suite;
               
+              // CRITICAL: Filter for CI test workflows only (Issue #326 Cursor feedback)
+              // This prevents Ana from analyzing unrelated check suites (Vercel, Bugbot, etc)
+              const targetWorkflows = ['CI Tests', 'Optimized CI Tests'];
+              
               // Get check runs for this check suite
               const { data: checkRuns } = await github.rest.checks.listForSuite({
                 ...context.repo,
                 check_suite_id: checkSuite.id,
               });
+              
+              // Check if any check run belongs to a target CI workflow
+              const isTargetWorkflow = checkRuns.check_runs.some(run => {
+                const runName = run.name || '';
+                return targetWorkflows.some(target => 
+                  runName.includes(target) || 
+                  run.details_url?.includes('CI') ||
+                  run.details_url?.includes('tests')
+                );
+              });
+              
+              if (!isTargetWorkflow) {
+                console.log(`check_suite event: Skipping non-CI workflow check suite (ID: ${checkSuite.id})`);
+                return { workflow_run_id: null };
+              }
+              
+              console.log(`check_suite event: Confirmed CI test workflow, proceeding with analysis`);
               
               // Find workflow run ID from check run details URL
               // Check run details_url format: https://github.com/owner/repo/runs/WORKFLOW_RUN_ID?check_suite_focus=true

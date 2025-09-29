@@ -181,6 +181,69 @@ describe("Ana Check Suite Trigger Configuration (Issue #326)", () => {
         ).toBe(true)
       }
     })
+
+    it("should filter check_suite events by target workflow names", () => {
+      const analysisJob = anaWorkflowConfig.jobs["analyze-ci-failures"]
+
+      const extractRunIdStep = analysisJob.steps.find(
+        (step: any) => step.id === "extract-workflow-run-id"
+      )
+
+      expect(extractRunIdStep).toBeDefined()
+
+      const script = extractRunIdStep.with.script
+
+      // CRITICAL: Must filter for CI test workflows only (Issue #326 Cursor feedback)
+      // Should define target workflows array
+      expect(script).toContain("targetWorkflows")
+      expect(script).toContain("CI Tests")
+      expect(script).toContain("Optimized CI Tests")
+    })
+
+    it("should skip check_suite events from non-CI workflows like Vercel or Bugbot", () => {
+      const analysisJob = anaWorkflowConfig.jobs["analyze-ci-failures"]
+
+      const extractRunIdStep = analysisJob.steps.find(
+        (step: any) => step.id === "extract-workflow-run-id"
+      )
+
+      expect(extractRunIdStep).toBeDefined()
+
+      const script = extractRunIdStep.with.script
+
+      // Should check if check run names match target workflows
+      // This prevents analyzing Vercel, Cursor Bugbot, or other unrelated check suites
+      if (script.includes("check_suite")) {
+        expect(script).toContain("check_runs")
+
+        // Should have logic to match against target workflows
+        expect(
+          script.includes("some") ||
+            script.includes("find") ||
+            script.includes("filter")
+        ).toBe(true)
+      }
+    })
+
+    it("should return null workflow_run_id for non-target check suites", () => {
+      const analysisJob = anaWorkflowConfig.jobs["analyze-ci-failures"]
+
+      const extractRunIdStep = analysisJob.steps.find(
+        (step: any) => step.id === "extract-workflow-run-id"
+      )
+
+      const script = extractRunIdStep.with.script
+
+      // Should return null if not a target workflow
+      // This will cause subsequent steps to skip
+      if (script.includes("check_suite")) {
+        const returnNullCount = (script.match(/workflow_run_id: null/g) || [])
+          .length
+
+        // Should have multiple return null paths for different skip conditions
+        expect(returnNullCount).toBeGreaterThanOrEqual(2)
+      }
+    })
   })
 
   describe("Integration Points", () => {
