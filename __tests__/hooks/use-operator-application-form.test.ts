@@ -107,9 +107,9 @@ describe("useOperatorApplicationForm", () => {
     )
 
     await waitFor(() => {
+      // Defensive programming: Assert suggestions array exists before accessing elements
+      expect(result.current.suggestions).toBeDefined()
       expect(result.current.suggestions).toHaveLength(1)
-      // Defensive programming: Check array length before accessing elements
-      expect(result.current.suggestions.length).toBeGreaterThan(0)
       expect(result.current.suggestions[0]).toMatchObject({
         placeId: "place-1",
         displayName: "123 Main St, City, State",
@@ -344,8 +344,14 @@ describe("useOperatorApplicationForm", () => {
   })
 
   it("should set loading states correctly during submission", async () => {
-    let resolvePromise: (value: { ok: boolean; json: () => Promise<{ success: boolean }> }) => void
-    const promise = new Promise<{ ok: boolean; json: () => Promise<{ success: boolean }> }>((resolve) => {
+    let resolvePromise: (value: {
+      ok: boolean
+      json: () => Promise<{ success: boolean }>
+    }) => void
+    const promise = new Promise<{
+      ok: boolean
+      json: () => Promise<{ success: boolean }>
+    }>((resolve) => {
       resolvePromise = resolve
     })
 
