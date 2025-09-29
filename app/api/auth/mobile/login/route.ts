@@ -51,8 +51,13 @@ export async function POST(
 
     if (!result.success) {
       // Check if it's a database error vs authentication failure
-      const errorMessage = String(result.error?.details?.originalError || result.error?.message || "")
-      if (errorMessage.toLowerCase().includes("database") || errorMessage.toLowerCase().includes("connection")) {
+      const errorMessage = String(
+        result?.error?.details?.originalError || result?.error?.message || ""
+      )
+      if (
+        errorMessage.toLowerCase().includes("database") ||
+        errorMessage.toLowerCase().includes("connection")
+      ) {
         return NextResponse.json(
           {
             success: false,
@@ -61,7 +66,7 @@ export async function POST(
           { status: 500 }
         )
       }
-      
+
       return NextResponse.json(
         {
           success: false,
@@ -71,7 +76,7 @@ export async function POST(
       )
     }
 
-    const user = result.data
+    const user = result?.data
     if (!user) {
       return NextResponse.json(
         {

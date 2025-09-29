@@ -30,7 +30,7 @@ async function deletePost(postId: string) {
     method: "DELETE",
   })
 
-  if (!response?.ok) {
+  if (!response.ok) {
     toast({
       title: "Something went wrong.",
       description: "Your post was not deleted. Please try again.",

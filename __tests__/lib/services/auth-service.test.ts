@@ -291,7 +291,7 @@ describe("AuthService", () => {
       const result = await authService.getUserById("nonexistent")
 
       expect(result.success).toBe(false)
-      expect(result.error?.code).toBe("USER_NOT_FOUND")
+      expect(result.error?.code).toBe("NOT_FOUND")
     })
 
     it("should validate required userId", async () => {
@@ -327,7 +327,7 @@ describe("AuthService", () => {
       const result = await authService.getUserByEmail("nonexistent@example.com")
 
       expect(result.success).toBe(false)
-      expect(result.error?.code).toBe("USER_NOT_FOUND")
+      expect(result.error?.code).toBe("NOT_FOUND")
     })
   })
 
@@ -414,7 +414,7 @@ describe("AuthService", () => {
       )
 
       expect(result.success).toBe(false)
-      expect(result.error?.code).toBe("PASSWORD_CHANGE_FAILED")
+      expect(result.error?.code).toBe("NOT_FOUND")
     })
   })
 

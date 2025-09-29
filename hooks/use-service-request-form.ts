@@ -87,7 +87,7 @@ export function useServiceRequestForm({ user, notifications }: UseServiceRequest
         // Service returned an error
         setJobSiteSuggestions([])
         notificationCallbacks.showError(
-          result.error?.message || "Unable to search for addresses at the moment. Please enter the address manually.",
+          result.error.message || "Unable to search for addresses at the moment. Please enter the address manually.",
           "Address search unavailable"
         )
       }

@@ -38,7 +38,7 @@ export function UserNameForm({ user, className, ...props }: UserNameFormProps) {
   } = useForm<FormData>({
     resolver: zodResolver(userNameSchema),
     defaultValues: {
-      name: user?.name || "",
+      name: user.name || "",
     },
   })
   const [isSaving, setIsSaving] = React.useState<boolean>(false)
@@ -46,7 +46,7 @@ export function UserNameForm({ user, className, ...props }: UserNameFormProps) {
   async function onSubmit(data: FormData) {
     setIsSaving(true)
 
-    const response = await fetch(`/api/users/${user.id}`, {
+    const response = await fetch(`/api/users/${user?.id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -58,7 +58,7 @@ export function UserNameForm({ user, className, ...props }: UserNameFormProps) {
 
     setIsSaving(false)
 
-    if (!response?.ok) {
+    if (!response.ok) {
       toast({
         title: "Something went wrong.",
         description: "Your name was not updated. Please try again.",
@@ -100,7 +100,7 @@ export function UserNameForm({ user, className, ...props }: UserNameFormProps) {
               size={32}
               {...register("name")}
             />
-            {errors?.name && (
+            {errors.name && (
               <p className="px-1 text-xs text-red-600">{errors.name.message}</p>
             )}
           </div>
@@ -111,9 +111,7 @@ export function UserNameForm({ user, className, ...props }: UserNameFormProps) {
             className={cn(buttonVariants(), className)}
             disabled={isSaving}
           >
-            {isSaving && (
-              <Icons.spinner className="mr-2 size-4 animate-spin" />
-            )}
+            {isSaving && <Icons.spinner className="mr-2 size-4 animate-spin" />}
             <span>Save</span>
           </button>
         </CardFooter>

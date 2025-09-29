@@ -94,11 +94,11 @@ export function useManagerQueue(
 
           try {
             const errorData = await response.json()
-            if (response?.status === 401) {
+            if (response.status === 401) {
               errorMessage = "Authentication required. Please log in."
-            } else if (response?.status === 403) {
+            } else if (response.status === 403) {
               errorMessage = "Access denied. Manager permissions required."
-            } else if (response?.status === 409) {
+            } else if (response.status === 409) {
               errorMessage =
                 "Request cannot be approved at this time. Check request status."
             } else if (errorData?.error) {
@@ -106,11 +106,11 @@ export function useManagerQueue(
             }
           } catch {
             // Use status-based fallback
-            if (response?.status === 401) {
+            if (response.status === 401) {
               errorMessage = "Authentication required. Please log in."
-            } else if (response?.status === 403) {
+            } else if (response.status === 403) {
               errorMessage = "Access denied. Manager permissions required."
-            } else if (response?.status >= 500) {
+            } else if (response.status >= 500) {
               errorMessage = "Server error. Please try again later."
             }
           }
@@ -154,11 +154,11 @@ export function useManagerQueue(
 
           try {
             const errorData = await response.json()
-            if (response?.status === 401) {
+            if (response.status === 401) {
               errorMessage = "Authentication required. Please log in."
-            } else if (response?.status === 403) {
+            } else if (response.status === 403) {
               errorMessage = "Access denied. Manager permissions required."
-            } else if (response?.status === 409) {
+            } else if (response.status === 409) {
               errorMessage =
                 "Request cannot be rejected at this time. Check request status."
             } else if (errorData?.error) {
@@ -166,11 +166,11 @@ export function useManagerQueue(
             }
           } catch {
             // Use status-based fallback
-            if (response?.status === 401) {
+            if (response.status === 401) {
               errorMessage = "Authentication required. Please log in."
-            } else if (response?.status === 403) {
+            } else if (response.status === 403) {
               errorMessage = "Access denied. Manager permissions required."
-            } else if (response?.status >= 500) {
+            } else if (response.status >= 500) {
               errorMessage = "Server error. Please try again later."
             }
           }
@@ -214,22 +214,22 @@ export function useManagerQueue(
 
           try {
             const errorData = await response.json()
-            if (response?.status === 401) {
+            if (response.status === 401) {
               errorMessage = "Authentication required. Please log in."
-            } else if (response?.status === 403) {
+            } else if (response.status === 403) {
               errorMessage = "Access denied. Manager permissions required."
-            } else if (response?.status === 409) {
+            } else if (response.status === 409) {
               errorMessage = "Operator assignment failed. Check availability."
             } else if (errorData?.error) {
               errorMessage = errorData.error
             }
           } catch {
             // Use status-based fallback
-            if (response?.status === 401) {
+            if (response.status === 401) {
               errorMessage = "Authentication required. Please log in."
-            } else if (response?.status === 403) {
+            } else if (response.status === 403) {
               errorMessage = "Access denied. Manager permissions required."
-            } else if (response?.status >= 500) {
+            } else if (response.status >= 500) {
               errorMessage = "Server error. Please try again later."
             }
           }

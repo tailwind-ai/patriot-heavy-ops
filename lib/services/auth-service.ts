@@ -69,10 +69,7 @@ export class AuthService extends BaseService {
       ["email", "password"]
     )
     if (!validation.success) {
-      return this.createError(
-        "VALIDATION_ERROR",
-        validation.error?.message || "Validation failed"
-      )
+      return this.createError("VALIDATION_ERROR", validation.error.message)
     }
 
     return this.handleAsync(
@@ -129,10 +126,7 @@ export class AuthService extends BaseService {
       "password",
     ])
     if (!validation.success) {
-      return this.createError(
-        "VALIDATION_ERROR",
-        validation.error?.message || "Validation failed"
-      )
+      return this.createError("VALIDATION_ERROR", validation.error.message)
     }
 
     return this.handleAsync(
@@ -183,10 +177,7 @@ export class AuthService extends BaseService {
 
     const validation = this.validateRequired({ userId }, ["userId"])
     if (!validation.success) {
-      return this.createError(
-        "VALIDATION_ERROR",
-        validation.error?.message || "Validation failed"
-      )
+      return this.createError("VALIDATION_ERROR", validation.error.message)
     }
 
     return this.handleAsync(
@@ -223,10 +214,7 @@ export class AuthService extends BaseService {
 
     const validation = this.validateRequired({ email }, ["email"])
     if (!validation.success) {
-      return this.createError(
-        "VALIDATION_ERROR",
-        validation.error?.message || "Validation failed"
-      )
+      return this.createError("VALIDATION_ERROR", validation.error.message)
     }
 
     return this.handleAsync(
@@ -265,10 +253,7 @@ export class AuthService extends BaseService {
 
     const validation = this.validateRequired({ userId }, ["userId"])
     if (!validation.success) {
-      return this.createError(
-        "VALIDATION_ERROR",
-        validation.error?.message || "Validation failed"
-      )
+      return this.createError("VALIDATION_ERROR", validation.error.message)
     }
 
     return this.handleAsync(
@@ -323,8 +308,12 @@ export class AuthService extends BaseService {
           },
         })
 
-        if (!user?.password) {
-          throw new Error("User not found or password not set")
+        if (!user) {
+          throw new Error("User not found")
+        }
+
+        if (!user.password) {
+          throw new Error("Password not set for user")
         }
 
         // Verify current password
@@ -337,7 +326,7 @@ export class AuthService extends BaseService {
         const hashedPassword = await hashPassword(newPassword)
 
         // Update password
-        await db?.user.update({
+        await db.user.update({
           where: {
             id: userId,
           },
@@ -412,16 +401,14 @@ export class AuthService extends BaseService {
     // Validate the update data
     const validation = userNameSchema.safeParse(updates)
     if (!validation.success) {
-      return this.createError(
-        "VALIDATION_ERROR",
-        "Invalid profile data",
-        { issues: validation.error.issues }
-      )
+      return this.createError("VALIDATION_ERROR", "Invalid profile data", {
+        issues: validation.error.issues,
+      })
     }
 
     return this.handleAsync(
       async () => {
-        await db?.user.update({
+        await db.user.update({
           where: {
             id: userId,
           },

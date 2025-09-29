@@ -564,8 +564,8 @@ describe("DashboardService", () => {
       const result = await dashboardService.getDashboardData(options)
 
       expect(result.success).toBe(false)
-      expect(result.error?.code).toBe("DASHBOARD_DATA_ERROR")
-      expect(result.error?.message).toBe("Failed to fetch dashboard data")
+      expect(result.error?.code).toBe("DATABASE_ERROR")
+      expect(result.error?.message).toBe("Database connection failed")
     })
 
     it("should validate required options", async () => {

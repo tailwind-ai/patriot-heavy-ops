@@ -94,7 +94,7 @@ export function useOperatorApplicationForm({ user, notifications }: UseOperatorA
     setIsSaving(true)
 
     try {
-      const response = await fetch(`/api/users/${user.id}/operator-application`, {
+      const response = await fetch(`/api/users/${user?.id}/operator-application`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -104,7 +104,7 @@ export function useOperatorApplicationForm({ user, notifications }: UseOperatorA
         }),
       })
 
-      if (!response?.ok) {
+      if (!response.ok) {
         notificationCallbacks.showError(
           "Your application was not submitted. Please try again.",
           "Something went wrong."

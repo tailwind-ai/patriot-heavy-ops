@@ -15,7 +15,7 @@ export async function POST(
 
     // Ensure user is authenticated and has access to this user.
     const session = await getServerSession(authOptions)
-    if (!session?.user || params.userId !== session?.user.id) {
+    if (!session?.user || params?.userId !== session?.user?.id) {
       return new Response(null, { status: 403 })
     }
 
