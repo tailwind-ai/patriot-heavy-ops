@@ -38,7 +38,7 @@ export function UserNameForm({ user, className, ...props }: UserNameFormProps) {
   } = useForm<FormData>({
     resolver: zodResolver(userNameSchema),
     defaultValues: {
-      name: user?.name || "",
+      name: user.name || "",
     },
   })
   const [isSaving, setIsSaving] = React.useState<boolean>(false)
@@ -100,7 +100,7 @@ export function UserNameForm({ user, className, ...props }: UserNameFormProps) {
               size={32}
               {...register("name")}
             />
-            {errors?.name && (
+            {errors.name && (
               <p className="px-1 text-xs text-red-600">{errors.name.message}</p>
             )}
           </div>
