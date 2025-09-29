@@ -627,7 +627,7 @@ export class ServiceRequestService extends BaseService {
 
         if (hasPermissionSafe(options.userRole, "view_all_requests")) {
           // Managers and Admins can see all requests
-          serviceRequests = await db.serviceRequest.findMany({
+          serviceRequests = await db?.serviceRequest.findMany({
             select: {
               id: true,
               title: true,
@@ -678,7 +678,7 @@ export class ServiceRequestService extends BaseService {
           })
         } else if (hasPermissionSafe(options.userRole, "view_assignments")) {
           // Operators can see requests they're assigned to + their own requests
-          serviceRequests = await db.serviceRequest.findMany({
+          serviceRequests = await db?.serviceRequest.findMany({
             select: {
               id: true,
               title: true,
@@ -734,7 +734,7 @@ export class ServiceRequestService extends BaseService {
           })
         } else if (hasPermissionSafe(options.userRole, "view_own_requests")) {
           // Regular users can only see their own requests
-          serviceRequests = await db.serviceRequest.findMany({
+          serviceRequests = await db?.serviceRequest.findMany({
             select: {
               id: true,
               title: true,
@@ -835,7 +835,7 @@ export class ServiceRequestService extends BaseService {
 
     return this.handleAsync(
       async () => {
-        const serviceRequest = await db.serviceRequest.create({
+        const serviceRequest = await db?.serviceRequest.create({
           data: {
             title: input.title,
             description: input.description ?? null,
@@ -939,7 +939,7 @@ export class ServiceRequestService extends BaseService {
           throw error
         }
 
-        const serviceRequest = await db.serviceRequest.findUnique({
+        const serviceRequest = await db?.serviceRequest.findUnique({
           where: {
             id: options.requestId,
           },
@@ -1043,7 +1043,7 @@ export class ServiceRequestService extends BaseService {
         if (updates.equipmentDetail !== undefined) updateData.equipmentDetail = updates.equipmentDetail
         if (updates.internalNotes !== undefined) updateData.internalNotes = updates.internalNotes
 
-        const serviceRequest = await db.serviceRequest.update({
+        const serviceRequest = await db?.serviceRequest.update({
           where: {
             id: requestId,
           },
@@ -1123,7 +1123,7 @@ export class ServiceRequestService extends BaseService {
           throw error
         }
 
-        await db.serviceRequest.delete({
+        await db?.serviceRequest.delete({
           where: {
             id: requestId,
           },
@@ -1145,7 +1145,7 @@ export class ServiceRequestService extends BaseService {
   ): Promise<ServiceResult<boolean>> {
     return this.handleAsync(
       async () => {
-        const count = await db.serviceRequest.count({
+        const count = await db?.serviceRequest.count({
           where: {
             id: requestId,
             userId: userId,

@@ -474,4 +474,133 @@ describe("AuthService", () => {
       expect(authService.validateAuthUser(userWithNulls)).toBe(true)
     })
   })
+
+  describe("Database Null Safety (Issue #330)", () => {
+    it("should handle null database connection gracefully in authenticate", async () => {
+      // Temporarily set db.user to undefined to simulate connection failure
+      const originalUser = mockDb.user
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ;(mockDb as any).user = undefined
+
+      const credentials: LoginCredentials = {
+        email: "test@example.com",
+        password: "password123",
+      }
+
+      const result = await authService.authenticate(credentials)
+
+      expect(result.success).toBe(false)
+      expect(result.error?.code).toBe("AUTH_FAILED")
+
+      // Restore the mock
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ;(mockDb as any).user = originalUser
+    })
+
+    it("should handle null database connection gracefully in register", async () => {
+      const originalUser = mockDb.user
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ;(mockDb as any).user = undefined
+
+      const registerData: RegisterData = {
+        email: "new@example.com",
+        password: "password123",
+        name: "New User",
+      }
+
+      const result = await authService.register(registerData)
+
+      expect(result.success).toBe(false)
+      expect(result.error?.code).toBe("REGISTRATION_FAILED")
+
+      // Restore the mock
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ;(mockDb as any).user = originalUser
+    })
+
+    it("should handle null database connection gracefully in getUserById", async () => {
+      const originalUser = mockDb.user
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ;(mockDb as any).user = undefined
+
+      const result = await authService.getUserById("user-123")
+
+      expect(result.success).toBe(false)
+      expect(result.error?.code).toBe("USER_NOT_FOUND")
+
+      // Restore the mock
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ;(mockDb as any).user = originalUser
+    })
+
+    it("should handle null database connection gracefully in getUserByEmail", async () => {
+      const originalUser = mockDb.user
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ;(mockDb as any).user = undefined
+
+      const result = await authService.getUserByEmail("test@example.com")
+
+      expect(result.success).toBe(false)
+      expect(result.error?.code).toBe("USER_NOT_FOUND")
+
+      // Restore the mock
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ;(mockDb as any).user = originalUser
+    })
+
+    it("should handle null database connection gracefully in updateUser", async () => {
+      const originalUser = mockDb.user
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ;(mockDb as any).user = undefined
+
+      const result = await authService.updateUser("user-123", {
+        name: "Updated Name",
+      })
+
+      expect(result.success).toBe(false)
+      expect(result.error?.code).toBe("UPDATE_FAILED")
+
+      // Restore the mock
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ;(mockDb as any).user = originalUser
+    })
+
+    it("should handle null database connection gracefully in changePassword", async () => {
+      const originalUser = mockDb.user
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ;(mockDb as any).user = undefined
+
+      const result = await authService.changePassword(
+        "user-123",
+        "oldPassword",
+        "newPassword"
+      )
+
+      expect(result.success).toBe(false)
+      expect(result.error?.code).toBe("PASSWORD_CHANGE_FAILED")
+
+      // Restore the mock
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ;(mockDb as any).user = originalUser
+    })
+
+    it("should handle null database connection gracefully in updateUserProfile", async () => {
+      const originalUser = mockDb.user
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ;(mockDb as any).user = undefined
+
+      const result = await authService.updateUserProfile(
+        "user-123",
+        "user-123",
+        { name: "Updated Name" }
+      )
+
+      expect(result.success).toBe(false)
+      expect(result.error?.code).toBe("UPDATE_FAILED")
+
+      // Restore the mock
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ;(mockDb as any).user = originalUser
+    })
+  })
 })

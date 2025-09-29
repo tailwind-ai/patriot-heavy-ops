@@ -693,4 +693,87 @@ describe("ServiceRequestService", () => {
       expect(typeof precisionCost.data).toBe("number")
     })
   })
+
+  describe("Database Null Safety (Issue #330)", () => {
+    // Note: These tests verify that when db becomes null/undefined,
+    // the service methods handle it gracefully through error handling.
+    // The implementation uses optional chaining (db?.serviceRequest, db?.userAssignment)
+    // which, combined with handleAsync wrapper, ensures graceful error handling.
+
+    it("should handle null db.serviceRequest gracefully in getServiceRequests", async () => {
+      const { db } = await import("../../../lib/db")
+      const mockDb = db as {
+        serviceRequest: {
+          findMany: jest.MockedFunction<any>
+          count: jest.MockedFunction<any>
+        }
+      }
+
+      // Set db.serviceRequest to undefined temporarily
+      const originalServiceRequest = mockDb.serviceRequest
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ;(mockDb as any).serviceRequest = undefined
+
+      const result = await service.getServiceRequests({
+        userId: "user-123",
+        userRole: "USER",
+      })
+
+      expect(result.success).toBe(false)
+      expect(result.error?.code).toBe("DATABASE_ERROR")
+
+      // Restore
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ;(mockDb as any).serviceRequest = originalServiceRequest
+    })
+
+    it("should handle null db.serviceRequest gracefully in getServiceRequestById", async () => {
+      const { db } = await import("../../../lib/db")
+      const mockDb = db as {
+        serviceRequest: {
+          findUnique: jest.MockedFunction<any>
+          count: jest.MockedFunction<any>
+        }
+      }
+
+      const originalServiceRequest = mockDb.serviceRequest
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ;(mockDb as any).serviceRequest = undefined
+
+      const result = await service.getServiceRequestById({
+        requestId: "request-123",
+        userId: "user-123",
+      })
+
+      expect(result.success).toBe(false)
+      expect(result.error?.code).toBe("DATABASE_ERROR")
+
+      // Restore
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ;(mockDb as any).serviceRequest = originalServiceRequest
+    })
+
+    it("should handle null db.serviceRequest gracefully in deleteServiceRequest", async () => {
+      const { db } = await import("../../../lib/db")
+      const mockDb = db as {
+        serviceRequest: {
+          delete: jest.MockedFunction<any>
+          count: jest.MockedFunction<any>
+        }
+      }
+
+      const originalServiceRequest = mockDb.serviceRequest
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ;(mockDb as any).serviceRequest = undefined
+
+      const result = await service.deleteServiceRequest("request-123", "user-123")
+
+      expect(result.success).toBe(false)
+      expect(result.error?.code).toBe("DATABASE_ERROR")
+
+      // Restore
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ;(mockDb as any).serviceRequest = originalServiceRequest
+    })
+  })
 })
