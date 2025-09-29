@@ -606,15 +606,15 @@ export class AnaAnalyzer {
   /**
    * Detect workflow context for conditional analysis (Issue #303 Phase 3)
    */
-  private detectWorkflowContext(workflowRun: any): {
+  private detectWorkflowContext(workflowRun: Record<string, unknown>): {
     type: "pr" | "main" | "release" | "unknown"
     branch: string
     event: string
     isPR: boolean
     isMainBranch: boolean
   } {
-    const branch = workflowRun.head_branch || "unknown"
-    const event = workflowRun.event || "unknown"
+    const branch = (workflowRun.head_branch as string) || "unknown"
+    const event = (workflowRun.event as string) || "unknown"
 
     // Determine workflow type
     let type: "pr" | "main" | "release" | "unknown" = "unknown"

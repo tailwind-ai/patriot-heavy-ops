@@ -110,7 +110,7 @@ export class AuthService extends BaseService {
 
         // Return user without password
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { password, ...authUser } = user
+        const { password: _password, ...authUser } = user
         return authUser as AuthUser
       },
       "AUTH_FAILED",

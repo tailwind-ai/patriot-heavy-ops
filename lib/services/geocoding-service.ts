@@ -276,20 +276,21 @@ export class MobileLocationProvider implements GeocodingProvider {
   name = "mobile-location"
 
   async searchAddresses(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _query: string,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _options?: GeocodingSearchOptions
   ): Promise<GeocodingAddress[]> {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const _unused = { _query, _options }
     // Future implementation for React Native location services
     // This would integrate with device GPS and local geocoding
     throw new Error("Mobile location provider not yet implemented")
   }
 
   async reverseGeocode(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _coordinates: GeocodingCoordinates
   ): Promise<GeocodingAddress | null> {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const _unused = _coordinates
     // Future implementation for React Native reverse geocoding
     throw new Error("Mobile location provider not yet implemented")
   }

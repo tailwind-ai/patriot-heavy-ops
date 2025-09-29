@@ -99,7 +99,7 @@ export interface MobileApiError {
 /**
  * Mobile API success response wrapper
  */
-export interface MobileApiSuccess<T = any> {
+export interface MobileApiSuccess<T = unknown> {
   success: true
   data: T
 }
@@ -107,7 +107,7 @@ export interface MobileApiSuccess<T = any> {
 /**
  * Generic mobile API response
  */
-export type MobileApiResponse<T = any> = MobileApiSuccess<T> | MobileApiError
+export type MobileApiResponse<T = unknown> = MobileApiSuccess<T> | MobileApiError
 
 /**
  * Rate limiting configuration

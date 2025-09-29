@@ -89,3 +89,44 @@ These open source foundations save months of development time by providing battl
   This containerization platform provides consistent development environments for Patriot Heavy Ops. Docker configuration can be found in `Dockerfile.dev` and `docker-compose.yml` for local development setup.
 - [Vercel Analytics](https://vercel.com/analytics)
   This analytics service tracks user behavior and performance metrics for Patriot Heavy Ops. Analytics integration is configured in the application components for monitoring contractor and operator engagement.
+
+## Development Workflow
+
+### Pre-commit Validation
+
+Per `.cursorrules.md` standards, all code changes must pass validation before committing:
+
+```bash
+# Manual validation (run before every commit)
+npm run validate
+
+# Docker-based validation (recommended for consistency)
+npm run validate:docker
+
+# Or use the validation script directly
+./scripts/validate-pre-commit.sh
+```
+
+The validation process includes:
+- **TypeScript type checking**: `npx tsc --noEmit`
+- **ESLint code quality**: `npx eslint . --quiet`
+
+### Local CI Simulation
+
+Before pushing changes, simulate the CI environment:
+
+```bash
+# Run all tests in Docker environment
+docker-compose exec app npm test
+
+# Full validation pipeline
+docker-compose exec app npm run validate && docker-compose exec app npm test
+```
+
+### Type Safety Standards
+
+This project enforces strict type safety:
+- **Zero `any` types allowed** - Use proper TypeScript types
+- **Unused parameters** - Prefix with underscore (`_unused`)
+- **Optional chaining required** - Use `obj?.prop` for uncertain data
+- **Error boundaries** - Wrap uncertain operations in try-catch blocks

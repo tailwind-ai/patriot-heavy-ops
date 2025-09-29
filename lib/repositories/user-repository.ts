@@ -275,7 +275,7 @@ export class UserRepository extends BaseRepository {
   ): Promise<RepositoryResult<SafeUser[]>> {
     return this.handleAsync(
       () => {
-        let query: any = {
+        let query = {
           select: {
             id: true,
             name: true,
@@ -355,7 +355,7 @@ export class UserRepository extends BaseRepository {
           }
         }
 
-        let query: any = {
+        let query = {
           where: whereClause,
           select: {
             id: true,
@@ -745,7 +745,7 @@ export class UserRepository extends BaseRepository {
 
     return this.handleAsync(
       () => {
-        let query: any = {
+        let query = {
           where: { role },
           select: {
             id: true,
