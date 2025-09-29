@@ -5,7 +5,7 @@ import { formatDate } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 import { PostOperations } from "@/components/post-operations"
 
-interface PostItemProps {
+type PostItemProps = {
   post: Pick<Post, "id" | "title" | "published" | "createdAt">
 }
 

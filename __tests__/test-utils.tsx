@@ -3,14 +3,14 @@ import { render, RenderOptions } from "@testing-library/react"
 import { SessionProvider } from "next-auth/react"
 import type { Session } from "next-auth"
 
-// Type-safe mock interfaces with proper generics
-interface MockResponse<T = unknown> {
+// Type-safe mock types with proper generics
+type MockResponse<T = unknown> = {
   ok: boolean
   status?: number
   json: () => Promise<T>
 }
 
-interface MockRequest<T = unknown> {
+type MockRequest<T = unknown> = {
   json: () => Promise<T>
   method: string
 }
@@ -30,7 +30,7 @@ export const mockSession: Session = {
 }
 
 // Custom render function that includes providers
-interface CustomRenderOptions extends Omit<RenderOptions, "wrapper"> {
+type CustomRenderOptions = Omit<RenderOptions, "wrapper"> & {
   session?: Session | null
 }
 

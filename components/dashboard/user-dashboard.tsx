@@ -14,7 +14,7 @@ import { ServiceRequestCreateButton } from "@/components/service-request-create-
 import { SERVICE_REQUEST_STATUS } from "@/lib/constants/status"
 import { NotificationCallbacks } from "@/lib/utils/notifications"
 
-interface UserDashboardProps {
+type UserDashboardProps = {
   notifications?: NotificationCallbacks
   onNavigateToCreateRequest?: (() => void) | undefined
 }
@@ -54,7 +54,7 @@ function StatusBadge({ status }: { status: string }) {
 /**
  * Stats card component for dashboard metrics
  */
-interface StatsCardProps {
+type StatsCardProps = {
   title: string
   value: number
   icon: React.ComponentType<{ className?: string }>
@@ -82,7 +82,7 @@ function StatsCard({ title, value, icon: Icon, description, className }: StatsCa
 /**
  * Service request item component
  */
-interface ServiceRequestItemProps {
+type ServiceRequestItemProps = {
   request: {
     id: string
     title: string

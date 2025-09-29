@@ -13,7 +13,7 @@ import { NotificationCallbacks, createNoOpNotifications } from "@/lib/utils/noti
 
 type FormData = z.infer<typeof operatorApplicationSchema>
 
-interface UseOperatorApplicationFormProps {
+type UseOperatorApplicationFormProps = {
   user: Pick<User, "id" | "name">
   notifications?: NotificationCallbacks
 }

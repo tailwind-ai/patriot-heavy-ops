@@ -36,8 +36,8 @@ import userEvent from "@testing-library/user-event"
 import { SessionProvider } from "next-auth/react"
 import type { Session } from "next-auth"
 
-// Type-safe mock Response interface with proper generics
-interface MockResponse<T = unknown> {
+// Type-safe mock Response type with proper generics
+type MockResponse<T = unknown> = {
   ok: boolean
   status?: number
   json: () => Promise<T>
@@ -222,7 +222,9 @@ export const renderWithRole = (
 }
 
 // Mock fetch for successful responses with proper typing
-export const mockFetchSuccess = <T = Record<string, unknown>>(data: T = {} as T) => {
+export const mockFetchSuccess = <T = Record<string, unknown>,>(
+  data: T = {} as T
+) => {
   const mockFetch = global.fetch as jest.MockedFunction<typeof fetch>
   const response = new Response(JSON.stringify(data), {
     status: 200,
@@ -286,7 +288,11 @@ export const testFormValidation = async (
 export const testSuccessfulSubmission = async (
   formTester: FormTester,
   formData: Record<string, string>,
-  expectedApiCall?: { url: string; method: string; body?: Record<string, unknown> }
+  expectedApiCall?: {
+    url: string
+    method: string
+    body?: Record<string, unknown>
+  }
 ) => {
   // Fill form with valid data
   for (const [field, value] of Object.entries(formData)) {

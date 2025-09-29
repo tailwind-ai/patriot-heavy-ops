@@ -12,7 +12,7 @@ import { NotificationCallbacks, createNoOpNotifications } from "@/lib/utils/noti
 
 type FormData = z.infer<typeof serviceRequestSchema>
 
-interface UseServiceRequestFormProps {
+type UseServiceRequestFormProps = {
   user: {
     id: string
     name: string | null

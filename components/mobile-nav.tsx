@@ -9,7 +9,7 @@ import { useLockBody } from "@/hooks/use-lock-body"
 import { Icons } from "@/components/icons"
 import { buttonVariants } from "@/components/ui/button"
 
-interface MobileNavProps {
+type MobileNavProps = {
   items: MainNavItem[]
   children?: React.ReactNode
   onClose: () => void

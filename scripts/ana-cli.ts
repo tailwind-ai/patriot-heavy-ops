@@ -19,8 +19,8 @@ import {
   createAnaWebhookPayload,
 } from "../lib/ana/webhook-client"
 
-// Legacy interface for backward compatibility with workflow output
-interface LegacyAnaResults {
+// Legacy type for backward compatibility with workflow output
+type LegacyAnaResults = {
   todos: Array<{
     id: string
     content: string

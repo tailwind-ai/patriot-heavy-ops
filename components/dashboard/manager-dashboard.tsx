@@ -28,7 +28,7 @@ import { Label } from "@/components/ui/label"
 /**
  * Stats card component for manager metrics
  */
-interface StatsCardProps {
+type StatsCardProps = {
   title: string
   value: number | string
   icon: React.ComponentType<{ className?: string }>
@@ -56,7 +56,7 @@ function StatsCard({ title, value, icon: Icon, description, className }: StatsCa
 /**
  * Pending approval item component with approve/reject actions
  */
-interface PendingApprovalItemProps {
+type PendingApprovalItemProps = {
   request: {
     id: string
     title: string
@@ -219,7 +219,7 @@ function PendingApprovalItem({ request, onApprove, onReject, isProcessing }: Pen
 /**
  * Service request overview item for all requests tab
  */
-interface ServiceRequestOverviewItemProps {
+type ServiceRequestOverviewItemProps = {
   request: {
     id: string
     title: string

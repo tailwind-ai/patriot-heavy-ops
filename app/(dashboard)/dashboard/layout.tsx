@@ -7,7 +7,7 @@ import { DashboardNav } from "@/components/nav"
 import { SiteFooter } from "@/components/site-footer"
 import { UserAccountNav } from "@/components/user-account-nav"
 
-interface DashboardLayoutProps {
+type DashboardLayoutProps = {
   children?: React.ReactNode
 }
 

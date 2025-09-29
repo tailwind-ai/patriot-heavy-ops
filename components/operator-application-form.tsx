@@ -18,8 +18,7 @@ import { Label } from "@/components/ui/label"
 import { Icons } from "@/components/icons"
 import { useOperatorApplicationForm } from "@/hooks/use-operator-application-form"
 
-interface OperatorApplicationFormProps
-  extends React.HTMLAttributes<HTMLFormElement> {
+type OperatorApplicationFormProps = React.HTMLAttributes<HTMLFormElement> & {
   user: Pick<User, "id" | "name">
 }
 

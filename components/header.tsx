@@ -1,4 +1,4 @@
-interface DashboardHeaderProps {
+type DashboardHeaderProps = {
   heading: string
   text?: string
   children?: React.ReactNode

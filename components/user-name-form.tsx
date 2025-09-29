@@ -23,7 +23,7 @@ import { Label } from "@/components/ui/label"
 import { toast } from "@/components/ui/use-toast"
 import { Icons } from "@/components/icons"
 
-interface UserNameFormProps extends React.HTMLAttributes<HTMLFormElement> {
+type UserNameFormProps = React.HTMLAttributes<HTMLFormElement> & {
   user: Pick<User, "id" | "name">
 }
 

@@ -5,7 +5,7 @@ import { formatDate } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 import { ServiceRequestOperations } from "@/components/service-request-operations"
 
-interface ServiceRequestItemProps {
+type ServiceRequestItemProps = {
   serviceRequest: Pick<ServiceRequest, "id" | "title" | "status" | "equipmentCategory" | "jobSite" | "startDate" | "createdAt">
 }
 
