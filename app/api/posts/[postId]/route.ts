@@ -60,7 +60,7 @@ export async function PATCH(
       },
       data: {
         ...(body.title !== undefined && { title: body.title }),
-        ...(body.content !== undefined && { content: body.content as any }),
+        ...(body.content !== undefined && { content: body.content }),
       },
     })
 
