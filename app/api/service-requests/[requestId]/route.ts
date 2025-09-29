@@ -54,16 +54,16 @@ export async function GET(
     })
 
     if (!result.success) {
-      if (result.error?.code === "ACCESS_DENIED") {
+      if (result?.error?.code === "ACCESS_DENIED") {
         return new Response(null, { status: 403 })
       }
-      if (result.error?.code === "NOT_FOUND") {
+      if (result?.error?.code === "NOT_FOUND") {
         return new Response(null, { status: 404 })
       }
       return new Response(null, { status: 500 })
     }
 
-    return new Response(JSON.stringify(result.data))
+    return new Response(JSON.stringify(result?.data))
   } catch {
     return new Response(null, { status: 500 })
   }
@@ -92,17 +92,17 @@ export async function PATCH(
     )
 
     if (!result.success) {
-      if (result.error?.code === "ACCESS_DENIED") {
+      if (result?.error?.code === "ACCESS_DENIED") {
         return new Response(null, { status: 403 })
       }
-      if (result.error?.code === "VALIDATION_ERROR") {
-        const issues = result.error.details?.issues || result.error.details
+      if (result?.error?.code === "VALIDATION_ERROR") {
+        const issues = result?.error?.details?.issues || result?.error?.details
         return new Response(JSON.stringify(issues), { status: 422 })
       }
       return new Response(null, { status: 500 })
     }
 
-    return new Response(JSON.stringify(result.data))
+    return new Response(JSON.stringify(result?.data))
   } catch (error) {
     if (error instanceof z.ZodError) {
       return new Response(JSON.stringify(error.issues), { status: 422 })
@@ -132,7 +132,7 @@ export async function DELETE(
     )
 
     if (!result.success) {
-      if (result.error?.code === "ACCESS_DENIED") {
+      if (result?.error?.code === "ACCESS_DENIED") {
         return new Response(null, { status: 403 })
       }
       return new Response(null, { status: 500 })
