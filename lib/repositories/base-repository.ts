@@ -149,8 +149,8 @@ export abstract class BaseRepository {
   /**
    * Validate required parameters
    */
-  protected validateRequired(
-    params: Record<string, unknown>,
+  protected validateRequired<T extends Record<string, unknown>>(
+    params: T,
     requiredFields: string[]
   ): RepositoryResult<void> {
     const missing = requiredFields.filter(

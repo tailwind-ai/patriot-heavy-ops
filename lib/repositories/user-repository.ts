@@ -98,7 +98,7 @@ export interface UserWithAccounts extends User {
   }>
 }
 
-export interface UserCreateInput {
+export interface UserCreateInput extends Record<string, unknown> {
   name?: string
   email: string
   password?: string
@@ -400,7 +400,7 @@ export class UserRepository extends BaseRepository {
    */
   async create(data: UserCreateInput): Promise<RepositoryResult<SafeUser>> {
     const validation = this.validateRequired(
-      data as unknown as Record<string, unknown>,
+      data,
       ["email"]
     )
     if (!validation.success) {
@@ -532,7 +532,7 @@ export class UserRepository extends BaseRepository {
   async count(filters?: FilterOptions): Promise<RepositoryResult<number>> {
     return this.handleAsync(
       () => {
-        let query: { where?: Record<string, unknown> } = {}
+        let query: Parameters<typeof this.db.user.count>[0] = {}
 
         if (filters) {
           query = this.applyFilters(query, filters)

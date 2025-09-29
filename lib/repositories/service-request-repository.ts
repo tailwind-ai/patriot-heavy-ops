@@ -34,7 +34,7 @@ export interface ServiceRequestWithUser extends ServiceRequest {
   }
 }
 
-export interface ServiceRequestCreateInput {
+export interface ServiceRequestCreateInput extends Record<string, unknown> {
   title: string
   description?: string
   contactName: string
@@ -76,7 +76,7 @@ export interface ServiceRequestFilters {
   priority?: string
 }
 
-export interface RoleBasedAccessOptions {
+export interface RoleBasedAccessOptions extends Record<string, unknown> {
   userId: string
   userRole: UserRole
 }
@@ -163,7 +163,7 @@ export class ServiceRequestRepository
     pagination?: PaginationOptions
   ): Promise<RepositoryResult<ServiceRequestWithUser[]>> {
     const validation = this.validateRequired(
-      accessOptions as unknown as Record<string, unknown>,
+      accessOptions,
       ["userId", "userRole"]
     )
     if (!validation.success) {
@@ -269,7 +269,7 @@ export class ServiceRequestRepository
     data: ServiceRequestCreateInput
   ): Promise<RepositoryResult<ServiceRequest>> {
     const validation = this.validateRequired(
-      data as unknown as Record<string, unknown>,
+      data,
       [
         "title",
         "contactName",
