@@ -22,7 +22,19 @@ jest.mock("next-auth/next")
 
 import { db } from "@/lib/db"
 
-const mockDb = db as any
+// Type-safe mock database with proper function signatures
+type MockDb = {
+  user: {
+    update: jest.MockedFunction<
+      (args: {
+        where: { id: string }
+        data: Record<string, unknown>
+      }) => Promise<unknown>
+    >
+  }
+}
+
+const mockDb = db as unknown as MockDb
 const mockGetServerSession = getServerSession as jest.MockedFunction<
   typeof getServerSession
 >

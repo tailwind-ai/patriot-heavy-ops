@@ -3,17 +3,15 @@ import { render, RenderOptions } from "@testing-library/react"
 import { SessionProvider } from "next-auth/react"
 import type { Session } from "next-auth"
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
-// Type-safe mock interfaces
-interface MockResponse {
+// Type-safe mock interfaces with proper generics
+interface MockResponse<T = unknown> {
   ok: boolean
   status?: number
-  json: () => Promise<any>
+  json: () => Promise<T>
 }
 
-interface MockRequest {
-  json: () => Promise<any>
+interface MockRequest<T = unknown> {
+  json: () => Promise<T>
   method: string
 }
 
@@ -61,11 +59,11 @@ const customRender = (
 export * from "@testing-library/react"
 export { customRender as render }
 
-// Test helpers
-export const createMockRequest = (
-  body: any = {},
+// Test helpers with proper typing
+export const createMockRequest = <T = Record<string, unknown>>(
+  body: T = {} as T,
   method: string = "POST"
-): MockRequest => {
+): MockRequest<T> => {
   return {
     json: jest.fn().mockResolvedValue(body),
     method,
@@ -102,23 +100,23 @@ export const createMockSession = (
   expires: "2024-12-31",
 })
 
-// Mock fetch for successful responses
-export const mockFetchSuccess = (data: any = {}) => {
+// Mock fetch for successful responses with proper typing
+export const mockFetchSuccess = <T = Record<string, unknown>>(data: T = {} as T) => {
   const mockFetch = global.fetch as MockFetch
-  const mockResponse: MockResponse = {
+  const mockResponse: MockResponse<T> = {
     ok: true,
     json: () => Promise.resolve(data),
   }
   mockFetch.mockResolvedValueOnce(mockResponse as Response)
 }
 
-// Mock fetch for error responses
+// Mock fetch for error responses with proper typing
 export const mockFetchError = (
   message: string = "Error",
   status: number = 400
 ) => {
   const mockFetch = global.fetch as MockFetch
-  const mockResponse: MockResponse = {
+  const mockResponse: MockResponse<{ message: string }> = {
     ok: false,
     status,
     json: () => Promise.resolve({ message }),
