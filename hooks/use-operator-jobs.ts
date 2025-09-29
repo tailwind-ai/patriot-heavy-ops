@@ -11,14 +11,14 @@ import {
   createNoOpNotifications,
 } from "@/lib/utils/notifications"
 
-export interface UseOperatorJobsOptions {
+export type UseOperatorJobsOptions = {
   limit?: number
   offset?: number
   enableCaching?: boolean
   notifications?: NotificationCallbacks
 }
 
-export interface UseOperatorJobsReturn {
+export type UseOperatorJobsReturn = {
   availableJobs: DashboardServiceRequest[]
   activeAssignments: OperatorAssignment[]
   totalAssignments: number
