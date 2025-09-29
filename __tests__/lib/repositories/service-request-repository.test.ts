@@ -58,6 +58,8 @@ describe("ServiceRequestRepository", () => {
 
       const result = await repository.findById("sr123")
 
+      // Defensive programming: Assert result exists before accessing properties
+      expect(result).toBeDefined()
       expect(result.success).toBe(true)
       expect(result.data).toEqual(mockServiceRequest)
       expect(mockPrismaClient.serviceRequest.findUnique).toHaveBeenCalledWith({
@@ -101,6 +103,8 @@ describe("ServiceRequestRepository", () => {
     it("should handle validation error for missing ID", async () => {
       const result = await repository.findById("")
 
+      // Defensive programming: Assert result exists before accessing properties
+      expect(result).toBeDefined()
       expect(result.success).toBe(false)
       expect(result.error?.code).toBe("VALIDATION_ERROR")
       expect(mockPrismaClient.serviceRequest.findUnique).not.toHaveBeenCalled()
@@ -290,6 +294,8 @@ describe("ServiceRequestRepository", () => {
 
       const result = await repository.create(mockCreateInput)
 
+      // Defensive programming: Assert result exists before accessing properties
+      expect(result).toBeDefined()
       expect(result.success).toBe(true)
       expect(result.data).toEqual(mockCreatedRequest)
       expect(mockPrismaClient.serviceRequest.create).toHaveBeenCalledWith({
@@ -362,6 +368,8 @@ describe("ServiceRequestRepository", () => {
 
       const result = await repository.update("sr123", mockUpdateInput)
 
+      // Defensive programming: Assert result exists before accessing properties
+      expect(result).toBeDefined()
       expect(result.success).toBe(true)
       expect(result.data).toEqual(mockUpdatedRequest)
       expect(mockPrismaClient.serviceRequest.update).toHaveBeenCalledWith({
@@ -388,6 +396,8 @@ describe("ServiceRequestRepository", () => {
 
       const result = await repository.delete("sr123")
 
+      // Defensive programming: Assert result exists before accessing properties
+      expect(result).toBeDefined()
       expect(result.success).toBe(true)
       expect(result.data).toBe(true)
       expect(mockPrismaClient.serviceRequest.delete).toHaveBeenCalledWith({
