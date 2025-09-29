@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server"
  * Provides multiple layers of protection for sensitive endpoints
  */
 
-export interface SecurityConfig {
+export type SecurityConfig = {
   requireAuth?: boolean
   allowedIPs?: string[]
   requireApiKey?: boolean

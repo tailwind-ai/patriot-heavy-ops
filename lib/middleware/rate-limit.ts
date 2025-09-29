@@ -2,10 +2,10 @@ import { NextRequest, NextResponse } from "next/server"
 import { generateRateLimitKey } from "@/lib/utils/ip-utils"
 
 /**
- * Redis client interface for rate limiting
+ * Redis client type for rate limiting
  * Compatible with popular Redis clients like ioredis and node-redis
  */
-interface RedisClient {
+type RedisClient = {
   get(key: string): Promise<string | null>
   setex(key: string, seconds: number, value: string): Promise<string>
   del(key: string): Promise<number>
@@ -14,7 +14,7 @@ interface RedisClient {
 /**
  * Rate limiting configuration
  */
-interface RateLimitConfig {
+type RateLimitConfig = {
   windowMs: number
   maxRequests: number
   message?: string
@@ -25,15 +25,15 @@ interface RateLimitConfig {
 /**
  * Rate limit entry
  */
-interface RateLimitEntry {
+type RateLimitEntry = {
   count: number
   resetTime: number
 }
 
 /**
- * Rate limit store interface for different storage backends
+ * Rate limit store type for different storage backends
  */
-interface RateLimitStore {
+type RateLimitStore = {
   get(key: string): Promise<RateLimitEntry | null>
   set(key: string, entry: RateLimitEntry): Promise<void>
   delete(key: string): Promise<void>
