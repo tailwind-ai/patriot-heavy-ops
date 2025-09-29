@@ -70,11 +70,11 @@ describe("Dashboard Service Mobile Compatibility", () => {
 
   describe("Mobile Caching Patterns", () => {
     it("should support mobile-optimized cache TTL", async () => {
-      const mockDb = require("@/lib/db")
+      const { db } = await import("@/lib/db")
       
       // Mock successful database responses
-      mockDb.db.serviceRequest.count.mockResolvedValue(5)
-      mockDb.db.serviceRequest.findMany.mockResolvedValue([])
+      db.serviceRequest.count.mockResolvedValue(5)
+      db.serviceRequest.findMany.mockResolvedValue([])
 
       const mobileOptions = {
         userId: "mobile-user",
@@ -90,13 +90,13 @@ describe("Dashboard Service Mobile Compatibility", () => {
       // First call should hit database
       const result1 = await dashboardService.getDashboardData(mobileOptions, mobileCacheOptions)
       expect(result1.success).toBe(true)
-      expect(mockDb.db.serviceRequest.count).toHaveBeenCalledTimes(4)
+      expect(db.serviceRequest.count).toHaveBeenCalledTimes(4)
 
       // Second call should use cache
       const result2 = await dashboardService.getDashboardData(mobileOptions, mobileCacheOptions)
       expect(result2.success).toBe(true)
       // Database should not be called again
-      expect(mockDb.db.serviceRequest.count).toHaveBeenCalledTimes(4)
+      expect(db.serviceRequest.count).toHaveBeenCalledTimes(4)
     })
 
     it("should handle cache expiration for mobile scenarios", async () => {
@@ -178,10 +178,10 @@ describe("Dashboard Service Mobile Compatibility", () => {
     })
 
     it("should support React Native network state handling", async () => {
-      const mockDb = require("@/lib/db")
+      const { db } = await import("@/lib/db")
       
       // Simulate network unavailable scenario
-      mockDb.db.serviceRequest.count.mockRejectedValue(
+      db.serviceRequest.count.mockRejectedValue(
         new Error("Network request failed")
       )
 
@@ -202,11 +202,11 @@ describe("Dashboard Service Mobile Compatibility", () => {
 
   describe("Mobile Performance Optimization", () => {
     it("should handle large datasets efficiently for mobile", async () => {
-      const mockDb = require("@/lib/db")
+      const { db } = await import("@/lib/db")
       
       // Mock large dataset but with mobile-appropriate pagination
-      mockDb.db.serviceRequest.count.mockResolvedValue(1000)
-      mockDb.db.serviceRequest.findMany.mockResolvedValue(
+      db.serviceRequest.count.mockResolvedValue(1000)
+      db.serviceRequest.findMany.mockResolvedValue(
         Array.from({ length: 10 }, (_, i) => ({
           id: `mobile-req-${i}`,
           title: `Mobile Request ${i}`,
@@ -235,7 +235,7 @@ describe("Dashboard Service Mobile Compatibility", () => {
       expect(result.data!.stats.totalRequests).toBe(1000)
 
       // Verify mobile-appropriate pagination was used
-      expect(mockDb.db.serviceRequest.findMany).toHaveBeenCalledWith(
+      expect(db.serviceRequest.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
           take: 10,
         })
@@ -243,10 +243,10 @@ describe("Dashboard Service Mobile Compatibility", () => {
     })
 
     it("should support incremental loading for mobile scrolling", async () => {
-      const mockDb = require("@/lib/db")
+      const { db } = await import("@/lib/db")
       
-      mockDb.db.serviceRequest.count.mockResolvedValue(50)
-      mockDb.db.serviceRequest.findMany.mockResolvedValue([])
+      db.serviceRequest.count.mockResolvedValue(50)
+      db.serviceRequest.findMany.mockResolvedValue([])
 
       // Simulate mobile pagination/infinite scroll
       await dashboardService.getDashboardData({
@@ -256,7 +256,7 @@ describe("Dashboard Service Mobile Compatibility", () => {
         offset: 20, // Third page
       })
 
-      expect(mockDb.db.serviceRequest.findMany).toHaveBeenCalledWith(
+      expect(db.serviceRequest.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
           take: 10,
           skip: 20,
@@ -265,11 +265,11 @@ describe("Dashboard Service Mobile Compatibility", () => {
     })
 
     it("should minimize data transfer for mobile networks", async () => {
-      const mockDb = require("@/lib/db")
+      const { db } = await import("@/lib/db")
       
       // Mock minimal data response for mobile
-      mockDb.db.serviceRequest.count.mockResolvedValue(5)
-      mockDb.db.serviceRequest.findMany.mockResolvedValue([
+      db.serviceRequest.count.mockResolvedValue(5)
+      db.serviceRequest.findMany.mockResolvedValue([
         {
           id: "mobile-req-1",
           title: "Mobile Request",
@@ -295,7 +295,7 @@ describe("Dashboard Service Mobile Compatibility", () => {
       expect(result.success).toBe(true)
       
       // Verify only essential fields are selected (would be configured in real implementation)
-      expect(mockDb.db.serviceRequest.findMany).toHaveBeenCalledWith(
+      expect(db.serviceRequest.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
           select: expect.objectContaining({
             id: true,
@@ -310,10 +310,10 @@ describe("Dashboard Service Mobile Compatibility", () => {
 
   describe("Mobile Error Handling", () => {
     it("should handle intermittent connectivity gracefully", async () => {
-      const mockDb = require("@/lib/db")
+      const { db } = await import("@/lib/db")
       
       // Simulate intermittent connection failure
-      mockDb.db.serviceRequest.count
+      db.serviceRequest.count
         .mockRejectedValueOnce(new Error("Connection timeout"))
         .mockResolvedValue(5)
 
@@ -325,7 +325,7 @@ describe("Dashboard Service Mobile Compatibility", () => {
       expect(result1.success).toBe(false)
 
       // Second attempt succeeds (connection restored)
-      mockDb.db.serviceRequest.findMany.mockResolvedValue([])
+      db.serviceRequest.findMany.mockResolvedValue([])
       const result2 = await dashboardService.getDashboardData({
         userId: "mobile-user",
         userRole: "USER",
@@ -334,9 +334,9 @@ describe("Dashboard Service Mobile Compatibility", () => {
     })
 
     it("should provide mobile-friendly error messages", async () => {
-      const mockDb = require("@/lib/db")
+      const { db } = await import("@/lib/db")
       
-      mockDb.db.serviceRequest.count.mockRejectedValue(
+      db.serviceRequest.count.mockRejectedValue(
         new Error("Network unavailable")
       )
 
@@ -406,7 +406,7 @@ describe("Dashboard Service Mobile Compatibility", () => {
 
   describe("Cross-Platform Data Consistency", () => {
     it("should maintain consistent data format across platforms", async () => {
-      const mockDb = require("@/lib/db")
+      const { db } = await import("@/lib/db")
       
       const consistentData = {
         id: "cross-platform-req",
@@ -423,8 +423,8 @@ describe("Dashboard Service Mobile Compatibility", () => {
         updatedAt: new Date("2024-01-10T08:00:00Z"),
       }
 
-      mockDb.db.serviceRequest.count.mockResolvedValue(1)
-      mockDb.db.serviceRequest.findMany.mockResolvedValue([consistentData])
+      db.serviceRequest.count.mockResolvedValue(1)
+      db.serviceRequest.findMany.mockResolvedValue([consistentData])
 
       const result = await dashboardService.getDashboardData({
         userId: "cross-platform-user",
@@ -444,12 +444,12 @@ describe("Dashboard Service Mobile Compatibility", () => {
     })
 
     it("should handle timezone differences for mobile users", async () => {
-      const mockDb = require("@/lib/db")
+      const { db } = await import("@/lib/db")
       
       const utcDate = new Date("2024-01-15T10:00:00Z")
       
-      mockDb.db.serviceRequest.count.mockResolvedValue(1)
-      mockDb.db.serviceRequest.findMany.mockResolvedValue([
+      db.serviceRequest.count.mockResolvedValue(1)
+      db.serviceRequest.findMany.mockResolvedValue([
         {
           id: "timezone-req",
           title: "Timezone Request",

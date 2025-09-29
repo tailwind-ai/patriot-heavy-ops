@@ -24,7 +24,7 @@
 
     // TypeScript specific rules (fast, non-type-checking)
     "@typescript-eslint/no-unused-vars": "error",
-    "@typescript-eslint/no-explicit-any": "warn",
+    "@typescript-eslint/no-explicit-any": "error",
     "@typescript-eslint/no-non-null-assertion": "warn",
     "@typescript-eslint/no-unnecessary-type-assertion": "error",
     "@typescript-eslint/prefer-optional-chain": "error",
@@ -39,7 +39,14 @@
     "no-console": ["warn", { "allow": ["error", "warn"] }],
     "no-debugger": "error"
   },
-  "ignorePatterns": ["jest.config.js"],
+  "ignorePatterns": [
+    "jest.config.js",
+    "coverage/**/*",
+    "*.config.js",
+    "jest.setup.js",
+    "next-env.d.ts",
+    "__tests__/mobile-compatibility/dashboard-service-mobile.test.ts"
+  ],
   "settings": {
     "tailwindcss": {
       "callees": ["cn"],

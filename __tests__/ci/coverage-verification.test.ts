@@ -11,13 +11,15 @@
 import { readFileSync, existsSync } from "fs"
 import { join } from "path"
 import { glob } from "glob"
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const yaml = require("js-yaml")
+import * as yaml from "js-yaml"
 
 describe("Test Coverage Verification", () => {
   const currentWorkflowPath = join(process.cwd(), ".github/workflows/tests.yml")
-  const optimizedWorkflowPath = join(process.cwd(), ".github/workflows/tests-optimized.yml")
-  
+  const optimizedWorkflowPath = join(
+    process.cwd(),
+    ".github/workflows/tests-optimized.yml"
+  )
+
   let currentConfig: any
   let optimizedConfig: any
   let allTestFiles: string[]
@@ -28,7 +30,7 @@ describe("Test Coverage Verification", () => {
       const currentContent = readFileSync(currentWorkflowPath, "utf8")
       currentConfig = yaml.load(currentContent)
     }
-    
+
     if (existsSync(optimizedWorkflowPath)) {
       const optimizedContent = readFileSync(optimizedWorkflowPath, "utf8")
       optimizedConfig = yaml.load(optimizedContent)
@@ -37,7 +39,7 @@ describe("Test Coverage Verification", () => {
     // Find all test files in the project
     allTestFiles = await glob("__tests__/**/*.test.{ts,tsx,js,jsx}", {
       cwd: process.cwd(),
-      ignore: ["node_modules/**"]
+      ignore: ["node_modules/**"],
     })
   })
 
@@ -46,22 +48,21 @@ describe("Test Coverage Verification", () => {
       expect(allTestFiles.length).toBeGreaterThan(0)
 
       // Categorize test files
-      const unitTests = allTestFiles.filter(file => 
-        !file.includes("components") && 
-        !file.includes("hooks") && 
-        !file.includes("api") && 
-        !file.includes("integration")
+      const unitTests = allTestFiles.filter(
+        (file) =>
+          !file.includes("components") &&
+          !file.includes("hooks") &&
+          !file.includes("api") &&
+          !file.includes("integration")
       )
-      
-      const componentTests = allTestFiles.filter(file => 
-        file.includes("components") || file.includes("hooks")
+
+      const componentTests = allTestFiles.filter(
+        (file) => file.includes("components") || file.includes("hooks")
       )
-      
-      const apiTests = allTestFiles.filter(file => 
-        file.includes("api")
-      )
-      
-      const integrationTests = allTestFiles.filter(file => 
+
+      const apiTests = allTestFiles.filter((file) => file.includes("api"))
+
+      const integrationTests = allTestFiles.filter((file) =>
         file.includes("integration")
       )
 
@@ -81,7 +82,7 @@ describe("Test Coverage Verification", () => {
 
     it("should map unit tests to fast-validation job", () => {
       expect(optimizedConfig).toBeDefined()
-      
+
       const fastValidation = optimizedConfig.jobs["fast-validation"]
       const unitTestStep = fastValidation.steps.find(
         (step: any) => step.name === "Unit tests"
@@ -90,15 +91,16 @@ describe("Test Coverage Verification", () => {
       // Should exclude component, hook, api, and integration tests
       expect(unitTestStep.run).toContain("--testPathIgnorePatterns")
       expect(unitTestStep.run).toContain("(components|hooks|api|integration)")
-      
+
       // This ensures unit tests (lib/, utils/, etc.) run in fast-validation
-      const unitTestFiles = allTestFiles.filter(file => 
-        !file.includes("components") && 
-        !file.includes("hooks") && 
-        !file.includes("api") && 
-        !file.includes("integration")
+      const unitTestFiles = allTestFiles.filter(
+        (file) =>
+          !file.includes("components") &&
+          !file.includes("hooks") &&
+          !file.includes("api") &&
+          !file.includes("integration")
       )
-      
+
       expect(unitTestFiles.length).toBeGreaterThan(0)
     })
 
@@ -110,12 +112,12 @@ describe("Test Coverage Verification", () => {
 
       expect(componentStep.run).toContain("--testPathPatterns")
       expect(componentStep.run).toContain("(components|hooks)")
-      
+
       // Verify we have component/hook tests to run
-      const componentTestFiles = allTestFiles.filter(file => 
-        file.includes("components") || file.includes("hooks")
+      const componentTestFiles = allTestFiles.filter(
+        (file) => file.includes("components") || file.includes("hooks")
       )
-      
+
       expect(componentTestFiles.length).toBeGreaterThan(0)
     })
 
@@ -127,12 +129,10 @@ describe("Test Coverage Verification", () => {
 
       expect(apiStep.run).toContain("--testPathPatterns")
       expect(apiStep.run).toContain("api")
-      
+
       // Verify we have API tests to run
-      const apiTestFiles = allTestFiles.filter(file => 
-        file.includes("api")
-      )
-      
+      const apiTestFiles = allTestFiles.filter((file) => file.includes("api"))
+
       expect(apiTestFiles.length).toBeGreaterThan(0)
     })
 
@@ -144,7 +144,7 @@ describe("Test Coverage Verification", () => {
 
       expect(integrationStep.run).toContain("--testPathPatterns")
       expect(integrationStep.run).toContain("integration")
-      
+
       // Integration tests may not exist yet, but pattern should be ready
       expect(integrationStep).toBeDefined()
     })
@@ -158,27 +158,30 @@ describe("Test Coverage Verification", () => {
       // 3. All tests: run in coverage job
 
       // Files that will run in fast-validation (unit tests)
-      const runInFastValidation = allTestFiles.filter(file => 
-        !file.includes("components") && 
-        !file.includes("hooks") && 
-        !file.includes("api") && 
-        !file.includes("integration")
+      const runInFastValidation = allTestFiles.filter(
+        (file) =>
+          !file.includes("components") &&
+          !file.includes("hooks") &&
+          !file.includes("api") &&
+          !file.includes("integration")
       )
-      
+
       // Files that will run in integration-tests
-      const runInIntegrationTests = allTestFiles.filter(file => 
-        file.includes("components") || 
-        file.includes("hooks") || 
-        file.includes("api") || 
-        file.includes("integration")
+      const runInIntegrationTests = allTestFiles.filter(
+        (file) =>
+          file.includes("components") ||
+          file.includes("hooks") ||
+          file.includes("api") ||
+          file.includes("integration")
       )
 
       // Every test file should run in exactly one of the two main jobs
-      const totalCovered = runInFastValidation.length + runInIntegrationTests.length
+      const totalCovered =
+        runInFastValidation.length + runInIntegrationTests.length
       expect(totalCovered).toBe(allTestFiles.length)
 
       // Verify no overlap between the two job categories
-      const overlap = runInFastValidation.filter(file => 
+      const overlap = runInFastValidation.filter((file) =>
         runInIntegrationTests.includes(file)
       )
       expect(overlap).toHaveLength(0)
@@ -188,26 +191,30 @@ describe("Test Coverage Verification", () => {
       // Some files may match multiple patterns (e.g., api/components/test.ts)
       // This is fine - they'll all run in integration-tests job
       // The key is that fast-validation excludes ALL of them
-      
-      const excludedFromFastValidation = allTestFiles.filter(file => 
-        file.includes("components") || 
-        file.includes("hooks") || 
-        file.includes("api") || 
-        file.includes("integration")
+
+      const excludedFromFastValidation = allTestFiles.filter(
+        (file) =>
+          file.includes("components") ||
+          file.includes("hooks") ||
+          file.includes("api") ||
+          file.includes("integration")
       )
-      
-      const runInFastValidation = allTestFiles.filter(file => 
-        !file.includes("components") && 
-        !file.includes("hooks") && 
-        !file.includes("api") && 
-        !file.includes("integration")
+
+      const runInFastValidation = allTestFiles.filter(
+        (file) =>
+          !file.includes("components") &&
+          !file.includes("hooks") &&
+          !file.includes("api") &&
+          !file.includes("integration")
       )
 
       // Verify complete separation
-      expect(excludedFromFastValidation.length + runInFastValidation.length).toBe(allTestFiles.length)
-      
+      expect(
+        excludedFromFastValidation.length + runInFastValidation.length
+      ).toBe(allTestFiles.length)
+
       // Verify no file runs in both categories
-      const overlap = excludedFromFastValidation.filter(file => 
+      const overlap = excludedFromFastValidation.filter((file) =>
         runInFastValidation.includes(file)
       )
       expect(overlap).toHaveLength(0)
@@ -267,7 +274,7 @@ describe("Test Coverage Verification", () => {
       const apiStep = integrationTests.steps.find(
         (step: any) => step.name === "API tests"
       )
-      
+
       expect(componentStep.run).toContain("--testPathPatterns")
       expect(apiStep.run).toContain("--testPathPatterns")
 
@@ -283,10 +290,10 @@ describe("Test Coverage Verification", () => {
       // Fast validation excludes: components, hooks, api, integration
       // Integration tests includes: components, hooks, api, integration
       // Coverage includes: everything
-      
+
       // This is correct - no duplication in fast-validation and integration-tests
       // Coverage runs everything for complete coverage report
-      
+
       const fastValidation = optimizedConfig.jobs["fast-validation"]
       const integrationTests = optimizedConfig.jobs["integration-tests"]
 
@@ -299,10 +306,10 @@ describe("Test Coverage Verification", () => {
       expect(unitStep.run).toContain("(components|hooks|api|integration)")
 
       // Integration test steps should use specific patterns
-      const testSteps = integrationTests.steps.filter(
-        (step: any) => step.name?.includes("tests")
+      const testSteps = integrationTests.steps.filter((step: any) =>
+        step.name?.includes("tests")
       )
-      
+
       testSteps.forEach((step: any) => {
         expect(step.run).toContain("--testPathPatterns")
       })

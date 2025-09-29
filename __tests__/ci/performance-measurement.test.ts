@@ -10,8 +10,7 @@
 
 import { readFileSync, existsSync } from "fs"
 import { join } from "path"
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const yaml = require("js-yaml")
+import * as yaml from "js-yaml"
 
 describe("CI Performance Measurement", () => {
   const currentWorkflowPath = join(process.cwd(), ".github/workflows/tests.yml")

@@ -809,7 +809,7 @@ export class ServiceRequestService extends BaseService {
 
     // Validate input data (exclude requestedTotalHours as it will be calculated)
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { requestedTotalHours, ...inputForValidation } = input
+    const { requestedTotalHours: _requestedTotalHours, ...inputForValidation } = input
     const validation = serviceRequestSchema.omit({ requestedTotalHours: true }).safeParse(inputForValidation)
 
     if (!validation.success) {

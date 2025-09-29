@@ -1,4 +1,5 @@
 name: Create Release Issues
+# Test #2: Testing Reject behavior for mobile notification workflow Epic #314
 
 on:
   workflow_dispatch:

@@ -413,7 +413,7 @@ describe("Dashboard Service Role Filtering Tests", () => {
       ]
 
       allCalls.forEach(call => {
-        if (call[0] && call[0].where) {
+        if (call[0]?.where) {
           expect(call[0].where).not.toHaveProperty("userId")
         }
       })

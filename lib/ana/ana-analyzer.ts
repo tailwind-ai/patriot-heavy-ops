@@ -946,9 +946,9 @@ export class AnaAnalyzer {
   analyzeCursorBugbotReviewComment(
     commentBody: string,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    filePath?: string,
+    _filePath?: string,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    lineNumber?: number | null
+    _lineNumber?: number | null
   ): {
     issue?: {
       title: string
