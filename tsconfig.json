@@ -42,7 +42,6 @@
     "types/**/*.d.ts"
   ],
   "exclude": [
-    "node_modules",
-    "__tests__/mobile-compatibility/dashboard-service-mobile.test.ts"
+    "node_modules"
   ]
 }

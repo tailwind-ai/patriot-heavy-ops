@@ -44,8 +44,7 @@
     "coverage/**/*",
     "*.config.js",
     "jest.setup.js",
-    "next-env.d.ts",
-    "__tests__/mobile-compatibility/dashboard-service-mobile.test.ts"
+    "next-env.d.ts"
   ],
   "settings": {
     "tailwindcss": {
