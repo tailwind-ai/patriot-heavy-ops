@@ -103,11 +103,7 @@ export class ServiceRequestRepository
   async findById(id: string): Promise<RepositoryResult<ServiceRequest | null>> {
     const validation = this.validateRequired({ id }, ["id"])
     if (!validation.success) {
-      const errorMessage =
-        typeof validation.error === "string"
-          ? validation.error
-          : validation.error?.message || "Validation failed"
-      return this.createError("VALIDATION_ERROR", errorMessage)
+      return validation
     }
 
     return this.handleAsync(
@@ -162,16 +158,12 @@ export class ServiceRequestRepository
     filters?: ServiceRequestFilters,
     pagination?: PaginationOptions
   ): Promise<RepositoryResult<ServiceRequestWithUser[]>> {
-    const validation = this.validateRequired(
-      accessOptions,
-      ["userId", "userRole"]
-    )
+    const validation = this.validateRequired(accessOptions, [
+      "userId",
+      "userRole",
+    ])
     if (!validation.success) {
-      const errorMessage =
-        typeof validation.error === "string"
-          ? validation.error
-          : validation.error?.message || "Validation failed"
-      return this.createError("VALIDATION_ERROR", errorMessage)
+      return validation
     }
 
     return this.handleAsync(
@@ -268,32 +260,27 @@ export class ServiceRequestRepository
   async create(
     data: ServiceRequestCreateInput
   ): Promise<RepositoryResult<ServiceRequest>> {
-    const validation = this.validateRequired(
-      data,
-      [
-        "title",
-        "contactName",
-        "contactEmail",
-        "contactPhone",
-        "jobSite",
-        "equipmentCategory",
-        "equipmentDetail",
-        "userId",
-      ]
-    )
+    const validation = this.validateRequired(data, [
+      "title",
+      "contactName",
+      "contactEmail",
+      "contactPhone",
+      "jobSite",
+      "equipmentCategory",
+      "equipmentDetail",
+      "userId",
+    ])
     if (!validation.success) {
-      const errorMessage =
-        typeof validation.error === "string"
-          ? validation.error
-          : validation.error?.message || "Validation failed"
-      return this.createError("VALIDATION_ERROR", errorMessage)
+      return validation
     }
 
     // Validate transport option
     if (!this.validateTransportOption(data.transport)) {
       return this.createError(
         "VALIDATION_ERROR",
-        `Invalid transport option: ${data.transport}. Must be one of: ${transportOptions.join(", ")}`
+        `Invalid transport option: ${
+          data.transport
+        }. Must be one of: ${transportOptions.join(", ")}`
       )
     }
 
@@ -333,11 +320,7 @@ export class ServiceRequestRepository
   ): Promise<RepositoryResult<ServiceRequest>> {
     const validation = this.validateRequired({ id }, ["id"])
     if (!validation.success) {
-      const errorMessage =
-        typeof validation.error === "string"
-          ? validation.error
-          : validation.error?.message || "Validation failed"
-      return this.createError("VALIDATION_ERROR", errorMessage)
+      return validation
     }
 
     return this.handleAsync(
@@ -361,11 +344,7 @@ export class ServiceRequestRepository
   async delete(id: string): Promise<RepositoryResult<boolean>> {
     const validation = this.validateRequired({ id }, ["id"])
     if (!validation.success) {
-      const errorMessage =
-        typeof validation.error === "string"
-          ? validation.error
-          : validation.error?.message || "Validation failed"
-      return this.createError("VALIDATION_ERROR", errorMessage)
+      return validation
     }
 
     return this.handleAsync(
@@ -417,11 +396,7 @@ export class ServiceRequestRepository
       "changedBy",
     ])
     if (!validation.success) {
-      const errorMessage =
-        typeof validation.error === "string"
-          ? validation.error
-          : validation.error?.message || "Validation failed"
-      return this.createError("VALIDATION_ERROR", errorMessage)
+      return validation
     }
 
     return this.handleAsync(
@@ -511,7 +486,9 @@ export class ServiceRequestRepository
   /**
    * Validate transport option value
    */
-  private validateTransportOption(transport: string): transport is TransportOption {
+  private validateTransportOption(
+    transport: string
+  ): transport is TransportOption {
     return transportOptions.includes(transport as TransportOption)
   }
 
