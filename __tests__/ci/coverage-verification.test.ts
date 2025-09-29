@@ -11,7 +11,8 @@
 import { readFileSync, existsSync } from "fs"
 import { join } from "path"
 import { glob } from "glob"
-import * as yaml from "js-yaml"
+// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
+const yaml = require("js-yaml")
 
 describe("Test Coverage Verification", () => {
   const currentWorkflowPath = join(process.cwd(), ".github/workflows/tests.yml")
