@@ -132,9 +132,11 @@ describe("/api/users/[userId]", () => {
 
         const errors = await getResponseJson(response)
         expect(Array.isArray(errors)).toBe(true)
-        expect(errors.some((error: any) => error.path.includes("name"))).toBe(
-          true
-        )
+        expect(
+          errors.some((error: { path?: string[] }) =>
+            error.path?.includes("name")
+          )
+        ).toBe(true)
       })
 
       it("should validate name length (maximum 32 characters)", async () => {
@@ -151,9 +153,11 @@ describe("/api/users/[userId]", () => {
 
         const errors = await getResponseJson(response)
         expect(Array.isArray(errors)).toBe(true)
-        expect(errors.some((error: any) => error.path.includes("name"))).toBe(
-          true
-        )
+        expect(
+          errors.some((error: { path?: string[] }) =>
+            error.path?.includes("name")
+          )
+        ).toBe(true)
       })
 
       it("should accept valid name", async () => {
@@ -219,7 +223,7 @@ describe("/api/users/[userId]", () => {
           expires: new Date().toISOString(),
         })
 
-        const invalidContext = { params: { userId: "" } } // Empty userId
+        const invalidContext = { params: Promise.resolve({ userId: "" }) } // Empty userId
 
         const updateData = { name: "Valid Name" }
         const request = createMockRequest(
@@ -227,7 +231,7 @@ describe("/api/users/[userId]", () => {
           `http://localhost:3000/api/users/${mockUserId}`,
           updateData
         )
-        const response = await PATCH(request, invalidContext as any)
+        const response = await PATCH(request, invalidContext)
 
         // Returns 403 because empty userId doesn't match session user ID
         assertResponse(response, 403)

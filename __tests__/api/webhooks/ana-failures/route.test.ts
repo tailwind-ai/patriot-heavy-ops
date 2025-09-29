@@ -12,12 +12,14 @@ jest.mock("next/headers", () => ({
 
 // Import the mocked module
 import { headers } from "next/headers"
+import type { ReadonlyHeaders } from "next/dist/server/web/spec-extension/adapters/headers"
 
 // Mock globalThis.todo_write for testing with proper typing
 const mockTodoWrite = jest.fn()
 
 // Type-safe global extension
 declare global {
+  // eslint-disable-next-line no-var
   var todo_write: jest.MockedFunction<typeof mockTodoWrite>
 }
 
@@ -41,7 +43,29 @@ describe("/api/webhooks/ana-failures", () => {
   })
 
   describe("POST /api/webhooks/ana-failures", () => {
-    const validPayload = {
+    // Type-safe payload interface
+    type WebhookPayload = {
+      summary: string
+      analysisDate: string
+      workflowRunId?: string
+      prNumber?: number
+      failures: Array<{
+        id: string
+        type: "ci_failure" | "vercel_failure" | "bugbot_issue"
+        content: string
+        priority: "low" | "medium" | "high" | "critical"
+        files?: string[]
+        lineNumbers?: number[]
+        rootCause?: string
+        impact?: string
+        suggestedFix?: string
+        affectedComponents?: string[]
+        relatedPR?: string
+        createdAt: string
+      }>
+    }
+
+    const validPayload: WebhookPayload = {
       summary: "CI Test workflow failed with 2 TypeScript errors",
       analysisDate: "2025-09-27T18:30:00Z",
       workflowRunId: "12345",
@@ -64,7 +88,9 @@ describe("/api/webhooks/ana-failures", () => {
       ],
     }
 
-    const createValidRequest = (payload: any = validPayload) => {
+    const createValidRequest = (
+      payload: Record<string, unknown> = validPayload
+    ) => {
       const body = JSON.stringify(payload)
       const secret = "test-secret"
       const timestamp = new Date().toISOString()
@@ -72,14 +98,14 @@ describe("/api/webhooks/ana-failures", () => {
         .toString("base64")
         .substring(0, 16)}`
 
-      // Mock headers following proven pattern
-      mockHeaders.mockReturnValue({
+      // Mock headers following proven pattern - Next.js 15 returns Promise
+      mockHeaders.mockResolvedValue({
         get: jest.fn().mockImplementation((name: string) => {
           if (name === "x-ana-signature") return signature
           if (name === "x-ana-timestamp") return timestamp
           return null
         }),
-      } as any)
+      } as unknown as ReadonlyHeaders)
 
       return new Request("http://localhost:3000/api/webhooks/ana-failures", {
         method: "POST",
@@ -233,13 +259,13 @@ describe("/api/webhooks/ana-failures", () => {
       it("should reject requests with missing signature", async () => {
         // Mock headers to return null for signature, valid timestamp
         const timestamp = new Date().toISOString()
-        mockHeaders.mockReturnValue({
+        mockHeaders.mockResolvedValue({
           get: jest.fn().mockImplementation((name: string) => {
             if (name === "x-ana-signature") return null
             if (name === "x-ana-timestamp") return timestamp
             return null
           }),
-        } as any)
+        } as unknown as ReadonlyHeaders)
 
         const request = new Request(
           "http://localhost:3000/api/webhooks/ana-failures",
@@ -260,13 +286,13 @@ describe("/api/webhooks/ana-failures", () => {
 
       it("should reject requests with missing timestamp", async () => {
         // Mock headers to return valid signature, null timestamp
-        mockHeaders.mockReturnValue({
+        mockHeaders.mockResolvedValue({
           get: jest.fn().mockImplementation((name: string) => {
             if (name === "x-ana-signature") return "sha256=invalid"
             if (name === "x-ana-timestamp") return null
             return null
           }),
-        } as any)
+        } as unknown as ReadonlyHeaders)
 
         const request = new Request(
           "http://localhost:3000/api/webhooks/ana-failures",
@@ -288,13 +314,13 @@ describe("/api/webhooks/ana-failures", () => {
       it("should reject requests with invalid signature", async () => {
         // Mock headers to return invalid signature, valid timestamp
         const timestamp = new Date().toISOString()
-        mockHeaders.mockReturnValue({
+        mockHeaders.mockResolvedValue({
           get: jest.fn().mockImplementation((name: string) => {
             if (name === "x-ana-signature") return "sha256=invalid-signature"
             if (name === "x-ana-timestamp") return timestamp
             return null
           }),
-        } as any)
+        } as unknown as ReadonlyHeaders)
 
         const request = new Request(
           "http://localhost:3000/api/webhooks/ana-failures",
@@ -322,13 +348,13 @@ describe("/api/webhooks/ana-failures", () => {
           .substring(0, 16)}`
 
         // Mock headers to return valid signature, old timestamp
-        mockHeaders.mockReturnValue({
+        mockHeaders.mockResolvedValue({
           get: jest.fn().mockImplementation((name: string) => {
             if (name === "x-ana-signature") return signature
             if (name === "x-ana-timestamp") return oldTimestamp
             return null
           }),
-        } as any)
+        } as unknown as ReadonlyHeaders)
 
         const request = new Request(
           "http://localhost:3000/api/webhooks/ana-failures",
@@ -350,8 +376,8 @@ describe("/api/webhooks/ana-failures", () => {
 
     describe("Payload validation", () => {
       it("should reject payload with missing summary", async () => {
-        const invalidPayload = { ...validPayload }
-        delete (invalidPayload as any).summary
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { summary: _summary, ...invalidPayload } = validPayload
 
         const request = createValidRequest(invalidPayload)
         const response = await POST(request)
@@ -364,8 +390,8 @@ describe("/api/webhooks/ana-failures", () => {
       })
 
       it("should reject payload with missing analysisDate", async () => {
-        const invalidPayload = { ...validPayload }
-        delete (invalidPayload as any).analysisDate
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { analysisDate: _analysisDate, ...invalidPayload } = validPayload
 
         const request = createValidRequest(invalidPayload)
         const response = await POST(request)
@@ -378,8 +404,8 @@ describe("/api/webhooks/ana-failures", () => {
       })
 
       it("should reject payload with missing failures array", async () => {
-        const invalidPayload = { ...validPayload }
-        delete (invalidPayload as any).failures
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { failures: _failures, ...invalidPayload } = validPayload
 
         const request = createValidRequest(invalidPayload)
         const response = await POST(request)
@@ -449,13 +475,13 @@ describe("/api/webhooks/ana-failures", () => {
           .substring(0, 16)}`
 
         // Mock headers to return valid signature and timestamp for malformed JSON
-        mockHeaders.mockReturnValue({
+        mockHeaders.mockResolvedValue({
           get: jest.fn().mockImplementation((name: string) => {
             if (name === "x-ana-signature") return signature
             if (name === "x-ana-timestamp") return timestamp
             return null
           }),
-        } as any)
+        } as unknown as ReadonlyHeaders)
 
         const request = new Request(
           "http://localhost:3000/api/webhooks/ana-failures",
