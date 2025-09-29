@@ -12,6 +12,7 @@ jest.mock("next/headers", () => ({
 
 // Import the mocked module
 import { headers } from "next/headers"
+import type { ReadonlyHeaders } from "next/dist/server/web/spec-extension/adapters/headers"
 
 // Mock globalThis.todo_write for testing with proper typing
 const mockTodoWrite = jest.fn()
@@ -97,14 +98,14 @@ describe("/api/webhooks/ana-failures", () => {
         .toString("base64")
         .substring(0, 16)}`
 
-      // Mock headers following proven pattern
-      mockHeaders.mockReturnValue({
+      // Mock headers following proven pattern - Next.js 15 returns Promise
+      mockHeaders.mockResolvedValue({
         get: jest.fn().mockImplementation((name: string) => {
           if (name === "x-ana-signature") return signature
           if (name === "x-ana-timestamp") return timestamp
           return null
         }),
-      } as unknown as Headers)
+      } as unknown as ReadonlyHeaders)
 
       return new Request("http://localhost:3000/api/webhooks/ana-failures", {
         method: "POST",
@@ -258,13 +259,13 @@ describe("/api/webhooks/ana-failures", () => {
       it("should reject requests with missing signature", async () => {
         // Mock headers to return null for signature, valid timestamp
         const timestamp = new Date().toISOString()
-        mockHeaders.mockReturnValue({
+        mockHeaders.mockResolvedValue({
           get: jest.fn().mockImplementation((name: string) => {
             if (name === "x-ana-signature") return null
             if (name === "x-ana-timestamp") return timestamp
             return null
           }),
-        } as unknown as Response)
+        } as unknown as ReadonlyHeaders)
 
         const request = new Request(
           "http://localhost:3000/api/webhooks/ana-failures",
@@ -285,13 +286,13 @@ describe("/api/webhooks/ana-failures", () => {
 
       it("should reject requests with missing timestamp", async () => {
         // Mock headers to return valid signature, null timestamp
-        mockHeaders.mockReturnValue({
+        mockHeaders.mockResolvedValue({
           get: jest.fn().mockImplementation((name: string) => {
             if (name === "x-ana-signature") return "sha256=invalid"
             if (name === "x-ana-timestamp") return null
             return null
           }),
-        } as unknown as Response)
+        } as unknown as ReadonlyHeaders)
 
         const request = new Request(
           "http://localhost:3000/api/webhooks/ana-failures",
@@ -313,13 +314,13 @@ describe("/api/webhooks/ana-failures", () => {
       it("should reject requests with invalid signature", async () => {
         // Mock headers to return invalid signature, valid timestamp
         const timestamp = new Date().toISOString()
-        mockHeaders.mockReturnValue({
+        mockHeaders.mockResolvedValue({
           get: jest.fn().mockImplementation((name: string) => {
             if (name === "x-ana-signature") return "sha256=invalid-signature"
             if (name === "x-ana-timestamp") return timestamp
             return null
           }),
-        } as unknown as Response)
+        } as unknown as ReadonlyHeaders)
 
         const request = new Request(
           "http://localhost:3000/api/webhooks/ana-failures",
@@ -347,13 +348,13 @@ describe("/api/webhooks/ana-failures", () => {
           .substring(0, 16)}`
 
         // Mock headers to return valid signature, old timestamp
-        mockHeaders.mockReturnValue({
+        mockHeaders.mockResolvedValue({
           get: jest.fn().mockImplementation((name: string) => {
             if (name === "x-ana-signature") return signature
             if (name === "x-ana-timestamp") return oldTimestamp
             return null
           }),
-        } as unknown as Response)
+        } as unknown as ReadonlyHeaders)
 
         const request = new Request(
           "http://localhost:3000/api/webhooks/ana-failures",
@@ -474,13 +475,13 @@ describe("/api/webhooks/ana-failures", () => {
           .substring(0, 16)}`
 
         // Mock headers to return valid signature and timestamp for malformed JSON
-        mockHeaders.mockReturnValue({
+        mockHeaders.mockResolvedValue({
           get: jest.fn().mockImplementation((name: string) => {
             if (name === "x-ana-signature") return signature
             if (name === "x-ana-timestamp") return timestamp
             return null
           }),
-        } as unknown as Response)
+        } as unknown as ReadonlyHeaders)
 
         const request = new Request(
           "http://localhost:3000/api/webhooks/ana-failures",
