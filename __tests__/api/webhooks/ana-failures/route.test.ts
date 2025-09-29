@@ -18,6 +18,7 @@ const mockTodoWrite = jest.fn()
 
 // Type-safe global extension
 declare global {
+  // eslint-disable-next-line no-var
   var todo_write: jest.MockedFunction<typeof mockTodoWrite>
 }
 
@@ -41,7 +42,29 @@ describe("/api/webhooks/ana-failures", () => {
   })
 
   describe("POST /api/webhooks/ana-failures", () => {
-    const validPayload = {
+    // Type-safe payload interface
+    type WebhookPayload = {
+      summary: string
+      analysisDate: string
+      workflowRunId?: string
+      prNumber?: number
+      failures: Array<{
+        id: string
+        type: "ci_failure" | "vercel_failure" | "bugbot_issue"
+        content: string
+        priority: "low" | "medium" | "high" | "critical"
+        files?: string[]
+        lineNumbers?: number[]
+        rootCause?: string
+        impact?: string
+        suggestedFix?: string
+        affectedComponents?: string[]
+        relatedPR?: string
+        createdAt: string
+      }>
+    }
+
+    const validPayload: WebhookPayload = {
       summary: "CI Test workflow failed with 2 TypeScript errors",
       analysisDate: "2025-09-27T18:30:00Z",
       workflowRunId: "12345",
@@ -64,7 +87,9 @@ describe("/api/webhooks/ana-failures", () => {
       ],
     }
 
-    const createValidRequest = (payload: any = validPayload) => {
+    const createValidRequest = (
+      payload: Record<string, unknown> = validPayload
+    ) => {
       const body = JSON.stringify(payload)
       const secret = "test-secret"
       const timestamp = new Date().toISOString()
@@ -79,7 +104,7 @@ describe("/api/webhooks/ana-failures", () => {
           if (name === "x-ana-timestamp") return timestamp
           return null
         }),
-      } as any)
+      } as unknown as Headers)
 
       return new Request("http://localhost:3000/api/webhooks/ana-failures", {
         method: "POST",
@@ -239,7 +264,7 @@ describe("/api/webhooks/ana-failures", () => {
             if (name === "x-ana-timestamp") return timestamp
             return null
           }),
-        } as any)
+        } as unknown as Response)
 
         const request = new Request(
           "http://localhost:3000/api/webhooks/ana-failures",
@@ -266,7 +291,7 @@ describe("/api/webhooks/ana-failures", () => {
             if (name === "x-ana-timestamp") return null
             return null
           }),
-        } as any)
+        } as unknown as Response)
 
         const request = new Request(
           "http://localhost:3000/api/webhooks/ana-failures",
@@ -294,7 +319,7 @@ describe("/api/webhooks/ana-failures", () => {
             if (name === "x-ana-timestamp") return timestamp
             return null
           }),
-        } as any)
+        } as unknown as Response)
 
         const request = new Request(
           "http://localhost:3000/api/webhooks/ana-failures",
@@ -328,7 +353,7 @@ describe("/api/webhooks/ana-failures", () => {
             if (name === "x-ana-timestamp") return oldTimestamp
             return null
           }),
-        } as any)
+        } as unknown as Response)
 
         const request = new Request(
           "http://localhost:3000/api/webhooks/ana-failures",
@@ -350,8 +375,8 @@ describe("/api/webhooks/ana-failures", () => {
 
     describe("Payload validation", () => {
       it("should reject payload with missing summary", async () => {
-        const invalidPayload = { ...validPayload }
-        delete (invalidPayload as any).summary
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { summary: _summary, ...invalidPayload } = validPayload
 
         const request = createValidRequest(invalidPayload)
         const response = await POST(request)
@@ -364,8 +389,8 @@ describe("/api/webhooks/ana-failures", () => {
       })
 
       it("should reject payload with missing analysisDate", async () => {
-        const invalidPayload = { ...validPayload }
-        delete (invalidPayload as any).analysisDate
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { analysisDate: _analysisDate, ...invalidPayload } = validPayload
 
         const request = createValidRequest(invalidPayload)
         const response = await POST(request)
@@ -378,8 +403,8 @@ describe("/api/webhooks/ana-failures", () => {
       })
 
       it("should reject payload with missing failures array", async () => {
-        const invalidPayload = { ...validPayload }
-        delete (invalidPayload as any).failures
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { failures: _failures, ...invalidPayload } = validPayload
 
         const request = createValidRequest(invalidPayload)
         const response = await POST(request)
@@ -455,7 +480,7 @@ describe("/api/webhooks/ana-failures", () => {
             if (name === "x-ana-timestamp") return timestamp
             return null
           }),
-        } as any)
+        } as unknown as Response)
 
         const request = new Request(
           "http://localhost:3000/api/webhooks/ana-failures",
