@@ -216,8 +216,10 @@ function UserOverviewItem({ user }: UserOverviewItemProps) {
     <div className="flex flex-col space-y-3 border-b p-4 last:border-b-0">
       <div className="flex flex-col space-y-2 sm:flex-row sm:items-start sm:justify-between sm:space-y-0">
         <div className="min-w-0 flex-1">
-          <h3 className="text-sm font-medium">{user.name || "Unknown User"}</h3>
-          <p className="text-xs text-muted-foreground">{user.email}</p>
+          <h3 className="text-sm font-medium">
+            {user?.name || "Unknown User"}
+          </h3>
+          <p className="text-xs text-muted-foreground">{user?.email}</p>
           {user.company && (
             <p className="text-xs text-muted-foreground">
               Company: {user.company}
@@ -501,7 +503,7 @@ export function AdminDashboard() {
               ) : users.length > 0 ? (
                 <div>
                   {users.map((user) => (
-                    <UserOverviewItem key={user.id} user={user} />
+                    <UserOverviewItem key={user?.id} user={user} />
                   ))}
                 </div>
               ) : (

@@ -158,7 +158,7 @@ export function useServiceRequestForm({ user, notifications }: UseServiceRequest
           }
         } catch {
           // If we can't parse the error response, use status-based messages
-          if (response.status === 403) {
+          if (response?.status === 403) {
             errorMessage = "You are not authorized to create service requests. Please log in and try again."
           } else if (response?.status >= 500) {
             errorMessage = "A server error occurred. Please try again later."
