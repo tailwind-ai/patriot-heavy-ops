@@ -46,7 +46,7 @@ export function UserNameForm({ user, className, ...props }: UserNameFormProps) {
   async function onSubmit(data: FormData) {
     setIsSaving(true)
 
-    const response = await fetch(`/api/users/${user.id}`, {
+    const response = await fetch(`/api/users/${user?.id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -111,9 +111,7 @@ export function UserNameForm({ user, className, ...props }: UserNameFormProps) {
             className={cn(buttonVariants(), className)}
             disabled={isSaving}
           >
-            {isSaving && (
-              <Icons.spinner className="mr-2 size-4 animate-spin" />
-            )}
+            {isSaving && <Icons.spinner className="mr-2 size-4 animate-spin" />}
             <span>Save</span>
           </button>
         </CardFooter>

@@ -78,7 +78,7 @@ validation.error.message
     return this.handleAsync(
       async () => {
         // Find user by email
-        const user = await db.user.findUnique({
+        const user = await db?.user.findUnique({
           where: {
             email: credentials.email.toLowerCase(),
           },
@@ -138,7 +138,7 @@ validation.error.message
     return this.handleAsync(
       async () => {
         // Check if user already exists
-        const existingUser = await db.user.findUnique({
+        const existingUser = await db?.user.findUnique({
           where: {
             email: data.email.toLowerCase(),
           },
@@ -152,7 +152,7 @@ validation.error.message
         const hashedPassword = await hashPassword(data.password)
 
         // Create user
-        const user = await db.user.create({
+        const user = await db?.user.create({
           data: {
             email: data.email.toLowerCase(),
             password: hashedPassword,
@@ -191,7 +191,7 @@ validation.error.message
 
     return this.handleAsync(
       async () => {
-        const user = await db.user.findUnique({
+        const user = await db?.user.findUnique({
           where: {
             id: userId,
           },
@@ -231,7 +231,7 @@ validation.error.message
 
     return this.handleAsync(
       async () => {
-        const user = await db.user.findUnique({
+        const user = await db?.user.findUnique({
           where: {
             email: email.toLowerCase(),
           },
@@ -273,7 +273,7 @@ validation.error.message
 
     return this.handleAsync(
       async () => {
-        const user = await db.user.update({
+        const user = await db?.user.update({
           where: {
             id: userId,
           },
@@ -314,7 +314,7 @@ validation.error.message
     return this.handleAsync(
       async () => {
         // Get current password hash
-        const user = await db.user.findUnique({
+        const user = await db?.user.findUnique({
           where: {
             id: userId,
           },

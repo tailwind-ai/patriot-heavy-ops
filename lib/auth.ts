@@ -36,7 +36,7 @@ export const authOptions: NextAuthOptions = {
           }
 
           // First check if user exists without loading password
-          const userExists = await db.user.findUnique({
+          const userExists = await db?.user.findUnique({
             where: {
               email: credentials.email.toLowerCase(),
             },
@@ -53,7 +53,7 @@ export const authOptions: NextAuthOptions = {
           }
 
           // Get password hash separately for verification
-          const passwordData = await db.user.findUnique({
+          const passwordData = await db?.user.findUnique({
             where: {
               email: credentials.email.toLowerCase(),
             },

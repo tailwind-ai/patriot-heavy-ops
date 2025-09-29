@@ -9,7 +9,7 @@ const DAY_IN_MS = 86_400_000 // 24 hours in milliseconds
 export async function getUserSubscriptionPlan(
   userId: string
 ): Promise<UserSubscriptionPlan> {
-  const user = await db.user.findFirst({
+  const user = await db?.user.findFirst({
     where: {
       id: userId,
     },
