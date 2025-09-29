@@ -326,7 +326,7 @@ export class AuthService extends BaseService {
         const hashedPassword = await hashPassword(newPassword)
 
         // Update password
-        await db.user.update({
+        await db?.user.update({
           where: {
             id: userId,
           },
@@ -408,7 +408,7 @@ export class AuthService extends BaseService {
 
     return this.handleAsync(
       async () => {
-        await db.user.update({
+        await db?.user.update({
           where: {
             id: userId,
           },
