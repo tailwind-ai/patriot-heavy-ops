@@ -14,12 +14,14 @@
 import {
   type ApplicationError,
   type Result,
-  createSuccessResult,
-  createErrorResult,
+  createSuccess,
+  createError,
   createDatabaseError,
   createNetworkError,
   createSystemError,
   createValidationError,
+  createAuthenticationError,
+  createAuthorizationError,
   ERROR_CODES,
 } from '../types/errors'
 
@@ -87,7 +89,7 @@ export abstract class BaseService {
   }
 
   /**
-   * Create a standardized error result
+   * Create a standardized error result (legacy method for backward compatibility)
    */
   protected createError<T>(
     code: string,
@@ -113,13 +115,49 @@ export abstract class BaseService {
   }
 
   /**
-   * Create a successful result
+   * Create enhanced error result using new error system
+   */
+  protected createEnhancedError<T>(error: ApplicationError): Result<T> {
+    this.logger.error(`${this.serviceName} Error: ${error.message}`, {
+      code: error.code,
+      severity: error.severity,
+      retryable: error.retryable,
+      details: error.details,
+    });
+
+    return createError<T>(error);
+  }
+
+  /**
+   * Create a successful result (legacy method for backward compatibility)
    */
   protected createSuccess<T>(data: T): ServiceResult<T> {
     return {
       success: true,
       data,
     };
+  }
+
+  /**
+   * Create enhanced success result using new error system
+   */
+  protected createEnhancedSuccess<T>(data: T): Result<T> {
+    return createSuccess<T>(data);
+  }
+
+  /**
+   * Enhanced async operation handler using new error system
+   */
+  protected async handleEnhancedAsync<T>(
+    operation: () => Promise<T>,
+    errorMessage: string
+  ): Promise<Result<T>> {
+    try {
+      const result = await operation();
+      return this.createEnhancedSuccess(result);
+    } catch (error) {
+      return this.handleEnhancedError<T>(error, errorMessage);
+    }
   }
 
   /**
@@ -204,6 +242,74 @@ export abstract class BaseService {
 
     // Fallback to provided error code and message
     return this.createError<T>(fallbackCode, fallbackMessage, details);
+  }
+
+  /**
+   * Enhanced error handling using new error system
+   */
+  protected handleEnhancedError<T>(
+    error: unknown,
+    fallbackMessage: string
+  ): Result<T> {
+    const details = error instanceof Error 
+      ? { originalError: error.message, stack: error.stack }
+      : { originalError: String(error) };
+
+    // Handle specific error types with enhanced categorization
+    if (error instanceof Error) {
+      // Database errors
+      if (error.name === "PrismaClientKnownRequestError" || 
+          error.message.includes("database") ||
+          error.message.includes("connection")) {
+        const dbError = createDatabaseError(error.message, 'DATABASE_ERROR', { details });
+        return this.createEnhancedError<T>(dbError);
+      }
+
+      // Network/API errors
+      if (error.name === "FetchError" || 
+          error.message.includes("fetch") ||
+          error.message.includes("network")) {
+        const networkError = createNetworkError(error.message, 'NETWORK_ERROR', { details });
+        return this.createEnhancedError<T>(networkError);
+      }
+
+      // Authentication errors
+      if (error.name === "INVALID_CREDENTIALS" ||
+          error.message.includes("authentication") ||
+          error.message.includes("login") ||
+          error.message.includes("password")) {
+        const authError = createAuthenticationError(error.message, 'AUTHENTICATION_ERROR', { details });
+        return this.createEnhancedError<T>(authError);
+      }
+
+      // Authorization errors
+      if (error.name === "ACCESS_DENIED" ||
+          error.message.includes("permission") ||
+          error.message.includes("unauthorized")) {
+        const authzError = createAuthorizationError(error.message, 'ACCESS_DENIED', { details });
+        return this.createEnhancedError<T>(authzError);
+      }
+
+      // Validation errors
+      if (error.name === "ValidationError" ||
+          error.message.includes("validation") ||
+          error.message.includes("invalid")) {
+        const validationError = createValidationError(error.message, { details });
+        return this.createEnhancedError<T>(validationError);
+      }
+
+      // System errors
+      if (error.message.includes("memory") ||
+          error.message.includes("timeout") ||
+          error.message.includes("system")) {
+        const systemError = createSystemError(error.message, 'SYSTEM_ERROR', { details });
+        return this.createEnhancedError<T>(systemError);
+      }
+    }
+
+    // Fallback to system error
+    const systemError = createSystemError(fallbackMessage, 'SYSTEM_ERROR', { details });
+    return this.createEnhancedError<T>(systemError);
   }
 
   /**

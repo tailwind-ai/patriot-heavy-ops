@@ -1,11 +1,13 @@
 /**
- * Enhanced Error Types Tests - Issue #301
+ * Tests for Enhanced Error Types - Issue #301
  *
- * Tests for structured error types and error boundary patterns
- * Following cursorrules.md Platform Mode - conservative, proven patterns only
+ * This test suite validates the comprehensive error handling system including:
+ * - Error factory functions
+ * - Type guards
+ * - Result type handling
+ * - Error severity and retry logic
  */
 
-import { describe, it, expect } from "@jest/globals"
 import {
   createValidationError,
   createAuthenticationError,
@@ -15,8 +17,8 @@ import {
   createBusinessLogicError,
   createSystemError,
   createExternalServiceError,
-  createSuccessResult,
-  createErrorResult,
+  createSuccess,
+  createError,
   isValidationError,
   isAuthenticationError,
   isAuthorizationError,
@@ -28,322 +30,288 @@ import {
   isCriticalError,
   isRetryableError,
   ERROR_CODES,
-  type Result,
+  createLegacyError,
 } from "../../lib/types/errors"
 
 describe("Enhanced Error Types - Issue #301", () => {
   describe("Error Factory Functions", () => {
     it("should create validation errors with proper structure", () => {
-      const error = createValidationError(
-        ERROR_CODES.INVALID_INPUT,
-        "Email format is invalid",
-        {
-          field: "email",
-          value: "invalid-email",
-          constraint: "email format",
-          userMessage: "Please enter a valid email address",
-        }
-      )
+      const error = createValidationError("Invalid email format", {
+        field: "email",
+        expectedType: "string",
+      })
 
-      expect(error.code).toBe(ERROR_CODES.INVALID_INPUT)
-      expect(error.message).toBe("Email format is invalid")
-      expect(error.category).toBe("validation")
+      expect(error.code).toBe("VALIDATION_ERROR")
+      expect(error.message).toBe("Invalid email format")
       expect(error.severity).toBe("medium")
       expect(error.retryable).toBe(false)
       expect(error.field).toBe("email")
-      expect(error.value).toBe("invalid-email")
-      expect(error.constraint).toBe("email format")
-      expect(error.userMessage).toBe("Please enter a valid email address")
-      expect(error.timestamp).toBeInstanceOf(Date)
+      expect(error.expectedType).toBe("string")
+      expect(error.timestamp).toBeDefined()
     })
 
     it("should create authentication errors with proper structure", () => {
       const error = createAuthenticationError(
-        ERROR_CODES.INVALID_CREDENTIALS,
-        "Invalid username or password",
+        "Invalid credentials",
+        "INVALID_CREDENTIALS",
         {
-          attemptCount: 3,
-          userMessage: "Login failed. Please check your credentials.",
+          userId: "user123",
         }
       )
 
-      expect(error.code).toBe(ERROR_CODES.INVALID_CREDENTIALS)
-      expect(error.category).toBe("authentication")
+      expect(error.code).toBe("INVALID_CREDENTIALS")
+      expect(error.message).toBe("Invalid credentials")
       expect(error.severity).toBe("high")
       expect(error.retryable).toBe(false)
-      expect(error.attemptCount).toBe(3)
-      expect(error.userMessage).toBe(
-        "Login failed. Please check your credentials."
-      )
+      expect(error.userId).toBe("user123")
+      expect(error.timestamp).toBeDefined()
     })
 
     it("should create authorization errors with proper structure", () => {
-      const error = createAuthorizationError(
-        ERROR_CODES.ACCESS_DENIED,
-        "User does not have required permissions",
-        {
-          requiredRole: "ADMIN",
-          currentRole: "USER",
-          resource: "/admin/users",
-        }
-      )
+      const error = createAuthorizationError("Access denied", "ACCESS_DENIED", {
+        userId: "user123",
+        requiredRole: "ADMIN",
+        resource: "/admin/users",
+      })
 
-      expect(error.code).toBe(ERROR_CODES.ACCESS_DENIED)
-      expect(error.category).toBe("authorization")
+      expect(error.code).toBe("ACCESS_DENIED")
+      expect(error.message).toBe("Access denied")
       expect(error.severity).toBe("high")
       expect(error.retryable).toBe(false)
+      expect(error.userId).toBe("user123")
       expect(error.requiredRole).toBe("ADMIN")
-      expect(error.currentRole).toBe("USER")
       expect(error.resource).toBe("/admin/users")
     })
 
     it("should create database errors with proper structure", () => {
       const error = createDatabaseError(
-        ERROR_CODES.CONSTRAINT_VIOLATION,
-        "Unique constraint violation on email field",
+        "Connection failed",
+        "CONNECTION_FAILED",
         {
-          operation: "create",
+          query: "SELECT * FROM users",
           table: "users",
-          constraint: "unique_email",
         }
       )
 
-      expect(error.code).toBe(ERROR_CODES.CONSTRAINT_VIOLATION)
-      expect(error.category).toBe("database")
+      expect(error.code).toBe("CONNECTION_FAILED")
+      expect(error.message).toBe("Connection failed")
       expect(error.severity).toBe("critical")
       expect(error.retryable).toBe(true)
-      expect(error.operation).toBe("create")
+      expect(error.query).toBe("SELECT * FROM users")
       expect(error.table).toBe("users")
-      expect(error.constraint).toBe("unique_email")
     })
 
     it("should create network errors with proper structure", () => {
-      const error = createNetworkError(
-        ERROR_CODES.SERVICE_UNAVAILABLE,
-        "External service is temporarily unavailable",
-        {
-          statusCode: 503,
-          endpoint: "/api/external/service",
-          timeout: false,
-        }
-      )
+      const error = createNetworkError("Request timeout", "REQUEST_TIMEOUT", {
+        url: "https://api.example.com",
+        statusCode: 408,
+        method: "GET",
+      })
 
-      expect(error.code).toBe(ERROR_CODES.SERVICE_UNAVAILABLE)
-      expect(error.category).toBe("network")
-      expect(error.severity).toBe("critical") // 5xx status codes are critical
+      expect(error.code).toBe("REQUEST_TIMEOUT")
+      expect(error.message).toBe("Request timeout")
+      expect(error.severity).toBe("high")
       expect(error.retryable).toBe(true)
-      expect(error.statusCode).toBe(503)
-      expect(error.endpoint).toBe("/api/external/service")
-      expect(error.timeout).toBe(false)
+      expect(error.url).toBe("https://api.example.com")
+      expect(error.statusCode).toBe(408)
+      expect(error.method).toBe("GET")
     })
 
     it("should create business logic errors with proper structure", () => {
       const error = createBusinessLogicError(
-        ERROR_CODES.BUSINESS_RULE_VIOLATION,
-        "Cannot delete user with active subscriptions",
+        "Invalid operation",
+        "INVALID_OPERATION",
         {
-          rule: "no_delete_with_active_subscriptions",
-          expectedValue: 0,
-          actualValue: 2,
+          operation: "deleteUser",
+          context: { userId: "user123", reason: "has active orders" },
         }
       )
 
-      expect(error.code).toBe(ERROR_CODES.BUSINESS_RULE_VIOLATION)
-      expect(error.category).toBe("business_logic")
+      expect(error.code).toBe("INVALID_OPERATION")
+      expect(error.message).toBe("Invalid operation")
       expect(error.severity).toBe("medium")
       expect(error.retryable).toBe(false)
-      expect(error.rule).toBe("no_delete_with_active_subscriptions")
-      expect(error.expectedValue).toBe(0)
-      expect(error.actualValue).toBe(2)
+      expect(error.operation).toBe("deleteUser")
+      expect(error.context).toEqual({
+        userId: "user123",
+        reason: "has active orders",
+      })
     })
 
     it("should create system errors with proper structure", () => {
       const error = createSystemError(
-        ERROR_CODES.OUT_OF_MEMORY,
-        "System is running low on memory",
+        "Service unavailable",
+        "SERVICE_UNAVAILABLE",
         {
-          component: "image-processor",
-          memoryUsage: 95,
+          service: "payment-service",
+          component: "stripe-integration",
         }
       )
 
-      expect(error.code).toBe(ERROR_CODES.OUT_OF_MEMORY)
-      expect(error.category).toBe("system")
+      expect(error.code).toBe("SERVICE_UNAVAILABLE")
+      expect(error.message).toBe("Service unavailable")
       expect(error.severity).toBe("critical")
       expect(error.retryable).toBe(true)
-      expect(error.component).toBe("image-processor")
-      expect(error.memoryUsage).toBe(95)
+      expect(error.service).toBe("payment-service")
+      expect(error.component).toBe("stripe-integration")
     })
 
     it("should create external service errors with proper structure", () => {
       const error = createExternalServiceError(
-        ERROR_CODES.THIRD_PARTY_TIMEOUT,
-        "Payment gateway request timed out",
+        "API error",
+        "stripe",
+        "API_ERROR",
         {
-          service: "stripe",
           endpoint: "/v1/charges",
-          responseTime: 30000,
+          statusCode: 500,
         }
       )
 
-      expect(error.code).toBe(ERROR_CODES.THIRD_PARTY_TIMEOUT)
-      expect(error.category).toBe("external_service")
+      expect(error.code).toBe("API_ERROR")
+      expect(error.message).toBe("API error")
       expect(error.severity).toBe("high")
       expect(error.retryable).toBe(true)
       expect(error.service).toBe("stripe")
       expect(error.endpoint).toBe("/v1/charges")
-      expect(error.responseTime).toBe(30000)
+      expect(error.statusCode).toBe(500)
     })
   })
 
   describe("Result Type Handling", () => {
     it("should create success results correctly", () => {
-      const data = { id: "123", name: "Test User" }
-      const result = createSuccessResult(data)
+      const result = createSuccess({ id: 1, name: "Test" })
 
       expect(result.success).toBe(true)
-      expect(result.data).toEqual(data)
+      expect(result.data).toEqual({ id: 1, name: "Test" })
       expect(result.error).toBeUndefined()
     })
 
     it("should create error results correctly", () => {
-      const error = createValidationError(
-        ERROR_CODES.INVALID_INPUT,
-        "Test error"
-      )
-      const result = createErrorResult(error)
+      const error = createValidationError("Test error")
+      const result = createError(error)
 
       expect(result.success).toBe(false)
-      expect(result.error).toEqual(error)
+      expect(result.error).toBe(error)
       expect(result.data).toBeUndefined()
     })
 
     it("should handle result type narrowing correctly", () => {
-      const successResult: Result<string> = createSuccessResult("test data")
-      const errorResult: Result<string> = createErrorResult(
-        createValidationError(ERROR_CODES.INVALID_INPUT, "Test error")
-      )
+      const successResult = createSuccess("test data")
+      const errorResult = createError(createValidationError("test error"))
 
       if (successResult.success) {
         // TypeScript should narrow the type here
         expect(successResult.data).toBe("test data")
+        // @ts-expect-error - error should not exist on success result
         expect(successResult.error).toBeUndefined()
       }
 
       if (!errorResult.success) {
         // TypeScript should narrow the type here
-        expect(errorResult.error.code).toBe(ERROR_CODES.INVALID_INPUT)
+        expect(errorResult.error.code).toBe("VALIDATION_ERROR")
+        // @ts-expect-error - data should not exist on error result
         expect(errorResult.data).toBeUndefined()
       }
     })
   })
 
   describe("Type Guards", () => {
-    const validationError = createValidationError(
-      ERROR_CODES.INVALID_INPUT,
-      "Test"
-    )
-    const authError = createAuthenticationError(
-      ERROR_CODES.INVALID_CREDENTIALS,
-      "Test"
-    )
-    const authzError = createAuthorizationError(
-      ERROR_CODES.ACCESS_DENIED,
-      "Test"
-    )
-    const dbError = createDatabaseError(ERROR_CODES.RECORD_NOT_FOUND, "Test")
-    const networkError = createNetworkError(ERROR_CODES.NETWORK_TIMEOUT, "Test")
-    const businessError = createBusinessLogicError(
-      ERROR_CODES.BUSINESS_RULE_VIOLATION,
-      "Test"
-    )
-    const systemError = createSystemError(ERROR_CODES.OUT_OF_MEMORY, "Test")
-    const externalError = createExternalServiceError(
-      ERROR_CODES.EXTERNAL_API_ERROR,
-      "Test"
-    )
-
     it("should correctly identify validation errors", () => {
+      const validationError = createValidationError("Test")
+      const authError = createAuthenticationError("Test")
+
       expect(isValidationError(validationError)).toBe(true)
       expect(isValidationError(authError)).toBe(false)
     })
 
     it("should correctly identify authentication errors", () => {
+      const authError = createAuthenticationError("Test", "INVALID_CREDENTIALS")
+      const validationError = createValidationError("Test")
+
       expect(isAuthenticationError(authError)).toBe(true)
       expect(isAuthenticationError(validationError)).toBe(false)
     })
 
     it("should correctly identify authorization errors", () => {
+      const authzError = createAuthorizationError("Test", "ACCESS_DENIED")
+      const authError = createAuthenticationError("Test")
+
       expect(isAuthorizationError(authzError)).toBe(true)
       expect(isAuthorizationError(authError)).toBe(false)
     })
 
     it("should correctly identify database errors", () => {
+      const dbError = createDatabaseError("Test", "CONNECTION_FAILED")
+      const networkError = createNetworkError("Test")
+
       expect(isDatabaseError(dbError)).toBe(true)
       expect(isDatabaseError(networkError)).toBe(false)
     })
 
     it("should correctly identify network errors", () => {
+      const networkError = createNetworkError("Test", "REQUEST_TIMEOUT")
+      const dbError = createDatabaseError("Test")
+
       expect(isNetworkError(networkError)).toBe(true)
       expect(isNetworkError(dbError)).toBe(false)
     })
 
     it("should correctly identify business logic errors", () => {
+      const businessError = createBusinessLogicError(
+        "Test",
+        "INVALID_OPERATION"
+      )
+      const systemError = createSystemError("Test")
+
       expect(isBusinessLogicError(businessError)).toBe(true)
       expect(isBusinessLogicError(systemError)).toBe(false)
     })
 
     it("should correctly identify system errors", () => {
+      const systemError = createSystemError("Test", "SERVICE_UNAVAILABLE")
+      const businessError = createBusinessLogicError("Test")
+
       expect(isSystemError(systemError)).toBe(true)
-      expect(isSystemError(externalError)).toBe(false)
+      expect(isSystemError(businessError)).toBe(false)
     })
 
     it("should correctly identify external service errors", () => {
+      const externalError = createExternalServiceError(
+        "Test",
+        "stripe",
+        "API_ERROR"
+      )
+      const systemError = createSystemError("Test")
+
       expect(isExternalServiceError(externalError)).toBe(true)
-      expect(isExternalServiceError(validationError)).toBe(false)
+      expect(isExternalServiceError(systemError)).toBe(false)
     })
   })
 
   describe("Error Severity and Retry Logic", () => {
     it("should correctly identify critical errors", () => {
-      const criticalError = createDatabaseError(
-        ERROR_CODES.DATABASE_CONNECTION_FAILED,
-        "Test"
-      )
-      const nonCriticalError = createValidationError(
-        ERROR_CODES.INVALID_INPUT,
-        "Test"
-      )
+      const criticalError = createDatabaseError("Test") // Critical by default
+      const mediumError = createValidationError("Test") // Medium by default
 
       expect(isCriticalError(criticalError)).toBe(true)
-      expect(isCriticalError(nonCriticalError)).toBe(false)
+      expect(isCriticalError(mediumError)).toBe(false)
     })
 
     it("should correctly identify retryable errors", () => {
-      const retryableError = createNetworkError(
-        ERROR_CODES.NETWORK_TIMEOUT,
-        "Test"
-      )
-      const nonRetryableError = createValidationError(
-        ERROR_CODES.INVALID_INPUT,
-        "Test"
-      )
+      const retryableError = createNetworkError("Test") // Retryable by default
+      const nonRetryableError = createValidationError("Test") // Not retryable by default
 
       expect(isRetryableError(retryableError)).toBe(true)
       expect(isRetryableError(nonRetryableError)).toBe(false)
     })
 
     it("should set appropriate severity for network errors based on status code", () => {
-      const serverError = createNetworkError(
-        ERROR_CODES.SERVICE_UNAVAILABLE,
-        "Test",
-        { statusCode: 500 }
-      )
-      const clientError = createNetworkError(
-        ERROR_CODES.SERVICE_UNAVAILABLE,
-        "Test",
-        { statusCode: 400 }
-      )
+      const serverError = createNetworkError("Server error", "NETWORK_ERROR", {
+        statusCode: 500,
+      })
+      const clientError = createNetworkError("Client error", "NETWORK_ERROR", {
+        statusCode: 400,
+      })
 
       expect(serverError.severity).toBe("critical")
       expect(clientError.severity).toBe("high")
@@ -352,27 +320,47 @@ describe("Enhanced Error Types - Issue #301", () => {
 
   describe("Error Codes Constants", () => {
     it("should have all required error codes defined", () => {
-      expect(ERROR_CODES.VALIDATION_FAILED).toBe("VALIDATION_FAILED")
-      expect(ERROR_CODES.INVALID_CREDENTIALS).toBe("INVALID_CREDENTIALS")
-      expect(ERROR_CODES.ACCESS_DENIED).toBe("ACCESS_DENIED")
-      expect(ERROR_CODES.DATABASE_CONNECTION_FAILED).toBe(
-        "DATABASE_CONNECTION_FAILED"
-      )
-      expect(ERROR_CODES.NETWORK_TIMEOUT).toBe("NETWORK_TIMEOUT")
-      expect(ERROR_CODES.BUSINESS_RULE_VIOLATION).toBe(
-        "BUSINESS_RULE_VIOLATION"
-      )
-      expect(ERROR_CODES.OUT_OF_MEMORY).toBe("OUT_OF_MEMORY")
-      expect(ERROR_CODES.EXTERNAL_API_ERROR).toBe("EXTERNAL_API_ERROR")
+      expect(ERROR_CODES.VALIDATION_ERROR).toBe("VALIDATION_ERROR")
+      expect(ERROR_CODES.AUTHENTICATION_ERROR).toBe("AUTHENTICATION_ERROR")
+      expect(ERROR_CODES.AUTHORIZATION_ERROR).toBe("AUTHORIZATION_ERROR")
+      expect(ERROR_CODES.DATABASE_ERROR).toBe("DATABASE_ERROR")
+      expect(ERROR_CODES.NETWORK_ERROR).toBe("NETWORK_ERROR")
+      expect(ERROR_CODES.BUSINESS_LOGIC_ERROR).toBe("BUSINESS_LOGIC_ERROR")
+      expect(ERROR_CODES.SYSTEM_ERROR).toBe("SYSTEM_ERROR")
+      expect(ERROR_CODES.EXTERNAL_SERVICE_ERROR).toBe("EXTERNAL_SERVICE_ERROR")
+
+      // Legacy codes
+      expect(ERROR_CODES.NOT_FOUND).toBe("NOT_FOUND")
+      expect(ERROR_CODES.PASSWORD_CHANGE_FAILED).toBe("PASSWORD_CHANGE_FAILED")
     })
 
     it("should have consistent error code format", () => {
-      const errorCodes = Object.values(ERROR_CODES)
+      const codes = Object.values(ERROR_CODES)
 
-      errorCodes.forEach((code) => {
+      codes.forEach((code) => {
+        expect(typeof code).toBe("string")
+        expect(code.length).toBeGreaterThan(0)
         expect(code).toMatch(/^[A-Z_]+$/) // Should be uppercase with underscores
-        expect(code.length).toBeGreaterThan(3) // Should be descriptive
       })
+    })
+  })
+
+  describe("Legacy Support", () => {
+    it("should handle legacy error codes", () => {
+      const notFoundError = createLegacyError("NOT_FOUND", "User not found")
+      const passwordError = createLegacyError(
+        "PASSWORD_CHANGE_FAILED",
+        "Password change failed"
+      )
+      const unknownError = createLegacyError("UNKNOWN_ERROR", "Unknown error")
+
+      expect(isValidationError(notFoundError)).toBe(true)
+      expect(isAuthenticationError(passwordError)).toBe(true)
+      expect(isSystemError(unknownError)).toBe(true)
+
+      expect(notFoundError.details?.legacyCode).toBe("NOT_FOUND")
+      expect(passwordError.details?.legacyCode).toBe("PASSWORD_CHANGE_FAILED")
+      expect(unknownError.details?.legacyCode).toBe("UNKNOWN_ERROR")
     })
   })
 })
