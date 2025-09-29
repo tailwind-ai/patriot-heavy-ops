@@ -262,8 +262,8 @@ export class DashboardService extends BaseService {
   private async getUserStats(userId: string): Promise<DashboardStats> {
     const [totalRequests, activeRequests, completedRequests] =
       await Promise.all([
-        db.serviceRequest.count({ where: { userId } }),
-        db.serviceRequest.count({
+        db?.serviceRequest.count({ where: { userId } }),
+        db?.serviceRequest.count({
           where: {
             userId,
             status: {
@@ -284,7 +284,7 @@ export class DashboardService extends BaseService {
             },
           },
         }),
-        db.serviceRequest.count({
+        db?.serviceRequest.count({
           where: {
             userId,
             status: {
@@ -321,8 +321,8 @@ export class DashboardService extends BaseService {
   private async getOperatorStats(operatorId: string): Promise<DashboardStats> {
     const [totalAssignments, activeAssignments, completedAssignments] =
       await Promise.all([
-        db.userAssignment.count({ where: { operatorId } }),
-        db.userAssignment.count({
+        db?.userAssignment.count({ where: { operatorId } }),
+        db?.userAssignment.count({
           where: {
             operatorId,
             serviceRequest: {
@@ -341,7 +341,7 @@ export class DashboardService extends BaseService {
             },
           },
         }),
-        db.userAssignment.count({
+        db?.userAssignment.count({
           where: {
             operatorId,
             serviceRequest: {
@@ -390,8 +390,8 @@ export class DashboardService extends BaseService {
 
     const [totalRequests, activeRequests, completedRequests, pendingApproval] =
       await Promise.all([
-        db.serviceRequest.count({ where: whereClause }),
-        db.serviceRequest.count({
+        db?.serviceRequest.count({ where: whereClause }),
+        db?.serviceRequest.count({
           where: {
             ...whereClause,
             status: {
@@ -412,7 +412,7 @@ export class DashboardService extends BaseService {
             },
           },
         }),
-        db.serviceRequest.count({
+        db?.serviceRequest.count({
           where: {
             ...whereClause,
             status: {
@@ -426,7 +426,7 @@ export class DashboardService extends BaseService {
             },
           },
         }),
-        db.serviceRequest.count({
+        db?.serviceRequest.count({
           where: {
             ...whereClause,
             status: { in: ["SUBMITTED", "UNDER_REVIEW"] },
@@ -451,7 +451,7 @@ export class DashboardService extends BaseService {
       activeRequests,
       completedRequests,
       pendingApproval,
-      revenue: decimalToNumber(revenueResult._sum.estimatedCost) || 0,
+      revenue: decimalToNumber(revenueResult?._sum?.estimatedCost) || 0,
     }
   }
 
@@ -485,7 +485,7 @@ export class DashboardService extends BaseService {
     return {
       ...stats,
       averageJobDuration: decimalToHours(
-        avgDurationResult._avg?.requestedTotalHours
+        avgDurationResult?._avg?.requestedTotalHours
       ),
     }
   }
@@ -518,7 +518,7 @@ export class DashboardService extends BaseService {
       skip: options.offset || 0,
     })
 
-    return requests.map((request) => ({
+    return (requests || []).map((request) => ({
       ...request,
       estimatedCost: decimalToNumber(request.estimatedCost),
       requestedTotalHours: decimalToHours(request.requestedTotalHours),
@@ -569,7 +569,7 @@ export class DashboardService extends BaseService {
       skip: options.offset || 0,
     })
 
-    return requests.map((request) => ({
+    return (requests || []).map((request) => ({
       ...request,
       estimatedCost: decimalToNumber(request.estimatedCost),
       requestedTotalHours: decimalToHours(request.requestedTotalHours),
@@ -631,11 +631,11 @@ export class DashboardService extends BaseService {
       skip: options.offset || 0,
     })
 
-    return requests.map((request) => ({
+    return (requests || []).map((request) => ({
       ...request,
       estimatedCost: decimalToNumber(request.estimatedCost),
       requestedTotalHours: decimalToHours(request.requestedTotalHours),
-      assignedOperators: request.userAssignments.map(
+      assignedOperators: (request.userAssignments || []).map(
         (assignment) => assignment.operator
       ),
     }))
@@ -670,7 +670,7 @@ export class DashboardService extends BaseService {
       take: limit || 10,
     })
 
-    return assignments
+    return assignments || []
   }
 
   /**
@@ -716,7 +716,7 @@ export class DashboardService extends BaseService {
       take: limit || 15,
     })
 
-    return assignments
+    return assignments || []
   }
 
   /**
@@ -736,7 +736,7 @@ export class DashboardService extends BaseService {
       take: limit || 10,
     })
 
-    return users
+    return users || []
   }
 
   /**
