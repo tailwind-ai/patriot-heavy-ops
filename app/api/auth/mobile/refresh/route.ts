@@ -67,7 +67,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<TokenRefreshR
     }
 
     // Verify user still exists and get current data
-    const user = await db.user.findUnique({
+    const user = await db?.user.findUnique({
       where: { id: payload.userId },
       select: {
         id: true,

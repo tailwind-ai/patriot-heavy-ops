@@ -15,7 +15,7 @@ export async function POST(
 
     // Ensure user is authenticated and has access to this user.
     const session = await getServerSession(authOptions)
-    if (!session?.user || params.userId !== session?.user.id) {
+    if (!session?.user || params?.userId !== session?.user?.id) {
       return new Response(null, { status: 403 })
     }
 
@@ -25,7 +25,7 @@ export async function POST(
 
     // Update user record with operator application data
     // Since we consolidated User and Operator tables, we store the location in preferredLocations
-    const updatedUser = await db.user.update({
+    const updatedUser = await db?.user.update({
       where: {
         id: session.user.id,
       },

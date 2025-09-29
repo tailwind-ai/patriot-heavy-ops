@@ -20,7 +20,7 @@ export async function GET() {
     }
 
     const { user } = session
-    const posts = await db.post.findMany({
+    const posts = await db?.post.findMany({
       select: {
         id: true,
         title: true,
@@ -47,12 +47,12 @@ export async function POST(req: Request) {
     }
 
     const { user } = session
-    const subscriptionPlan = await getUserSubscriptionPlan(user.id)
+    const subscriptionPlan = await getUserSubscriptionPlan(user?.id)
 
     // If user is on a free plan.
     // Check if user has reached limit of 3 posts.
     if (!subscriptionPlan.isPro) {
-      const count = await db.post.count({
+      const count = await db?.post.count({
         where: {
           authorId: user.id,
         },
@@ -66,7 +66,7 @@ export async function POST(req: Request) {
     const json = await req.json()
     const body = postCreateSchema.parse(json)
 
-    const post = await db.post.create({
+    const post = await db?.post.create({
       data: {
         title: body.title,
         ...(body.content !== undefined && { content: body.content }),

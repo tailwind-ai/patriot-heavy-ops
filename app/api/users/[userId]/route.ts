@@ -59,13 +59,13 @@ export async function PATCH(
     )
 
     if (!result.success) {
-      if (result.error?.code === "ACCESS_DENIED") {
+      if (result?.error?.code === "ACCESS_DENIED") {
         return new Response(null, { status: 403 })
       }
-      if (result.error?.code === "VALIDATION_ERROR") {
+      if (result?.error?.code === "VALIDATION_ERROR") {
         // Extract issues from the details object to match expected format
         // Ensure details.issues is always present and is an array
-        const details = result.error.details || {}
+        const details = result?.error?.details || {}
         let issues: unknown[] = []
         
         if (Array.isArray(details.issues)) {
