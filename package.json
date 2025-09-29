@@ -26,7 +26,7 @@
     "test:debug-watch": "npm run test:debug -- --watchAll",
     "test:update-snapshots": "jest --updateSnapshot",
     "test:snapshots": "jest --testNamePattern='snapshot'",
-    "todo": "tsx scripts/todo-cli.ts",
+    "todo": "tsx scripts/export-cursor-todos.ts",
     "approve-workflows": "./scripts/auto-approve-workflows.sh",
     "validate": "npx tsc --noEmit && npx eslint . --quiet",
     "validate:docker": "docker-compose exec app npm run validate",

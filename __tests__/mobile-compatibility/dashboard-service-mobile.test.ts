@@ -329,40 +329,43 @@ describe("Dashboard Service Mobile Compatibility", () => {
       // Mock minimal data response for mobile
       mockDb.serviceRequest.count.mockResolvedValue(5)
       mockDb.serviceRequest.findMany.mockResolvedValue([
-          {
-            id: "mobile-req-1",
-            userId: "user-1",
-            title: "Mobile Request",
-            description: "Mobile test description",
-            contactName: "Contact 1",
-            contactEmail: "contact1@test.com",
-            contactPhone: "555-0101",
-            company: "Test Company 1",
-            status: "SUBMITTED" as const,
-            equipmentCategory: "SKID_STEERS_TRACK_LOADERS",
-            equipmentDetail: "Standard skid steer",
-            jobSite: "Mobile Site",
-            transport: "WE_HANDLE_IT" as const,
-            startDate: new Date(),
-            endDate: null,
-            requestedDurationType: "FULL_DAY",
-            requestedDurationValue: 1,
-            requestedTotalHours: new Decimal(8),
-            rateType: "HOURLY",
-            baseRate: new Decimal(75),
-            estimatedCost: new Decimal(500),
-            depositAmount: null,
-            depositPaid: false,
-            depositPaidAt: null,
-            finalAmount: null,
-            finalPaid: false,
-            finalPaidAt: null,
-            assignedManagerId: null,
-            priority: "MEDIUM",
-            internalNotes: null,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-          },
+        {
+          id: "mobile-req-1",
+          userId: "user-1",
+          title: "Mobile Request",
+          description: "Mobile test description",
+          contactName: "Contact 1",
+          contactEmail: "contact1@test.com",
+          contactPhone: "555-0101",
+          company: "Test Company 1",
+          status: "SUBMITTED" as const,
+          equipmentCategory: "SKID_STEERS_TRACK_LOADERS",
+          equipmentDetail: "Standard skid steer",
+          jobSite: "Mobile Site",
+          transport: "WE_HANDLE_IT" as const,
+          startDate: new Date(),
+          endDate: null,
+          requestedDurationType: "FULL_DAY",
+          requestedDurationValue: 1,
+          requestedTotalHours: new Decimal(8),
+          rateType: "HOURLY",
+          baseRate: new Decimal(75),
+          estimatedCost: new Decimal(500),
+          depositAmount: null,
+          depositPaid: false,
+          depositPaidAt: null,
+          finalAmount: null,
+          finalPaid: false,
+          finalPaidAt: null,
+          stripeDepositPaymentIntentId: null,
+          stripeFinalPaymentIntentId: null,
+          assignedManagerId: null,
+          rejectionReason: null,
+          priority: "MEDIUM",
+          internalNotes: null,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
       ])
 
       const result = await dashboardService.getDashboardData({
@@ -529,7 +532,7 @@ describe("Dashboard Service Mobile Compatibility", () => {
       }
 
       mockDb.serviceRequest.count.mockResolvedValue(1)
-      mockDb.serviceRequest.findMany.mockResolvedValue([consistentData])
+      mockDb.serviceRequest.findMany.mockResolvedValue([consistentData as any])
 
       const result = await dashboardService.getDashboardData({
         userId: "cross-platform-user",
