@@ -31,12 +31,10 @@ export interface ServiceError {
   timestamp: Date;
 }
 
-// Legacy interface for backward compatibility  
-export interface ServiceResult<T> {
-  success: boolean;
-  data?: T;
-  error?: ServiceError;
-}
+// Enhanced ServiceResult with discriminated union for better type safety
+export type ServiceResult<T> = 
+  | { success: true; data: T; error?: never }
+  | { success: false; data?: never; error: ServiceError }
 
 export interface ServiceLogger {
   info(message: string, meta?: Record<string, unknown>): void;

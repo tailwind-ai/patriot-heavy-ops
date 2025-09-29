@@ -38,7 +38,7 @@ export interface FilterOptions {
   select?: Record<string, unknown>
 }
 
-export interface RepositoryResult<T> extends ServiceResult<T> {
+export type RepositoryResult<T> = ServiceResult<T> & {
   pagination?: {
     page: number
     limit: number
