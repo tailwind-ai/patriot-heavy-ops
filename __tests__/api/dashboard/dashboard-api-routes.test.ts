@@ -30,10 +30,13 @@ const mockAuthenticateRequest = jest.requireMock(
 const mockHasRole = jest.requireMock("@/lib/middleware/mobile-auth").hasRole
 const mockServiceFactory = jest.requireMock("@/lib/services").ServiceFactory
 
-// Type-safe mock dashboard service
+// Type-safe mock dashboard service with correct method signature
 type MockDashboardService = {
   getDashboardData: jest.MockedFunction<
-    (params: Record<string, unknown>) => Promise<unknown>
+    (
+      options: Record<string, unknown>,
+      cacheOptions?: Record<string, unknown>
+    ) => Promise<unknown>
   >
 }
 
