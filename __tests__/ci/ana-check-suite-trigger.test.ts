@@ -157,6 +157,39 @@ describe("Ana Check Suite Trigger Configuration (Issue #326)", () => {
       expect(analyzeStep.if).toBeDefined()
       expect(analyzeStep.if).toContain("pr_number")
     })
+
+    it("should use empty string check for GitHub Actions null outputs", () => {
+      const analysisJob = anaWorkflowConfig.jobs["analyze-ci-failures"]
+
+      // CRITICAL: GitHub Actions converts JS null to empty string '', not 'null'
+      // find-pr step should check for empty string, not 'null'
+      const findPrStep = analysisJob.steps.find(
+        (step: any) => step.id === "find-pr"
+      )
+
+      expect(findPrStep).toBeDefined()
+      expect(findPrStep.if).toBeDefined()
+
+      // Should check != '' not != 'null' (GitHub Actions null handling)
+      expect(findPrStep.if).toContain("!= ''")
+      expect(findPrStep.if).not.toContain("!= 'null'")
+    })
+
+    it("should check for empty string before running analysis", () => {
+      const analysisJob = anaWorkflowConfig.jobs["analyze-ci-failures"]
+
+      // Analyze step should also check for empty string
+      const analyzeStep = analysisJob.steps.find((step: any) =>
+        step.name?.includes("Analyze CI Test failures")
+      )
+
+      expect(analyzeStep).toBeDefined()
+      expect(analyzeStep.if).toBeDefined()
+
+      // Should check != '' not != 'null'
+      expect(analyzeStep.if).toContain("!= ''")
+      expect(analyzeStep.if).not.toContain("!= 'null'")
+    })
   })
 
   describe("Check Suite Event Filtering", () => {
@@ -198,6 +231,21 @@ describe("Ana Check Suite Trigger Configuration (Issue #326)", () => {
       expect(script).toContain("targetWorkflows")
       expect(script).toContain("CI Tests")
       expect(script).toContain("Optimized CI Tests")
+    })
+
+    it("should check workflow name from check suite not just run name", () => {
+      const analysisJob = anaWorkflowConfig.jobs["analyze-ci-failures"]
+
+      const extractRunIdStep = analysisJob.steps.find(
+        (step: any) => step.id === "extract-workflow-run-id"
+      )
+
+      const script = extractRunIdStep.with.script
+
+      // BUG FIX: Should check workflow_name property, not just run.name
+      // This prevents misidentifying workflows based only on check run names
+      expect(script).toContain("workflow_name")
+      expect(script).toContain("workflowName")
     })
 
     it("should skip check_suite events from non-CI workflows like Vercel or Bugbot", () => {

@@ -70,12 +70,15 @@ jobs:
               });
               
               // Check if any check run belongs to a target CI workflow
+              // BUG FIX: Check workflow name from check run, not just run.name
               const isTargetWorkflow = checkRuns.check_runs.some(run => {
+                // Extract workflow name from check run details URL or use workflow property
+                const workflowName = run.check_suite?.workflow_name || '';
                 const runName = run.name || '';
+                
                 return targetWorkflows.some(target => 
-                  runName.includes(target) || 
-                  run.details_url?.includes('CI') ||
-                  run.details_url?.includes('tests')
+                  workflowName.includes(target) ||
+                  runName.includes(target)
                 );
               });
               
@@ -118,7 +121,7 @@ jobs:
 
       - name: Find associated PR
         id: find-pr
-        if: steps.extract-workflow-run-id.outputs.workflow_run_id != 'null'
+        if: steps.extract-workflow-run-id.outputs.workflow_run_id != ''
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.ORG_PAT }}
@@ -173,7 +176,7 @@ jobs:
             return { pr_number: null };
 
       - name: Analyze CI Test failures and send to Tod webhook
-        if: steps.find-pr.outputs.pr_number != 'null'
+        if: steps.find-pr.outputs.pr_number != ''
         run: |
           echo "🔍 Ana analyzing CI Test failures..."
           echo "Event: ${{ github.event_name }}"
