@@ -202,14 +202,14 @@ describe("Enhanced Error Types - Issue #301", () => {
       if (successResult.success) {
         // TypeScript should narrow the type here
         expect(successResult.data).toBe("test data")
-        // @ts-expect-error - error should not exist on success result
+        // error should not exist on success result
         expect(successResult.error).toBeUndefined()
       }
 
       if (!errorResult.success) {
         // TypeScript should narrow the type here
         expect(errorResult.error.code).toBe("VALIDATION_ERROR")
-        // @ts-expect-error - data should not exist on error result
+        // data should not exist on error result
         expect(errorResult.data).toBeUndefined()
       }
     })

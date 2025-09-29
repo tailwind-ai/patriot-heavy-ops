@@ -16,7 +16,7 @@ export type ApplicationError = {
   readonly severity: 'low' | 'medium' | 'high' | 'critical'
   readonly retryable: boolean
   readonly timestamp: string
-  readonly details?: Record<string, unknown>
+  readonly details?: Record<string, unknown> | undefined
 }
 
 // Specific error types for different categories
@@ -137,20 +137,18 @@ export function createValidationError(
   message: string,
   options?: { field?: string; expectedType?: string; details?: Record<string, unknown> }
 ): ValidationError {
-  const baseError: ApplicationError = {
+  const baseError = {
     code: ERROR_CODES.VALIDATION_ERROR,
     message,
     severity: 'medium',
     retryable: false,
     timestamp: new Date().toISOString(),
-    details: options?.details
-  }
-  
-  return {
-    ...baseError,
+    ...(options?.details !== undefined && { details: options.details }),
     ...(options?.field !== undefined && { field: options.field }),
     ...(options?.expectedType !== undefined && { expectedType: options.expectedType })
   }
+  
+  return baseError as ValidationError
 }
 
 export function createAuthenticationError(
@@ -158,19 +156,17 @@ export function createAuthenticationError(
   code: AuthenticationError['code'] = 'AUTHENTICATION_ERROR',
   options?: { userId?: string; details?: Record<string, unknown> }
 ): AuthenticationError {
-  const baseError: ApplicationError = {
+  const baseError = {
     code,
     message,
     severity: 'high',
     retryable: false,
     timestamp: new Date().toISOString(),
-    details: options?.details
-  }
-  
-  return {
-    ...baseError,
+    ...(options?.details !== undefined && { details: options.details }),
     ...(options?.userId !== undefined && { userId: options.userId })
   }
+  
+  return baseError as AuthenticationError
 }
 
 export function createAuthorizationError(
@@ -178,21 +174,19 @@ export function createAuthorizationError(
   code: AuthorizationError['code'] = 'AUTHORIZATION_ERROR',
   options?: { userId?: string; requiredRole?: string; resource?: string; details?: Record<string, unknown> }
 ): AuthorizationError {
-  const baseError: ApplicationError = {
+  const baseError = {
     code,
     message,
     severity: 'high',
     retryable: false,
     timestamp: new Date().toISOString(),
-    details: options?.details
-  }
-  
-  return {
-    ...baseError,
+    ...(options?.details !== undefined && { details: options.details }),
     ...(options?.userId !== undefined && { userId: options.userId }),
     ...(options?.requiredRole !== undefined && { requiredRole: options.requiredRole }),
     ...(options?.resource !== undefined && { resource: options.resource })
   }
+  
+  return baseError as AuthorizationError
 }
 
 export function createDatabaseError(
@@ -200,20 +194,18 @@ export function createDatabaseError(
   code: DatabaseError['code'] = 'DATABASE_ERROR',
   options?: { query?: string; table?: string; details?: Record<string, unknown> }
 ): DatabaseError {
-  const baseError: ApplicationError = {
+  const baseError = {
     code,
     message,
     severity: 'critical',
     retryable: true,
     timestamp: new Date().toISOString(),
-    details: options?.details
-  }
-  
-  return {
-    ...baseError,
+    ...(options?.details !== undefined && { details: options.details }),
     ...(options?.query !== undefined && { query: options.query }),
     ...(options?.table !== undefined && { table: options.table })
   }
+  
+  return baseError as DatabaseError
 }
 
 export function createNetworkError(
@@ -221,25 +213,22 @@ export function createNetworkError(
   code: NetworkError['code'] = 'NETWORK_ERROR',
   options?: { url?: string; statusCode?: number; method?: string; details?: Record<string, unknown> }
 ): NetworkError {
-  const baseError: ApplicationError = {
-    code,
-    message,
-    retryable: true,
-    timestamp: new Date().toISOString(),
-    details: options?.details,
-    severity: 'high' // Default severity
-  }
-  
   // Determine severity based on status code
   const severity = options?.statusCode && options.statusCode >= 500 ? 'critical' : 'high'
   
-  return {
-    ...baseError,
+  const baseError = {
+    code,
+    message,
     severity,
+    retryable: true,
+    timestamp: new Date().toISOString(),
+    ...(options?.details !== undefined && { details: options.details }),
     ...(options?.url !== undefined && { url: options.url }),
     ...(options?.statusCode !== undefined && { statusCode: options.statusCode }),
     ...(options?.method !== undefined && { method: options.method })
   }
+  
+  return baseError as NetworkError
 }
 
 export function createBusinessLogicError(
@@ -247,20 +236,18 @@ export function createBusinessLogicError(
   code: BusinessLogicError['code'] = 'BUSINESS_LOGIC_ERROR',
   options?: { operation?: string; context?: Record<string, unknown>; details?: Record<string, unknown> }
 ): BusinessLogicError {
-  const baseError: ApplicationError = {
+  const baseError = {
     code,
     message,
     severity: 'medium',
     retryable: false,
     timestamp: new Date().toISOString(),
-    details: options?.details
-  }
-  
-  return {
-    ...baseError,
+    ...(options?.details !== undefined && { details: options.details }),
     ...(options?.operation !== undefined && { operation: options.operation }),
     ...(options?.context !== undefined && { context: options.context })
   }
+  
+  return baseError as BusinessLogicError
 }
 
 export function createSystemError(
@@ -268,20 +255,18 @@ export function createSystemError(
   code: SystemError['code'] = 'SYSTEM_ERROR',
   options?: { service?: string; component?: string; details?: Record<string, unknown> }
 ): SystemError {
-  const baseError: ApplicationError = {
+  const baseError = {
     code,
     message,
     severity: 'critical',
     retryable: true,
     timestamp: new Date().toISOString(),
-    details: options?.details
-  }
-  
-  return {
-    ...baseError,
+    ...(options?.details !== undefined && { details: options.details }),
     ...(options?.service !== undefined && { service: options.service }),
     ...(options?.component !== undefined && { component: options.component })
   }
+  
+  return baseError as SystemError
 }
 
 export function createExternalServiceError(
@@ -290,21 +275,19 @@ export function createExternalServiceError(
   code: ExternalServiceError['code'] = 'EXTERNAL_SERVICE_ERROR',
   options?: { endpoint?: string; statusCode?: number; details?: Record<string, unknown> }
 ): ExternalServiceError {
-  const baseError: ApplicationError = {
+  const baseError = {
     code,
     message,
     severity: 'high',
     retryable: true,
     timestamp: new Date().toISOString(),
-    details: options?.details
-  }
-  
-  return {
-    ...baseError,
     service,
+    ...(options?.details !== undefined && { details: options.details }),
     ...(options?.endpoint !== undefined && { endpoint: options.endpoint }),
     ...(options?.statusCode !== undefined && { statusCode: options.statusCode })
   }
+  
+  return baseError as ExternalServiceError
 }
 
 // Result factory functions

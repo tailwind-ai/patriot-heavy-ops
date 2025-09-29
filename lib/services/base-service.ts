@@ -125,7 +125,8 @@ export abstract class BaseService {
       details: error.details,
     });
 
-    return createError<T>(error);
+    // Cast to AppError since ApplicationError is the base type
+    return createError<T>(error as any);
   }
 
   /**
