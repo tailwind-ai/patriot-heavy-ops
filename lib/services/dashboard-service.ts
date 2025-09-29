@@ -262,8 +262,8 @@ export class DashboardService extends BaseService {
   private async getUserStats(userId: string): Promise<DashboardStats> {
     const [totalRequests, activeRequests, completedRequests] =
       await Promise.all([
-        db.serviceRequest.count({ where: { userId } }),
-        db.serviceRequest.count({
+        db?.serviceRequest.count({ where: { userId } }),
+        db?.serviceRequest.count({
           where: {
             userId,
             status: {
@@ -284,7 +284,7 @@ export class DashboardService extends BaseService {
             },
           },
         }),
-        db.serviceRequest.count({
+        db?.serviceRequest.count({
           where: {
             userId,
             status: {
@@ -300,7 +300,7 @@ export class DashboardService extends BaseService {
         }),
       ])
 
-    const pendingApproval = await db.serviceRequest.count({
+    const pendingApproval = await db?.serviceRequest.count({
       where: {
         userId,
         status: { in: ["SUBMITTED", "UNDER_REVIEW"] },
@@ -321,8 +321,8 @@ export class DashboardService extends BaseService {
   private async getOperatorStats(operatorId: string): Promise<DashboardStats> {
     const [totalAssignments, activeAssignments, completedAssignments] =
       await Promise.all([
-        db.userAssignment.count({ where: { operatorId } }),
-        db.userAssignment.count({
+        db?.userAssignment.count({ where: { operatorId } }),
+        db?.userAssignment.count({
           where: {
             operatorId,
             serviceRequest: {
@@ -341,7 +341,7 @@ export class DashboardService extends BaseService {
             },
           },
         }),
-        db.userAssignment.count({
+        db?.userAssignment.count({
           where: {
             operatorId,
             serviceRequest: {
@@ -360,7 +360,7 @@ export class DashboardService extends BaseService {
       ])
 
     // Also include their own service requests
-    const ownRequests = await db.serviceRequest.count({
+    const ownRequests = await db?.serviceRequest.count({
       where: { userId: operatorId },
     })
 
@@ -390,8 +390,8 @@ export class DashboardService extends BaseService {
 
     const [totalRequests, activeRequests, completedRequests, pendingApproval] =
       await Promise.all([
-        db.serviceRequest.count({ where: whereClause }),
-        db.serviceRequest.count({
+        db?.serviceRequest.count({ where: whereClause }),
+        db?.serviceRequest.count({
           where: {
             ...whereClause,
             status: {
@@ -412,7 +412,7 @@ export class DashboardService extends BaseService {
             },
           },
         }),
-        db.serviceRequest.count({
+        db?.serviceRequest.count({
           where: {
             ...whereClause,
             status: {
@@ -426,7 +426,7 @@ export class DashboardService extends BaseService {
             },
           },
         }),
-        db.serviceRequest.count({
+        db?.serviceRequest.count({
           where: {
             ...whereClause,
             status: { in: ["SUBMITTED", "UNDER_REVIEW"] },
@@ -435,7 +435,7 @@ export class DashboardService extends BaseService {
       ])
 
     // Calculate revenue from completed requests
-    const revenueResult = await db.serviceRequest.aggregate({
+    const revenueResult = await db?.serviceRequest.aggregate({
       where: {
         ...whereClause,
         status: { in: ["PAYMENT_RECEIVED", "CLOSED"] },
@@ -451,7 +451,7 @@ export class DashboardService extends BaseService {
       activeRequests,
       completedRequests,
       pendingApproval,
-      revenue: decimalToNumber(revenueResult._sum.estimatedCost) || 0,
+      revenue: decimalToNumber(revenueResult?._sum?.estimatedCost) || 0,
     }
   }
 
@@ -465,7 +465,7 @@ export class DashboardService extends BaseService {
     const stats = await this.getManagerStats(dateRange) // Inherit manager stats
 
     // Add admin-specific metrics
-    const avgDurationResult = await db.serviceRequest.aggregate({
+    const avgDurationResult = await db?.serviceRequest.aggregate({
       where: {
         status: {
           in: [
@@ -485,7 +485,7 @@ export class DashboardService extends BaseService {
     return {
       ...stats,
       averageJobDuration: decimalToHours(
-        avgDurationResult._avg?.requestedTotalHours
+        avgDurationResult?._avg?.requestedTotalHours
       ),
     }
   }
@@ -496,7 +496,7 @@ export class DashboardService extends BaseService {
   private async getUserServiceRequests(
     options: DashboardDataOptions
   ): Promise<DashboardServiceRequest[]> {
-    const requests = await db.serviceRequest.findMany({
+    const requests = await db?.serviceRequest.findMany({
       where: { userId: options.userId },
       select: {
         id: true,
@@ -518,7 +518,7 @@ export class DashboardService extends BaseService {
       skip: options.offset || 0,
     })
 
-    return requests.map((request) => ({
+    return (requests || []).map((request) => ({
       ...request,
       estimatedCost: decimalToNumber(request.estimatedCost),
       requestedTotalHours: decimalToHours(request.requestedTotalHours),
@@ -531,7 +531,7 @@ export class DashboardService extends BaseService {
   private async getOperatorServiceRequests(
     options: DashboardDataOptions
   ): Promise<DashboardServiceRequest[]> {
-    const requests = await db.serviceRequest.findMany({
+    const requests = await db?.serviceRequest.findMany({
       where: {
         OR: [
           { userId: options.userId }, // Own requests
@@ -569,7 +569,7 @@ export class DashboardService extends BaseService {
       skip: options.offset || 0,
     })
 
-    return requests.map((request) => ({
+    return (requests || []).map((request) => ({
       ...request,
       estimatedCost: decimalToNumber(request.estimatedCost),
       requestedTotalHours: decimalToHours(request.requestedTotalHours),
@@ -591,7 +591,7 @@ export class DashboardService extends BaseService {
         }
       : {}
 
-    const requests = await db.serviceRequest.findMany({
+    const requests = await db?.serviceRequest.findMany({
       where: whereClause,
       select: {
         id: true,
@@ -631,11 +631,11 @@ export class DashboardService extends BaseService {
       skip: options.offset || 0,
     })
 
-    return requests.map((request) => ({
+    return (requests || []).map((request) => ({
       ...request,
       estimatedCost: decimalToNumber(request.estimatedCost),
       requestedTotalHours: decimalToHours(request.requestedTotalHours),
-      assignedOperators: request.userAssignments.map(
+      assignedOperators: (request.userAssignments || []).map(
         (assignment) => assignment.operator
       ),
     }))
@@ -648,7 +648,7 @@ export class DashboardService extends BaseService {
     operatorId: string,
     limit?: number
   ): Promise<OperatorAssignment[]> {
-    const assignments = await db.userAssignment.findMany({
+    const assignments = await db?.userAssignment.findMany({
       where: { operatorId },
       select: {
         id: true,
@@ -670,7 +670,7 @@ export class DashboardService extends BaseService {
       take: limit || 10,
     })
 
-    return assignments
+    return assignments || []
   }
 
   /**
@@ -679,7 +679,7 @@ export class DashboardService extends BaseService {
   private async getAllActiveAssignments(
     limit?: number
   ): Promise<OperatorAssignment[]> {
-    const assignments = await db.userAssignment.findMany({
+    const assignments = await db?.userAssignment.findMany({
       where: {
         serviceRequest: {
           status: {
@@ -716,14 +716,14 @@ export class DashboardService extends BaseService {
       take: limit || 15,
     })
 
-    return assignments
+    return assignments || []
   }
 
   /**
    * Get recent users (ADMIN only)
    */
   private async getRecentUsers(limit?: number): Promise<DashboardUser[]> {
-    const users = await db.user.findMany({
+    const users = await db?.user.findMany({
       select: {
         id: true,
         name: true,
@@ -736,7 +736,7 @@ export class DashboardService extends BaseService {
       take: limit || 10,
     })
 
-    return users
+    return users || []
   }
 
   /**
