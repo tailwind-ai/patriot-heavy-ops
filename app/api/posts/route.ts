@@ -47,7 +47,12 @@ export async function POST(req: Request) {
     }
 
     const { user } = session
-    const subscriptionPlan = await getUserSubscriptionPlan(user?.id)
+    
+    if (!user?.id) {
+      return new Response("User ID not found", { status: 400 })
+    }
+    
+    const subscriptionPlan = await getUserSubscriptionPlan(user.id)
 
     // If user is on a free plan.
     // Check if user has reached limit of 3 posts.
