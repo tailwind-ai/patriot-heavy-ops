@@ -213,22 +213,22 @@ export function useDashboardData(
 
         try {
           const errorData = await response.json()
-          if (response?.status === 401) {
+          if (response.status === 401) {
             errorMessage = "Authentication required. Please log in."
-          } else if (response?.status === 403) {
+          } else if (response.status === 403) {
             errorMessage = "Access denied. Insufficient permissions."
-          } else if (response?.status === 422) {
+          } else if (response.status === 422) {
             errorMessage = "Invalid request parameters."
           } else if (errorData?.error) {
             errorMessage = errorData.error
           }
         } catch {
           // Use status-based fallback messages
-          if (response?.status === 401) {
+          if (response.status === 401) {
             errorMessage = "Authentication required. Please log in."
-          } else if (response?.status === 403) {
+          } else if (response.status === 403) {
             errorMessage = "Access denied. Insufficient permissions."
-          } else if (response?.status >= 500) {
+          } else if (response.status >= 500) {
             errorMessage = "Server error. Please try again later."
           }
         }

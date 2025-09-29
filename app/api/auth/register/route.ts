@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
     const { name, email, password } = userRegisterSchema.parse(body)
 
     // Check if user already exists
-    const existingUser = await db?.user.findUnique({
+    const existingUser = await db.user.findUnique({
       where: {
         email: email.toLowerCase(),
       },
@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     // Hash password and create user
     const hashedPassword = await hashPassword(password)
 
-    const user = await db?.user.create({
+    const user = await db.user.create({
       data: {
         name,
         email: email.toLowerCase(),
