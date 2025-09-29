@@ -451,9 +451,9 @@ export abstract class BaseService {
   ): ServiceResult<void> {
     const missing = requiredFields.filter(
       (field) =>
-        params[field] === undefined ||
-        params[field] === null ||
-        params[field] === ""
+        params?.[field] === undefined ||
+        params?.[field] === null ||
+        params?.[field] === ""
     )
 
     if (missing.length > 0) {
