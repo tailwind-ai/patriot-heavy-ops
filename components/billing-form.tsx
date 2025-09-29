@@ -16,7 +16,7 @@ import {
 import { toast } from "@/components/ui/use-toast"
 import { Icons } from "@/components/icons"
 
-interface BillingFormProps extends React.HTMLAttributes<HTMLFormElement> {
+type BillingFormProps = React.HTMLAttributes<HTMLFormElement> & {
   subscriptionPlan: UserSubscriptionPlan & {
     isCanceled: boolean
   }

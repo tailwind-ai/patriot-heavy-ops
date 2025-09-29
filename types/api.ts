@@ -7,7 +7,7 @@ import { Prisma } from '@prisma/client'
 /**
  * Standard API response wrapper for all endpoints
  */
-export interface ApiResponse<T = unknown> {
+export type ApiResponse<T = unknown> = {
   data?: T
   error?: string
   message?: string
@@ -17,7 +17,7 @@ export interface ApiResponse<T = unknown> {
 /**
  * API error response structure
  */
-export interface ApiError {
+export type ApiError = {
   error: string
   message?: string
   success: false
@@ -31,7 +31,7 @@ export interface ApiError {
 /**
  * Paginated API response
  */
-export interface PaginatedApiResponse<T = unknown> extends ApiResponse<T[]> {
+export type PaginatedApiResponse<T = unknown> = ApiResponse<T[]> & {
   pagination: {
     page: number
     limit: number
@@ -49,7 +49,7 @@ export interface PaginatedApiResponse<T = unknown> extends ApiResponse<T[]> {
 /**
  * User response for API endpoints
  */
-export interface UserResponse {
+export type UserResponse = {
   id: string
   name: string | null
   email: string | null
@@ -64,7 +64,7 @@ export interface UserResponse {
 /**
  * Operator-specific user response
  */
-export interface OperatorResponse extends UserResponse {
+export type OperatorResponse = UserResponse & {
   militaryBranch?: string | null
   yearsOfService?: number | null
   certifications: string[]
@@ -75,7 +75,7 @@ export interface OperatorResponse extends UserResponse {
 /**
  * User with subscription information
  */
-export interface UserWithSubscriptionResponse extends UserResponse {
+export type UserWithSubscriptionResponse = UserResponse & {
   subscription: {
     isPro: boolean
     stripeCustomerId?: string | null
@@ -92,7 +92,7 @@ export interface UserWithSubscriptionResponse extends UserResponse {
 /**
  * Post list item response
  */
-export interface PostListResponse {
+export type PostListResponse = {
   id: string
   title: string
   published: boolean
@@ -102,7 +102,7 @@ export interface PostListResponse {
 /**
  * Full post response
  */
-export interface PostResponse {
+export type PostResponse = {
   id: string
   title: string
   content: unknown | null
@@ -116,7 +116,7 @@ export interface PostResponse {
 /**
  * Post creation response
  */
-export interface PostCreateResponse {
+export type PostCreateResponse = {
   id: string
 }
 
@@ -127,7 +127,7 @@ export interface PostCreateResponse {
 /**
  * Service request list item response
  */
-export interface ServiceRequestListResponse {
+export type ServiceRequestListResponse = {
   id: string
   title: string
   status: ServiceRequestStatus
@@ -150,7 +150,7 @@ export interface ServiceRequestListResponse {
 /**
  * Full service request response
  */
-export interface ServiceRequestResponse {
+export type ServiceRequestResponse = {
   id: string
   title: string
   description: string | null
@@ -209,7 +209,7 @@ export interface ServiceRequestResponse {
 /**
  * Service request creation response
  */
-export interface ServiceRequestCreateResponse {
+export type ServiceRequestCreateResponse = {
   id: string
   title: string
   status: ServiceRequestStatus
@@ -219,7 +219,7 @@ export interface ServiceRequestCreateResponse {
 /**
  * Service request update response
  */
-export interface ServiceRequestUpdateResponse {
+export type ServiceRequestUpdateResponse = {
   id: string
   title: string
   status: ServiceRequestStatus
@@ -233,7 +233,7 @@ export interface ServiceRequestUpdateResponse {
 /**
  * User assignment response
  */
-export interface UserAssignmentResponse {
+export type UserAssignmentResponse = {
   id: string
   serviceRequestId: string
   operatorId: string
@@ -256,7 +256,7 @@ export interface UserAssignmentResponse {
 /**
  * Stripe session response
  */
-export interface StripeSessionResponse {
+export type StripeSessionResponse = {
   url: string
 }
 
@@ -404,7 +404,7 @@ export type PostWithAuthor = Prisma.PostGetPayload<{
 /**
  * Service request form data
  */
-export interface ServiceRequestFormData {
+export type ServiceRequestFormData = {
   title: string
   description?: string
   contactName: string
@@ -426,7 +426,7 @@ export interface ServiceRequestFormData {
 /**
  * User update form data
  */
-export interface UserUpdateFormData {
+export type UserUpdateFormData = {
   name?: string
   email?: string
   phone?: string
@@ -436,7 +436,7 @@ export interface UserUpdateFormData {
 /**
  * Operator application form data
  */
-export interface OperatorApplicationFormData {
+export type OperatorApplicationFormData = {
   militaryBranch: string
   yearsOfService: number
   certifications: string[]

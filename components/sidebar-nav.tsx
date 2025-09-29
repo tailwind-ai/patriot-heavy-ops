@@ -29,7 +29,7 @@ export function DocsSidebarNav({ items }: DocsSidebarNavProps) {
   ) : null
 }
 
-interface DocsSidebarNavItemsProps {
+type DocsSidebarNavItemsProps = {
   items: SidebarNavItem[]
   pathname: string | null
 }

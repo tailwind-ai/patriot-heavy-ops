@@ -30,7 +30,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 /**
  * Stats card component for admin metrics
  */
-interface StatsCardProps {
+type StatsCardProps = {
   title: string
   value: number | string
   icon: React.ComponentType<{ className?: string }>
@@ -64,7 +64,7 @@ function StatsCard({
 /**
  * Service request overview item for admin view
  */
-interface ServiceRequestOverviewItemProps {
+type ServiceRequestOverviewItemProps = {
   request: {
     id: string
     title: string
@@ -177,7 +177,7 @@ function ServiceRequestOverviewItem({
 /**
  * User overview item for admin user management
  */
-interface UserOverviewItemProps {
+type UserOverviewItemProps = {
   user: {
     id: string
     name: string | null

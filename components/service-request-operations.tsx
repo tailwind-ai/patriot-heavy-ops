@@ -24,7 +24,7 @@ import {
 import { toast } from "@/components/ui/use-toast"
 import { Icons } from "@/components/icons"
 
-interface ServiceRequestOperationsProps {
+type ServiceRequestOperationsProps = {
   serviceRequest: { id: string; title: string }
 }
 

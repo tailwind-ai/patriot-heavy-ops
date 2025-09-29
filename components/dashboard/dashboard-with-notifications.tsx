@@ -4,7 +4,7 @@ import { DashboardWithNavigation } from "./dashboard-with-navigation"
 import { createToastNotifications } from "@/lib/utils/notifications"
 import { toast } from "@/components/ui/use-toast"
 
-interface DashboardWithNotificationsProps {
+type DashboardWithNotificationsProps = {
   user: {
     role: string
     id?: string

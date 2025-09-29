@@ -7,7 +7,7 @@ import { DayPicker } from "react-day-picker"
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
 
-interface ChevronProps {
+type ChevronProps = {
   className?: string
   size?: number
   disabled?: boolean

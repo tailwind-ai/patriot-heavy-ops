@@ -6,7 +6,7 @@ import { marketingConfig } from "@/config/marketing"
 import { MainNav } from "@/components/main-nav"
 import { SiteFooter } from "@/components/site-footer"
 
-interface OperatorsLayoutProps {
+type OperatorsLayoutProps = {
   children: React.ReactNode
 }
 

@@ -6,7 +6,7 @@ import { ManagerDashboard } from "./manager-dashboard"
 import { AdminDashboard } from "./admin-dashboard"
 import { NotificationCallbacks } from "@/lib/utils/notifications"
 
-interface DashboardRouterProps {
+type DashboardRouterProps = {
   user: {
     role: string
     id?: string

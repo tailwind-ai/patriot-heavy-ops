@@ -19,7 +19,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Icons } from "@/components/icons"
 import { useServiceRequestForm } from "@/hooks/use-service-request-form"
 
-interface ServiceRequestFormProps extends React.HTMLAttributes<HTMLFormElement> {
+type ServiceRequestFormProps = React.HTMLAttributes<HTMLFormElement> & {
   user: {
     id: string
     name: string | null

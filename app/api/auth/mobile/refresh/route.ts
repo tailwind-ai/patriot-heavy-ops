@@ -14,7 +14,7 @@ const refreshTokenSchema = z.object({
 /**
  * Token refresh response interface
  */
-interface TokenRefreshResponse {
+type TokenRefreshResponse = {
   success: boolean
   accessToken?: string
   refreshToken?: string

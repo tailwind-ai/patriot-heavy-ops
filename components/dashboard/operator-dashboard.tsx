@@ -25,7 +25,7 @@ import {
 /**
  * Stats card component for operator metrics
  */
-interface StatsCardProps {
+type StatsCardProps = {
   title: string
   value: number
   icon: React.ComponentType<{ className?: string }>
@@ -53,7 +53,7 @@ function StatsCard({ title, value, icon: Icon, description, className }: StatsCa
 /**
  * Available job item component with accept action
  */
-interface AvailableJobItemProps {
+type AvailableJobItemProps = {
   job: {
     id: string
     title: string
@@ -169,7 +169,7 @@ function AvailableJobItem({ job, onAccept, isAccepting }: AvailableJobItemProps)
 /**
  * Active assignment item component with complete action
  */
-interface ActiveAssignmentItemProps {
+type ActiveAssignmentItemProps = {
   assignment: {
     id: string
     status: string

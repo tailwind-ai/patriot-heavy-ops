@@ -9,7 +9,7 @@ import { MainNavItem } from "types"
 import { Icons } from "@/components/icons"
 import { MobileNav } from "@/components/mobile-nav"
 
-interface MainNavProps {
+type MainNavProps = {
   items?: MainNavItem[]
   children?: React.ReactNode
 }

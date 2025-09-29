@@ -8,7 +8,7 @@ import { createHmac, timingSafeEqual } from "crypto"
  */
 
 // Ana → Tod Data Contract (from Issue #282)
-interface AnaWebhookPayload {
+type AnaWebhookPayload = {
   summary: string
   analysisDate: string
   workflowRunId?: string
@@ -16,7 +16,7 @@ interface AnaWebhookPayload {
   failures: AnalyzedFailure[]
 }
 
-interface AnalyzedFailure {
+type AnalyzedFailure = {
   id: string
   type: "ci_failure" | "vercel_failure" | "bugbot_issue"
   content: string
@@ -32,7 +32,7 @@ interface AnalyzedFailure {
 }
 
 // Cursor TODO Data Contract
-interface CursorTodoItem {
+type CursorTodoItem = {
   id: string
   content: string
   status: "pending" | "in_progress" | "completed" | "cancelled"

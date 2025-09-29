@@ -15,7 +15,7 @@ const mobileLoginSchema = z.object({
 /**
  * Mobile login response interface
  */
-interface MobileLoginResponse {
+type MobileLoginResponse = {
   success: boolean
   accessToken?: string
   refreshToken?: string

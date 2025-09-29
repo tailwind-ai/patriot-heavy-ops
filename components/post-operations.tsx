@@ -41,7 +41,7 @@ async function deletePost(postId: string) {
   return true
 }
 
-interface PostOperationsProps {
+type PostOperationsProps = {
   post: Pick<Post, "id" | "title">
 }
 

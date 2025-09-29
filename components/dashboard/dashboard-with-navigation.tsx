@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation"
 import { DashboardRouter } from "./dashboard-router"
 import { NotificationCallbacks } from "@/lib/utils/notifications"
 
-interface DashboardWithNavigationProps {
+type DashboardWithNavigationProps = {
   user: {
     role: string
     id?: string

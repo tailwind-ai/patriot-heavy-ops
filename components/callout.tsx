@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils"
 
-interface CalloutProps {
+type CalloutProps = {
   icon?: string
   children?: React.ReactNode
   type?: "default" | "warning" | "danger"

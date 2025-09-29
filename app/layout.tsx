@@ -19,7 +19,7 @@ const fontHeading = localFont({
   variable: "--font-heading",
 })
 
-interface RootLayoutProps {
+type RootLayoutProps = {
   children: React.ReactNode
 }
 

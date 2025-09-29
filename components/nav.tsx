@@ -7,7 +7,7 @@ import { SidebarNavItem } from "types"
 import { cn } from "@/lib/utils"
 import { Icons } from "@/components/icons"
 
-interface DashboardNavProps {
+type DashboardNavProps = {
   items: SidebarNavItem[]
 }
 
