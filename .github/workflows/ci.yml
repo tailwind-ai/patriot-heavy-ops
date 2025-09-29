@@ -1,5 +1,4 @@
 name: CI/CD Pipeline
-# Test #3: Fresh file test for Cursor dialog behavior - Epic #314
 
 on:
   workflow_run:

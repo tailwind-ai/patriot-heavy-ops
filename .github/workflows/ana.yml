@@ -1,5 +1,4 @@
 name: Ana
-# Test #2: Testing Reject behavior for mobile notification workflow Epic #314
 
 on:
   # Monitor CI Test workflow completion
