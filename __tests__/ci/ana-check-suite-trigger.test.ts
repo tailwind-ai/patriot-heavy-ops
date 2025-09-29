@@ -303,8 +303,23 @@ describe("Ana Check Suite Trigger Configuration (Issue #326)", () => {
       )
 
       expect(uploadStep).toBeDefined()
-      expect(uploadStep.if).toBe("always()")
       expect(uploadStep.with.path).toBe("ana-results.json")
+    })
+
+    it("should only upload artifacts when valid workflow_run_id exists", () => {
+      const analysisJob = anaWorkflowConfig.jobs["analyze-ci-failures"]
+
+      const uploadStep = analysisJob.steps.find((step: any) =>
+        step.uses?.includes("upload-artifact")
+      )
+
+      expect(uploadStep).toBeDefined()
+
+      // BUG FIX: Should check for valid workflow_run_id to prevent malformed artifact names
+      // like "ana-ci-analysis-" when workflow_run_id is empty
+      expect(uploadStep.if).toContain("always()")
+      expect(uploadStep.if).toContain("workflow_run_id")
+      expect(uploadStep.if).toContain("!= ''")
     })
 
     it("should use same environment setup for both event types", () => {
