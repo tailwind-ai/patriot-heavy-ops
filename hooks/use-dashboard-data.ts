@@ -30,7 +30,7 @@ const debounce = <T extends (...args: unknown[]) => unknown>(
 }
 
 // Types from dashboard service
-export interface DashboardStats {
+export type DashboardStats = {
   totalRequests: number
   activeRequests: number
   completedRequests: number
@@ -39,7 +39,7 @@ export interface DashboardStats {
   averageJobDuration?: number
 }
 
-export interface DashboardServiceRequest {
+export type DashboardServiceRequest = {
   id: string
   title: string
   status: string
@@ -65,7 +65,7 @@ export interface DashboardServiceRequest {
   }>
 }
 
-export interface OperatorAssignment {
+export type OperatorAssignment = {
   id: string
   serviceRequestId: string
   operatorId: string
@@ -80,7 +80,7 @@ export interface OperatorAssignment {
   }
 }
 
-export interface DashboardUser {
+export type DashboardUser = {
   id: string
   name: string | null
   email: string | null
@@ -89,14 +89,14 @@ export interface DashboardUser {
   createdAt: Date
 }
 
-export interface DashboardData {
+export type DashboardData = {
   stats: DashboardStats
   recentRequests: DashboardServiceRequest[]
   assignments?: OperatorAssignment[]
   users?: DashboardUser[]
 }
 
-export interface UseDashboardDataOptions {
+export type UseDashboardDataOptions = {
   role: UserRole
   limit?: number
   offset?: number
@@ -108,7 +108,7 @@ export interface UseDashboardDataOptions {
   notifications?: NotificationCallbacks
 }
 
-export interface UseDashboardDataReturn {
+export type UseDashboardDataReturn = {
   data: DashboardData | null
   isLoading: boolean
   error: string | null

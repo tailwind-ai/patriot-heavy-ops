@@ -33,16 +33,16 @@ export type EquipmentCategory =
 
 export type TransportOption = "WE_HANDLE_IT" | "YOU_HANDLE_IT"
 
-export interface ServiceRequestCalculationInput extends Record<string, unknown> {
+export type ServiceRequestCalculationInput = {
   durationType: DurationType
   durationValue: number
   baseRate: number
   rateType: RateType
   transport: TransportOption
   equipmentCategory: EquipmentCategory
-}
+} & Record<string, unknown>
 
-export interface ServiceRequestCalculationResult {
+export type ServiceRequestCalculationResult = {
   totalHours: number
   baseCost: number
   transportFee: number
@@ -50,7 +50,7 @@ export interface ServiceRequestCalculationResult {
   durationDisplay: string
 }
 
-export interface StatusTransition {
+export type StatusTransition = {
   fromStatus: string | undefined
   toStatus: string
   isValid: boolean
@@ -58,13 +58,13 @@ export interface StatusTransition {
 }
 
 // CRUD operation types
-export interface AuthenticatedUser {
+export type AuthenticatedUser = {
   id: string
   email: string
   role: string
 }
 
-export interface ServiceRequestCreateInput {
+export type ServiceRequestCreateInput = {
   title: string
   description?: string
   contactName: string
@@ -85,11 +85,11 @@ export interface ServiceRequestCreateInput {
 }
 
 // Type for input that may include requestedTotalHours (to be excluded during validation)
-export interface ServiceRequestCreateInputWithOptionalTotal extends ServiceRequestCreateInput {
+export type ServiceRequestCreateInputWithOptionalTotal = ServiceRequestCreateInput & {
   requestedTotalHours?: number
 }
 
-export interface ServiceRequestUpdateInput {
+export type ServiceRequestUpdateInput = {
   title?: string
   description?: string
   transport?: TransportOption
@@ -101,16 +101,16 @@ export interface ServiceRequestUpdateInput {
   internalNotes?: string
 }
 
-export interface ServiceRequestListOptions extends Record<string, unknown> {
+export type ServiceRequestListOptions = {
   userId: string
   userRole: string
-}
+} & Record<string, unknown>
 
-export interface ServiceRequestAccessOptions extends Record<string, unknown> {
+export type ServiceRequestAccessOptions = {
   requestId: string
   userId: string
   userRole?: string
-}
+} & Record<string, unknown>
 
 /**
  * Service Request Business Logic Service
