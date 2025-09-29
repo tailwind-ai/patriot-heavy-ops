@@ -82,24 +82,24 @@ export function useOperatorJobs(
 
           try {
             const errorData = await response.json()
-            if (response.status === 401) {
+            if (response?.status === 401) {
               errorMessage = "Authentication required. Please log in."
-            } else if (response.status === 403) {
+            } else if (response?.status === 403) {
               errorMessage =
                 "Access denied. You may not be authorized for this job."
-            } else if (response.status === 409) {
+            } else if (response?.status === 409) {
               errorMessage = "Job is no longer available or already assigned."
             } else if (errorData?.error) {
               errorMessage = errorData.error
             }
           } catch {
             // Use status-based fallback
-            if (response.status === 401) {
+            if (response?.status === 401) {
               errorMessage = "Authentication required. Please log in."
-            } else if (response.status === 403) {
+            } else if (response?.status === 403) {
               errorMessage =
                 "Access denied. You may not be authorized for this job."
-            } else if (response.status >= 500) {
+            } else if (response?.status >= 500) {
               errorMessage = "Server error. Please try again later."
             }
           }
@@ -144,12 +144,12 @@ export function useOperatorJobs(
 
           try {
             const errorData = await response.json()
-            if (response.status === 401) {
+            if (response?.status === 401) {
               errorMessage = "Authentication required. Please log in."
-            } else if (response.status === 403) {
+            } else if (response?.status === 403) {
               errorMessage =
                 "Access denied. You may not be authorized to complete this job."
-            } else if (response.status === 409) {
+            } else if (response?.status === 409) {
               errorMessage =
                 "Job cannot be completed at this time. Check job status."
             } else if (errorData?.error) {
@@ -157,12 +157,12 @@ export function useOperatorJobs(
             }
           } catch {
             // Use status-based fallback
-            if (response.status === 401) {
+            if (response?.status === 401) {
               errorMessage = "Authentication required. Please log in."
-            } else if (response.status === 403) {
+            } else if (response?.status === 403) {
               errorMessage =
                 "Access denied. You may not be authorized to complete this job."
-            } else if (response.status >= 500) {
+            } else if (response?.status >= 500) {
               errorMessage = "Server error. Please try again later."
             }
           }

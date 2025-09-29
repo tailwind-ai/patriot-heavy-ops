@@ -48,13 +48,13 @@ export function ServiceRequestOperations({
         let errorMessage =
           "Your service request was not deleted. Please try again."
 
-        if (response.status === 403) {
+        if (response?.status === 403) {
           errorMessage =
             "You are not authorized to delete this service request."
-        } else if (response.status === 404) {
+        } else if (response?.status === 404) {
           errorMessage =
             "Service request not found. It may have already been deleted."
-        } else if (response.status >= 500) {
+        } else if (response?.status >= 500) {
           errorMessage = "A server error occurred. Please try again later."
         }
 

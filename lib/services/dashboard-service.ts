@@ -300,7 +300,7 @@ export class DashboardService extends BaseService {
         }),
       ])
 
-    const pendingApproval = await db.serviceRequest.count({
+    const pendingApproval = await db?.serviceRequest.count({
       where: {
         userId,
         status: { in: ["SUBMITTED", "UNDER_REVIEW"] },
@@ -360,7 +360,7 @@ export class DashboardService extends BaseService {
       ])
 
     // Also include their own service requests
-    const ownRequests = await db.serviceRequest.count({
+    const ownRequests = await db?.serviceRequest.count({
       where: { userId: operatorId },
     })
 
@@ -435,7 +435,7 @@ export class DashboardService extends BaseService {
       ])
 
     // Calculate revenue from completed requests
-    const revenueResult = await db.serviceRequest.aggregate({
+    const revenueResult = await db?.serviceRequest.aggregate({
       where: {
         ...whereClause,
         status: { in: ["PAYMENT_RECEIVED", "CLOSED"] },
@@ -465,7 +465,7 @@ export class DashboardService extends BaseService {
     const stats = await this.getManagerStats(dateRange) // Inherit manager stats
 
     // Add admin-specific metrics
-    const avgDurationResult = await db.serviceRequest.aggregate({
+    const avgDurationResult = await db?.serviceRequest.aggregate({
       where: {
         status: {
           in: [
@@ -496,7 +496,7 @@ export class DashboardService extends BaseService {
   private async getUserServiceRequests(
     options: DashboardDataOptions
   ): Promise<DashboardServiceRequest[]> {
-    const requests = await db.serviceRequest.findMany({
+    const requests = await db?.serviceRequest.findMany({
       where: { userId: options.userId },
       select: {
         id: true,
@@ -531,7 +531,7 @@ export class DashboardService extends BaseService {
   private async getOperatorServiceRequests(
     options: DashboardDataOptions
   ): Promise<DashboardServiceRequest[]> {
-    const requests = await db.serviceRequest.findMany({
+    const requests = await db?.serviceRequest.findMany({
       where: {
         OR: [
           { userId: options.userId }, // Own requests
@@ -591,7 +591,7 @@ export class DashboardService extends BaseService {
         }
       : {}
 
-    const requests = await db.serviceRequest.findMany({
+    const requests = await db?.serviceRequest.findMany({
       where: whereClause,
       select: {
         id: true,
@@ -648,7 +648,7 @@ export class DashboardService extends BaseService {
     operatorId: string,
     limit?: number
   ): Promise<OperatorAssignment[]> {
-    const assignments = await db.userAssignment.findMany({
+    const assignments = await db?.userAssignment.findMany({
       where: { operatorId },
       select: {
         id: true,
@@ -679,7 +679,7 @@ export class DashboardService extends BaseService {
   private async getAllActiveAssignments(
     limit?: number
   ): Promise<OperatorAssignment[]> {
-    const assignments = await db.userAssignment.findMany({
+    const assignments = await db?.userAssignment.findMany({
       where: {
         serviceRequest: {
           status: {
@@ -723,7 +723,7 @@ export class DashboardService extends BaseService {
    * Get recent users (ADMIN only)
    */
   private async getRecentUsers(limit?: number): Promise<DashboardUser[]> {
-    const users = await db.user.findMany({
+    const users = await db?.user.findMany({
       select: {
         id: true,
         name: true,

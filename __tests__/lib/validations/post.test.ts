@@ -95,7 +95,7 @@ describe('Post Validation Schemas', () => {
     })
 
     describe('content validation', () => {
-      it('should accept any content type (z.any())', () => {
+      it('should accept EditorJS content structure', () => {
         const validContentTypes = [
           null,
           undefined,

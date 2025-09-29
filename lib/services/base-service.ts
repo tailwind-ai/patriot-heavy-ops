@@ -11,6 +11,19 @@
  * - Single responsibility principle
  */
 
+import {
+  type ApplicationError,
+  type Result,
+  createSuccessResult,
+  createErrorResult,
+  createDatabaseError,
+  createNetworkError,
+  createSystemError,
+  createValidationError,
+  ERROR_CODES,
+} from '../types/errors'
+
+// Legacy interface for backward compatibility
 export interface ServiceError {
   code: string;
   message: string;
@@ -18,6 +31,7 @@ export interface ServiceError {
   timestamp: Date;
 }
 
+// Legacy interface for backward compatibility  
 export interface ServiceResult<T> {
   success: boolean;
   data?: T;
@@ -109,7 +123,7 @@ export abstract class BaseService {
   }
 
   /**
-   * Handle async operations with standardized error handling
+   * Handle async operations with enhanced error boundary patterns
    */
   protected async handleAsync<T>(
     operation: () => Promise<T>,
@@ -120,20 +134,148 @@ export abstract class BaseService {
       const result = await operation();
       return this.createSuccess(result);
     } catch (error) {
-      const details = error instanceof Error 
-        ? { originalError: error.message, stack: error.stack }
-        : { originalError: String(error) };
+      return this.handleError<T>(error, errorCode, errorMessage);
+    }
+  }
 
-      // Check for specific error types
-      if (error instanceof Error && error.name === "ACCESS_DENIED") {
+  /**
+   * Enhanced error handling with comprehensive error boundary patterns
+   */
+  protected handleError<T>(
+    error: unknown,
+    fallbackCode: string,
+    fallbackMessage: string
+  ): ServiceResult<T> {
+    const details = error instanceof Error 
+      ? { originalError: error.message, stack: error.stack }
+      : { originalError: String(error) };
+
+    // Handle specific error types with enhanced categorization
+    if (error instanceof Error) {
+      // Database errors
+      if (error.name === "PrismaClientKnownRequestError" || 
+          error.message.includes("database") ||
+          error.message.includes("connection")) {
+        return this.createError<T>("DATABASE_ERROR", error.message, details);
+      }
+
+      // Network/API errors
+      if (error.name === "FetchError" || 
+          error.message.includes("fetch") ||
+          error.message.includes("network")) {
+        return this.createError<T>("NETWORK_ERROR", error.message, details);
+      }
+
+      // Authentication errors
+      if (error.name === "INVALID_CREDENTIALS" ||
+          error.message.includes("authentication") ||
+          error.message.includes("login")) {
+        return this.createError<T>("AUTHENTICATION_ERROR", error.message, details);
+      }
+
+      // Authorization errors
+      if (error.name === "ACCESS_DENIED" ||
+          error.message.includes("permission") ||
+          error.message.includes("unauthorized")) {
         return this.createError<T>("ACCESS_DENIED", error.message, details);
       }
-      if (error instanceof Error && error.name === "NOT_FOUND") {
+
+      // Validation errors
+      if (error.name === "ValidationError" ||
+          error.message.includes("validation") ||
+          error.message.includes("invalid")) {
+        return this.createError<T>("VALIDATION_ERROR", error.message, details);
+      }
+
+      // Not found errors
+      if (error.name === "NOT_FOUND" ||
+          error.message.includes("not found") ||
+          error.message.includes("does not exist")) {
         return this.createError<T>("NOT_FOUND", error.message, details);
       }
 
-      return this.createError<T>(errorCode, errorMessage, details);
+      // System errors
+      if (error.message.includes("memory") ||
+          error.message.includes("timeout") ||
+          error.message.includes("system")) {
+        return this.createError<T>("SYSTEM_ERROR", error.message, details);
+      }
     }
+
+    // Fallback to provided error code and message
+    return this.createError<T>(fallbackCode, fallbackMessage, details);
+  }
+
+  /**
+   * Enhanced async operation handler with retry logic for retryable errors
+   */
+  protected async handleAsyncWithRetry<T>(
+    operation: () => Promise<T>,
+    errorCode: string,
+    errorMessage: string,
+    maxRetries: number = 3,
+    retryDelay: number = 1000
+  ): Promise<ServiceResult<T>> {
+    let lastError: unknown;
+    
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        const result = await operation();
+        return this.createSuccess(result);
+      } catch (error) {
+        lastError = error;
+        
+        // Check if error is retryable
+        const isRetryable = this.isRetryableError(error);
+        
+        if (!isRetryable || attempt === maxRetries) {
+          break;
+        }
+        
+        // Wait before retry with exponential backoff
+        await this.delay(retryDelay * Math.pow(2, attempt - 1));
+      }
+    }
+    
+    return this.handleError<T>(lastError, errorCode, errorMessage);
+  }
+
+  /**
+   * Check if an error is retryable
+   */
+  private isRetryableError(error: unknown): boolean {
+    if (!(error instanceof Error)) {
+      return false;
+    }
+
+    // Network errors are typically retryable
+    if (error.name === "FetchError" || 
+        error.message.includes("network") ||
+        error.message.includes("timeout") ||
+        error.message.includes("connection")) {
+      return true;
+    }
+
+    // Database connection errors are retryable
+    if (error.message.includes("database connection") ||
+        error.message.includes("connection refused")) {
+      return true;
+    }
+
+    // System overload errors are retryable
+    if (error.message.includes("overload") ||
+        error.message.includes("rate limit")) {
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * Utility method for delays in retry logic
+   */
+  private delay(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   /**

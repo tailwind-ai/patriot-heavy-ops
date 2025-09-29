@@ -6,10 +6,10 @@ import { db } from "@/lib/db"
 import { verifyPassword } from "@/lib/auth-utils"
 
 export const authOptions: NextAuthOptions = {
-  // huh any! I know.
+  // Note: PrismaAdapter disabled while using Credentials provider only
   // This is a temporary fix for prisma client.
   // @see https://github.com/prisma/prisma/issues/16117
-  // adapter: PrismaAdapter(db as any),
+  // adapter: PrismaAdapter(db),
   // Note: keep adapter disabled while only the Credentials provider is active.
   // Re-enable when adding OAuth/email providers that require persistence.
   session: {
@@ -36,7 +36,7 @@ export const authOptions: NextAuthOptions = {
           }
 
           // First check if user exists without loading password
-          const userExists = await db.user.findUnique({
+          const userExists = await db?.user.findUnique({
             where: {
               email: credentials.email.toLowerCase(),
             },
@@ -53,7 +53,7 @@ export const authOptions: NextAuthOptions = {
           }
 
           // Get password hash separately for verification
-          const passwordData = await db.user.findUnique({
+          const passwordData = await db?.user.findUnique({
             where: {
               email: credentials.email.toLowerCase(),
             },
@@ -106,7 +106,7 @@ export const authOptions: NextAuthOptions = {
     },
     async jwt({ token, user }) {
       const dbUser = token.email
-        ? await db.user.findUnique({
+        ? await db?.user.findUnique({
             where: {
               email: token.email,
             },
