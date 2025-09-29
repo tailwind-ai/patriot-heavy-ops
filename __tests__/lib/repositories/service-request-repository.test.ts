@@ -33,7 +33,9 @@ describe("ServiceRequestRepository", () => {
   let repository: ServiceRequestRepository
 
   beforeEach(() => {
-    repository = new ServiceRequestRepository(mockPrismaClient as unknown as PrismaClient)
+    repository = new ServiceRequestRepository(
+      mockPrismaClient as unknown as PrismaClient
+    )
     jest.clearAllMocks()
   })
 
@@ -441,7 +443,20 @@ describe("ServiceRequestRepository", () => {
         mockCurrentRequest
       )
       mockPrismaClient.$transaction.mockImplementation(
-        async (callback: any) => {
+        async (
+          callback: (tx: {
+            serviceRequest: {
+              update: jest.MockedFunction<
+                (args: Record<string, unknown>) => Promise<unknown>
+              >
+            }
+            serviceRequestStatusHistory: {
+              create: jest.MockedFunction<
+                (args: Record<string, unknown>) => Promise<unknown>
+              >
+            }
+          }) => Promise<unknown>
+        ) => {
           return callback({
             serviceRequest: {
               update: jest.fn().mockResolvedValue(mockUpdatedRequest),
