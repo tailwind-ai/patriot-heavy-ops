@@ -196,22 +196,23 @@ export const createAuthorizationError = (
     userMessage?: string
   }
 ): AuthorizationError => {
-  const error: AuthorizationError = {
+  const baseError = {
     code,
     message,
-    category: 'authorization',
-    severity: 'high',
+    category: 'authorization' as const,
+    severity: 'high' as const,
     retryable: false,
     timestamp: new Date(),
   }
   
-  if (options?.requiredRole !== undefined) error.requiredRole = options.requiredRole
-  if (options?.currentRole !== undefined) error.currentRole = options.currentRole
-  if (options?.resource !== undefined) error.resource = options.resource
-  if (options?.context !== undefined) error.context = options.context
-  if (options?.userMessage !== undefined) error.userMessage = options.userMessage
-  
-  return error
+  return {
+    ...baseError,
+    ...(options?.requiredRole !== undefined && { requiredRole: options.requiredRole }),
+    ...(options?.currentRole !== undefined && { currentRole: options.currentRole }),
+    ...(options?.resource !== undefined && { resource: options.resource }),
+    ...(options?.context !== undefined && { context: options.context }),
+    ...(options?.userMessage !== undefined && { userMessage: options.userMessage }),
+  }
 }
 
 export const createDatabaseError = (
@@ -225,22 +226,23 @@ export const createDatabaseError = (
     userMessage?: string
   }
 ): DatabaseError => {
-  const error: DatabaseError = {
+  const baseError = {
     code,
     message,
-    category: 'database',
-    severity: 'critical',
+    category: 'database' as const,
+    severity: 'critical' as const,
     retryable: true,
     timestamp: new Date(),
   }
   
-  if (options?.operation !== undefined) error.operation = options.operation
-  if (options?.table !== undefined) error.table = options.table
-  if (options?.constraint !== undefined) error.constraint = options.constraint
-  if (options?.context !== undefined) error.context = options.context
-  if (options?.userMessage !== undefined) error.userMessage = options.userMessage
-  
-  return error
+  return {
+    ...baseError,
+    ...(options?.operation !== undefined && { operation: options.operation }),
+    ...(options?.table !== undefined && { table: options.table }),
+    ...(options?.constraint !== undefined && { constraint: options.constraint }),
+    ...(options?.context !== undefined && { context: options.context }),
+    ...(options?.userMessage !== undefined && { userMessage: options.userMessage }),
+  }
 }
 
 export const createNetworkError = (
@@ -254,22 +256,24 @@ export const createNetworkError = (
     userMessage?: string
   }
 ): NetworkError => {
-  const error: NetworkError = {
+  const severity = options?.statusCode && options.statusCode >= 500 ? 'critical' : 'high'
+  const baseError = {
     code,
     message,
-    category: 'network',
-    severity: options?.statusCode && options.statusCode >= 500 ? 'critical' : 'high',
+    category: 'network' as const,
+    severity: severity as 'critical' | 'high',
     retryable: true,
     timestamp: new Date(),
   }
   
-  if (options?.statusCode !== undefined) error.statusCode = options.statusCode
-  if (options?.endpoint !== undefined) error.endpoint = options.endpoint
-  if (options?.timeout !== undefined) error.timeout = options.timeout
-  if (options?.context !== undefined) error.context = options.context
-  if (options?.userMessage !== undefined) error.userMessage = options.userMessage
-  
-  return error
+  return {
+    ...baseError,
+    ...(options?.statusCode !== undefined && { statusCode: options.statusCode }),
+    ...(options?.endpoint !== undefined && { endpoint: options.endpoint }),
+    ...(options?.timeout !== undefined && { timeout: options.timeout }),
+    ...(options?.context !== undefined && { context: options.context }),
+    ...(options?.userMessage !== undefined && { userMessage: options.userMessage }),
+  }
 }
 
 export const createBusinessLogicError = (
@@ -283,22 +287,23 @@ export const createBusinessLogicError = (
     userMessage?: string
   }
 ): BusinessLogicError => {
-  const error: BusinessLogicError = {
+  const baseError = {
     code,
     message,
-    category: 'business_logic',
-    severity: 'medium',
+    category: 'business_logic' as const,
+    severity: 'medium' as const,
     retryable: false,
     timestamp: new Date(),
   }
   
-  if (options?.rule !== undefined) error.rule = options.rule
-  if (options?.expectedValue !== undefined) error.expectedValue = options.expectedValue
-  if (options?.actualValue !== undefined) error.actualValue = options.actualValue
-  if (options?.context !== undefined) error.context = options.context
-  if (options?.userMessage !== undefined) error.userMessage = options.userMessage
-  
-  return error
+  return {
+    ...baseError,
+    ...(options?.rule !== undefined && { rule: options.rule }),
+    ...(options?.expectedValue !== undefined && { expectedValue: options.expectedValue }),
+    ...(options?.actualValue !== undefined && { actualValue: options.actualValue }),
+    ...(options?.context !== undefined && { context: options.context }),
+    ...(options?.userMessage !== undefined && { userMessage: options.userMessage }),
+  }
 }
 
 export const createSystemError = (
@@ -312,22 +317,23 @@ export const createSystemError = (
     userMessage?: string
   }
 ): SystemError => {
-  const error: SystemError = {
+  const baseError = {
     code,
     message,
-    category: 'system',
-    severity: 'critical',
+    category: 'system' as const,
+    severity: 'critical' as const,
     retryable: true,
     timestamp: new Date(),
   }
   
-  if (options?.component !== undefined) error.component = options.component
-  if (options?.memoryUsage !== undefined) error.memoryUsage = options.memoryUsage
-  if (options?.diskSpace !== undefined) error.diskSpace = options.diskSpace
-  if (options?.context !== undefined) error.context = options.context
-  if (options?.userMessage !== undefined) error.userMessage = options.userMessage
-  
-  return error
+  return {
+    ...baseError,
+    ...(options?.component !== undefined && { component: options.component }),
+    ...(options?.memoryUsage !== undefined && { memoryUsage: options.memoryUsage }),
+    ...(options?.diskSpace !== undefined && { diskSpace: options.diskSpace }),
+    ...(options?.context !== undefined && { context: options.context }),
+    ...(options?.userMessage !== undefined && { userMessage: options.userMessage }),
+  }
 }
 
 export const createExternalServiceError = (
@@ -341,22 +347,23 @@ export const createExternalServiceError = (
     userMessage?: string
   }
 ): ExternalServiceError => {
-  const error: ExternalServiceError = {
+  const baseError = {
     code,
     message,
-    category: 'external_service',
-    severity: 'high',
+    category: 'external_service' as const,
+    severity: 'high' as const,
     retryable: true,
     timestamp: new Date(),
   }
   
-  if (options?.service !== undefined) error.service = options.service
-  if (options?.endpoint !== undefined) error.endpoint = options.endpoint
-  if (options?.responseTime !== undefined) error.responseTime = options.responseTime
-  if (options?.context !== undefined) error.context = options.context
-  if (options?.userMessage !== undefined) error.userMessage = options.userMessage
-  
-  return error
+  return {
+    ...baseError,
+    ...(options?.service !== undefined && { service: options.service }),
+    ...(options?.endpoint !== undefined && { endpoint: options.endpoint }),
+    ...(options?.responseTime !== undefined && { responseTime: options.responseTime }),
+    ...(options?.context !== undefined && { context: options.context }),
+    ...(options?.userMessage !== undefined && { userMessage: options.userMessage }),
+  }
 }
 
 // Helper functions for result handling

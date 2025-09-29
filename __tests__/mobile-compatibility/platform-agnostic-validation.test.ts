@@ -570,7 +570,7 @@ describe("Platform-Agnostic Validation Tests", () => {
       const notFoundResult = await authService.getUserById("nonexistent")
 
       expect(notFoundResult.success).toBe(false)
-      expect(notFoundResult.error?.code).toBe("USER_NOT_FOUND")
+      expect(notFoundResult.error?.code).toBe("NOT_FOUND")
     })
   })
 })
