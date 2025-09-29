@@ -5,6 +5,10 @@ on:
   workflow_run:
     workflows: ["CI Tests", "Optimized CI Tests"]
     types: [completed]
+  # Monitor check suite completion for PR branch failures (Issue #326)
+  # This solves the limitation where workflow_run only triggers on default branch
+  check_suite:
+    types: [completed]
   # Monitor Cursor Bugbot completion (when it posts comments)
   issue_comment:
     types: [created]
@@ -22,7 +26,9 @@ jobs:
   # Analyze CI Test failures and add to Cursor TODO list
   analyze-ci-failures:
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'failure'
+    if: |
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'failure') ||
+      (github.event_name == 'check_suite' && github.event.check_suite.conclusion == 'failure')
 
     steps:
       - name: Checkout code
@@ -36,6 +42,46 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Extract workflow run ID
+        id: extract-workflow-run-id
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.ORG_PAT }}
+          script: |
+            // Extract workflow run ID based on event type (Issue #326)
+            if (context.eventName === 'workflow_run') {
+              // For workflow_run events, ID is directly available
+              const workflowRunId = context.payload.workflow_run.id;
+              console.log(`workflow_run event: Run ID ${workflowRunId}`);
+              return { workflow_run_id: workflowRunId.toString() };
+            } else if (context.eventName === 'check_suite') {
+              // For check_suite events, we need to find the workflow run from check runs
+              const checkSuite = context.payload.check_suite;
+              
+              // Get check runs for this check suite
+              const { data: checkRuns } = await github.rest.checks.listForSuite({
+                ...context.repo,
+                check_suite_id: checkSuite.id,
+              });
+              
+              // Find workflow run ID from check run details URL
+              // Check run details_url format: https://github.com/owner/repo/runs/WORKFLOW_RUN_ID?check_suite_focus=true
+              for (const checkRun of checkRuns.check_runs) {
+                const match = checkRun.details_url?.match(/\/runs\/(\d+)/);
+                if (match && match[1]) {
+                  const workflowRunId = match[1];
+                  console.log(`check_suite event: Found Run ID ${workflowRunId} from check run ${checkRun.name}`);
+                  return { workflow_run_id: workflowRunId };
+                }
+              }
+              
+              console.log('check_suite event: No workflow run ID found');
+              return { workflow_run_id: null };
+            }
+
+            console.log(`Unknown event type: ${context.eventName}`);
+            return { workflow_run_id: null };
 
       - name: Setup environment
         run: |
@@ -51,40 +97,74 @@ jobs:
 
       - name: Find associated PR
         id: find-pr
+        if: steps.extract-workflow-run-id.outputs.workflow_run_id != 'null'
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.ORG_PAT }}
           script: |
-            // Find associated PR for this workflow run
-            const { data: prs } = await github.rest.pulls.list({
-              ...context.repo,
-              state: 'open',
-              head: `${context.repo.owner}:${{ github.event.workflow_run.head_branch }}`
-            });
+            // Find associated PR based on event type (Issue #326)
+            if (context.eventName === 'workflow_run') {
+              // For workflow_run events, find PR by branch name
+              const headBranch = context.payload.workflow_run.head_branch;
+              const { data: prs } = await github.rest.pulls.list({
+                ...context.repo,
+                state: 'open',
+                head: `${context.repo.owner}:${headBranch}`
+              });
 
-            if (prs.length === 0) {
-              console.log("No open PR found for branch ${{ github.event.workflow_run.head_branch }}, skipping");
-              return { pr_number: null };
+              if (prs.length === 0) {
+                console.log(`No open PR found for branch ${headBranch}, skipping`);
+                return { pr_number: null };
+              }
+
+              const prNumber = prs[0].number;
+              console.log(`workflow_run: Found PR #${prNumber} for branch ${headBranch}`);
+              return { pr_number: prNumber.toString() };
+            } else if (context.eventName === 'check_suite') {
+              // For check_suite events, PR info is in the event payload
+              const checkSuite = context.payload.check_suite;
+              
+              if (checkSuite.pull_requests && checkSuite.pull_requests.length > 0) {
+                const prNumber = checkSuite.pull_requests[0].number;
+                console.log(`check_suite: Found PR #${prNumber} from event payload`);
+                return { pr_number: prNumber.toString() };
+              }
+              
+              // Fallback: try to find PR by branch
+              const headBranch = checkSuite.head_branch;
+              const { data: prs } = await github.rest.pulls.list({
+                ...context.repo,
+                state: 'open',
+                head: `${context.repo.owner}:${headBranch}`
+              });
+
+              if (prs.length === 0) {
+                console.log(`check_suite: No open PR found for branch ${headBranch}, skipping`);
+                return { pr_number: null };
+              }
+
+              const prNumber = prs[0].number;
+              console.log(`check_suite: Found PR #${prNumber} by branch lookup`);
+              return { pr_number: prNumber.toString() };
             }
 
-            const prNumber = prs[0].number;
-            console.log(`Found PR #${prNumber} for failed CI Test workflow`);
-            return { pr_number: prNumber.toString() };
+            console.log(`Unknown event type: ${context.eventName}, skipping`);
+            return { pr_number: null };
 
       - name: Analyze CI Test failures and send to Tod webhook
         if: steps.find-pr.outputs.pr_number != 'null'
         run: |
           echo "🔍 Ana analyzing CI Test failures..."
-          echo "Workflow: ${{ github.event.workflow_run.name }}"
-          echo "Run ID: ${{ github.event.workflow_run.id }}"
+          echo "Event: ${{ github.event_name }}"
+          echo "Run ID: ${{ steps.extract-workflow-run-id.outputs.workflow_run_id }}"
           echo "PR: ${{ steps.find-pr.outputs.pr_number }}"
           echo "Webhook Endpoint: ${{ secrets.TOD_WEBHOOK_ENDPOINT || 'http://localhost:3001/webhook/ana-failures' }}"
 
           # Set up GitHub CLI authentication
           echo "${{ secrets.ORG_PAT }}" | gh auth login --with-token
 
-          # Analyze workflow logs and send to Tod via webhook (Issue #282)
-          if ! npx tsx scripts/ana-cli.ts analyze-ci-failures ${{ github.event.workflow_run.id }} ${{ steps.find-pr.outputs.pr_number }}; then
+          # Analyze workflow logs and send to Tod via webhook (Issue #282, #326)
+          if ! npx tsx scripts/ana-cli.ts analyze-ci-failures ${{ steps.extract-workflow-run-id.outputs.workflow_run_id }} ${{ steps.find-pr.outputs.pr_number }}; then
             echo "❌ Ana analysis failed, but continuing workflow"
             echo '{"todos": [], "summary": "Ana analysis failed", "analysisDate": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'"}' > ana-results.json
           fi
@@ -93,7 +173,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ana-ci-analysis-${{ github.event.workflow_run.id }}
+          name: ana-ci-analysis-${{ steps.extract-workflow-run-id.outputs.workflow_run_id }}
           path: ana-results.json
           retention-days: 7
 
