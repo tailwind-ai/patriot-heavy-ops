@@ -36,13 +36,11 @@ import userEvent from "@testing-library/user-event"
 import { SessionProvider } from "next-auth/react"
 import type { Session } from "next-auth"
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
-// Type-safe mock Response interface
-interface MockResponse {
+// Type-safe mock Response interface with proper generics
+interface MockResponse<T = unknown> {
   ok: boolean
   status?: number
-  json: () => Promise<any>
+  json: () => Promise<T>
 }
 
 // Type-safe mock fetch function type
@@ -173,7 +171,7 @@ export const setupAddressAutocomplete = () => {
   const mockFetch = global.fetch as MockFetch
   mockFetch.mockImplementation((url) => {
     if (typeof url === "string" && url.includes("/api/geocoding")) {
-      const mockResponse: MockResponse = {
+      const mockResponse: MockResponse<typeof mockAddressSuggestions> = {
         ok: true,
         json: () => Promise.resolve(mockAddressSuggestions),
       }
@@ -223,8 +221,8 @@ export const renderWithRole = (
   return render(<SessionProvider session={mockSession}>{ui}</SessionProvider>)
 }
 
-// Mock fetch for successful responses
-export const mockFetchSuccess = (data: any = {}) => {
+// Mock fetch for successful responses with proper typing
+export const mockFetchSuccess = <T = Record<string, unknown>>(data: T = {} as T) => {
   const mockFetch = global.fetch as jest.MockedFunction<typeof fetch>
   const response = new Response(JSON.stringify(data), {
     status: 200,
@@ -288,7 +286,7 @@ export const testFormValidation = async (
 export const testSuccessfulSubmission = async (
   formTester: FormTester,
   formData: Record<string, string>,
-  expectedApiCall?: { url: string; method: string; body?: any }
+  expectedApiCall?: { url: string; method: string; body?: Record<string, unknown> }
 ) => {
   // Fill form with valid data
   for (const [field, value] of Object.entries(formData)) {

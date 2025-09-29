@@ -9,10 +9,10 @@ import {
   ServiceRequestCreateInput,
   ServiceRequestUpdateInput,
 } from "@/lib/repositories/service-request-repository"
-import { ServiceRequestStatus, UserRole } from "@prisma/client"
+import { ServiceRequestStatus, UserRole, PrismaClient } from "@prisma/client"
 
-// Mock Prisma Client
-const mockPrismaClient = {
+// Create a type-safe mock factory for Prisma Client
+const createMockPrismaClient = () => ({
   serviceRequest: {
     findUnique: jest.fn(),
     findMany: jest.fn(),
@@ -25,13 +25,15 @@ const mockPrismaClient = {
     create: jest.fn(),
   },
   $transaction: jest.fn(),
-} as any
+})
+
+const mockPrismaClient = createMockPrismaClient()
 
 describe("ServiceRequestRepository", () => {
   let repository: ServiceRequestRepository
 
   beforeEach(() => {
-    repository = new ServiceRequestRepository(mockPrismaClient)
+    repository = new ServiceRequestRepository(mockPrismaClient as unknown as PrismaClient)
     jest.clearAllMocks()
   })
 

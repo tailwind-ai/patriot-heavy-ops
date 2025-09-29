@@ -13,9 +13,15 @@ jest.mock("next/headers", () => ({
 // Import the mocked module
 import { headers } from "next/headers"
 
-// Mock globalThis.todo_write for testing
+// Mock globalThis.todo_write for testing with proper typing
 const mockTodoWrite = jest.fn()
-;(globalThis as any).todo_write = mockTodoWrite
+
+// Type-safe global extension
+declare global {
+  var todo_write: jest.MockedFunction<typeof mockTodoWrite>
+}
+
+globalThis.todo_write = mockTodoWrite
 
 const mockHeaders = headers as jest.MockedFunction<typeof headers>
 
