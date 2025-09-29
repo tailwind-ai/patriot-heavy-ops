@@ -21,7 +21,14 @@ jest.mock('next-auth/next')
 
 import { db } from '@/lib/db'
 
-const mockDb = db as any
+// Type-safe mock database with proper function signatures
+type MockDb = {
+  user: {
+    update: jest.MockedFunction<(args: { where: { id: string }; data: Record<string, unknown> }) => Promise<unknown>>
+  }
+}
+
+const mockDb = db as unknown as MockDb
 const mockGetServerSession = getServerSession as jest.MockedFunction<typeof getServerSession>
 
 describe('/api/users/[userId]/operator-application', () => {
@@ -109,7 +116,7 @@ describe('/api/users/[userId]/operator-application', () => {
         
         const errors = await getResponseJson(response)
         expect(Array.isArray(errors)).toBe(true)
-        expect(errors.some((error: any) => error.path.includes('location'))).toBe(true)
+        expect(errors.some((error: { path?: string[] }) => error.path?.includes('location'))).toBe(true)
       })
 
       it('should validate location is not empty', async () => {
@@ -122,7 +129,7 @@ describe('/api/users/[userId]/operator-application', () => {
         
         const errors = await getResponseJson(response)
         expect(Array.isArray(errors)).toBe(true)
-        expect(errors.some((error: any) => error.message === 'Please select a location')).toBe(true)
+        expect(errors.some((error: { message?: string }) => error.message === 'Please select a location')).toBe(true)
       })
 
       it('should accept valid location', async () => {
@@ -243,11 +250,11 @@ describe('/api/users/[userId]/operator-application', () => {
           expires: new Date().toISOString(),
         })
 
-        const invalidContext = { params: { userId: '' } } // Empty userId
+        const invalidContext = { params: Promise.resolve({ userId: '' }) } // Empty userId
 
         const applicationData = { location: 'Austin, TX' }
         const request = createMockRequest('POST', `http://localhost:3000/api/users/${mockUserId}/operator-application`, applicationData)
-        const response = await POST(request, invalidContext as any)
+        const response = await POST(request, invalidContext)
 
         // Returns 403 because empty userId doesn't match session user ID
         assertResponse(response, 403)

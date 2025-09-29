@@ -30,8 +30,15 @@ const mockAuthenticateRequest = jest.requireMock(
 const mockHasRole = jest.requireMock("@/lib/middleware/mobile-auth").hasRole
 const mockServiceFactory = jest.requireMock("@/lib/services").ServiceFactory
 
+// Type-safe mock dashboard service
+type MockDashboardService = {
+  getDashboardData: jest.MockedFunction<
+    (params: Record<string, unknown>) => Promise<unknown>
+  >
+}
+
 describe("Dashboard API Routes", () => {
-  let mockDashboardService: any
+  let mockDashboardService: MockDashboardService
 
   beforeEach(() => {
     jest.clearAllMocks()
@@ -42,11 +49,13 @@ describe("Dashboard API Routes", () => {
     }
     mockServiceFactory.getDashboardService.mockReturnValue(mockDashboardService)
 
-    // Setup default auth mock
-    mockHasRole.mockImplementation((user: any, role: string) => {
-      if (!user?.role) return false
-      return user.role === role || user.role === "ADMIN"
-    })
+    // Setup default auth mock with proper user type
+    mockHasRole.mockImplementation(
+      (user: { role?: string } | null, role: string) => {
+        if (!user?.role) return false
+        return user.role === role || user.role === "ADMIN"
+      }
+    )
   })
 
   describe("GET /api/dashboard/user", () => {
