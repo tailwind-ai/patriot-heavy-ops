@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 
-import { renderHook, waitFor } from "@testing-library/react"
+import { renderHook, waitFor, act } from "@testing-library/react"
 import { useDashboardData } from "@/hooks/use-dashboard-data"
 
 // Mock fetch
@@ -352,5 +352,258 @@ describe("useDashboardData", () => {
       "Network error. Please check your connection and try again."
     )
     expect(result.current.data).toBe(null)
+  })
+
+  describe("Null Safety - API Response Handling", () => {
+    it("should handle null response object gracefully", async () => {
+      mockFetch.mockResolvedValue(null as unknown as Response)
+
+      const { result } = renderHook(() =>
+        useDashboardData({
+          role: "USER",
+        })
+      )
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false)
+      })
+
+      expect(result.current.data).toBe(null)
+      // When response is null, !response?.ok is true, enters error block with default message
+      expect(result.current.error).toBe("Failed to fetch dashboard data")
+    })
+
+    it("should handle undefined response.ok", async () => {
+      mockFetch.mockImplementation(async () => {
+        return {
+          status: 500,
+          json: async () => ({ error: "Server error" }),
+        } as Response
+      })
+
+      const { result } = renderHook(() =>
+        useDashboardData({
+          role: "USER",
+        })
+      )
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false)
+      })
+
+      expect(result.current.data).toBe(null)
+      expect(result.current.error).toBeDefined()
+    })
+
+    it("should handle null result.data", async () => {
+      mockFetch.mockImplementation(async () => {
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({ data: null }),
+        } as Response
+      })
+
+      const { result } = renderHook(() =>
+        useDashboardData({
+          role: "USER",
+        })
+      )
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false)
+      })
+
+      expect(result.current.data).toBe(null)
+      expect(result.current.error).toBe("Invalid response format")
+    })
+
+    it("should handle undefined result.data", async () => {
+      mockFetch.mockImplementation(async () => {
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({}),
+        } as Response
+      })
+
+      const { result } = renderHook(() =>
+        useDashboardData({
+          role: "USER",
+        })
+      )
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false)
+      })
+
+      expect(result.current.data).toBe(null)
+      expect(result.current.error).toBe("Invalid response format")
+    })
+
+    it("should handle null response.json()", async () => {
+      mockFetch.mockImplementation(async () => {
+        return {
+          ok: true,
+          status: 200,
+          json: async () => null,
+        } as Response
+      })
+
+      const { result } = renderHook(() =>
+        useDashboardData({
+          role: "USER",
+        })
+      )
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false)
+      })
+
+      expect(result.current.error).toBe("Invalid response format")
+    })
+
+    it("should handle null errorData.error in error response", async () => {
+      mockFetch.mockImplementation(async () => {
+        return {
+          ok: false,
+          status: 500,
+          json: async () => ({}),
+        } as Response
+      })
+
+      const { result } = renderHook(() =>
+        useDashboardData({
+          role: "USER",
+        })
+      )
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false)
+      })
+
+      // When errorData is empty object, it falls back to default message
+      expect(result.current.error).toBe("Failed to fetch dashboard data")
+    })
+  })
+
+  describe("Null Safety - Cache Clearing", () => {
+    it("should handle null response in clearCache", async () => {
+      const mockData = {
+        data: {
+          stats: {
+            totalRequests: 1,
+            activeRequests: 0,
+            completedRequests: 1,
+            pendingApproval: 0,
+          },
+          recentRequests: [],
+        },
+      }
+
+      // Initial fetch succeeds
+      mockFetch.mockImplementationOnce(async () => {
+        return {
+          ok: true,
+          status: 200,
+          json: async () => mockData,
+        } as Response
+      })
+
+      const { result } = renderHook(() =>
+        useDashboardData({
+          role: "USER",
+        })
+      )
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false)
+      })
+
+      mockFetch.mockClear()
+
+      // Cache clear returns null
+      mockFetch.mockResolvedValueOnce(null as unknown as Response)
+      // Refetch returns data
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => mockData,
+      } as Response)
+
+      await act(async () => {
+        result.current.clearCache()
+        // Wait for debounce
+        await new Promise((resolve) => setTimeout(resolve, 1100))
+      })
+
+      // Should handle null gracefully and fallback to refetch
+      await waitFor(() => {
+        expect(mockFetch).toHaveBeenCalled()
+      })
+    })
+
+    it("should handle undefined dataResponse.ok in clearCache", async () => {
+      const mockData = {
+        data: {
+          stats: {
+            totalRequests: 1,
+            activeRequests: 0,
+            completedRequests: 1,
+            pendingApproval: 0,
+          },
+          recentRequests: [],
+        },
+      }
+
+      mockFetch.mockImplementationOnce(async () => {
+        return {
+          ok: true,
+          status: 200,
+          json: async () => mockData,
+        } as Response
+      })
+
+      const { result } = renderHook(() =>
+        useDashboardData({
+          role: "USER",
+        })
+      )
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false)
+      })
+
+      mockFetch.mockClear()
+
+      // Cache clear succeeds
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({ success: true }),
+      } as Response)
+
+      // Data response without ok
+      mockFetch.mockResolvedValueOnce({
+        status: 500,
+        json: async () => ({}),
+      } as Response)
+
+      // Fallback refetch
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => mockData,
+      } as Response)
+
+      await act(async () => {
+        result.current.clearCache()
+        await new Promise((resolve) => setTimeout(resolve, 1100))
+      })
+
+      await waitFor(() => {
+        expect(mockFetch).toHaveBeenCalled()
+      })
+    })
   })
 })

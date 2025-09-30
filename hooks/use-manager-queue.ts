@@ -89,16 +89,16 @@ export function useManagerQueue(
           }
         )
 
-        if (!response.ok) {
+        if (!response?.ok) {
           let errorMessage = "Failed to approve request"
 
           try {
-            const errorData = await response.json()
-            if (response.status === 401) {
+            const errorData = await response?.json?.()
+            if (response?.status === 401) {
               errorMessage = "Authentication required. Please log in."
-            } else if (response.status === 403) {
+            } else if (response?.status === 403) {
               errorMessage = "Access denied. Manager permissions required."
-            } else if (response.status === 409) {
+            } else if (response?.status === 409) {
               errorMessage =
                 "Request cannot be approved at this time. Check request status."
             } else if (errorData?.error) {
@@ -106,11 +106,11 @@ export function useManagerQueue(
             }
           } catch {
             // Use status-based fallback
-            if (response.status === 401) {
+            if (response?.status === 401) {
               errorMessage = "Authentication required. Please log in."
-            } else if (response.status === 403) {
+            } else if (response?.status === 403) {
               errorMessage = "Access denied. Manager permissions required."
-            } else if (response.status >= 500) {
+            } else if (response?.status && response.status >= 500) {
               errorMessage = "Server error. Please try again later."
             }
           }
@@ -149,16 +149,16 @@ export function useManagerQueue(
           }
         )
 
-        if (!response.ok) {
+        if (!response?.ok) {
           let errorMessage = "Failed to reject request"
 
           try {
-            const errorData = await response.json()
-            if (response.status === 401) {
+            const errorData = await response?.json?.()
+            if (response?.status === 401) {
               errorMessage = "Authentication required. Please log in."
-            } else if (response.status === 403) {
+            } else if (response?.status === 403) {
               errorMessage = "Access denied. Manager permissions required."
-            } else if (response.status === 409) {
+            } else if (response?.status === 409) {
               errorMessage =
                 "Request cannot be rejected at this time. Check request status."
             } else if (errorData?.error) {
@@ -166,11 +166,11 @@ export function useManagerQueue(
             }
           } catch {
             // Use status-based fallback
-            if (response.status === 401) {
+            if (response?.status === 401) {
               errorMessage = "Authentication required. Please log in."
-            } else if (response.status === 403) {
+            } else if (response?.status === 403) {
               errorMessage = "Access denied. Manager permissions required."
-            } else if (response.status >= 500) {
+            } else if (response?.status && response.status >= 500) {
               errorMessage = "Server error. Please try again later."
             }
           }
@@ -209,27 +209,27 @@ export function useManagerQueue(
           }
         )
 
-        if (!response.ok) {
+        if (!response?.ok) {
           let errorMessage = "Failed to assign operator"
 
           try {
-            const errorData = await response.json()
-            if (response.status === 401) {
+            const errorData = await response?.json?.()
+            if (response?.status === 401) {
               errorMessage = "Authentication required. Please log in."
-            } else if (response.status === 403) {
+            } else if (response?.status === 403) {
               errorMessage = "Access denied. Manager permissions required."
-            } else if (response.status === 409) {
+            } else if (response?.status === 409) {
               errorMessage = "Operator assignment failed. Check availability."
             } else if (errorData?.error) {
               errorMessage = errorData.error
             }
           } catch {
             // Use status-based fallback
-            if (response.status === 401) {
+            if (response?.status === 401) {
               errorMessage = "Authentication required. Please log in."
-            } else if (response.status === 403) {
+            } else if (response?.status === 403) {
               errorMessage = "Access denied. Manager permissions required."
-            } else if (response.status >= 500) {
+            } else if (response?.status && response.status >= 500) {
               errorMessage = "Server error. Please try again later."
             }
           }
@@ -256,7 +256,7 @@ export function useManagerQueue(
   const allRequests = dashboardData?.recentRequests || []
   const pendingApprovals = allRequests.filter(
     (request) =>
-      request.status === "SUBMITTED" || request.status === "UNDER_REVIEW"
+      request?.status === "SUBMITTED" || request?.status === "UNDER_REVIEW"
   )
   const activeAssignments = dashboardData?.assignments || []
 
@@ -272,11 +272,11 @@ export function useManagerQueue(
     pendingApprovals,
     allRequests,
     activeAssignments,
-    totalRequests: stats.totalRequests,
-    activeRequests: stats.activeRequests,
-    completedRequests: stats.completedRequests,
-    pendingApproval: stats.pendingApproval,
-    revenue: stats.revenue || 0,
+    totalRequests: stats?.totalRequests ?? 0,
+    activeRequests: stats?.activeRequests ?? 0,
+    completedRequests: stats?.completedRequests ?? 0,
+    pendingApproval: stats?.pendingApproval ?? 0,
+    revenue: stats?.revenue ?? 0,
     isLoading,
     error,
     refetch,

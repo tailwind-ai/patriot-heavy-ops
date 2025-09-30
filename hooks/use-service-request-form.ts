@@ -81,8 +81,8 @@ export function useServiceRequestForm({ user, notifications }: UseServiceRequest
         countryCode: "us",
       })
       
-      if (result.success) {
-        setJobSiteSuggestions(result.data || [])
+      if (result?.success) {
+        setJobSiteSuggestions(result?.data || [])
       } else {
         // Service returned an error
         setJobSiteSuggestions([])
@@ -138,29 +138,29 @@ export function useServiceRequestForm({ user, notifications }: UseServiceRequest
         body: JSON.stringify(data),
       })
 
-      if (!response.ok) {
+      if (!response?.ok) {
         let errorMessage = "Your service request was not created. Please try again."
         
         try {
-          const errorData = await response.json()
-          if (response.status === 422) {
+          const errorData = await response?.json?.()
+          if (response?.status === 422) {
             // Validation errors
             errorMessage = "Please check your form data and try again."
             if (Array.isArray(errorData) && errorData.length > 0) {
               errorMessage = `Validation error: ${errorData[0].message}`
             }
-          } else if (response.status === 403) {
+          } else if (response?.status === 403) {
             errorMessage = "You are not authorized to create service requests. Please log in and try again."
-          } else if (response.status === 500) {
+          } else if (response?.status === 500) {
             errorMessage = "A server error occurred. Please try again later."
           } else if (errorData?.message) {
             errorMessage = errorData.message
           }
         } catch {
           // If we can't parse the error response, use status-based messages
-          if (response.status === 403) {
+          if (response?.status === 403) {
             errorMessage = "You are not authorized to create service requests. Please log in and try again."
-          } else if (response.status >= 500) {
+          } else if (response?.status && response.status >= 500) {
             errorMessage = "A server error occurred. Please try again later."
           }
         }
