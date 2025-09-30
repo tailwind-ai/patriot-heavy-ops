@@ -43,7 +43,7 @@ export async function authenticateRequest(req: NextRequest): Promise<AuthResult>
         isAuthenticated: true,
         user: {
           id: session.user.id,
-          email: session.user.email || '',
+          email: session.user.email ?? '',
           role: session.user.role
         },
         authMethod: 'session'
@@ -94,8 +94,8 @@ async function authenticateWithJWT(token: string): Promise<AuthResult> {
       isAuthenticated: true,
       user: {
         id: user.id,
-        email: user.email || '',
-        role: user.role || undefined
+        email: user.email ?? '',
+        role: user.role ?? undefined
       }
     }
   } catch (error) {

@@ -79,7 +79,7 @@ export class AnaAnalyzer {
       })
 
       // Detect workflow context for conditional analysis (Issue #303 Phase 3)
-      const workflowContext = this.detectWorkflowContext(workflowRun.data)
+      const workflowContext = this.detectWorkflowContext(workflowRun?.data)
       const analysisMode = this.determineAnalysisMode(workflowContext)
 
       console.log(
@@ -94,9 +94,9 @@ export class AnaAnalyzer {
       })
 
       const failures: AnalyzedFailure[] = []
-      const failedJobsCount = jobs.data.jobs.filter(
+      const failedJobsCount = jobs?.data?.jobs?.filter(
         (job) => job.conclusion === "failure"
-      ).length
+      )?.length ?? 0
 
       // Generate context-aware summary (Issue #303 Phase 3)
       const summary = this.generateContextAwareSummary(
@@ -106,7 +106,7 @@ export class AnaAnalyzer {
       )
 
       // Analyze each failed job
-      for (const job of jobs.data.jobs) {
+      for (const job of jobs?.data?.jobs ?? []) {
         if (job.conclusion === "failure") {
           console.log(`  📋 Analyzing failed job: ${job.name}`)
 
@@ -119,9 +119,9 @@ export class AnaAnalyzer {
                 job_id: job.id,
               })
 
-            const logContent = Buffer.from(logs.data as ArrayBuffer).toString(
-              "utf-8"
-            )
+            const logContent = logs?.data 
+              ? Buffer.from(logs.data as ArrayBuffer).toString("utf-8")
+              : ""
             const analysis = this.analyzeJobLogs(
               job.name,
               logContent,
@@ -167,7 +167,7 @@ export class AnaAnalyzer {
       const anaResults = createAnaResults(failures, summary)
 
       // Collect job metadata for webhook (Issue #303 Phase 4)
-      const jobMetadata = jobs.data.jobs
+      const jobMetadata = (jobs?.data?.jobs ?? [])
         .filter(job => job.conclusion === "failure")
         .map(job => ({
           jobName: job.name,
@@ -180,8 +180,8 @@ export class AnaAnalyzer {
       // Calculate performance metrics
       const performanceMetrics = {
         totalAnalysisTime: Date.now() - Date.now(), // Placeholder - would be actual total time
-        jobCount: jobMetadata.length,
-        averageJobAnalysisTime: jobMetadata.length > 0 ? 
+        jobCount: jobMetadata?.length ?? 0,
+        averageJobAnalysisTime: (jobMetadata?.length ?? 0) > 0 ? 
           jobMetadata.reduce((sum, job) => sum + job.analysisTime, 0) / jobMetadata.length : 0,
       }
 
@@ -242,7 +242,7 @@ export class AnaAnalyzer {
         comment_id: commentId,
       })
 
-      const commentBody = comment.data.body || ""
+      const commentBody = comment?.data?.body ?? ""
       console.log(`  📝 Comment preview: ${commentBody.substring(0, 100)}...`)
 
       // Analyze the comment for issues
@@ -492,7 +492,7 @@ export class AnaAnalyzer {
           // Extract more context from test name if it contains "›"
           if (testName.includes("›")) {
             const parts = testName.split("›").map(p => p.trim())
-            return `${parts[0]}: ${parts[parts.length - 1]}`
+            return `${parts?.[0] ?? "test"}: ${parts?.[parts.length - 1] ?? "unknown"}`
           }
           return `Test case failed: ${testName}`
         },
@@ -774,18 +774,18 @@ export class AnaAnalyzer {
       })
 
       // Validate this is a Cursor bot review
-      if (!review.data.user || review.data.user.login !== "cursor") {
+      if (!review?.data?.user || review.data.user.login !== "cursor") {
         throw new Error(
           `Review is not from Cursor bot (user: ${
-            review.data.user?.login || "unknown"
+            review?.data?.user?.login ?? "unknown"
           })`
         )
       }
 
       // Validate this is a comment review
-      if (review.data.state !== "COMMENTED") {
+      if (review?.data?.state !== "COMMENTED") {
         throw new Error(
-          `Review is not a comment review (state: ${review.data.state})`
+          `Review is not a comment review (state: ${review?.data?.state ?? "unknown"})`
         )
       }
 
@@ -800,12 +800,12 @@ export class AnaAnalyzer {
           review_id: reviewId,
         })
 
-      console.log(`  📝 Found ${reviewComments.data.length} review comments`)
+      console.log(`  📝 Found ${reviewComments?.data?.length ?? 0} review comments`)
 
       const failures: AnalyzedFailure[] = []
 
       // Process each review comment
-      for (const comment of reviewComments.data) {
+      for (const comment of reviewComments?.data ?? []) {
         const analysis = this.analyzeCursorBugbotReviewComment(
           comment.body || "",
           comment.path,
@@ -1067,9 +1067,9 @@ async function main() {
     switch (command) {
       case "analyze-ci-failures":
         const workflowRunId = process.argv[3]
-        const prNumberCI = parseInt(process.argv[4]!)
+        const prNumberCI = process.argv[4] ? parseInt(process.argv[4]) : NaN
 
-        if (!workflowRunId || !prNumberCI) {
+        if (!workflowRunId || !prNumberCI || isNaN(prNumberCI)) {
           console.log(
             "❌ Usage: npx tsx scripts/ana-cli.ts analyze-ci-failures <WORKFLOW_RUN_ID> <PR_NUMBER>"
           )
@@ -1080,10 +1080,10 @@ async function main() {
         break
 
       case "analyze-cursor-bugbot":
-        const prNum = parseInt(process.argv[3]!)
-        const commentId = parseInt(process.argv[4]!)
+        const prNum = process.argv[3] ? parseInt(process.argv[3]) : NaN
+        const commentId = process.argv[4] ? parseInt(process.argv[4]) : NaN
 
-        if (!prNum || !commentId) {
+        if (!prNum || !commentId || isNaN(prNum) || isNaN(commentId)) {
           console.log(
             "❌ Usage: npx tsx scripts/ana-cli.ts analyze-cursor-bugbot <PR_NUMBER> <COMMENT_ID>"
           )
@@ -1094,10 +1094,10 @@ async function main() {
         break
 
       case "analyze-cursor-bugbot-review":
-        const prNumberReview = parseInt(process.argv[3]!)
-        const reviewId = parseInt(process.argv[4]!)
+        const prNumberReview = process.argv[3] ? parseInt(process.argv[3]) : NaN
+        const reviewId = process.argv[4] ? parseInt(process.argv[4]) : NaN
 
-        if (!prNumberReview || !reviewId) {
+        if (!prNumberReview || !reviewId || isNaN(prNumberReview) || isNaN(reviewId)) {
           console.log(
             "❌ Usage: npx tsx scripts/ana-cli.ts analyze-cursor-bugbot-review <PR_NUMBER> <REVIEW_ID>"
           )
