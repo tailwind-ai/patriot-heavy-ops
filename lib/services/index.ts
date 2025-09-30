@@ -101,6 +101,7 @@ export class ServiceFactory {
   private static adminService: AdminService | null = null
   private static paymentService: PaymentService | null = null
   private static adminServicePromise: Promise<AdminService> | null = null
+  private static paymentServicePromise: Promise<PaymentService> | null = null
 
   /**
    * Get singleton instance of AuthService
@@ -174,11 +175,22 @@ export class ServiceFactory {
   /**
    * Get singleton instance of PaymentService
    * Note: PaymentService requires Stripe SDK, PaymentRepository, and ServiceRequestService
-   * Uses dynamic imports to avoid circular dependencies
+   * Uses Promise-based lock to prevent race conditions in concurrent calls
    */
   static async getPaymentService(): Promise<PaymentService> {
-    if (!this.paymentService) {
-      // Dynamic imports to avoid circular dependencies (consistent with getAdminService pattern)
+    // Return existing instance if available
+    if (this.paymentService) {
+      return this.paymentService
+    }
+
+    // If initialization is in progress, wait for it
+    if (this.paymentServicePromise) {
+      return this.paymentServicePromise
+    }
+
+    // Start new initialization with race condition protection
+    this.paymentServicePromise = (async () => {
+      // Dynamic imports to avoid circular dependencies
       const { stripe } = await import("@/lib/stripe")
       const { RepositoryFactory: RepoFactory } = await import("@/lib/repositories")
       const paymentRepository = RepoFactory.getPaymentRepository()
@@ -188,8 +200,11 @@ export class ServiceFactory {
         paymentRepository,
         serviceRequestService
       )
-    }
-    return this.paymentService
+      this.paymentServicePromise = null // Clear promise after completion
+      return this.paymentService
+    })()
+
+    return this.paymentServicePromise
   }
 
   /**
@@ -203,5 +218,6 @@ export class ServiceFactory {
     this.adminService = null
     this.paymentService = null
     this.adminServicePromise = null
+    this.paymentServicePromise = null
   }
 }
