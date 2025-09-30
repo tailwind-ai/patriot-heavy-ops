@@ -15,7 +15,7 @@ import { BaseService, ServiceResult, ServiceLogger } from "./base-service"
 import { db } from "../db"
 import { hasPermissionSafe } from "../permissions"
 import { serviceRequestSchema, serviceRequestUpdateSchema } from "../validations/service-request"
-import type { ServiceRequest } from "@prisma/client"
+import type { ServiceRequest, ServiceRequestStatus } from "@prisma/client"
 
 // Type definitions for service request business logic
 export type DurationType = "HALF_DAY" | "FULL_DAY" | "MULTI_DAY" | "WEEKLY"
@@ -83,6 +83,25 @@ export type StatusHistoryEntry = {
 }
 
 export type UserRole = "USER" | "OPERATOR" | "MANAGER" | "ADMIN"
+
+// Workflow mutation types (Issue #223)
+export type ChangeStatusInput = {
+  requestId: string
+  newStatus: string
+  userId: string
+  userRole: UserRole
+  reason?: string
+  notes?: string
+}
+
+export type AssignOperatorInput = {
+  requestId: string
+  operatorId: string
+  userId: string
+  userRole: UserRole
+  rate?: number
+  estimatedHours?: number
+}
 
 // CRUD operation types
 export type AuthenticatedUser = {
@@ -1417,5 +1436,202 @@ export class ServiceRequestService extends BaseService {
       canTransition: reasons.length === 0,
       reasons,
     })
+  }
+
+  /**
+   * Change service request status with workflow validation (Issue #223)
+   * Performs atomic transaction: validates permissions, updates status, logs history
+   */
+  async changeStatus(
+    input: ChangeStatusInput
+  ): Promise<ServiceResult<ServiceRequest>> {
+    this.logOperation("changeStatus", {
+      requestId: input.requestId,
+      newStatus: input.newStatus,
+      userId: "[REDACTED]",
+      userRole: input.userRole,
+    })
+
+    // Validate required parameters
+    const validation = this.validateRequired(
+      input,
+      ["requestId", "newStatus", "userId", "userRole"]
+    )
+    if (!validation.success) {
+      return this.createError<ServiceRequest>(
+        validation.error?.code || "VALIDATION_ERROR",
+        validation.error?.message || "Validation failed",
+        validation.error?.details
+      )
+    }
+
+    return this.handleAsync(
+      async () => {
+        // Get current service request
+        const currentRequest = await db?.serviceRequest.findUnique({
+          where: { id: input.requestId },
+        })
+
+        if (!currentRequest) {
+          const error = new Error("Service request not found")
+          error.name = "NOT_FOUND"
+          throw error
+        }
+
+        // Validate transition with permissions
+        const transitionValidation = this.validateTransitionWithPermissions(
+          currentRequest.status,
+          input.newStatus,
+          input.userRole
+        )
+
+        if (!transitionValidation.success || !transitionValidation.data?.isValid) {
+          const error = new Error(
+            transitionValidation.error?.message || "Invalid status transition"
+          )
+          error.name = "INVALID_TRANSITION"
+          throw error
+        }
+
+        if (!transitionValidation.data.hasPermission) {
+          const error = new Error(
+            `Role ${input.userRole} does not have permission to transition to ${input.newStatus}`
+          )
+          error.name = "INSUFFICIENT_PERMISSIONS"
+          throw error
+        }
+
+        // Check business rules
+        const businessRules = this.canTransitionBasedOnBusinessRules(
+          currentRequest.status,
+          input.newStatus,
+          currentRequest as Record<string, unknown>
+        )
+
+        if (businessRules.success && businessRules.data && !businessRules.data.canTransition) {
+          const error = new Error(
+            `Business rule violation: ${businessRules.data.reasons.join(", ")}`
+          )
+          error.name = "BUSINESS_RULE_VIOLATION"
+          throw error
+        }
+
+        // Perform atomic transaction: update status + create history
+        const updatedRequest = await db?.$transaction(async (tx) => {
+          // Update service request status
+          const updated = await tx.serviceRequest.update({
+            where: { id: input.requestId },
+            data: {
+              status: input.newStatus as ServiceRequestStatus,
+              updatedAt: new Date(),
+            },
+          })
+
+          // Create status history entry
+          await tx.serviceRequestStatusHistory.create({
+            data: {
+              serviceRequestId: input.requestId,
+              fromStatus: currentRequest.status,
+              toStatus: input.newStatus as ServiceRequestStatus,
+              changedBy: input.userId,
+              reason: input.reason || null,
+              notes: input.notes || null,
+            },
+          })
+
+          return updated
+        })
+
+        return updatedRequest
+      },
+      "DATABASE_ERROR",
+      "Failed to change service request status"
+    )
+  }
+
+  /**
+   * Assign operator to service request (Issue #223)
+   * Creates or updates UserAssignment record with operator assignment
+   */
+  async assignOperator(
+    input: AssignOperatorInput
+  ): Promise<ServiceResult<{ id: string; status: string }>> {
+    this.logOperation("assignOperator", {
+      requestId: input.requestId,
+      operatorId: input.operatorId,
+      userId: "[REDACTED]",
+      userRole: input.userRole,
+    })
+
+    // Validate required parameters
+    const validation = this.validateRequired(
+      input,
+      ["requestId", "operatorId", "userId", "userRole"]
+    )
+    if (!validation.success) {
+      return this.createError<{ id: string; status: string }>(
+        validation.error?.code || "VALIDATION_ERROR",
+        validation.error?.message || "Validation failed",
+        validation.error?.details
+      )
+    }
+
+    // Check permissions - only MANAGER and ADMIN can assign operators
+    if (input.userRole !== "MANAGER" && input.userRole !== "ADMIN") {
+      return this.createError(
+        "INSUFFICIENT_PERMISSIONS",
+        `Role ${input.userRole} does not have permission to assign operators`
+      )
+    }
+
+    return this.handleAsync(
+      async () => {
+        // Verify service request exists
+        const serviceRequest = await db?.serviceRequest.findUnique({
+          where: { id: input.requestId },
+        })
+
+        if (!serviceRequest) {
+          const error = new Error("Service request not found")
+          error.name = "NOT_FOUND"
+          throw error
+        }
+
+        // Verify operator exists and has OPERATOR role
+        const operator = await db?.user.findUnique({
+          where: { id: input.operatorId },
+        })
+
+        if (!operator) {
+          const error = new Error("Operator not found")
+          error.name = "NOT_FOUND"
+          throw error
+        }
+
+        if (operator.role !== "OPERATOR") {
+          const error = new Error("User is not an operator")
+          error.name = "INVALID_ROLE"
+          throw error
+        }
+
+        // Create operator assignment
+        const assignment = await db?.userAssignment.create({
+          data: {
+            serviceRequestId: input.requestId,
+            operatorId: input.operatorId,
+            status: "pending",
+            rate: input.rate || null,
+            estimatedHours: input.estimatedHours || null,
+          },
+        })
+
+        return {
+          id: assignment?.id || "",
+          status: assignment?.status || "pending",
+        }
+      },
+      "DATABASE_ERROR",
+      "Failed to assign operator"
+    )
   }
 }

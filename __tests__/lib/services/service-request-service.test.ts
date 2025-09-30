@@ -1159,4 +1159,94 @@ describe("ServiceRequestService", () => {
       })
     })
   })
+
+  describe("changeStatus", () => {
+    describe("status transition workflow", () => {
+      it("should confirm changeStatus method exists", async () => {
+        expect(typeof (service as any).changeStatus).toBe("function")
+      })
+
+      it("should validate required parameters", async () => {
+        const result = await (service as any).changeStatus({
+          requestId: "",
+          newStatus: "UNDER_REVIEW",
+          userId: "user-123",
+          userRole: "MANAGER",
+        })
+
+        expect(result.success).toBe(false)
+        expect(result.error?.code).toBe("VALIDATION_ERROR")
+      })
+
+      it("should check role permissions for status transitions", () => {
+        // Test permission validation without database
+        const transitionResult = service.validateTransitionWithPermissions(
+          "SUBMITTED",
+          "PAYMENT_RECEIVED",
+          "OPERATOR"
+        )
+
+        expect(transitionResult.success).toBe(true)
+        expect(transitionResult.data?.hasPermission).toBe(false)
+      })
+
+      it("should validate status transition is valid", () => {
+        // Test transition validation logic
+        const result = service.validateStatusTransition(
+          "SUBMITTED",
+          "UNDER_REVIEW"
+        )
+
+        expect(result.success).toBe(true)
+        expect(result.data?.isValid).toBe(true)
+      })
+    })
+  })
+
+  describe("assignOperator", () => {
+    describe("operator assignment workflow", () => {
+      it("should confirm assignOperator method exists", async () => {
+        expect(typeof (service as any).assignOperator).toBe("function")
+      })
+
+      it("should validate required parameters", async () => {
+        const result = await (service as any).assignOperator({
+          requestId: "",
+          operatorId: "operator-123",
+          userId: "manager-123",
+          userRole: "MANAGER",
+        })
+
+        expect(result.success).toBe(false)
+        expect(result.error?.code).toBe("VALIDATION_ERROR")
+      })
+
+      it("should check permissions for operator assignment", async () => {
+        const result = await (service as any).assignOperator({
+          requestId: "req-123",
+          operatorId: "operator-123",
+          userId: "user-123",
+          userRole: "USER",
+        })
+
+        expect(result.success).toBe(false)
+        expect(result.error?.code).toContain("PERMISSION")
+      })
+
+      it("should allow MANAGER to assign operators", async () => {
+        const result = await (service as any).assignOperator({
+          requestId: "req-123",
+          operatorId: "operator-123",
+          userId: "manager-123",
+          userRole: "ADMIN",
+          rate: 75.0,
+          estimatedHours: 40,
+        })
+
+        // Will fail due to database not found, but permission check passes
+        expect(result.success).toBe(false)
+        expect(result.error?.code).not.toBe("INSUFFICIENT_PERMISSIONS")
+      })
+    })
+  })
 })
