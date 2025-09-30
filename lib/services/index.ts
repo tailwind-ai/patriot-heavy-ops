@@ -49,6 +49,10 @@ export {
   type ServiceRequestCalculationInput,
   type ServiceRequestCalculationResult,
   type StatusTransition,
+  type StatusTransitionWithPermissions,
+  type BusinessRuleValidation,
+  type StatusHistoryEntry,
+  type UserRole,
 } from "./service-request-service"
 
 // Dashboard data service

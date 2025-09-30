@@ -57,6 +57,33 @@ export type StatusTransition = {
   reason: string | undefined
 }
 
+// Workflow Engine types (Issue #222)
+export type StatusTransitionWithPermissions = {
+  fromStatus: string | undefined
+  toStatus: string
+  isValid: boolean
+  hasPermission: boolean
+  reason: string | undefined
+}
+
+export type BusinessRuleValidation = {
+  canTransition: boolean
+  reasons: string[]
+}
+
+export type StatusHistoryEntry = {
+  id: string
+  serviceRequestId: string
+  fromStatus: string | null
+  toStatus: string
+  changedBy: string
+  reason: string | null
+  notes: string | null
+  createdAt: Date
+}
+
+export type UserRole = "USER" | "OPERATOR" | "MANAGER" | "ADMIN"
+
 // CRUD operation types
 export type AuthenticatedUser = {
   id: string
@@ -164,6 +191,57 @@ export class ServiceRequestService extends BaseService {
     ["CANCELLED", []], // Terminal state
     ["CLOSED", []], // Terminal state
   ])
+
+  // Role-based transition permissions (Issue #222 - Workflow Engine)
+  // Defines which roles can perform which types of status transitions
+  private static readonly ROLE_TRANSITION_PERMISSIONS = {
+    ADMIN: {
+      // Admin can transition any valid status
+      canTransitionAny: true,
+      allowedStatuses: [] as string[], // Not used when canTransitionAny is true
+    },
+    MANAGER: {
+      canTransitionAny: false,
+      allowedStatuses: [
+        "SUBMITTED",
+        "UNDER_REVIEW",
+        "APPROVED",
+        "REJECTED",
+        "OPERATOR_MATCHING",
+        "OPERATOR_ASSIGNED",
+        "EQUIPMENT_CHECKING",
+        "EQUIPMENT_CONFIRMED",
+        "DEPOSIT_REQUESTED",
+        "DEPOSIT_PENDING",
+        "DEPOSIT_RECEIVED",
+        "JOB_SCHEDULED",
+        "JOB_IN_PROGRESS",
+        "JOB_COMPLETED",
+        "INVOICED",
+        "CANCELLED",
+        // Note: MANAGER cannot transition PAYMENT_PENDING, PAYMENT_RECEIVED, or CLOSED
+      ],
+    },
+    OPERATOR: {
+      canTransitionAny: false,
+      allowedStatuses: [
+        "OPERATOR_ASSIGNED", // Can update their assignment status
+        "EQUIPMENT_CHECKING",
+        "EQUIPMENT_CONFIRMED",
+        "JOB_SCHEDULED",
+        "JOB_IN_PROGRESS",
+        "JOB_COMPLETED",
+        // Note: OPERATOR can only manage job execution, not administrative or payment statuses
+      ],
+    },
+    USER: {
+      canTransitionAny: false,
+      allowedStatuses: [
+        "SUBMITTED", // Users can only submit initially
+        // Note: Users cannot transition existing requests - only create new submissions
+      ],
+    },
+  }
 
   constructor(logger?: ServiceLogger) {
     super("ServiceRequestService", logger)
@@ -311,7 +389,7 @@ export class ServiceRequestService extends BaseService {
       )
     }
 
-    const fee = ServiceRequestService.TRANSPORT_FEES[transport]
+    const fee = ServiceRequestService.TRANSPORT_FEES?.[transport]
     if (fee === undefined) {
       return this.createError(
         "INVALID_TRANSPORT_OPTION",
@@ -365,7 +443,7 @@ export class ServiceRequestService extends BaseService {
     }
 
     const multiplier =
-      ServiceRequestService.EQUIPMENT_MULTIPLIERS[equipmentCategory]
+      ServiceRequestService.EQUIPMENT_MULTIPLIERS?.[equipmentCategory]
     if (multiplier === undefined) {
       return this.createError(
         "INVALID_EQUIPMENT_CATEGORY",
@@ -1156,5 +1234,188 @@ export class ServiceRequestService extends BaseService {
       "DATABASE_ERROR",
       "Failed to verify access to service request"
     )
+  }
+
+  /**
+   * Workflow Engine Methods (Issue #222)
+   */
+
+  /**
+   * Validate status transition with role-based permissions
+   * Combines status transition validation with role permission checks
+   */
+  public validateTransitionWithPermissions(
+    fromStatus: string | undefined,
+    toStatus: string,
+    userRole: UserRole
+  ): ServiceResult<StatusTransitionWithPermissions> {
+    this.logOperation("validateTransitionWithPermissions", {
+      fromStatus,
+      toStatus,
+      userRole,
+    })
+
+    // First validate the status transition itself
+    const transitionResult = this.validateStatusTransition(fromStatus, toStatus)
+    if (!transitionResult.success) {
+      return this.createError<StatusTransitionWithPermissions>(
+        transitionResult.error?.code || "VALIDATION_ERROR",
+        transitionResult.error?.message || "Validation failed",
+        transitionResult.error?.details
+      )
+    }
+
+    const transition = transitionResult.data
+    if (!transition) {
+      return this.createError(
+        "VALIDATION_ERROR",
+        "Failed to validate transition"
+      )
+    }
+
+    // Check role-based permissions
+    const permissions =
+      ServiceRequestService.ROLE_TRANSITION_PERMISSIONS?.[userRole]
+    if (!permissions) {
+      return this.createSuccess({
+        fromStatus,
+        toStatus,
+        isValid: transition.isValid,
+        hasPermission: false,
+        reason: `Unknown role: ${userRole}`,
+      })
+    }
+
+    // ADMIN can transition any valid status
+    if (permissions.canTransitionAny) {
+      return this.createSuccess({
+        fromStatus,
+        toStatus,
+        isValid: transition.isValid,
+        hasPermission: true,
+        reason: transition.reason,
+      })
+    }
+
+    // Check if role can transition to this status
+    let hasPermission = permissions.allowedStatuses?.includes(toStatus) ?? false
+
+    // Special case: USER can only transition to SUBMITTED for initial submissions (no fromStatus)
+    if (userRole === "USER" && toStatus === "SUBMITTED" && fromStatus !== undefined) {
+      hasPermission = false
+    }
+
+    return this.createSuccess({
+      fromStatus,
+      toStatus,
+      isValid: transition.isValid,
+      hasPermission,
+      reason: hasPermission
+        ? transition.reason
+        : `Role ${userRole} does not have permission to transition to ${toStatus}`,
+    })
+  }
+
+  /**
+   * Get status history for a service request
+   * Returns audit trail of all status changes
+   */
+  async getStatusHistory(
+    serviceRequestId: string
+  ): Promise<ServiceResult<StatusHistoryEntry[]>> {
+    this.logOperation("getStatusHistory", { serviceRequestId })
+
+    const validation = this.validateRequired({ serviceRequestId }, [
+      "serviceRequestId",
+    ])
+    if (!validation.success) {
+      return this.createError<StatusHistoryEntry[]>(
+        validation.error?.code || "VALIDATION_ERROR",
+        validation.error?.message || "Validation failed",
+        validation.error?.details
+      )
+    }
+
+    return this.handleAsync(
+      async () => {
+        const request = await db?.serviceRequest.findUnique({
+          where: { id: serviceRequestId },
+          include: {
+            statusHistory: {
+              orderBy: {
+                createdAt: "asc",
+              },
+            },
+          },
+        })
+
+        if (!request) {
+          const error = new Error("Service request not found")
+          error.name = "NOT_FOUND"
+          throw error
+        }
+
+        return request.statusHistory || []
+      },
+      "DATABASE_ERROR",
+      "Failed to retrieve status history"
+    )
+  }
+
+  /**
+   * Validate business rules for status transitions
+   * Checks resource availability, financial requirements, and workflow constraints
+   */
+  public canTransitionBasedOnBusinessRules(
+    fromStatus: string,
+    toStatus: string,
+    requestData: Record<string, unknown>
+  ): ServiceResult<BusinessRuleValidation> {
+    this.logOperation("canTransitionBasedOnBusinessRules", {
+      fromStatus,
+      toStatus,
+    })
+
+    const reasons: string[] = []
+
+    // Business rule: Cannot request deposit without estimated cost
+    if (toStatus === "DEPOSIT_REQUESTED") {
+      if (requestData?.estimatedCost === null || requestData?.estimatedCost === undefined) {
+        reasons.push("Estimated cost must be set before requesting deposit")
+      }
+    }
+
+    // Business rule: Cannot schedule job without start date
+    if (toStatus === "JOB_SCHEDULED") {
+      if (!requestData?.startDate) {
+        reasons.push("Start date must be set before scheduling job")
+      }
+    }
+
+    // Business rule: Cannot invoice without completing job
+    if (toStatus === "INVOICED") {
+      if (fromStatus !== "JOB_COMPLETED") {
+        reasons.push("Job must be completed before invoicing")
+      }
+    }
+
+    // Business rule: Cannot mark payment as received without confirmation
+    if (toStatus === "PAYMENT_RECEIVED") {
+      if (requestData?.finalPaid !== true) {
+        reasons.push("Payment must be confirmed before marking as received")
+      }
+    }
+
+    // Business rule: Cannot mark deposit as received without payment
+    if (toStatus === "DEPOSIT_RECEIVED") {
+      if (requestData?.depositPaid !== true) {
+        reasons.push("Deposit must be paid before marking as received")
+      }
+    }
+
+    return this.createSuccess({
+      canTransition: reasons.length === 0,
+      reasons,
+    })
   }
 }
