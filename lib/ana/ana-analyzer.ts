@@ -380,7 +380,7 @@ export class AnaAnalyzer {
 
     if (content.includes("environment variable")) {
       const match = errorContent.match(/environment variable (\w+)/i)
-      const varName = match ? match[1] : "VARIABLE_NAME"
+      const varName = match?.[1] ?? "VARIABLE_NAME"
       return `Add ${varName} environment variable in Vercel dashboard`
     }
 
@@ -394,7 +394,7 @@ export class AnaAnalyzer {
 
     if (content.includes("prerendering")) {
       const match = errorContent.match(/prerendering page "([^"]+)"/i)
-      const page = match ? match[1] : "page"
+      const page = match?.[1] ?? "page"
       return `Fix getStaticProps error in ${page} page`
     }
 
@@ -505,10 +505,10 @@ export class AnaAnalyzer {
     let match: RegExpExecArray | null
     while ((match = pattern.regex.exec(logContent)) !== null) {
       // Handle two different formats: "error in file:line:col" or "file:line:col - error TS..."
-      const file = match[1] || match[5] // First format uses match[1], second uses match[5]
-      const line = match[3]
+      const file = match?.[1] || match?.[5] // First format uses match[1], second uses match[5]
+      const line = match?.[3]
         ? parseInt(match[3])
-        : match[7]
+        : match?.[7]
         ? parseInt(match[7])
         : undefined
 
@@ -546,8 +546,8 @@ export class AnaAnalyzer {
 
     let match: RegExpExecArray | null
     while ((match = pattern.regex.exec(logContent)) !== null) {
-      const file = match[1] || undefined // FAIL format
-      const description = match[3] || match[0] // test failed format or full match
+      const file = match?.[1] || undefined // FAIL format
+      const description = match?.[3] || match?.[0] || "test failed" // test failed format or full match
 
       issues.push({
         description: `Unit Tests: ${file || description}`,
@@ -575,10 +575,10 @@ export class AnaAnalyzer {
 
     let match: RegExpExecArray | null
     while ((match = pattern.regex.exec(logContent)) !== null) {
-      const file = match[1] || undefined // Full ESLint format
-      const line = match[3] ? parseInt(match[3]) : undefined
-      const severity = match[5] || "error" // Default to error for simple format
-      const description = match[6] || match[0] // Simple "lint error" format
+      const file = match?.[1] || undefined // Full ESLint format
+      const line = match?.[3] ? parseInt(match[3]) : undefined
+      const severity = match?.[5] || "error" // Default to error for simple format
+      const description = match?.[6] || match?.[0] || "lint error" // Simple "lint error" format
 
       if (severity === "error" || match[6]) {
         // Include simple format
@@ -611,7 +611,7 @@ export class AnaAnalyzer {
     let match: RegExpExecArray | null
     while ((match = pattern.regex.exec(logContent)) !== null) {
       issues.push({
-        description: `Build: ${match[1] || match[0]}`,
+        description: `Build: ${match?.[1] || match?.[0] || "build failed"}`,
         priority: pattern.priority,
         rootCause: this.extractRootCause(match[0]),
         suggestedFix: this.generateSuggestedFix(match[0], "Build"),
@@ -759,7 +759,7 @@ export class AnaAnalyzer {
 
     let match: RegExpExecArray | null
     while ((match = pattern.regex.exec(logContent)) !== null) {
-      const pagePath = match[1] || "page"
+      const pagePath = match?.[1] ?? "page"
       issues.push({
         description: `Vercel Deploy: Error occurred prerendering page "${pagePath}"`,
         priority: pattern.priority,
@@ -807,8 +807,8 @@ export class AnaAnalyzer {
 
     let match: RegExpExecArray | null
     while ((match = pattern.regex.exec(logContent)) !== null) {
-      const missingModule = match[1]
-      const fromFile = match[2]
+      const missingModule = match?.[1]
+      const fromFile = match?.[2]
       if (missingModule && fromFile) {
         issues.push({
           description: `Vercel Deploy: Cannot resolve module '${missingModule}' from '${fromFile}'`,
@@ -873,18 +873,18 @@ export class AnaAnalyzer {
     prNumber: number
   ): AnaResults {
     // Validate this is a Cursor bot review
-    if (!reviewData.review.user || reviewData.review.user.login !== "cursor") {
+    if (!reviewData?.review?.user || reviewData.review.user.login !== "cursor") {
       throw new Error(
         `Review is not from Cursor bot (user: ${
-          reviewData.review.user?.login || "unknown"
+          reviewData?.review?.user?.login ?? "unknown"
         })`
       )
     }
 
     // Validate this is a comment review
-    if (reviewData.review.state !== "COMMENTED") {
+    if (reviewData?.review?.state !== "COMMENTED") {
       throw new Error(
-        `Review is not a comment review (state: ${reviewData.review.state})`
+        `Review is not a comment review (state: ${reviewData?.review?.state ?? "unknown"})`
       )
     }
 

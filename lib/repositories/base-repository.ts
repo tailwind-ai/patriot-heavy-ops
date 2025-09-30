@@ -155,9 +155,9 @@ export abstract class BaseRepository {
   ): RepositoryResult<void> {
     const missing = requiredFields.filter(
       (field) =>
-        params[field] === undefined ||
-        params[field] === null ||
-        params[field] === ""
+        params?.[field] === undefined ||
+        params?.[field] === null ||
+        params?.[field] === ""
     )
 
     if (missing.length > 0) {
@@ -207,8 +207,8 @@ export abstract class BaseRepository {
   ): T {
     const query = { ...baseQuery }
 
-    if (filters.where) {
-      const existingWhere = (query as Record<string, unknown>).where
+    if (filters?.where) {
+      const existingWhere = (query as Record<string, unknown>)?.where
       ;(query as Record<string, unknown>).where = {
         ...(existingWhere && typeof existingWhere === "object"
           ? existingWhere
@@ -217,15 +217,15 @@ export abstract class BaseRepository {
       }
     }
 
-    if (filters.orderBy) {
+    if (filters?.orderBy) {
       ;(query as Record<string, unknown>).orderBy = filters.orderBy
     }
 
-    if (filters.include) {
+    if (filters?.include) {
       ;(query as Record<string, unknown>).include = filters.include
     }
 
-    if (filters.select) {
+    if (filters?.select) {
       ;(query as Record<string, unknown>).select = filters.select
     }
 
@@ -241,16 +241,16 @@ export abstract class BaseRepository {
   ): T {
     const query = { ...baseQuery }
 
-    if (pagination.limit) {
+    if (pagination?.limit) {
       ;(query as Record<string, unknown>).take = pagination.limit
     }
 
-    if (pagination.page && pagination.limit) {
+    if (pagination?.page && pagination?.limit) {
       ;(query as Record<string, unknown>).skip =
         (pagination.page - 1) * pagination.limit
     }
 
-    if (pagination.cursor) {
+    if (pagination?.cursor) {
       ;(query as Record<string, unknown>).cursor = { id: pagination.cursor }
       ;(query as Record<string, unknown>).skip = 1 // Skip the cursor record
     }
