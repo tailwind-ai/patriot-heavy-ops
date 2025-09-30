@@ -80,6 +80,18 @@ export {
   type AdminActionType,
 } from "./admin-service"
 
+// Payment processing service
+import { PaymentService } from "./payment-service"
+export {
+  PaymentService,
+  type PaymentIntentResult,
+  type CreateDepositPaymentInput,
+  type CreateFinalPaymentInput,
+  type ConfirmPaymentInput,
+  type RefundPaymentInput,
+  type PaymentHistoryEntry,
+} from "./payment-service"
+
 // Service factory for dependency injection
 export class ServiceFactory {
   private static authService: AuthService | null = null
@@ -87,6 +99,7 @@ export class ServiceFactory {
   private static serviceRequestService: ServiceRequestService | null = null
   private static dashboardService: DashboardService | null = null
   private static adminService: AdminService | null = null
+  private static paymentService: PaymentService | null = null
   private static adminServicePromise: Promise<AdminService> | null = null
 
   /**
@@ -159,6 +172,27 @@ export class ServiceFactory {
   }
 
   /**
+   * Get singleton instance of PaymentService
+   * Note: PaymentService requires Stripe SDK, PaymentRepository, and ServiceRequestService
+   * Uses dynamic import for Stripe to avoid circular dependencies
+   */
+  static getPaymentService(): PaymentService {
+    if (!this.paymentService) {
+      // Dynamic import to avoid circular dependencies
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const { stripe } = require("@/lib/stripe")
+      const paymentRepository = RepositoryFactory.getPaymentRepository()
+      const serviceRequestService = this.getServiceRequestService()
+      this.paymentService = new PaymentService(
+        stripe,
+        paymentRepository,
+        serviceRequestService
+      )
+    }
+    return this.paymentService
+  }
+
+  /**
    * Reset all service instances (useful for testing)
    */
   static reset(): void {
@@ -167,6 +201,7 @@ export class ServiceFactory {
     this.serviceRequestService = null
     this.dashboardService = null
     this.adminService = null
+    this.paymentService = null
     this.adminServicePromise = null
   }
 }
