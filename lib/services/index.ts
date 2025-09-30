@@ -174,14 +174,14 @@ export class ServiceFactory {
   /**
    * Get singleton instance of PaymentService
    * Note: PaymentService requires Stripe SDK, PaymentRepository, and ServiceRequestService
-   * Uses dynamic import for Stripe to avoid circular dependencies
+   * Uses dynamic imports to avoid circular dependencies
    */
-  static getPaymentService(): PaymentService {
+  static async getPaymentService(): Promise<PaymentService> {
     if (!this.paymentService) {
-      // Dynamic import to avoid circular dependencies
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const { stripe } = require("@/lib/stripe")
-      const paymentRepository = RepositoryFactory.getPaymentRepository()
+      // Dynamic imports to avoid circular dependencies (consistent with getAdminService pattern)
+      const { stripe } = await import("@/lib/stripe")
+      const { RepositoryFactory: RepoFactory } = await import("@/lib/repositories")
+      const paymentRepository = RepoFactory.getPaymentRepository()
       const serviceRequestService = this.getServiceRequestService()
       this.paymentService = new PaymentService(
         stripe,

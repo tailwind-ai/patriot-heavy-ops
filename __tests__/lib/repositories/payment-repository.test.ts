@@ -5,52 +5,33 @@
  * Tests CRUD operations, payment-specific queries, and null safety patterns.
  */
 
-import { PrismaClient } from "@prisma/client"
 import {
   PaymentRepository,
   PaymentCreateInput,
   PaymentUpdateInput,
 } from "@/lib/repositories/payment-repository"
 
-// Mock Prisma Client
-jest.mock("@/lib/db", () => ({
-  db: {
-    payment: {
-      findUnique: jest.fn(),
-      findFirst: jest.fn(),
-      findMany: jest.fn(),
-      create: jest.fn(),
-      update: jest.fn(),
-      delete: jest.fn(),
-      count: jest.fn(),
-      aggregate: jest.fn(),
-    },
+// Mock Prisma Client using plain object pattern (consistent with existing tests)
+const mockPrismaClient = {
+  payment: {
+    findUnique: jest.fn(),
+    findFirst: jest.fn(),
+    findMany: jest.fn(),
+    create: jest.fn(),
+    update: jest.fn(),
+    delete: jest.fn(),
+    count: jest.fn(),
+    aggregate: jest.fn(),
   },
-}))
+} as any
 
 describe("PaymentRepository", () => {
   let repository: PaymentRepository
-  let mockDb: jest.Mocked<PrismaClient>
 
   beforeEach(() => {
     // Clear all mocks before each test
     jest.clearAllMocks()
-
-    // Create mock database
-    mockDb = {
-      payment: {
-        findUnique: jest.fn(),
-        findFirst: jest.fn(),
-        findMany: jest.fn(),
-        create: jest.fn(),
-        update: jest.fn(),
-        delete: jest.fn(),
-        count: jest.fn(),
-        aggregate: jest.fn(),
-      },
-    } as unknown as jest.Mocked<PrismaClient>
-
-    repository = new PaymentRepository(mockDb)
+    repository = new PaymentRepository(mockPrismaClient)
   })
 
   describe("findById", () => {
@@ -70,19 +51,19 @@ describe("PaymentRepository", () => {
         updatedAt: new Date(),
       }
 
-      mockDb.payment.findUnique.mockResolvedValue(mockPayment)
+      mockPrismaClient.payment.findUnique.mockResolvedValue(mockPayment)
 
       const result = await repository.findById("payment_123")
 
       expect(result.success).toBe(true)
       expect(result.data).toEqual(mockPayment)
-      expect(mockDb.payment.findUnique).toHaveBeenCalledWith({
+      expect(mockPrismaClient.payment.findUnique).toHaveBeenCalledWith({
         where: { id: "payment_123" },
       })
     })
 
     it("should return null when payment not found", async () => {
-      mockDb.payment.findUnique.mockResolvedValue(null)
+      mockPrismaClient.payment.findUnique.mockResolvedValue(null)
 
       const result = await repository.findById("nonexistent_id")
 
@@ -91,7 +72,7 @@ describe("PaymentRepository", () => {
     })
 
     it("should handle database errors", async () => {
-      mockDb.payment.findUnique.mockRejectedValue(
+      mockPrismaClient.payment.findUnique.mockRejectedValue(
         new Error("Database connection failed")
       )
 
@@ -120,19 +101,19 @@ describe("PaymentRepository", () => {
         updatedAt: new Date(),
       }
 
-      mockDb.payment.findFirst.mockResolvedValue(mockPayment)
+      mockPrismaClient.payment.findFirst.mockResolvedValue(mockPayment)
 
       const result = await repository.findByStripePaymentIntentId("pi_123")
 
       expect(result.success).toBe(true)
       expect(result.data).toEqual(mockPayment)
-      expect(mockDb.payment.findFirst).toHaveBeenCalledWith({
+      expect(mockPrismaClient.payment.findFirst).toHaveBeenCalledWith({
         where: { stripePaymentIntentId: "pi_123" },
       })
     })
 
     it("should return null when payment not found by Stripe Payment Intent ID", async () => {
-      mockDb.payment.findFirst.mockResolvedValue(null)
+      mockPrismaClient.payment.findFirst.mockResolvedValue(null)
 
       const result = await repository.findByStripePaymentIntentId(
         "nonexistent_pi"
@@ -176,21 +157,21 @@ describe("PaymentRepository", () => {
         },
       ]
 
-      mockDb.payment.findMany.mockResolvedValue(mockPayments)
+      mockPrismaClient.payment.findMany.mockResolvedValue(mockPayments)
 
       const result = await repository.findByServiceRequest("request_123")
 
       expect(result.success).toBe(true)
       expect(result.data).toEqual(mockPayments)
       expect(result.data).toHaveLength(2)
-      expect(mockDb.payment.findMany).toHaveBeenCalledWith({
+      expect(mockPrismaClient.payment.findMany).toHaveBeenCalledWith({
         where: { serviceRequestId: "request_123" },
         orderBy: { createdAt: "desc" },
       })
     })
 
     it("should return empty array when no payments found", async () => {
-      mockDb.payment.findMany.mockResolvedValue([])
+      mockPrismaClient.payment.findMany.mockResolvedValue([])
 
       const result = await repository.findByServiceRequest("request_123")
 
@@ -216,13 +197,13 @@ describe("PaymentRepository", () => {
         updatedAt: new Date(),
       }
 
-      mockDb.payment.findFirst.mockResolvedValue(mockPayment)
+      mockPrismaClient.payment.findFirst.mockResolvedValue(mockPayment)
 
       const result = await repository.findDepositByServiceRequest("request_123")
 
       expect(result.success).toBe(true)
       expect(result.data).toEqual(mockPayment)
-      expect(mockDb.payment.findFirst).toHaveBeenCalledWith({
+      expect(mockPrismaClient.payment.findFirst).toHaveBeenCalledWith({
         where: {
           serviceRequestId: "request_123",
           type: "DEPOSIT",
@@ -249,13 +230,13 @@ describe("PaymentRepository", () => {
         updatedAt: new Date(),
       }
 
-      mockDb.payment.findFirst.mockResolvedValue(mockPayment)
+      mockPrismaClient.payment.findFirst.mockResolvedValue(mockPayment)
 
       const result = await repository.findFinalByServiceRequest("request_123")
 
       expect(result.success).toBe(true)
       expect(result.data).toEqual(mockPayment)
-      expect(mockDb.payment.findFirst).toHaveBeenCalledWith({
+      expect(mockPrismaClient.payment.findFirst).toHaveBeenCalledWith({
         where: {
           serviceRequestId: "request_123",
           type: "FINAL",
@@ -286,13 +267,13 @@ describe("PaymentRepository", () => {
         updatedAt: new Date(),
       }
 
-      mockDb.payment.create.mockResolvedValue(mockPayment)
+      mockPrismaClient.payment.create.mockResolvedValue(mockPayment)
 
       const result = await repository.create(createInput)
 
       expect(result.success).toBe(true)
       expect(result.data).toEqual(mockPayment)
-      expect(mockDb.payment.create).toHaveBeenCalledWith({
+      expect(mockPrismaClient.payment.create).toHaveBeenCalledWith({
         data: {
           serviceRequestId: "request_123",
           type: "DEPOSIT",
@@ -326,7 +307,7 @@ describe("PaymentRepository", () => {
         updatedAt: new Date(),
       }
 
-      mockDb.payment.create.mockResolvedValue(mockPayment)
+      mockPrismaClient.payment.create.mockResolvedValue(mockPayment)
 
       const result = await repository.create(createInput)
 
@@ -344,7 +325,7 @@ describe("PaymentRepository", () => {
 
       expect(result.success).toBe(false)
       expect(result.error?.code).toBe("VALIDATION_ERROR")
-      expect(mockDb.payment.create).not.toHaveBeenCalled()
+      expect(mockPrismaClient.payment.create).not.toHaveBeenCalled()
     })
 
     it("should handle database errors during creation", async () => {
@@ -355,7 +336,7 @@ describe("PaymentRepository", () => {
         status: "PENDING",
       }
 
-      mockDb.payment.create.mockRejectedValue(
+      mockPrismaClient.payment.create.mockRejectedValue(
         new Error("Database constraint violation")
       )
 
@@ -389,13 +370,13 @@ describe("PaymentRepository", () => {
         updatedAt: new Date(),
       }
 
-      mockDb.payment.update.mockResolvedValue(mockPayment)
+      mockPrismaClient.payment.update.mockResolvedValue(mockPayment)
 
       const result = await repository.update("payment_123", updateInput)
 
       expect(result.success).toBe(true)
       expect(result.data).toEqual(mockPayment)
-      expect(mockDb.payment.update).toHaveBeenCalledWith({
+      expect(mockPrismaClient.payment.update).toHaveBeenCalledWith({
         where: { id: "payment_123" },
         data: {
           status: "COMPLETED",
@@ -424,7 +405,7 @@ describe("PaymentRepository", () => {
         updatedAt: new Date(),
       }
 
-      mockDb.payment.update.mockResolvedValue(mockPayment)
+      mockPrismaClient.payment.update.mockResolvedValue(mockPayment)
 
       const result = await repository.update("payment_123", updateInput)
 
@@ -454,7 +435,7 @@ describe("PaymentRepository", () => {
         updatedAt: new Date(),
       }
 
-      mockDb.payment.update.mockResolvedValue(mockPayment)
+      mockPrismaClient.payment.update.mockResolvedValue(mockPayment)
 
       const result = await repository.update("payment_123", updateInput)
 
@@ -464,7 +445,9 @@ describe("PaymentRepository", () => {
     })
 
     it("should handle update errors", async () => {
-      mockDb.payment.update.mockRejectedValue(new Error("Payment not found"))
+      mockPrismaClient.payment.update.mockRejectedValue(
+        new Error("Payment not found")
+      )
 
       const result = await repository.update("nonexistent_id", {
         status: "COMPLETED",
@@ -477,7 +460,7 @@ describe("PaymentRepository", () => {
 
   describe("delete", () => {
     it("should delete payment by ID", async () => {
-      mockDb.payment.delete.mockResolvedValue({
+      mockPrismaClient.payment.delete.mockResolvedValue({
         id: "payment_123",
       } as any)
 
@@ -485,13 +468,15 @@ describe("PaymentRepository", () => {
 
       expect(result.success).toBe(true)
       expect(result.data).toBe(true)
-      expect(mockDb.payment.delete).toHaveBeenCalledWith({
+      expect(mockPrismaClient.payment.delete).toHaveBeenCalledWith({
         where: { id: "payment_123" },
       })
     })
 
     it("should handle delete errors", async () => {
-      mockDb.payment.delete.mockRejectedValue(new Error("Payment not found"))
+      mockPrismaClient.payment.delete.mockRejectedValue(
+        new Error("Payment not found")
+      )
 
       const result = await repository.delete("nonexistent_id")
 
@@ -502,17 +487,17 @@ describe("PaymentRepository", () => {
 
   describe("count", () => {
     it("should count all payments", async () => {
-      mockDb.payment.count.mockResolvedValue(10)
+      mockPrismaClient.payment.count.mockResolvedValue(10)
 
       const result = await repository.count()
 
       expect(result.success).toBe(true)
       expect(result.data).toBe(10)
-      expect(mockDb.payment.count).toHaveBeenCalledWith({ where: {} })
+      expect(mockPrismaClient.payment.count).toHaveBeenCalledWith({ where: {} })
     })
 
     it("should count payments with filters", async () => {
-      mockDb.payment.count.mockResolvedValue(5)
+      mockPrismaClient.payment.count.mockResolvedValue(5)
 
       const result = await repository.count({
         where: { status: "COMPLETED" },
@@ -520,7 +505,7 @@ describe("PaymentRepository", () => {
 
       expect(result.success).toBe(true)
       expect(result.data).toBe(5)
-      expect(mockDb.payment.count).toHaveBeenCalledWith({
+      expect(mockPrismaClient.payment.count).toHaveBeenCalledWith({
         where: { status: "COMPLETED" },
       })
     })
@@ -528,13 +513,13 @@ describe("PaymentRepository", () => {
 
   describe("countByServiceRequest", () => {
     it("should count payments for service request", async () => {
-      mockDb.payment.count.mockResolvedValue(3)
+      mockPrismaClient.payment.count.mockResolvedValue(3)
 
       const result = await repository.countByServiceRequest("request_123")
 
       expect(result.success).toBe(true)
       expect(result.data).toBe(3)
-      expect(mockDb.payment.count).toHaveBeenCalledWith({
+      expect(mockPrismaClient.payment.count).toHaveBeenCalledWith({
         where: { serviceRequestId: "request_123" },
       })
     })
@@ -542,7 +527,7 @@ describe("PaymentRepository", () => {
 
   describe("getTotalPaidAmount", () => {
     it("should calculate total paid amount for completed payments", async () => {
-      mockDb.payment.aggregate.mockResolvedValue({
+      mockPrismaClient.payment.aggregate.mockResolvedValue({
         _sum: {
           amount: { toFixed: () => "600.00" },
         },
@@ -552,7 +537,7 @@ describe("PaymentRepository", () => {
 
       expect(result.success).toBe(true)
       expect(result.data).toBe(600.0)
-      expect(mockDb.payment.aggregate).toHaveBeenCalledWith({
+      expect(mockPrismaClient.payment.aggregate).toHaveBeenCalledWith({
         where: {
           serviceRequestId: "request_123",
           status: "COMPLETED",
@@ -564,7 +549,7 @@ describe("PaymentRepository", () => {
     })
 
     it("should return 0 when no completed payments exist", async () => {
-      mockDb.payment.aggregate.mockResolvedValue({
+      mockPrismaClient.payment.aggregate.mockResolvedValue({
         _sum: {
           amount: null,
         },
@@ -577,7 +562,7 @@ describe("PaymentRepository", () => {
     })
 
     it("should handle null aggregate result", async () => {
-      mockDb.payment.aggregate.mockResolvedValue({
+      mockPrismaClient.payment.aggregate.mockResolvedValue({
         _sum: null,
       } as any)
 
@@ -607,7 +592,7 @@ describe("PaymentRepository", () => {
         },
       ]
 
-      mockDb.payment.findMany.mockResolvedValue(mockPayments)
+      mockPrismaClient.payment.findMany.mockResolvedValue(mockPayments)
 
       const result = await repository.findByFilters({
         type: "DEPOSIT",
@@ -615,7 +600,7 @@ describe("PaymentRepository", () => {
 
       expect(result.success).toBe(true)
       expect(result.data).toEqual(mockPayments)
-      expect(mockDb.payment.findMany).toHaveBeenCalledWith(
+      expect(mockPrismaClient.payment.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
           where: { type: "DEPOSIT" },
         })
@@ -626,14 +611,14 @@ describe("PaymentRepository", () => {
       const startDate = new Date("2025-09-01")
       const endDate = new Date("2025-09-30")
 
-      mockDb.payment.findMany.mockResolvedValue([])
+      mockPrismaClient.payment.findMany.mockResolvedValue([])
 
       await repository.findByFilters({
         createdAfter: startDate,
         createdBefore: endDate,
       })
 
-      expect(mockDb.payment.findMany).toHaveBeenCalledWith(
+      expect(mockPrismaClient.payment.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
           where: {
             createdAt: {
@@ -646,7 +631,7 @@ describe("PaymentRepository", () => {
     })
 
     it("should combine multiple filters", async () => {
-      mockDb.payment.findMany.mockResolvedValue([])
+      mockPrismaClient.payment.findMany.mockResolvedValue([])
 
       await repository.findByFilters({
         serviceRequestId: "request_123",
@@ -654,7 +639,7 @@ describe("PaymentRepository", () => {
         status: "COMPLETED",
       })
 
-      expect(mockDb.payment.findMany).toHaveBeenCalledWith(
+      expect(mockPrismaClient.payment.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
           where: {
             serviceRequestId: "request_123",
