@@ -559,7 +559,8 @@ describe("Dashboard Service Role Filtering Tests", () => {
       })
 
       expect(result.success).toBe(false)
-      expect(result.error?.message).toBe("Failed to fetch dashboard data")
+      // Now preserves the actual validation error message
+      expect(result.error?.message).toContain("Invalid user role")
     })
 
     it("should validate user ID is not empty", async () => {

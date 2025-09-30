@@ -77,7 +77,8 @@ describe("DashboardService", () => {
       })
 
       expect(result.success).toBe(false)
-      expect(result.error?.message).toContain("Failed to fetch dashboard data")
+      // Now preserves the actual validation error message
+      expect(result.error?.message).toContain("Invalid user role")
     })
 
     it("should return cached data when caching is enabled", async () => {
@@ -565,7 +566,8 @@ describe("DashboardService", () => {
 
       expect(result.success).toBe(false)
       expect(result.error?.code).toBe("DASHBOARD_DATA_ERROR")
-      expect(result.error?.message).toBe("Failed to fetch dashboard data")
+      // Now preserves the actual database error message
+      expect(result.error?.message).toBe("Database connection failed")
     })
 
     it("should validate required options", async () => {

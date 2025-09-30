@@ -425,7 +425,8 @@ describe("Dashboard Service Mobile Compatibility", () => {
 
       expect(result.success).toBe(false)
       expect(result.error?.code).toBe("DASHBOARD_DATA_ERROR")
-      expect(result.error?.message).toBe("Failed to fetch dashboard data")
+      // Now preserves the actual network error message for better debugging
+      expect(result.error?.message).toBe("Network unavailable")
       // In a real mobile app, this would be mapped to user-friendly messages
     })
   })

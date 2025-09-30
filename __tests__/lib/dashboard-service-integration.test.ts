@@ -100,7 +100,8 @@ describe("DashboardService Integration Tests", () => {
 
       expect(result.success).toBe(false)
       expect(result.error?.code).toBe("DASHBOARD_DATA_ERROR")
-      expect(result.error?.message).toBe("Failed to fetch dashboard data")
+      // Now preserves the actual error message from the thrown error
+      expect(result.error?.message).toBe("Repository connection failed")
     })
 
     it("should propagate repository validation errors", async () => {
@@ -397,7 +398,8 @@ describe("DashboardService Integration Tests", () => {
 
       expect(result.success).toBe(false)
       expect(result.error?.code).toBe("DASHBOARD_DATA_ERROR")
-      expect(result.error?.message).toBe("Failed to fetch dashboard data")
+      // Now preserves the actual error message instead of generic fallback
+      expect(result.error?.message).toBe("Connection timeout")
       expect(result.error?.details?.originalError).toBe("Connection timeout")
     })
   })

@@ -122,13 +122,18 @@ export abstract class BaseService {
    * Categorize error into structured error types
    * Maps generic errors and Prisma errors to structured error categories
    * 
-   * For backward compatibility, uses fallbackCode and fallbackMessage as the primary
-   * error identification, while preserving original error details.
+   * For backward compatibility:
+   * - Preserves original error.message when available
+   * - Uses error.name as code when it matches known patterns
+   * - Falls back to provided fallbackCode and fallbackMessage
    */
   protected categorizeError(error: unknown, fallbackCode: string, fallbackMessage: string): StructuredError {
     const details = error instanceof Error 
       ? { originalError: error.message, stack: error.stack }
       : { originalError: String(error) };
+
+    // Determine the message to use: prefer original error message if available
+    const message = error instanceof Error && error.message ? error.message : fallbackMessage;
 
     // Handle Prisma database errors
     if (error && typeof error === 'object' && 'code' in error) {
@@ -137,7 +142,7 @@ export abstract class BaseService {
       // Prisma error codes: P2002 = Unique constraint, P2003 = Foreign key, P2025 = Not found, etc.
       if (typeof prismaError.code === 'string' && prismaError.code.startsWith('P')) {
         return createDatabaseError(
-          fallbackMessage,
+          message,
           `DB_${prismaError.code}`,
           { ...details, prismaCode: prismaError.code, meta: prismaError.meta }
         );
@@ -146,8 +151,6 @@ export abstract class BaseService {
 
     // Handle standard Error objects with specific names
     if (error instanceof Error) {
-      // Use error.name as code if it's a known error type, otherwise use fallbackCode
-      
       // Authentication errors - check error name OR fallback code
       if (
         error.name === 'INVALID_CREDENTIALS' || 
@@ -160,24 +163,29 @@ export abstract class BaseService {
         const code = (error.name === 'INVALID_CREDENTIALS' || error.name === 'TOKEN_EXPIRED' || error.name === 'INVALID_TOKEN') 
           ? error.name 
           : fallbackCode;
-        return createAuthenticationError(fallbackMessage, code, details);
+        return createAuthenticationError(message, code, details);
       }
       
-      // Authorization errors - check error name OR fallback code  
+      // NOT_FOUND errors - separate from authorization (resource doesn't exist vs. access denied)
+      if (error.name === 'NOT_FOUND' || fallbackCode === 'NOT_FOUND') {
+        const code = error.name === 'NOT_FOUND' ? error.name : fallbackCode;
+        // NOT_FOUND gets categorized as AuthorizationError for HTTP status mapping (404)
+        // but preserves NOT_FOUND code for proper routing logic
+        return createAuthorizationError(message, code, details);
+      }
+      
+      // Authorization errors - check error name OR fallback code
       if (
         error.name === 'ACCESS_DENIED' || 
         error.name === 'INSUFFICIENT_PERMISSIONS' ||
-        error.name === 'NOT_FOUND' ||
         fallbackCode === 'ACCESS_DENIED' ||
         fallbackCode === 'INSUFFICIENT_PERMISSIONS' ||
-        fallbackCode === 'FORBIDDEN' ||
-        fallbackCode === 'NOT_FOUND'
+        fallbackCode === 'FORBIDDEN'
       ) {
-        const code = (error.name === 'ACCESS_DENIED' || error.name === 'INSUFFICIENT_PERMISSIONS' || error.name === 'NOT_FOUND') 
+        const code = (error.name === 'ACCESS_DENIED' || error.name === 'INSUFFICIENT_PERMISSIONS') 
           ? error.name 
           : fallbackCode;
-        // NOT_FOUND is technically authorization (you're not authorized to see this resource)
-        return createAuthorizationError(fallbackMessage, code, details);
+        return createAuthorizationError(message, code, details);
       }
       
       // Validation errors - check error name OR fallback code
@@ -190,7 +198,7 @@ export abstract class BaseService {
         const code = (error.name === 'VALIDATION_ERROR' || error.name === 'INVALID_INPUT') 
           ? error.name 
           : fallbackCode;
-        return createValidationError(fallbackMessage, code, details);
+        return createValidationError(message, code, details);
       }
       
       // Database errors - check fallback code patterns
@@ -199,7 +207,7 @@ export abstract class BaseService {
         fallbackCode === 'DATABASE_ERROR' ||
         fallbackCode === 'QUERY_ERROR'
       ) {
-        return createDatabaseError(fallbackMessage, fallbackCode, details);
+        return createDatabaseError(message, fallbackCode, details);
       }
       
       // Network errors - check error name OR fallback code
@@ -214,11 +222,11 @@ export abstract class BaseService {
         const code = (error.name === 'NETWORK_ERROR' || error.name === 'TIMEOUT' || error.name === 'CONNECTION_FAILED') 
           ? error.name 
           : fallbackCode;
-        return createNetworkError(fallbackMessage, code, details);
+        return createNetworkError(message, code, details);
       }
       
       // System errors (catch-all for Error objects)
-      return createSystemError(fallbackMessage, fallbackCode, details);
+      return createSystemError(message, fallbackCode, details);
     }
 
     // Fallback for non-Error objects
