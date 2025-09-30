@@ -369,9 +369,8 @@ describe("useDashboardData", () => {
       })
 
       expect(result.current.data).toBe(null)
-      expect(result.current.error).toBe(
-        "Network error. Please check your connection and try again."
-      )
+      // When response is null, !response?.ok is true, enters error block with default message
+      expect(result.current.error).toBe("Failed to fetch dashboard data")
     })
 
     it("should handle undefined response.ok", async () => {

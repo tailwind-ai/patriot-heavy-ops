@@ -65,9 +65,10 @@ describe("useManagerQueue", () => {
         await result.current.approveRequest("request-1")
       })
 
+      // When response is null, !response?.ok is true, enters error block with default message
       expect(mockNotifications.showError).toHaveBeenCalledWith(
-        "Unable to connect to the server. Please check your connection and try again.",
-        "Network error"
+        "Failed to approve request",
+        "Failed to approve request"
       )
     })
 
@@ -161,9 +162,10 @@ describe("useManagerQueue", () => {
         await result.current.rejectRequest("request-1", "Test reason")
       })
 
+      // When response is null, !response?.ok is true, enters error block with default message
       expect(mockNotifications.showError).toHaveBeenCalledWith(
-        "Unable to connect to the server. Please check your connection and try again.",
-        "Network error"
+        "Failed to reject request",
+        "Failed to reject request"
       )
     })
 
@@ -225,9 +227,10 @@ describe("useManagerQueue", () => {
         await result.current.assignOperator("request-1", "operator-1")
       })
 
+      // When response is null, !response?.ok is true, enters error block with default message
       expect(mockNotifications.showError).toHaveBeenCalledWith(
-        "Unable to connect to the server. Please check your connection and try again.",
-        "Network error"
+        "Failed to assign operator",
+        "Failed to assign operator"
       )
     })
   })

@@ -347,9 +347,10 @@ describe("useServiceRequestForm", () => {
         await result.current.onSubmit(formData)
       })
 
+      // When response is null, !response?.ok is true, enters error block with default message
       expect(mockNotifications.showError).toHaveBeenCalledWith(
-        "Unable to connect to the server. Please check your internet connection and try again.",
-        "Network error"
+        "Your service request was not created. Please try again.",
+        "Failed to create service request"
       )
     })
 

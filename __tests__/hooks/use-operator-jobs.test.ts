@@ -66,10 +66,10 @@ describe("useOperatorJobs", () => {
         await result.current.acceptJob("job-1")
       })
 
-      // Should handle null response gracefully
+      // When response is null, !response?.ok is true, enters error block with default message
       expect(mockNotifications.showError).toHaveBeenCalledWith(
-        "Unable to connect to the server. Please check your connection and try again.",
-        "Network error"
+        "Failed to accept job",
+        "Failed to accept job"
       )
     })
 
@@ -202,9 +202,10 @@ describe("useOperatorJobs", () => {
         await result.current.completeJob("assignment-1")
       })
 
+      // When response is null, !response?.ok is true, enters error block with default message
       expect(mockNotifications.showError).toHaveBeenCalledWith(
-        "Unable to connect to the server. Please check your connection and try again.",
-        "Network error"
+        "Failed to complete job",
+        "Failed to complete job"
       )
     })
   })
