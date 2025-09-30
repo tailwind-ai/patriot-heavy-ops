@@ -218,6 +218,17 @@ export const apiRateLimit = rateLimit({
 })
 
 /**
+ * Admin operations rate limiter
+ * More restrictive for sensitive administrative operations
+ */
+export const adminRateLimit = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  maxRequests: 30, // 30 requests per minute (stricter than general API)
+  message: 'Admin rate limit exceeded, please slow down',
+  keyGenerator: (req: NextRequest) => generateRateLimitKey(req, 'admin_rate_limit')
+})
+
+/**
  * Apply rate limiting to a request handler
  */
 export function withRateLimit<T extends unknown[]>(
