@@ -80,6 +80,18 @@ export {
   type AdminActionType,
 } from "./admin-service"
 
+// Payment processing service
+import { PaymentService } from "./payment-service"
+export {
+  PaymentService,
+  type PaymentIntentResult,
+  type CreateDepositPaymentInput,
+  type CreateFinalPaymentInput,
+  type ConfirmPaymentInput,
+  type RefundPaymentInput,
+  type PaymentHistoryEntry,
+} from "./payment-service"
+
 // Service factory for dependency injection
 export class ServiceFactory {
   private static authService: AuthService | null = null
@@ -87,7 +99,9 @@ export class ServiceFactory {
   private static serviceRequestService: ServiceRequestService | null = null
   private static dashboardService: DashboardService | null = null
   private static adminService: AdminService | null = null
+  private static paymentService: PaymentService | null = null
   private static adminServicePromise: Promise<AdminService> | null = null
+  private static paymentServicePromise: Promise<PaymentService> | null = null
 
   /**
    * Get singleton instance of AuthService
@@ -159,6 +173,41 @@ export class ServiceFactory {
   }
 
   /**
+   * Get singleton instance of PaymentService
+   * Note: PaymentService requires Stripe SDK, PaymentRepository, and ServiceRequestService
+   * Uses Promise-based lock to prevent race conditions in concurrent calls
+   */
+  static async getPaymentService(): Promise<PaymentService> {
+    // Return existing instance if available
+    if (this.paymentService) {
+      return this.paymentService
+    }
+
+    // If initialization is in progress, wait for it
+    if (this.paymentServicePromise) {
+      return this.paymentServicePromise
+    }
+
+    // Start new initialization with race condition protection
+    this.paymentServicePromise = (async () => {
+      // Dynamic imports to avoid circular dependencies
+      const { stripe } = await import("@/lib/stripe")
+      const { RepositoryFactory: RepoFactory } = await import("@/lib/repositories")
+      const paymentRepository = RepoFactory.getPaymentRepository()
+      const serviceRequestService = this.getServiceRequestService()
+      this.paymentService = new PaymentService(
+        stripe,
+        paymentRepository,
+        serviceRequestService
+      )
+      this.paymentServicePromise = null // Clear promise after completion
+      return this.paymentService
+    })()
+
+    return this.paymentServicePromise
+  }
+
+  /**
    * Reset all service instances (useful for testing)
    */
   static reset(): void {
@@ -167,6 +216,8 @@ export class ServiceFactory {
     this.serviceRequestService = null
     this.dashboardService = null
     this.adminService = null
+    this.paymentService = null
     this.adminServicePromise = null
+    this.paymentServicePromise = null
   }
 }

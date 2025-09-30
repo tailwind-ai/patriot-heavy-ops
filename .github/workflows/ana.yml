@@ -207,7 +207,7 @@ jobs:
     if: |
       (github.event_name == 'issue_comment' && contains(github.event.comment.body, 'Cursor Bugbot')) ||
       (github.event_name == 'pull_request_review' && 
-       github.event.review.user.login == 'cursor' &&
+       github.event.review.user.login == 'cursor[bot]' &&
        github.event.review.state == 'COMMENTED')
 
     steps:

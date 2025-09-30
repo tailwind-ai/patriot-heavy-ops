@@ -35,6 +35,15 @@ export {
   type UserWithAccounts
 } from "./user-repository"
 
+// Payment Repository
+export {
+  PaymentRepository,
+  type PaymentCreateInput,
+  type PaymentUpdateInput,
+  type PaymentWithServiceRequest,
+  type PaymentFilters
+} from "./payment-repository"
+
 /**
  * Repository Factory for dependency injection
  * Provides singleton instances and supports testing with mock databases
@@ -43,6 +52,7 @@ export class RepositoryFactory {
   private static serviceRequestRepository: ServiceRequestRepository | null =
     null
   private static userRepository: UserRepository | null = null
+  private static paymentRepository: PaymentRepository | null = null
   private static dbInstance: PrismaClient | null = null
 
   /**
@@ -84,6 +94,16 @@ export class RepositoryFactory {
   }
 
   /**
+   * Get singleton instance of PaymentRepository
+   */
+  static getPaymentRepository(): PaymentRepository {
+    if (!this.paymentRepository) {
+      this.paymentRepository = new PaymentRepository(this.getDatabase())
+    }
+    return this.paymentRepository
+  }
+
+  /**
    * Create new repository instances (useful for testing or custom configurations)
    */
   static createServiceRequestRepository(
@@ -100,12 +120,20 @@ export class RepositoryFactory {
     return new UserRepository(database || this.getDatabase(), options)
   }
 
+  static createPaymentRepository(
+    database?: PrismaClient,
+    options?: RepositoryOptions
+  ): PaymentRepository {
+    return new PaymentRepository(database || this.getDatabase(), options)
+  }
+
   /**
    * Reset all repository instances (useful for testing)
    */
   static reset(): void {
     this.serviceRequestRepository = null
     this.userRepository = null
+    this.paymentRepository = null
   }
 
   /**
@@ -115,6 +143,7 @@ export class RepositoryFactory {
     // Pre-create all repository instances
     this.getServiceRequestRepository()
     this.getUserRepository()
+    this.getPaymentRepository()
 
     // Test database connection
     try {
@@ -152,6 +181,7 @@ export class RepositoryFactory {
 import type { RepositoryOptions } from "./base-repository"
 import { ServiceRequestRepository } from "./service-request-repository"
 import { UserRepository } from "./user-repository"
+import { PaymentRepository } from "./payment-repository"
 import type { 
   ServiceRequestCreateInput
   // ServiceRequestUpdateInput - imported but not used, keeping for future use
@@ -160,6 +190,7 @@ import type {
   UserCreateInput, 
   UserUpdateInput 
 } from "./user-repository"
+// PaymentCreateInput - imported but not used, keeping for future use
 
 /**
  * Convenience functions for common repository operations
