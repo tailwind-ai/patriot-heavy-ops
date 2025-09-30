@@ -420,7 +420,8 @@ describe("Platform-Agnostic Validation Tests", () => {
 
       expect(result.success).toBe(false)
       expect(result.error?.code).toBe("USER_NOT_FOUND")
-      expect(result.error?.message).toBe("User not found")
+      // Now preserves the actual network error message
+      expect(result.error?.message).toBe("Network request failed")
     })
 
     it("should provide offline-capable business logic", () => {

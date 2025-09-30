@@ -144,7 +144,8 @@ describe("AuthService", () => {
 
       expect(result.success).toBe(false)
       expect(result.error?.code).toBe("AUTH_FAILED")
-      expect(result.error?.message).toBe("Authentication failed")
+      // Now preserves the original error message instead of generic fallback
+      expect(result.error?.message).toBe("Invalid credentials")
     })
 
     it("should fail authentication with invalid password", async () => {

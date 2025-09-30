@@ -11,6 +11,16 @@
  * - Single responsibility principle
  */
 
+import {
+  createAuthenticationError,
+  createAuthorizationError,
+  createDatabaseError,
+  createNetworkError,
+  createSystemError,
+  createValidationError,
+  StructuredError,
+} from '@/lib/types/errors';
+
 export interface ServiceError {
   code: string;
   message: string;
@@ -109,7 +119,123 @@ export abstract class BaseService {
   }
 
   /**
+   * Categorize error into structured error types
+   * Maps generic errors and Prisma errors to structured error categories
+   * 
+   * For backward compatibility:
+   * - Preserves original error.message when available
+   * - Uses error.name as code when it matches known patterns
+   * - Falls back to provided fallbackCode and fallbackMessage
+   */
+  protected categorizeError(error: unknown, fallbackCode: string, fallbackMessage: string): StructuredError {
+    const details = error instanceof Error 
+      ? { originalError: error.message, stack: error.stack }
+      : { originalError: String(error) };
+
+    // Determine the message to use: prefer original error message if available
+    const message = error instanceof Error && error.message ? error.message : fallbackMessage;
+
+    // Handle Prisma database errors
+    if (error && typeof error === 'object' && 'code' in error) {
+      const prismaError = error as { code?: string; meta?: unknown };
+      
+      // Prisma error codes: P2002 = Unique constraint, P2003 = Foreign key, P2025 = Not found, etc.
+      if (typeof prismaError.code === 'string' && prismaError.code.startsWith('P')) {
+        return createDatabaseError(
+          message,
+          `DB_${prismaError.code}`,
+          { ...details, prismaCode: prismaError.code, meta: prismaError.meta }
+        );
+      }
+    }
+
+    // Handle standard Error objects with specific names
+    if (error instanceof Error) {
+      // Authentication errors - check error name OR fallback code
+      if (
+        error.name === 'INVALID_CREDENTIALS' || 
+        error.name === 'TOKEN_EXPIRED' || 
+        error.name === 'INVALID_TOKEN' ||
+        fallbackCode === 'AUTH_FAILED' ||
+        fallbackCode === 'INVALID_CREDENTIALS' ||
+        fallbackCode === 'TOKEN_EXPIRED'
+      ) {
+        const code = (error.name === 'INVALID_CREDENTIALS' || error.name === 'TOKEN_EXPIRED' || error.name === 'INVALID_TOKEN') 
+          ? error.name 
+          : fallbackCode;
+        return createAuthenticationError(message, code, details);
+      }
+      
+      // NOT_FOUND errors - separate from authorization (resource doesn't exist vs. access denied)
+      if (error.name === 'NOT_FOUND' || fallbackCode === 'NOT_FOUND') {
+        const code = error.name === 'NOT_FOUND' ? error.name : fallbackCode;
+        // NOT_FOUND gets categorized as AuthorizationError for HTTP status mapping (404)
+        // but preserves NOT_FOUND code for proper routing logic
+        return createAuthorizationError(message, code, details);
+      }
+      
+      // Authorization errors - check error name OR fallback code
+      if (
+        error.name === 'ACCESS_DENIED' || 
+        error.name === 'INSUFFICIENT_PERMISSIONS' ||
+        fallbackCode === 'ACCESS_DENIED' ||
+        fallbackCode === 'INSUFFICIENT_PERMISSIONS' ||
+        fallbackCode === 'FORBIDDEN'
+      ) {
+        const code = (error.name === 'ACCESS_DENIED' || error.name === 'INSUFFICIENT_PERMISSIONS') 
+          ? error.name 
+          : fallbackCode;
+        return createAuthorizationError(message, code, details);
+      }
+      
+      // Validation errors - check error name OR fallback code
+      if (
+        error.name === 'VALIDATION_ERROR' || 
+        error.name === 'INVALID_INPUT' ||
+        fallbackCode === 'VALIDATION_ERROR' ||
+        fallbackCode === 'INVALID_INPUT'
+      ) {
+        const code = (error.name === 'VALIDATION_ERROR' || error.name === 'INVALID_INPUT') 
+          ? error.name 
+          : fallbackCode;
+        return createValidationError(message, code, details);
+      }
+      
+      // Database errors - check fallback code patterns
+      if (
+        fallbackCode.startsWith('DB_') ||
+        fallbackCode === 'DATABASE_ERROR' ||
+        fallbackCode === 'QUERY_ERROR'
+      ) {
+        return createDatabaseError(message, fallbackCode, details);
+      }
+      
+      // Network errors - check error name OR fallback code
+      if (
+        error.name === 'NETWORK_ERROR' || 
+        error.name === 'TIMEOUT' || 
+        error.name === 'CONNECTION_FAILED' ||
+        fallbackCode === 'NETWORK_ERROR' ||
+        fallbackCode === 'TIMEOUT' ||
+        fallbackCode === 'CONNECTION_FAILED'
+      ) {
+        const code = (error.name === 'NETWORK_ERROR' || error.name === 'TIMEOUT' || error.name === 'CONNECTION_FAILED') 
+          ? error.name 
+          : fallbackCode;
+        return createNetworkError(message, code, details);
+      }
+      
+      // System errors (catch-all for Error objects)
+      return createSystemError(message, fallbackCode, details);
+    }
+
+    // Fallback for non-Error objects
+    return createSystemError(fallbackMessage, fallbackCode, details);
+  }
+
+  /**
    * Handle async operations with standardized error handling
+   * Now with enhanced error categorization support
    */
   protected async handleAsync<T>(
     operation: () => Promise<T>,
@@ -120,19 +246,22 @@ export abstract class BaseService {
       const result = await operation();
       return this.createSuccess(result);
     } catch (error) {
-      const details = error instanceof Error 
-        ? { originalError: error.message, stack: error.stack }
-        : { originalError: String(error) };
-
-      // Check for specific error types
-      if (error instanceof Error && error.name === "ACCESS_DENIED") {
-        return this.createError<T>("ACCESS_DENIED", error.message, details);
-      }
-      if (error instanceof Error && error.name === "NOT_FOUND") {
-        return this.createError<T>("NOT_FOUND", error.message, details);
-      }
-
-      return this.createError<T>(errorCode, errorMessage, details);
+      // Use error categorization for structured error handling
+      const structuredError = this.categorizeError(error, errorCode, errorMessage);
+      
+      // Log the categorized error
+      this.logger.error(`${this.serviceName} Error [${structuredError.category}]: ${structuredError.message}`, {
+        code: structuredError.code,
+        severity: structuredError.severity,
+        retryable: structuredError.retryable,
+        details: structuredError.details,
+      });
+      
+      // Return as ServiceResult (backward compatible)
+      return {
+        success: false,
+        error: structuredError,
+      };
     }
   }
 
