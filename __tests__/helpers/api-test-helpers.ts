@@ -132,6 +132,15 @@ export function createMockUserContext(userId: string) {
 }
 
 /**
+ * Create mock route context for post routes (Next.js 15)
+ */
+export function createMockPostContext(postId: string) {
+  return {
+    params: Promise.resolve({ postId }),
+  }
+}
+
+/**
  * Helper to extract JSON from Response object
  */
 export async function getResponseJson(response: Response) {
