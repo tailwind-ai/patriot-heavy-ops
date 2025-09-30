@@ -15,7 +15,7 @@ export async function GET() {
   try {
     const session = await getServerSession(authOptions)
 
-    if (!session) {
+    if (!session || !session.user?.id) {
       return new Response("Unauthorized", { status: 403 })
     }
 
@@ -42,7 +42,7 @@ export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions)
 
-    if (!session) {
+    if (!session || !session.user?.id) {
       return new Response("Unauthorized", { status: 403 })
     }
 
@@ -70,7 +70,7 @@ export async function POST(req: Request) {
       data: {
         title: body.title,
         ...(body.content !== undefined && { content: body.content }),
-        authorId: session.user.id,
+        authorId: user.id,
       },
       select: {
         id: true,
