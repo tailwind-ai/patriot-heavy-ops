@@ -33,7 +33,8 @@ export async function GET(
     // Get query parameters
     const searchParams = req.nextUrl.searchParams
     const currentStatus = searchParams.get("status")
-    const role = searchParams.get("role") || user.role || "USER"
+    // SECURITY: Always use authenticated user's actual role, never trust query parameter
+    const role = user.role || "USER"
 
     if (!currentStatus) {
       return NextResponse.json(

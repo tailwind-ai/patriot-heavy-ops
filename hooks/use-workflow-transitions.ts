@@ -75,7 +75,8 @@ export function useWorkflowTransitions(
     setError(null)
 
     try {
-      const url = `/api/service-requests/${requestId}/transitions?status=${currentStatus}&role=${userRole}`
+      // Note: role parameter is not sent for security - server uses authenticated user's actual role
+      const url = `/api/service-requests/${requestId}/transitions?status=${currentStatus}`
       const response = await fetch(url, {
         method: "GET",
         headers: {

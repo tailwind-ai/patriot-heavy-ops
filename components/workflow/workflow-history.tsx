@@ -30,7 +30,7 @@ export type WorkflowHistoryEntry = {
   }
   reason: string | null
   notes: string | null
-  createdAt: Date
+  createdAt: Date | string
 }
 
 /**
@@ -154,7 +154,15 @@ export function WorkflowHistory({
                 {/* Timestamp */}
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Clock className="size-3" />
-                  <span>{formatDate(entry.createdAt?.toDateString() || "")}</span>
+                  <span>
+                    {entry.createdAt
+                      ? formatDate(
+                          typeof entry.createdAt === "string"
+                            ? entry.createdAt
+                            : entry.createdAt.toISOString()
+                        )
+                      : "Unknown date"}
+                  </span>
                 </div>
 
                 {/* Reason */}

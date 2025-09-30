@@ -88,7 +88,7 @@ describe("useWorkflowTransitions", () => {
       expect(result.current.transitions).toEqual(mockTransitions)
       expect(result.current.error).toBeNull()
       expect(global.fetch).toHaveBeenCalledWith(
-        "/api/service-requests/test-request-123/transitions?status=SUBMITTED&role=USER",
+        "/api/service-requests/test-request-123/transitions?status=SUBMITTED",
         expect.objectContaining({
           method: "GET",
           credentials: "include",
@@ -397,7 +397,7 @@ describe("useWorkflowTransitions", () => {
       })
 
       expect(global.fetch).toHaveBeenLastCalledWith(
-        "/api/service-requests/test-request-123/transitions?status=UNDER_REVIEW&role=USER",
+        "/api/service-requests/test-request-123/transitions?status=UNDER_REVIEW",
         expect.any(Object)
       )
     })

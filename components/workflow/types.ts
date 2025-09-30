@@ -39,7 +39,7 @@ export type StatusHistoryEntry = {
   }
   reason: string | null
   notes: string | null
-  createdAt: Date
+  createdAt: Date | string
 }
 
 /**
