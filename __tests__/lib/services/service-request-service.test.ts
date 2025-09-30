@@ -766,7 +766,10 @@ describe("ServiceRequestService", () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ;(mockDb as any).serviceRequest = undefined
 
-      const result = await service.deleteServiceRequest("request-123", "user-123")
+      const result = await service.deleteServiceRequest(
+        "request-123",
+        "user-123"
+      )
 
       expect(result.success).toBe(false)
       expect(result.error?.code).toBe("DATABASE_ERROR")
@@ -774,6 +777,312 @@ describe("ServiceRequestService", () => {
       // Restore
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ;(mockDb as any).serviceRequest = originalServiceRequest
+    })
+  })
+
+  describe("Workflow Engine - Role-Based Transition Permissions", () => {
+    describe("validateTransitionWithPermissions", () => {
+      it("should allow ADMIN to transition from any status to any valid status", () => {
+        const result = service.validateTransitionWithPermissions(
+          "SUBMITTED",
+          "UNDER_REVIEW",
+          "ADMIN"
+        )
+
+        expect(result.success).toBe(true)
+        expect(result.data?.isValid).toBe(true)
+        expect(result.data?.hasPermission).toBe(true)
+      })
+
+      it("should allow MANAGER to transition workflow statuses", () => {
+        const result = service.validateTransitionWithPermissions(
+          "UNDER_REVIEW",
+          "APPROVED",
+          "MANAGER"
+        )
+
+        expect(result.success).toBe(true)
+        expect(result.data?.isValid).toBe(true)
+        expect(result.data?.hasPermission).toBe(true)
+      })
+
+      it("should prevent MANAGER from transitioning payment statuses", () => {
+        const result = service.validateTransitionWithPermissions(
+          "INVOICED",
+          "PAYMENT_PENDING",
+          "MANAGER"
+        )
+
+        expect(result.success).toBe(true)
+        expect(result.data?.isValid).toBe(true)
+        expect(result.data?.hasPermission).toBe(false)
+        expect(result.data?.reason).toContain("MANAGER")
+      })
+
+      it("should prevent OPERATOR from transitioning administrative statuses", () => {
+        const result = service.validateTransitionWithPermissions(
+          "UNDER_REVIEW",
+          "APPROVED",
+          "OPERATOR"
+        )
+
+        expect(result.success).toBe(true)
+        expect(result.data?.hasPermission).toBe(false)
+        expect(result.data?.reason).toContain("OPERATOR")
+      })
+
+      it("should allow OPERATOR to update job progress statuses", () => {
+        const result = service.validateTransitionWithPermissions(
+          "JOB_SCHEDULED",
+          "JOB_IN_PROGRESS",
+          "OPERATOR"
+        )
+
+        expect(result.success).toBe(true)
+        expect(result.data?.isValid).toBe(true)
+        expect(result.data?.hasPermission).toBe(true)
+      })
+
+      it("should prevent USER from transitioning any status", () => {
+        const result = service.validateTransitionWithPermissions(
+          "SUBMITTED",
+          "CANCELLED",
+          "USER"
+        )
+
+        expect(result.success).toBe(true)
+        expect(result.data?.hasPermission).toBe(false)
+        expect(result.data?.reason).toContain("USER")
+      })
+
+      it("should validate status transition rules along with permissions", () => {
+        const result = service.validateTransitionWithPermissions(
+          "SUBMITTED",
+          "CLOSED",
+          "ADMIN"
+        )
+
+        expect(result.success).toBe(true)
+        expect(result.data?.hasPermission).toBe(true)
+        expect(result.data?.isValid).toBe(false) // Invalid transition
+        expect(result.data?.reason).toContain("Cannot transition")
+      })
+
+      it("should handle null/undefined fromStatus for initial submissions", () => {
+        const result = service.validateTransitionWithPermissions(
+          undefined,
+          "SUBMITTED",
+          "USER"
+        )
+
+        expect(result.success).toBe(true)
+        expect(result.data?.isValid).toBe(true)
+        expect(result.data?.hasPermission).toBe(true)
+      })
+
+      it("should reject unknown role types", () => {
+        const result = service.validateTransitionWithPermissions(
+          "SUBMITTED",
+          "UNDER_REVIEW",
+          "UNKNOWN_ROLE" as any
+        )
+
+        expect(result.success).toBe(true)
+        expect(result.data?.hasPermission).toBe(false)
+      })
+    })
+  })
+
+  describe("Workflow Engine - Status History", () => {
+    describe("getStatusHistory", () => {
+      it("should retrieve status history for a service request", async () => {
+        const { db } = await import("../../../lib/db")
+        const mockDb = db as {
+          serviceRequest: {
+            findUnique: jest.MockedFunction<any>
+          }
+        }
+
+        mockDb.serviceRequest.findUnique = jest.fn().mockResolvedValue({
+          id: "request-123",
+          statusHistory: [
+            {
+              id: "history-1",
+              serviceRequestId: "request-123",
+              fromStatus: null,
+              toStatus: "SUBMITTED",
+              changedBy: "user-123",
+              reason: null,
+              notes: null,
+              createdAt: new Date("2025-01-01"),
+            },
+            {
+              id: "history-2",
+              serviceRequestId: "request-123",
+              fromStatus: "SUBMITTED",
+              toStatus: "UNDER_REVIEW",
+              changedBy: "manager-123",
+              reason: "Standard review",
+              notes: "Looks good",
+              createdAt: new Date("2025-01-02"),
+            },
+          ],
+        })
+
+        const result = await service.getStatusHistory("request-123")
+
+        expect(result.success).toBe(true)
+        expect(result.data).toHaveLength(2)
+        expect(result.data?.[0]?.toStatus).toBe("SUBMITTED")
+        expect(result.data?.[1]?.toStatus).toBe("UNDER_REVIEW")
+      })
+
+      it("should handle service request not found", async () => {
+        const { db } = await import("../../../lib/db")
+        const mockDb = db as {
+          serviceRequest: {
+            findUnique: jest.MockedFunction<any>
+          }
+        }
+
+        mockDb.serviceRequest.findUnique = jest.fn().mockResolvedValue(null)
+
+        const result = await service.getStatusHistory("nonexistent")
+
+        expect(result.success).toBe(false)
+        expect(result.error?.code).toBe("NOT_FOUND")
+      })
+
+      it("should return empty array for request with no history", async () => {
+        const { db } = await import("../../../lib/db")
+        const mockDb = db as {
+          serviceRequest: {
+            findUnique: jest.MockedFunction<any>
+          }
+        }
+
+        mockDb.serviceRequest.findUnique = jest.fn().mockResolvedValue({
+          id: "request-123",
+          statusHistory: [],
+        })
+
+        const result = await service.getStatusHistory("request-123")
+
+        expect(result.success).toBe(true)
+        expect(result.data).toEqual([])
+      })
+
+      it("should handle database errors gracefully", async () => {
+        const { db } = await import("../../../lib/db")
+        const mockDb = db as {
+          serviceRequest: {
+            findUnique: jest.MockedFunction<any>
+          }
+        }
+
+        mockDb.serviceRequest.findUnique = jest
+          .fn()
+          .mockRejectedValue(new Error("Database connection failed"))
+
+        const result = await service.getStatusHistory("request-123")
+
+        expect(result.success).toBe(false)
+        expect(result.error?.code).toBe("DATABASE_ERROR")
+      })
+    })
+  })
+
+  describe("Workflow Engine - Business Rules", () => {
+    describe("canTransitionBasedOnBusinessRules", () => {
+      it("should prevent transition to DEPOSIT_REQUESTED without estimated cost", () => {
+        const result = service.canTransitionBasedOnBusinessRules(
+          "EQUIPMENT_CONFIRMED",
+          "DEPOSIT_REQUESTED",
+          {
+            estimatedCost: null,
+            depositAmount: null,
+          }
+        )
+
+        expect(result.success).toBe(true)
+        expect(result.data?.canTransition).toBe(false)
+        expect(result.data?.reasons).toContain(
+          "Estimated cost must be set before requesting deposit"
+        )
+      })
+
+      it("should prevent transition to JOB_SCHEDULED without start date", () => {
+        const result = service.canTransitionBasedOnBusinessRules(
+          "DEPOSIT_RECEIVED",
+          "JOB_SCHEDULED",
+          {
+            startDate: null,
+          }
+        )
+
+        expect(result.success).toBe(true)
+        expect(result.data?.canTransition).toBe(false)
+        expect(result.data?.reasons).toContain(
+          "Start date must be set before scheduling job"
+        )
+      })
+
+      it("should prevent transition to INVOICED without completed job", () => {
+        const result = service.canTransitionBasedOnBusinessRules(
+          "JOB_IN_PROGRESS",
+          "INVOICED",
+          {}
+        )
+
+        expect(result.success).toBe(true)
+        expect(result.data?.canTransition).toBe(false)
+        expect(result.data?.reasons).toContain(
+          "Job must be completed before invoicing"
+        )
+      })
+
+      it("should prevent transition to PAYMENT_RECEIVED without payment", () => {
+        const result = service.canTransitionBasedOnBusinessRules(
+          "PAYMENT_PENDING",
+          "PAYMENT_RECEIVED",
+          {
+            finalPaid: false,
+          }
+        )
+
+        expect(result.success).toBe(true)
+        expect(result.data?.canTransition).toBe(false)
+        expect(result.data?.reasons).toContain(
+          "Payment must be confirmed before marking as received"
+        )
+      })
+
+      it("should allow valid transitions when all business rules are met", () => {
+        const result = service.canTransitionBasedOnBusinessRules(
+          "EQUIPMENT_CONFIRMED",
+          "DEPOSIT_REQUESTED",
+          {
+            estimatedCost: 1000,
+            depositAmount: 300,
+          }
+        )
+
+        expect(result.success).toBe(true)
+        expect(result.data?.canTransition).toBe(true)
+        expect(result.data?.reasons).toEqual([])
+      })
+
+      it("should allow transitions that don't have special business rules", () => {
+        const result = service.canTransitionBasedOnBusinessRules(
+          "SUBMITTED",
+          "UNDER_REVIEW",
+          {}
+        )
+
+        expect(result.success).toBe(true)
+        expect(result.data?.canTransition).toBe(true)
+        expect(result.data?.reasons).toEqual([])
+      })
     })
   })
 })
