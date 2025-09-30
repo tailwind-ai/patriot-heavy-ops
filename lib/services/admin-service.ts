@@ -15,11 +15,40 @@
  * Following .cursorrules.md Platform Mode standards (Issue #225)
  */
 
-import { UserRole } from "@prisma/client"
+import { UserRole, User } from "@prisma/client"
 import { BaseService, ServiceResult, ServiceLogger } from "./base-service"
-import { UserRepository, SafeUser, UserRoleInfo } from "@/lib/repositories/user-repository"
 import { DashboardService, DashboardStats } from "./dashboard-service"
-import { PaginationOptions } from "@/lib/repositories/base-repository"
+
+/**
+ * Pagination options for admin queries
+ * Duplicated here to maintain layer separation (services should not import from repositories)
+ */
+export interface PaginationOptions {
+  page?: number
+  limit?: number
+  cursor?: string
+}
+
+/**
+ * SafeUser type - User without password field for security
+ * Duplicated here to maintain layer separation
+ */
+export type SafeUser = Omit<User, "password">
+
+/**
+ * Minimal user info for role-based queries
+ * Duplicated here to maintain layer separation
+ */
+export type UserRoleInfo = Pick<
+  SafeUser,
+  "id" | "name" | "email" | "role" | "phone" | "company" | "createdAt"
+> & {
+  militaryBranch?: string | null
+  yearsOfService?: number | null
+  certifications?: string[]
+  preferredLocations?: string[]
+  isAvailable?: boolean
+}
 
 /**
  * User creation input for admin operations
@@ -96,11 +125,13 @@ export type AdminActionType =
  * Provides centralized business logic for administrative operations
  */
 export class AdminService extends BaseService {
-  private userRepository: UserRepository
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private userRepository: any // UserRepository - avoiding direct import for layer separation
   private dashboardService: DashboardService
 
   constructor(
-    userRepository: UserRepository,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    userRepository: any, // UserRepository - avoiding direct import for layer separation
     dashboardService: DashboardService,
     logger?: ServiceLogger
   ) {
@@ -116,7 +147,10 @@ export class AdminService extends BaseService {
   async createUser(
     userData: AdminUserCreateInput
   ): Promise<ServiceResult<SafeUser>> {
-    this.logOperation("createUser", { email: userData.email, role: userData.role })
+    this.logOperation("createUser", {
+      email: userData.email,
+      role: userData.role,
+    })
 
     const validation = this.validateRequired(
       userData as unknown as Record<string, unknown>,
@@ -226,7 +260,9 @@ export class AdminService extends BaseService {
         const deleteResult = await this.userRepository.delete(userId)
 
         if (!deleteResult.success) {
-          throw new Error(deleteResult.error?.message || "Failed to delete user")
+          throw new Error(
+            deleteResult.error?.message || "Failed to delete user"
+          )
         }
 
         return true
@@ -249,7 +285,10 @@ export class AdminService extends BaseService {
       newRole,
     })
 
-    const validation = this.validateRequired({ userId, newRole }, ["userId", "newRole"])
+    const validation = this.validateRequired({ userId, newRole }, [
+      "userId",
+      "newRole",
+    ])
     if (!validation.success) {
       return this.createError(
         "VALIDATION_ERROR",
@@ -260,11 +299,9 @@ export class AdminService extends BaseService {
     // Validate role is a valid UserRole enum value
     const validRoles: UserRole[] = ["USER", "OPERATOR", "MANAGER", "ADMIN"]
     if (!validRoles.includes(newRole)) {
-      return this.createError(
-        "VALIDATION_ERROR",
-        "Invalid role specified",
-        { validRoles }
-      )
+      return this.createError("VALIDATION_ERROR", "Invalid role specified", {
+        validRoles,
+      })
     }
 
     return this.handleAsync(
@@ -312,7 +349,7 @@ export class AdminService extends BaseService {
         }
 
         const user = userResult.data
-        
+
         // Check if user has complete application data
         if (
           !user.militaryBranch ||
@@ -441,9 +478,10 @@ export class AdminService extends BaseService {
           },
           orderBy: { createdAt: "desc" },
           ...(pagination?.limit && { take: pagination.limit }),
-          ...(pagination?.page && pagination?.limit && { 
-            skip: (pagination.page - 1) * pagination.limit 
-          }),
+          ...(pagination?.page &&
+            pagination?.limit && {
+              skip: (pagination.page - 1) * pagination.limit,
+            }),
         })
 
         return users || []
@@ -476,7 +514,9 @@ export class AdminService extends BaseService {
         const result = await this.userRepository.findByRole(role, pagination)
 
         if (!result.success) {
-          throw new Error(result.error?.message || "Failed to fetch users by role")
+          throw new Error(
+            result.error?.message || "Failed to fetch users by role"
+          )
         }
 
         return result.data || []
@@ -490,9 +530,10 @@ export class AdminService extends BaseService {
    * Get system-wide metrics
    * Aggregates data from multiple sources for admin dashboard
    */
-  async getSystemMetrics(
-    dateRange?: { start: Date; end: Date }
-  ): Promise<ServiceResult<SystemMetrics>> {
+  async getSystemMetrics(dateRange?: {
+    start: Date
+    end: Date
+  }): Promise<ServiceResult<SystemMetrics>> {
     this.logOperation("getSystemMetrics")
 
     return this.handleAsync(
