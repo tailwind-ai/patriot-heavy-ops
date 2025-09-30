@@ -69,12 +69,24 @@ export {
   type CacheOptions,
 } from "./dashboard-service"
 
+// Admin management service
+import { AdminService } from "./admin-service"
+export {
+  AdminService,
+  type AdminUserCreateInput,
+  type AdminUserUpdateInput,
+  type SystemMetrics,
+  type UserMetrics,
+  type AdminActionType,
+} from "./admin-service"
+
 // Service factory for dependency injection
 export class ServiceFactory {
   private static authService: AuthService | null = null
   private static geocodingService: GeocodingService | null = null
   private static serviceRequestService: ServiceRequestService | null = null
   private static dashboardService: DashboardService | null = null
+  private static adminService: AdminService | null = null
 
   /**
    * Get singleton instance of AuthService
@@ -117,6 +129,20 @@ export class ServiceFactory {
   }
 
   /**
+   * Get singleton instance of AdminService
+   * Note: AdminService requires UserRepository and DashboardService
+   */
+  static async getAdminService(): Promise<AdminService> {
+    if (!this.adminService) {
+      const { RepositoryFactory } = await import("@/lib/repositories")
+      const userRepository = RepositoryFactory.getUserRepository()
+      const dashboardService = this.getDashboardService()
+      this.adminService = new AdminService(userRepository, dashboardService)
+    }
+    return this.adminService
+  }
+
+  /**
    * Reset all service instances (useful for testing)
    */
   static reset(): void {
@@ -124,5 +150,6 @@ export class ServiceFactory {
     this.geocodingService = null
     this.serviceRequestService = null
     this.dashboardService = null
+    this.adminService = null
   }
 }
