@@ -87,6 +87,14 @@ export async function POST(
     // Get admin service instance
     const adminService = await ServiceFactory.getAdminService()
 
+    // Get user's current role before changing it (for accurate audit logging)
+    const { RepositoryFactory } = await import("@/lib/repositories")
+    const userRepository = RepositoryFactory.getUserRepository()
+    const currentUserResult = await userRepository.findById(userId)
+    const previousRole = currentUserResult.success && currentUserResult.data
+      ? currentUserResult.data.role
+      : "unknown"
+
     // Change user role using service layer
     const result = await adminService.changeUserRole(
       userId,
@@ -106,7 +114,7 @@ export async function POST(
       )
     }
 
-    // Log admin action for audit trail
+    // Log admin action for audit trail with correct previousRole
     adminService.logAdminAction(
       authResult.user.id,
       "USER_ROLE_CHANGED",
@@ -114,7 +122,7 @@ export async function POST(
       {
         operation: "change_user_role",
         newRole: role,
-        previousRole: result.data?.role,
+        previousRole,
       }
     )
 

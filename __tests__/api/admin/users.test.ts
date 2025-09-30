@@ -334,7 +334,7 @@ describe("GET /api/admin/users", () => {
       // Assert
       expect(mockAdminService.logAdminAction).toHaveBeenCalledWith(
         "admin-1",
-        "SYSTEM_METRICS_ACCESSED",
+        "USERS_LISTED",
         undefined,
         expect.objectContaining({
           operation: "list_users_by_role",

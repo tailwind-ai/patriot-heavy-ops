@@ -106,7 +106,7 @@ export async function GET(req: NextRequest) {
     // Log admin action for audit trail
     adminService.logAdminAction(
       authResult.user.id,
-      "SYSTEM_METRICS_ACCESSED",
+      "OPERATOR_APPLICATIONS_LISTED",
       undefined,
       {
         operation: "list_pending_operator_applications",

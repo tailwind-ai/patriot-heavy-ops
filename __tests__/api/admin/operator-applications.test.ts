@@ -1,6 +1,6 @@
 /**
  * Admin Operator Applications API Route Tests
- * 
+ *
  * Tests GET /api/admin/operator-applications endpoint following TDD principles
  * Following .cursorrules.md Platform Mode standards (Issue #226)
  */
@@ -12,13 +12,17 @@ import { createMockRequest } from "@/__tests__/helpers/api-test-helpers"
 jest.mock("@/lib/middleware/mobile-auth")
 jest.mock("@/lib/services")
 
-const mockAuthenticateRequest = jest.requireMock("@/lib/middleware/mobile-auth").authenticateRequest
+const mockAuthenticateRequest = jest.requireMock(
+  "@/lib/middleware/mobile-auth"
+).authenticateRequest
 const mockHasRole = jest.requireMock("@/lib/middleware/mobile-auth").hasRole
 const mockServiceFactory = jest.requireMock("@/lib/services").ServiceFactory
 
 // Mock admin service type
 type MockAdminService = {
-  getPendingOperatorApplications: jest.MockedFunction<(pagination?: unknown) => Promise<unknown>>
+  getPendingOperatorApplications: jest.MockedFunction<
+    (pagination?: unknown) => Promise<unknown>
+  >
   logAdminAction: jest.MockedFunction<(...args: unknown[]) => void>
 }
 
@@ -36,10 +40,12 @@ describe("GET /api/admin/operator-applications", () => {
     mockServiceFactory.getAdminService.mockResolvedValue(mockAdminService)
 
     // Setup hasRole mock
-    mockHasRole.mockImplementation((user: { role?: string } | undefined, role: string) => {
-      if (!user?.role) return false
-      return user.role === role
-    })
+    mockHasRole.mockImplementation(
+      (user: { role?: string } | undefined, role: string) => {
+        if (!user?.role) return false
+        return user.role === role
+      }
+    )
   })
 
   const createOperatorAppsRequest = (params: Record<string, string> = {}) => {
@@ -55,7 +61,7 @@ describe("GET /api/admin/operator-applications", () => {
       // Arrange
       mockAuthenticateRequest.mockResolvedValue({
         isAuthenticated: false,
-        error: "No valid authentication found"
+        error: "No valid authentication found",
       })
 
       // Act
@@ -69,11 +75,15 @@ describe("GET /api/admin/operator-applications", () => {
 
     it("should return 403 for non-admin user", async () => {
       // Arrange
-      const mockUser = { id: "mgr-1", email: "manager@test.com", role: "MANAGER" }
+      const mockUser = {
+        id: "mgr-1",
+        email: "manager@test.com",
+        role: "MANAGER",
+      }
       mockAuthenticateRequest.mockResolvedValue({
         isAuthenticated: true,
         user: mockUser,
-        authMethod: "session"
+        authMethod: "session",
       })
 
       // Act
@@ -92,14 +102,16 @@ describe("GET /api/admin/operator-applications", () => {
       mockAuthenticateRequest.mockResolvedValue({
         isAuthenticated: true,
         user: mockUser,
-        authMethod: "session"
+        authMethod: "session",
       })
       mockHasRole.mockReturnValue(true)
     })
 
     it("should return 422 for invalid limit parameter", async () => {
       // Act
-      const response = await GET(createOperatorAppsRequest({ limit: "invalid" }))
+      const response = await GET(
+        createOperatorAppsRequest({ limit: "invalid" })
+      )
       const data = await response.json()
 
       // Assert
@@ -121,20 +133,24 @@ describe("GET /api/admin/operator-applications", () => {
       // Arrange
       mockAdminService.getPendingOperatorApplications.mockResolvedValue({
         success: true,
-        data: []
+        data: [],
       })
 
       // Act
-      const response = await GET(createOperatorAppsRequest({ 
-        limit: "20",
-        page: "2"
-      }))
+      const response = await GET(
+        createOperatorAppsRequest({
+          limit: "20",
+          page: "2",
+        })
+      )
 
       // Assert
       expect(response.status).toBe(200)
-      expect(mockAdminService.getPendingOperatorApplications).toHaveBeenCalledWith({
+      expect(
+        mockAdminService.getPendingOperatorApplications
+      ).toHaveBeenCalledWith({
         limit: 20,
-        page: 2
+        page: 2,
       })
     })
   })
@@ -145,7 +161,7 @@ describe("GET /api/admin/operator-applications", () => {
       mockAuthenticateRequest.mockResolvedValue({
         isAuthenticated: true,
         user: mockUser,
-        authMethod: "session"
+        authMethod: "session",
       })
       mockHasRole.mockReturnValue(true)
     })
@@ -162,7 +178,7 @@ describe("GET /api/admin/operator-applications", () => {
           yearsOfService: 8,
           certifications: ["Heavy Equipment", "Excavator"],
           preferredLocations: ["Florida", "Georgia"],
-          createdAt: new Date()
+          createdAt: new Date(),
         },
         {
           id: "user-2",
@@ -173,13 +189,13 @@ describe("GET /api/admin/operator-applications", () => {
           yearsOfService: 12,
           certifications: ["CDL", "Crane Operator"],
           preferredLocations: ["Texas"],
-          createdAt: new Date()
-        }
+          createdAt: new Date(),
+        },
       ]
 
       mockAdminService.getPendingOperatorApplications.mockResolvedValue({
         success: true,
-        data: mockApplications
+        data: mockApplications,
       })
 
       // Act
@@ -194,16 +210,19 @@ describe("GET /api/admin/operator-applications", () => {
         email: "applicant1@test.com",
         role: "USER",
         militaryBranch: "Navy",
-        yearsOfService: 8
+        yearsOfService: 8,
       })
-      expect(data.data[0].certifications).toEqual(["Heavy Equipment", "Excavator"])
+      expect(data.data[0].certifications).toEqual([
+        "Heavy Equipment",
+        "Excavator",
+      ])
     })
 
     it("should use default pagination", async () => {
       // Arrange
       mockAdminService.getPendingOperatorApplications.mockResolvedValue({
         success: true,
-        data: []
+        data: [],
       })
 
       // Act
@@ -214,11 +233,13 @@ describe("GET /api/admin/operator-applications", () => {
       expect(response.status).toBe(200)
       expect(data.meta).toMatchObject({
         limit: 50,
-        page: 1
+        page: 1,
       })
-      expect(mockAdminService.getPendingOperatorApplications).toHaveBeenCalledWith({
+      expect(
+        mockAdminService.getPendingOperatorApplications
+      ).toHaveBeenCalledWith({
         limit: 50,
-        page: 1
+        page: 1,
       })
     })
 
@@ -226,7 +247,7 @@ describe("GET /api/admin/operator-applications", () => {
       // Arrange
       mockAdminService.getPendingOperatorApplications.mockResolvedValue({
         success: true,
-        data: []
+        data: [],
       })
 
       // Act
@@ -235,10 +256,10 @@ describe("GET /api/admin/operator-applications", () => {
       // Assert
       expect(mockAdminService.logAdminAction).toHaveBeenCalledWith(
         "admin-1",
-        "SYSTEM_METRICS_ACCESSED",
+        "OPERATOR_APPLICATIONS_LISTED",
         undefined,
         expect.objectContaining({
-          operation: "list_pending_operator_applications"
+          operation: "list_pending_operator_applications",
         })
       )
     })
@@ -247,7 +268,7 @@ describe("GET /api/admin/operator-applications", () => {
       // Arrange
       mockAdminService.getPendingOperatorApplications.mockResolvedValue({
         success: true,
-        data: []
+        data: [],
       })
 
       // Act
@@ -267,7 +288,7 @@ describe("GET /api/admin/operator-applications", () => {
       mockAuthenticateRequest.mockResolvedValue({
         isAuthenticated: true,
         user: mockUser,
-        authMethod: "session"
+        authMethod: "session",
       })
       mockHasRole.mockReturnValue(true)
     })
@@ -276,7 +297,7 @@ describe("GET /api/admin/operator-applications", () => {
       // Arrange
       mockAdminService.getPendingOperatorApplications.mockResolvedValue({
         success: false,
-        error: { message: "Database connection failed" }
+        error: { message: "Database connection failed" },
       })
 
       // Act
@@ -310,12 +331,12 @@ describe("GET /api/admin/operator-applications", () => {
       mockAuthenticateRequest.mockResolvedValue({
         isAuthenticated: true,
         user: mockUser,
-        authMethod: "session"
+        authMethod: "session",
       })
       mockHasRole.mockReturnValue(true)
       mockAdminService.getPendingOperatorApplications.mockResolvedValue({
         success: true,
-        data: []
+        data: [],
       })
     })
 
@@ -324,7 +345,9 @@ describe("GET /api/admin/operator-applications", () => {
       const response = await GET(createOperatorAppsRequest())
 
       // Assert
-      expect(response.headers.get("Cache-Control")).toBe("no-cache, no-store, must-revalidate")
+      expect(response.headers.get("Cache-Control")).toBe(
+        "no-cache, no-store, must-revalidate"
+      )
     })
 
     it("should include security headers", async () => {
