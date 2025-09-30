@@ -87,6 +87,7 @@ export class ServiceFactory {
   private static serviceRequestService: ServiceRequestService | null = null
   private static dashboardService: DashboardService | null = null
   private static adminService: AdminService | null = null
+  private static adminServicePromise: Promise<AdminService> | null = null
 
   /**
    * Get singleton instance of AuthService
@@ -131,15 +132,30 @@ export class ServiceFactory {
   /**
    * Get singleton instance of AdminService
    * Note: AdminService requires UserRepository and DashboardService
+   * Uses Promise-based lock to prevent race conditions in concurrent calls
    */
   static async getAdminService(): Promise<AdminService> {
-    if (!this.adminService) {
+    // Return existing instance if available
+    if (this.adminService) {
+      return this.adminService
+    }
+
+    // If initialization is in progress, wait for it
+    if (this.adminServicePromise) {
+      return this.adminServicePromise
+    }
+
+    // Start new initialization with race condition protection
+    this.adminServicePromise = (async () => {
       const { RepositoryFactory } = await import("@/lib/repositories")
       const userRepository = RepositoryFactory.getUserRepository()
       const dashboardService = this.getDashboardService()
       this.adminService = new AdminService(userRepository, dashboardService)
-    }
-    return this.adminService
+      this.adminServicePromise = null // Clear promise after completion
+      return this.adminService
+    })()
+
+    return this.adminServicePromise
   }
 
   /**
@@ -151,5 +167,6 @@ export class ServiceFactory {
     this.serviceRequestService = null
     this.dashboardService = null
     this.adminService = null
+    this.adminServicePromise = null
   }
 }

@@ -806,4 +806,81 @@ describe("AdminService", () => {
       )
     })
   })
+
+  describe("database connection failures", () => {
+    beforeEach(() => {
+      // Mock db as undefined for these tests
+      jest.resetModules()
+      jest.doMock("@/lib/db", () => ({
+        db: undefined,
+      }))
+    })
+
+    afterEach(() => {
+      jest.resetModules()
+    })
+
+    it("should throw error when db is undefined in deleteUser", async () => {
+      // Mock user exists
+      mockDb.user.findUnique.mockResolvedValue({
+        id: "user-123",
+        email: "test@example.com",
+        name: "Test User",
+        role: "USER",
+      })
+
+      const result = await adminService.deleteUser("user-123")
+
+      expect(result.success).toBe(false)
+      expect(result.error?.message).toContain(
+        "Database connection not available"
+      )
+    })
+
+    it("should throw error when db is undefined in rejectOperatorApplication", async () => {
+      // Mock user exists
+      mockDb.user.findUnique.mockResolvedValue({
+        id: "user-123",
+        email: "operator@example.com",
+        name: "Operator",
+        role: "USER",
+        militaryBranch: "Army",
+        yearsOfService: 5,
+      })
+
+      const result = await adminService.rejectOperatorApplication("user-123")
+
+      expect(result.success).toBe(false)
+      expect(result.error?.message).toContain(
+        "Database connection not available"
+      )
+    })
+
+    it("should throw error when db is undefined in getPendingOperatorApplications", async () => {
+      const result = await adminService.getPendingOperatorApplications()
+
+      expect(result.success).toBe(false)
+      expect(result.error?.message).toContain(
+        "Database connection not available"
+      )
+    })
+
+    it("should throw error when db is undefined in getSystemMetrics", async () => {
+      const result = await adminService.getSystemMetrics()
+
+      expect(result.success).toBe(false)
+      expect(result.error?.message).toContain(
+        "Database connection not available"
+      )
+    })
+
+    it("should throw error when db is undefined in getUserMetrics", async () => {
+      const result = await adminService.getUserMetrics()
+
+      expect(result.success).toBe(false)
+      expect(result.error?.message).toContain(
+        "Database connection not available"
+      )
+    })
+  })
 })

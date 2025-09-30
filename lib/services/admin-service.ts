@@ -239,7 +239,11 @@ export class AdminService extends BaseService {
 
         // Check for active service requests
         const { db } = await import("@/lib/db")
-        const activeRequestsCount = await db?.serviceRequest.count({
+        if (!db) {
+          throw new Error("Database connection not available")
+        }
+
+        const activeRequestsCount = await db.serviceRequest.count({
           where: {
             userId,
             status: {
@@ -248,7 +252,7 @@ export class AdminService extends BaseService {
           },
         })
 
-        if (activeRequestsCount && activeRequestsCount > 0) {
+        if (activeRequestsCount > 0) {
           const error = new Error(
             `Cannot delete user with ${activeRequestsCount} active service requests. Please close all requests first.`
           )
@@ -416,7 +420,11 @@ export class AdminService extends BaseService {
         // Note: We can't set fields to null/undefined with exactOptionalPropertyTypes
         // Instead, we clear arrays and use update to overwrite with empty values
         const { db } = await import("@/lib/db")
-        await db?.user.update({
+        if (!db) {
+          throw new Error("Database connection not available")
+        }
+
+        await db.user.update({
           where: { id: userId },
           data: {
             militaryBranch: null,
@@ -455,8 +463,11 @@ export class AdminService extends BaseService {
     return this.handleAsync(
       async () => {
         const { db } = await import("@/lib/db")
+        if (!db) {
+          throw new Error("Database connection not available")
+        }
 
-        const users = await db?.user.findMany({
+        const users = await db.user.findMany({
           where: {
             role: "USER",
             militaryBranch: { not: null },
@@ -484,7 +495,7 @@ export class AdminService extends BaseService {
             }),
         })
 
-        return users || []
+        return users
       },
       "PENDING_APPLICATIONS_ERROR",
       "Failed to fetch pending operator applications"
@@ -539,17 +550,20 @@ export class AdminService extends BaseService {
     return this.handleAsync(
       async () => {
         const { db } = await import("@/lib/db")
+        if (!db) {
+          throw new Error("Database connection not available")
+        }
 
         // Get total user count
-        const totalUsers = (await db?.user.count()) || 0
+        const totalUsers = await db.user.count()
 
         // Get user counts by role
         const [userCount, operatorCount, managerCount, adminCount] =
           await Promise.all([
-            db?.user.count({ where: { role: "USER" } }),
-            db?.user.count({ where: { role: "OPERATOR" } }),
-            db?.user.count({ where: { role: "MANAGER" } }),
-            db?.user.count({ where: { role: "ADMIN" } }),
+            db.user.count({ where: { role: "USER" } }),
+            db.user.count({ where: { role: "OPERATOR" } }),
+            db.user.count({ where: { role: "MANAGER" } }),
+            db.user.count({ where: { role: "ADMIN" } }),
           ])
 
         // Get service request stats from DashboardService
@@ -561,10 +575,10 @@ export class AdminService extends BaseService {
         return {
           totalUsers,
           usersByRole: {
-            USER: userCount || 0,
-            OPERATOR: operatorCount || 0,
-            MANAGER: managerCount || 0,
-            ADMIN: adminCount || 0,
+            USER: userCount,
+            OPERATOR: operatorCount,
+            MANAGER: managerCount,
+            ADMIN: adminCount,
           },
           serviceRequests: serviceStats,
         }
@@ -584,39 +598,41 @@ export class AdminService extends BaseService {
     return this.handleAsync(
       async () => {
         const { db } = await import("@/lib/db")
+        if (!db) {
+          throw new Error("Database connection not available")
+        }
 
         // Get total user count
-        const totalUsers = (await db?.user.count()) || 0
+        const totalUsers = await db.user.count()
 
         // Get user counts by role
         const [userCount, operatorCount, managerCount, adminCount] =
           await Promise.all([
-            db?.user.count({ where: { role: "USER" } }),
-            db?.user.count({ where: { role: "OPERATOR" } }),
-            db?.user.count({ where: { role: "MANAGER" } }),
-            db?.user.count({ where: { role: "ADMIN" } }),
+            db.user.count({ where: { role: "USER" } }),
+            db.user.count({ where: { role: "OPERATOR" } }),
+            db.user.count({ where: { role: "MANAGER" } }),
+            db.user.count({ where: { role: "ADMIN" } }),
           ])
 
         // Get new users in last 30 days
         const thirtyDaysAgo = new Date()
         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
 
-        const newUsersLast30Days =
-          (await db?.user.count({
-            where: {
-              createdAt: {
-                gte: thirtyDaysAgo,
-              },
+        const newUsersLast30Days = await db.user.count({
+          where: {
+            createdAt: {
+              gte: thirtyDaysAgo,
             },
-          })) || 0
+          },
+        })
 
         return {
           totalUsers,
           usersByRole: {
-            USER: userCount || 0,
-            OPERATOR: operatorCount || 0,
-            MANAGER: managerCount || 0,
-            ADMIN: adminCount || 0,
+            USER: userCount,
+            OPERATOR: operatorCount,
+            MANAGER: managerCount,
+            ADMIN: adminCount,
           },
           newUsersLast30Days,
         }
