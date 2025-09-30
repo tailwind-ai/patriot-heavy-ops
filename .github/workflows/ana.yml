@@ -247,32 +247,29 @@ jobs:
               const prNumber = context.payload.pull_request.number;
               
               console.log(`Found Cursor Bugbot review on PR #${prNumber}, Review ID: ${review.id}`);
-              return { 
-                is_valid: true, 
-                pr_number: prNumber.toString(),
-                review_id: review.id.toString(),
-                event_type: 'review'
-              };
+              core.setOutput('is_valid', 'true');
+              core.setOutput('pr_number', prNumber.toString());
+              core.setOutput('review_id', review.id.toString());
+              core.setOutput('event_type', 'review');
             } else if (context.eventName === 'issue_comment') {
               // Handle legacy issue_comment event (backward compatibility)
               if (!context.payload.issue.pull_request) {
                 console.log("Comment is not on a PR, skipping");
-                return { is_valid: false };
+                core.setOutput('is_valid', 'false');
+                return;
               }
 
               const prNumber = context.payload.issue.number;
               const commentId = context.payload.comment.id;
               
               console.log(`Found Cursor Bugbot comment on PR #${prNumber}, Comment ID: ${commentId}`);
-              return { 
-                is_valid: true, 
-                pr_number: prNumber.toString(),
-                comment_id: commentId.toString(),
-                event_type: 'comment'
-              };
+              core.setOutput('is_valid', 'true');
+              core.setOutput('pr_number', prNumber.toString());
+              core.setOutput('comment_id', commentId.toString());
+              core.setOutput('event_type', 'comment');
             } else {
               console.log("Unknown event type, skipping");
-              return { is_valid: false };
+              core.setOutput('is_valid', 'false');
             }
 
       - name: Analyze Cursor Bugbot review and send to Tod webhook
