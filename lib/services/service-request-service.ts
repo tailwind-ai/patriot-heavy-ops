@@ -1298,7 +1298,12 @@ export class ServiceRequestService extends BaseService {
     }
 
     // Check if role can transition to this status
-    const hasPermission = permissions.allowedStatuses?.includes(toStatus) ?? false
+    let hasPermission = permissions.allowedStatuses?.includes(toStatus) ?? false
+
+    // Special case: USER can only transition to SUBMITTED for initial submissions (no fromStatus)
+    if (userRole === "USER" && toStatus === "SUBMITTED" && fromStatus !== undefined) {
+      hasPermission = false
+    }
 
     return this.createSuccess({
       fromStatus,
@@ -1375,7 +1380,7 @@ export class ServiceRequestService extends BaseService {
 
     // Business rule: Cannot request deposit without estimated cost
     if (toStatus === "DEPOSIT_REQUESTED") {
-      if (!requestData?.estimatedCost) {
+      if (requestData?.estimatedCost === null || requestData?.estimatedCost === undefined) {
         reasons.push("Estimated cost must be set before requesting deposit")
       }
     }

@@ -890,6 +890,32 @@ describe("ServiceRequestService", () => {
         expect(result.success).toBe(true)
         expect(result.data?.hasPermission).toBe(false)
       })
+
+      it("should prevent USER from reverting existing request to SUBMITTED", () => {
+        // Bug fix: USER can only transition to SUBMITTED for initial submissions
+        const result = service.validateTransitionWithPermissions(
+          "UNDER_REVIEW", // Existing status
+          "SUBMITTED",
+          "USER"
+        )
+
+        expect(result.success).toBe(true)
+        expect(result.data?.hasPermission).toBe(false)
+        expect(result.data?.reason).toContain("USER")
+      })
+
+      it("should allow USER to transition to SUBMITTED only for initial submission", () => {
+        // USER can only submit when fromStatus is undefined (new request)
+        const result = service.validateTransitionWithPermissions(
+          undefined, // No previous status
+          "SUBMITTED",
+          "USER"
+        )
+
+        expect(result.success).toBe(true)
+        expect(result.data?.hasPermission).toBe(true)
+        expect(result.data?.isValid).toBe(true)
+      })
     })
   })
 
@@ -1082,6 +1108,54 @@ describe("ServiceRequestService", () => {
         expect(result.success).toBe(true)
         expect(result.data?.canTransition).toBe(true)
         expect(result.data?.reasons).toEqual([])
+      })
+
+      it("should allow zero estimated cost for free services", () => {
+        // Bug fix: 0 is a valid cost, should not be treated as falsy
+        const result = service.canTransitionBasedOnBusinessRules(
+          "EQUIPMENT_CONFIRMED",
+          "DEPOSIT_REQUESTED",
+          {
+            estimatedCost: 0, // Free service
+            depositAmount: 0,
+          }
+        )
+
+        expect(result.success).toBe(true)
+        expect(result.data?.canTransition).toBe(true)
+        expect(result.data?.reasons).toEqual([])
+      })
+
+      it("should prevent deposit request when estimatedCost is null", () => {
+        const result = service.canTransitionBasedOnBusinessRules(
+          "EQUIPMENT_CONFIRMED",
+          "DEPOSIT_REQUESTED",
+          {
+            estimatedCost: null, // Not set
+          }
+        )
+
+        expect(result.success).toBe(true)
+        expect(result.data?.canTransition).toBe(false)
+        expect(result.data?.reasons).toContain(
+          "Estimated cost must be set before requesting deposit"
+        )
+      })
+
+      it("should prevent deposit request when estimatedCost is undefined", () => {
+        const result = service.canTransitionBasedOnBusinessRules(
+          "EQUIPMENT_CONFIRMED",
+          "DEPOSIT_REQUESTED",
+          {
+            // estimatedCost not provided
+          }
+        )
+
+        expect(result.success).toBe(true)
+        expect(result.data?.canTransition).toBe(false)
+        expect(result.data?.reasons).toContain(
+          "Estimated cost must be set before requesting deposit"
+        )
       })
     })
   })
