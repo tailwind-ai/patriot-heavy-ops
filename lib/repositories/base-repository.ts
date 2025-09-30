@@ -9,6 +9,11 @@
  * - Testable with mocked database operations
  * - Consistent error handling and logging
  * - Support for offline-first mobile patterns
+ * 
+ * ADVANCED TYPE SAFETY (Issue #321):
+ * - Supports Prisma.ModelGetPayload patterns for type-safe queries
+ * - Generic type helpers for complex query construction
+ * - Automatic schema synchronization through Prisma-generated types
  */
 
 import { PrismaClient } from "@prisma/client"
@@ -301,4 +306,72 @@ export interface CrudRepository<T, CreateInput, UpdateInput> {
   update(id: string, data: UpdateInput): Promise<RepositoryResult<T>>
   delete(id: string): Promise<RepositoryResult<boolean>>
   count(filters?: FilterOptions): Promise<RepositoryResult<number>>
+}
+
+/**
+ * Type Helper Utilities for Advanced Prisma Patterns (Issue #321)
+ * 
+ * These utility types help construct type-safe Prisma queries with proper payload types.
+ */
+
+/**
+ * Helper type to extract the payload type from a Prisma model with specific select/include
+ * 
+ * @example
+ * ```typescript
+ * type UserWithAccounts = PrismaPayload<
+ *   Prisma.UserDelegate,
+ *   { include: { accounts: true } }
+ * >
+ * ```
+ */
+export type PrismaPayload<
+  TDelegate,
+  TArgs extends Record<string, unknown>
+> = TDelegate extends {
+  findUnique: (args: { select?: TArgs["select"]; include?: TArgs["include"] }) => Promise<infer TResult>
+}
+  ? TResult
+  : never
+
+/**
+ * Helper type for constructing type-safe select clauses
+ * 
+ * This type ensures that select clauses are properly typed and match the model structure.
+ * Using this pattern helps catch typos and schema mismatches at compile time.
+ * 
+ * @example
+ * ```typescript
+ * const userSelect: SelectClause<Prisma.UserSelect> = {
+ *   id: true,
+ *   name: true,
+ *   email: true,
+ *   // TypeScript will error if you add a non-existent field
+ * }
+ * ```
+ */
+export type SelectClause<T> = {
+  [K in keyof T]?: T[K]
+}
+
+/**
+ * Helper type for constructing type-safe include clauses with nested relations
+ * 
+ * This type ensures that include clauses properly handle nested relations
+ * and maintain type safety throughout the query structure.
+ * 
+ * @example
+ * ```typescript
+ * const serviceRequestInclude: IncludeClause<Prisma.ServiceRequestInclude> = {
+ *   user: { select: { name: true, email: true } },
+ *   userAssignments: { include: { operator: true } },
+ * }
+ * ```
+ */
+export type IncludeClause<T> = {
+  [K in keyof T]?: T[K] extends boolean
+    ? boolean
+    : T[K] extends Record<string, unknown>
+    ? T[K]
+    : never
 }
