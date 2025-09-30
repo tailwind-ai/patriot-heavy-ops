@@ -12,3 +12,10 @@ yarn-error.log*
 # Generated files that cause merge conflicts
 coverage/
 tsconfig.tsbuildinfo
+
+# Ana/Tod debugging files
+ANA-*.md
+TEST-COVERAGE-*.md
+
+# Cursor IDE configs
+.cursor/
