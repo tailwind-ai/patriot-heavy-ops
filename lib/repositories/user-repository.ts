@@ -32,7 +32,7 @@ import {
 /**
  * SafeUser type - User without password field for security
  * Following .cursorrules.md Platform Mode type safety standards
- * 
+ *
  * SECURITY NOTE: This explicit Omit type is maintained per .cursorrules.md line 191
  * "Security exceptions: Keep explicit Omit types for password exclusion"
  */
@@ -40,11 +40,11 @@ export type SafeUser = Omit<User, "password">
 
 /**
  * SafeUser with accounts relation using Prisma.UserGetPayload for type safety
- * 
+ *
  * This type uses Prisma-generated types to ensure automatic synchronization with schema changes.
  * The Prisma.UserGetPayload pattern provides compile-time guarantees that the select clause
  * matches the actual database schema and relations.
- * 
+ *
  * @example
  * ```typescript
  * const user: SafeUserWithAccounts = await userRepo.findById("user123")
@@ -88,10 +88,16 @@ export type SafeUserWithAccounts = Omit<
 >
 
 /**
- * Minimal user info for role-based queries using Prisma.UserGetPayload
- * 
- * This type precisely matches the fields selected in findByRole queries.
- * Using Prisma.UserGetPayload ensures the type automatically updates if the query changes.
+ * Minimal user info for role-based queries
+ *
+ * This type uses a base Prisma.UserGetPayload for core fields, with operator-specific
+ * fields marked as optional since they are only included when role === "OPERATOR".
+ *
+ * The findByRole query conditionally includes operator fields:
+ * - For OPERATOR role: includes militaryBranch, yearsOfService, certifications, etc.
+ * - For other roles: these fields are undefined
+ *
+ * @see findByRole method for conditional field selection logic
  */
 export type UserRoleInfo = Omit<
   Prisma.UserGetPayload<{
@@ -103,19 +109,21 @@ export type UserRoleInfo = Omit<
       phone: true
       company: true
       createdAt: true
-      militaryBranch: true
-      yearsOfService: true
-      certifications: true
-      preferredLocations: true
-      isAvailable: true
     }
   }>,
   "password"
->
+> & {
+  // Operator-specific fields (only present when role is OPERATOR, nullable from DB)
+  militaryBranch?: string | null
+  yearsOfService?: number | null
+  certifications?: string[]
+  preferredLocations?: string[]
+  isAvailable?: boolean
+}
 
 /**
  * Minimal user info for email verification using Prisma.UserGetPayload
- * 
+ *
  * This type matches the verifyEmail query result with only essential fields.
  */
 export type UserEmailInfo = Omit<
@@ -133,7 +141,7 @@ export type UserEmailInfo = Omit<
 
 /**
  * Minimal operator info for availability updates using Prisma.UserGetPayload
- * 
+ *
  * This type matches the setOperatorAvailability query result with operator-specific fields.
  */
 export type OperatorAvailabilityInfo = Omit<
@@ -466,10 +474,7 @@ export class UserRepository extends BaseRepository {
    * Create new user
    */
   async create(data: UserCreateInput): Promise<RepositoryResult<SafeUser>> {
-    const validation = this.validateRequired(
-      data,
-      ["email"]
-    )
+    const validation = this.validateRequired(data, ["email"])
     if (!validation.success) {
       const errorMessage =
         typeof validation.error === "string"
