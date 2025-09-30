@@ -17,7 +17,7 @@
  * - Minimal field selection based on use case requirements
  */
 
-import { PrismaClient } from "@prisma/client"
+import { PrismaClient, Prisma } from "@prisma/client"
 import type { User, UserRole } from "@prisma/client"
 import {
   BaseRepository,
@@ -32,25 +32,86 @@ import {
 /**
  * SafeUser type - User without password field for security
  * Following .cursorrules.md Platform Mode type safety standards
+ *
+ * SECURITY NOTE: This explicit Omit type is maintained per .cursorrules.md line 191
+ * "Security exceptions: Keep explicit Omit types for password exclusion"
  */
 export type SafeUser = Omit<User, "password">
 
 /**
- * SafeUser with accounts relation
+ * SafeUser with accounts relation using Prisma.UserGetPayload for type safety
+ *
+ * This type uses Prisma-generated types to ensure automatic synchronization with schema changes.
+ * The Prisma.UserGetPayload pattern provides compile-time guarantees that the select clause
+ * matches the actual database schema and relations.
+ *
+ * @example
+ * ```typescript
+ * const user: SafeUserWithAccounts = await userRepo.findById("user123")
+ * // TypeScript knows exact shape including nested accounts relation
+ * user.accounts.forEach(account => {
+ *   console.log(account.provider) // Type-safe access
+ * })
+ * ```
  */
-export interface SafeUserWithAccounts extends SafeUser {
-  accounts: Array<{
-    provider: string
-    providerAccountId: string
-  }>
-}
+export type SafeUserWithAccounts = Omit<
+  Prisma.UserGetPayload<{
+    select: {
+      id: true
+      name: true
+      email: true
+      emailVerified: true
+      image: true
+      role: true
+      phone: true
+      company: true
+      createdAt: true
+      updatedAt: true
+      militaryBranch: true
+      yearsOfService: true
+      certifications: true
+      preferredLocations: true
+      isAvailable: true
+      stripeCustomerId: true
+      stripeSubscriptionId: true
+      stripePriceId: true
+      stripeCurrentPeriodEnd: true
+      accounts: {
+        select: {
+          provider: true
+          providerAccountId: true
+        }
+      }
+    }
+  }>,
+  "password"
+>
 
 /**
  * Minimal user info for role-based queries
+ *
+ * This type uses a base Prisma.UserGetPayload for core fields, with operator-specific
+ * fields marked as optional since they are only included when role === "OPERATOR".
+ *
+ * The findByRole query conditionally includes operator fields:
+ * - For OPERATOR role: includes militaryBranch, yearsOfService, certifications, etc.
+ * - For other roles: these fields are undefined
+ *
+ * @see findByRole method for conditional field selection logic
  */
-export type UserRoleInfo = Pick<
-  SafeUser,
-  "id" | "name" | "email" | "role" | "phone" | "company" | "createdAt"
+export type UserRoleInfo = Omit<
+  Prisma.UserGetPayload<{
+    select: {
+      id: true
+      name: true
+      email: true
+      role: true
+      phone: true
+      company: true
+      createdAt: true
+    }
+  }>,
+  "password"
 > & {
   // Operator-specific fields (only present when role is OPERATOR, nullable from DB)
   militaryBranch?: string | null
@@ -61,31 +122,45 @@ export type UserRoleInfo = Pick<
 }
 
 /**
- * Minimal user info for email verification
+ * Minimal user info for email verification using Prisma.UserGetPayload
+ *
+ * This type matches the verifyEmail query result with only essential fields.
  */
-export type UserEmailInfo = Pick<
-  SafeUser,
-  "id" | "name" | "email" | "emailVerified" | "updatedAt"
+export type UserEmailInfo = Omit<
+  Prisma.UserGetPayload<{
+    select: {
+      id: true
+      name: true
+      email: true
+      emailVerified: true
+      updatedAt: true
+    }
+  }>,
+  "password"
 >
 
 /**
- * Minimal operator info for availability updates
+ * Minimal operator info for availability updates using Prisma.UserGetPayload
+ *
+ * This type matches the setOperatorAvailability query result with operator-specific fields.
  */
-export type OperatorAvailabilityInfo = Pick<
-  SafeUser,
-  | "id"
-  | "name"
-  | "email"
-  | "role"
-  | "certifications"
-  | "preferredLocations"
-  | "isAvailable"
-  | "updatedAt"
-> & {
-  // Nullable operator fields from DB
-  militaryBranch: string | null
-  yearsOfService: number | null
-}
+export type OperatorAvailabilityInfo = Omit<
+  Prisma.UserGetPayload<{
+    select: {
+      id: true
+      name: true
+      email: true
+      role: true
+      militaryBranch: true
+      yearsOfService: true
+      certifications: true
+      preferredLocations: true
+      isAvailable: true
+      updatedAt: true
+    }
+  }>,
+  "password"
+>
 
 /**
  * @deprecated Use SafeUserWithAccounts instead
@@ -399,10 +474,7 @@ export class UserRepository extends BaseRepository {
    * Create new user
    */
   async create(data: UserCreateInput): Promise<RepositoryResult<SafeUser>> {
-    const validation = this.validateRequired(
-      data,
-      ["email"]
-    )
+    const validation = this.validateRequired(data, ["email"])
     if (!validation.success) {
       const errorMessage =
         typeof validation.error === "string"

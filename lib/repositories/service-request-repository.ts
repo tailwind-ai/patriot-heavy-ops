@@ -3,9 +3,14 @@
  *
  * Handles all data operations for service requests with role-based access control.
  * Abstracts Prisma operations behind a mobile-compatible interface.
+ * 
+ * ADVANCED TYPE SAFETY (Issue #321):
+ * - Uses Prisma.ServiceRequestGetPayload for complex queries with relations
+ * - Type-safe nested includes for user, userAssignments, and statusHistory
+ * - Automatic schema synchronization through Prisma-generated types
  */
 
-import { PrismaClient } from "@prisma/client"
+import { PrismaClient, Prisma } from "@prisma/client"
 import type {
   ServiceRequest,
   ServiceRequestStatus,
@@ -26,13 +31,100 @@ import {
 import { transportOptions } from "../validations/service-request"
 
 // Type definitions for service request operations
-export interface ServiceRequestWithUser extends ServiceRequest {
-  user: {
-    name: string | null
-    email: string | null
-    company: string | null
+
+/**
+ * ServiceRequest with user relation using Prisma.ServiceRequestGetPayload
+ * 
+ * This type uses Prisma-generated types to ensure type safety for the user relation.
+ * The payload type automatically reflects the exact structure returned by queries
+ * with the user relation included.
+ * 
+ * @example
+ * ```typescript
+ * const request: ServiceRequestWithUser = await repo.findManyWithRoleAccess(...)
+ * // TypeScript knows the exact shape of the nested user object
+ * console.log(request.user.name) // Type-safe access to user.name
+ * ```
+ */
+export type ServiceRequestWithUser = Prisma.ServiceRequestGetPayload<{
+  select: {
+    id: true
+    title: true
+    status: true
+    equipmentCategory: true
+    jobSite: true
+    startDate: true
+    endDate: true
+    requestedDurationType: true
+    requestedDurationValue: true
+    estimatedCost: true
+    createdAt: true
+    updatedAt: true
+    user: {
+      select: {
+        name: true
+        email: true
+        company: true
+      }
+    }
   }
-}
+}>
+
+/**
+ * ServiceRequest with full relations using Prisma.ServiceRequestGetPayload
+ * 
+ * This type represents a service request with all related data included:
+ * - user: The user who created the request
+ * - userAssignments: Operator assignments with operator details
+ * - statusHistory: Complete status change history with user who made changes
+ * 
+ * Using Prisma.ServiceRequestGetPayload ensures compile-time type safety for
+ * deeply nested relations and automatic updates when the schema changes.
+ * 
+ * @example
+ * ```typescript
+ * const request: ServiceRequestWithRelations = await repo.findById("sr123")
+ * // TypeScript knows all nested relation shapes
+ * request.userAssignments.forEach(assignment => {
+ *   console.log(assignment.operator.name) // Type-safe nested access
+ * })
+ * ```
+ */
+export type ServiceRequestWithRelations = Prisma.ServiceRequestGetPayload<{
+  include: {
+    user: {
+      select: {
+        name: true
+        email: true
+        company: true
+      }
+    }
+    userAssignments: {
+      include: {
+        operator: {
+          select: {
+            id: true
+            name: true
+            email: true
+          }
+        }
+      }
+    }
+    statusHistory: {
+      include: {
+        changedByUser: {
+          select: {
+            name: true
+            email: true
+          }
+        }
+      }
+      orderBy: {
+        createdAt: "desc"
+      }
+    }
+  }
+}>
 
 export interface ServiceRequestCreateInput extends Record<string, unknown> {
   title: string
@@ -98,9 +190,19 @@ export class ServiceRequestRepository
   }
 
   /**
-   * Find service request by ID
+   * Find service request by ID with all relations
+   * 
+   * Returns a ServiceRequestWithRelations type that includes:
+   * - Full service request details
+   * - User information (name, email, company)
+   * - User assignments with operator details
+   * - Status history with user who made changes
+   * 
+   * Uses Prisma.ServiceRequestGetPayload for compile-time type safety.
    */
-  async findById(id: string): Promise<RepositoryResult<ServiceRequest | null>> {
+  async findById(
+    id: string
+  ): Promise<RepositoryResult<ServiceRequestWithRelations | null>> {
     const validation = this.validateRequired({ id }, ["id"])
     if (!validation.success) {
       const errorMessage =
