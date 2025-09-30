@@ -89,7 +89,7 @@ export function useManagerQueue(
           }
         )
 
-        if (!response.ok) {
+        if (!response?.ok) {
           let errorMessage = "Failed to approve request"
 
           try {
@@ -149,7 +149,7 @@ export function useManagerQueue(
           }
         )
 
-        if (!response.ok) {
+        if (!response?.ok) {
           let errorMessage = "Failed to reject request"
 
           try {
@@ -209,7 +209,7 @@ export function useManagerQueue(
           }
         )
 
-        if (!response.ok) {
+        if (!response?.ok) {
           let errorMessage = "Failed to assign operator"
 
           try {
@@ -256,7 +256,7 @@ export function useManagerQueue(
   const allRequests = dashboardData?.recentRequests || []
   const pendingApprovals = allRequests.filter(
     (request) =>
-      request.status === "SUBMITTED" || request.status === "UNDER_REVIEW"
+      request?.status === "SUBMITTED" || request?.status === "UNDER_REVIEW"
   )
   const activeAssignments = dashboardData?.assignments || []
 
@@ -272,11 +272,11 @@ export function useManagerQueue(
     pendingApprovals,
     allRequests,
     activeAssignments,
-    totalRequests: stats.totalRequests,
-    activeRequests: stats.activeRequests,
-    completedRequests: stats.completedRequests,
-    pendingApproval: stats.pendingApproval,
-    revenue: stats.revenue || 0,
+    totalRequests: stats?.totalRequests ?? 0,
+    activeRequests: stats?.activeRequests ?? 0,
+    completedRequests: stats?.completedRequests ?? 0,
+    pendingApproval: stats?.pendingApproval ?? 0,
+    revenue: stats?.revenue ?? 0,
     isLoading,
     error,
     refetch,

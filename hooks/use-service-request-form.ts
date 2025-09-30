@@ -81,8 +81,8 @@ export function useServiceRequestForm({ user, notifications }: UseServiceRequest
         countryCode: "us",
       })
       
-      if (result.success) {
-        setJobSiteSuggestions(result.data || [])
+      if (result?.success) {
+        setJobSiteSuggestions(result?.data || [])
       } else {
         // Service returned an error
         setJobSiteSuggestions([])
@@ -138,7 +138,7 @@ export function useServiceRequestForm({ user, notifications }: UseServiceRequest
         body: JSON.stringify(data),
       })
 
-      if (!response.ok) {
+      if (!response?.ok) {
         let errorMessage = "Your service request was not created. Please try again."
         
         try {

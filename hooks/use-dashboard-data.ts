@@ -208,7 +208,7 @@ export function useDashboardData(
         credentials: "include", // Include cookies for session auth
       })
 
-      if (!response.ok) {
+      if (!response?.ok) {
         let errorMessage = "Failed to fetch dashboard data"
 
         try {
@@ -237,9 +237,9 @@ export function useDashboardData(
         return
       }
 
-      const result = await response.json()
+      const result = await response?.json?.()
 
-      if (result.data) {
+      if (result?.data) {
         // Transform date strings back to Date objects using utility function
         const transformedData: DashboardData = transformDashboardData(result)
         setData(transformedData)
@@ -292,7 +292,7 @@ export function useDashboardData(
         credentials: "include",
       })
 
-      if (!cacheResponse.ok) {
+      if (!cacheResponse?.ok) {
         logger.warn(
           "Cache clear request failed, proceeding with local refresh",
           { role }
@@ -317,9 +317,9 @@ export function useDashboardData(
         credentials: "include",
       })
 
-      if (dataResponse.ok) {
-        const result = await dataResponse.json()
-        if (result.data) {
+      if (dataResponse?.ok) {
+        const result = await dataResponse?.json?.()
+        if (result?.data) {
           // Transform date strings back to Date objects using utility function
           const transformedData: DashboardData = transformDashboardData(result)
           setData(transformedData)

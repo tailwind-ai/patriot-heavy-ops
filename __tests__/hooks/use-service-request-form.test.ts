@@ -314,4 +314,244 @@ describe("useServiceRequestForm", () => {
       "Network error"
     )
   })
+
+  describe("Null Safety - API Response Handling", () => {
+    it("should handle null response object in form submission", async () => {
+      ;(global.fetch as jest.Mock).mockResolvedValue(null as unknown as Response)
+
+      const { result } = renderHook(() =>
+        useServiceRequestForm({ user: mockUser, notifications: mockNotifications })
+      )
+
+      const formData = {
+        contactName: "John Doe",
+        contactEmail: "john@example.com",
+        contactPhone: "555-1234",
+        company: "Test Company",
+        title: "Test Request",
+        description: "Test description",
+        jobSite: "123 Main St",
+        transport: "WE_HANDLE_IT" as const,
+        startDate: "2024-01-01",
+        endDate: "2024-01-02",
+        equipmentCategory: "SKID_STEERS_TRACK_LOADERS" as const,
+        equipmentDetail: "Small loader",
+        requestedDurationType: "FULL_DAY" as const,
+        requestedDurationValue: 1,
+        requestedTotalHours: 8,
+        rateType: "DAILY" as const,
+        baseRate: 500,
+      }
+
+      await act(async () => {
+        await result.current.onSubmit(formData)
+      })
+
+      expect(mockNotifications.showError).toHaveBeenCalledWith(
+        "Unable to connect to the server. Please check your internet connection and try again.",
+        "Network error"
+      )
+    })
+
+    it("should handle undefined response.ok in form submission", async () => {
+      ;(global.fetch as jest.Mock).mockResolvedValue({
+        status: 500,
+        json: async () => ({ message: "Server error" }),
+      } as Response)
+
+      const { result } = renderHook(() =>
+        useServiceRequestForm({ user: mockUser, notifications: mockNotifications })
+      )
+
+      const formData = {
+        contactName: "John Doe",
+        contactEmail: "john@example.com",
+        contactPhone: "555-1234",
+        company: "Test Company",
+        title: "Test Request",
+        description: "Test description",
+        jobSite: "123 Main St",
+        transport: "WE_HANDLE_IT" as const,
+        startDate: "2024-01-01",
+        endDate: "2024-01-02",
+        equipmentCategory: "SKID_STEERS_TRACK_LOADERS" as const,
+        equipmentDetail: "Small loader",
+        requestedDurationType: "FULL_DAY" as const,
+        requestedDurationValue: 1,
+        requestedTotalHours: 8,
+        rateType: "DAILY" as const,
+        baseRate: 500,
+      }
+
+      await act(async () => {
+        await result.current.onSubmit(formData)
+      })
+
+      expect(mockNotifications.showError).toHaveBeenCalled()
+    })
+
+    it("should handle null errorData in error response", async () => {
+      ;(global.fetch as jest.Mock).mockResolvedValue({
+        ok: false,
+        status: 500,
+        json: async () => null,
+      } as Response)
+
+      const { result } = renderHook(() =>
+        useServiceRequestForm({ user: mockUser, notifications: mockNotifications })
+      )
+
+      const formData = {
+        contactName: "John Doe",
+        contactEmail: "john@example.com",
+        contactPhone: "555-1234",
+        company: "Test Company",
+        title: "Test Request",
+        description: "Test description",
+        jobSite: "123 Main St",
+        transport: "WE_HANDLE_IT" as const,
+        startDate: "2024-01-01",
+        endDate: "2024-01-02",
+        equipmentCategory: "SKID_STEERS_TRACK_LOADERS" as const,
+        equipmentDetail: "Small loader",
+        requestedDurationType: "FULL_DAY" as const,
+        requestedDurationValue: 1,
+        requestedTotalHours: 8,
+        rateType: "DAILY" as const,
+        baseRate: 500,
+      }
+
+      await act(async () => {
+        await result.current.onSubmit(formData)
+      })
+
+      expect(mockNotifications.showError).toHaveBeenCalledWith(
+        "A server error occurred. Please try again later.",
+        "Failed to create service request"
+      )
+    })
+
+    it("should handle undefined errorData.message", async () => {
+      ;(global.fetch as jest.Mock).mockResolvedValue({
+        ok: false,
+        status: 400,
+        json: async () => ({}),
+      } as Response)
+
+      const { result } = renderHook(() =>
+        useServiceRequestForm({ user: mockUser, notifications: mockNotifications })
+      )
+
+      const formData = {
+        contactName: "John Doe",
+        contactEmail: "john@example.com",
+        contactPhone: "555-1234",
+        company: "Test Company",
+        title: "Test Request",
+        description: "Test description",
+        jobSite: "123 Main St",
+        transport: "WE_HANDLE_IT" as const,
+        startDate: "2024-01-01",
+        endDate: "2024-01-02",
+        equipmentCategory: "SKID_STEERS_TRACK_LOADERS" as const,
+        equipmentDetail: "Small loader",
+        requestedDurationType: "FULL_DAY" as const,
+        requestedDurationValue: 1,
+        requestedTotalHours: 8,
+        rateType: "DAILY" as const,
+        baseRate: 500,
+      }
+
+      await act(async () => {
+        await result.current.onSubmit(formData)
+      })
+
+      expect(mockNotifications.showError).toHaveBeenCalledWith(
+        "Your service request was not created. Please try again.",
+        "Failed to create service request"
+      )
+    })
+  })
+
+  describe("Null Safety - Geocoding Data Access", () => {
+    it("should handle null result.data from geocoding service", async () => {
+      mockGeocodingService.searchAddresses.mockResolvedValue({
+        success: true,
+        data: null,
+      })
+
+      const { result } = renderHook(() =>
+        useServiceRequestForm({ user: mockUser, notifications: mockNotifications })
+      )
+
+      act(() => {
+        result.current.handleJobSiteInputChange("123 Main")
+      })
+
+      await waitFor(
+        () => {
+          expect(mockGeocodingService.searchAddresses).toHaveBeenCalled()
+        },
+        { timeout: 500 }
+      )
+
+      await waitFor(() => {
+        expect(result.current.jobSiteSuggestions).toEqual([])
+      })
+    })
+
+    it("should handle undefined result.data from geocoding service", async () => {
+      mockGeocodingService.searchAddresses.mockResolvedValue({
+        success: true,
+      })
+
+      const { result } = renderHook(() =>
+        useServiceRequestForm({ user: mockUser, notifications: mockNotifications })
+      )
+
+      act(() => {
+        result.current.handleJobSiteInputChange("123 Main")
+      })
+
+      await waitFor(
+        () => {
+          expect(mockGeocodingService.searchAddresses).toHaveBeenCalled()
+        },
+        { timeout: 500 }
+      )
+
+      await waitFor(() => {
+        expect(result.current.jobSiteSuggestions).toEqual([])
+      })
+    })
+
+    it("should handle null result.error.message from geocoding service", async () => {
+      mockGeocodingService.searchAddresses.mockResolvedValue({
+        success: false,
+        error: {},
+      })
+
+      const { result } = renderHook(() =>
+        useServiceRequestForm({ user: mockUser, notifications: mockNotifications })
+      )
+
+      act(() => {
+        result.current.handleJobSiteInputChange("123 Main")
+      })
+
+      await waitFor(
+        () => {
+          expect(mockGeocodingService.searchAddresses).toHaveBeenCalled()
+        },
+        { timeout: 500 }
+      )
+
+      await waitFor(() => {
+        expect(mockNotifications.showError).toHaveBeenCalledWith(
+          "Unable to search for addresses at the moment. Please enter the address manually.",
+          "Address search unavailable"
+        )
+      })
+    })
+  })
 })

@@ -77,7 +77,7 @@ export function useOperatorJobs(
           credentials: "include",
         })
 
-        if (!response.ok) {
+        if (!response?.ok) {
           let errorMessage = "Failed to accept job"
 
           try {
@@ -139,7 +139,7 @@ export function useOperatorJobs(
           }
         )
 
-        if (!response.ok) {
+        if (!response?.ok) {
           let errorMessage = "Failed to complete job"
 
           try {
@@ -191,7 +191,7 @@ export function useOperatorJobs(
   const availableJobs =
     dashboardData?.recentRequests?.filter(
       (request) =>
-        request.status === "OPERATOR_MATCHING" || request.status === "APPROVED"
+        request?.status === "OPERATOR_MATCHING" || request?.status === "APPROVED"
     ) || []
 
   const activeAssignments = dashboardData?.assignments || []
