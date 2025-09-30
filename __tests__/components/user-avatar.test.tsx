@@ -12,7 +12,7 @@ describe('UserAvatar', () => {
       expect(container.querySelector('svg')).toBeInTheDocument()
     })
 
-    it('should render without crashing when user.name is undefined', () => {
+    it('should render without crashing when user.name is null (handles undefined via optional chaining)', () => {
       const user = { name: null, image: null }
       
       const { container } = render(<UserAvatar user={user} />)
@@ -32,7 +32,7 @@ describe('UserAvatar', () => {
       expect(srText?.textContent).toBeTruthy() // Should have some fallback text
     })
 
-    it('should provide fallback text for screen readers when name is undefined', () => {
+    it('should provide fallback text for screen readers when name is null (handles undefined via optional chaining)', () => {
       const user = { name: null, image: null }
       
       render(<UserAvatar user={user} />)
@@ -54,7 +54,7 @@ describe('UserAvatar', () => {
       expect(container.querySelector('svg')).toBeInTheDocument()
     })
 
-    it('should render without crashing when user.image is undefined', () => {
+    it('should render without crashing when user.image is null (handles undefined via optional chaining)', () => {
       const user = { name: 'Test User', image: null }
       
       const { container } = render(<UserAvatar user={user} />)
@@ -85,7 +85,7 @@ describe('UserAvatar', () => {
       expect(container.querySelector('svg')).toBeInTheDocument()
     })
 
-    it('should render gracefully when both name and image are undefined', () => {
+    it('should render gracefully when both name and image are null (handles undefined via optional chaining)', () => {
       const user = { name: null, image: null }
       
       const { container } = render(<UserAvatar user={user} />)
