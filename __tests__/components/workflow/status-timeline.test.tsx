@@ -14,42 +14,44 @@ describe("StatusTimeline", () => {
       render(<StatusTimeline currentStatus="UNDER_REVIEW" />)
 
       expect(screen.getByText("Status Timeline")).toBeInTheDocument()
-      expect(screen.getByText("Under Review")).toBeInTheDocument()
-      expect(screen.getByText("Being evaluated")).toBeInTheDocument()
+      expect(screen.getAllByText("Under Review").length).toBeGreaterThan(0)
+      expect(screen.getAllByText("Being evaluated").length).toBeGreaterThan(0)
     })
 
     it("displays all workflow stages", () => {
       render(<StatusTimeline currentStatus="SUBMITTED" />)
 
-      expect(screen.getByText("Submitted")).toBeInTheDocument()
-      expect(screen.getByText("Under Review")).toBeInTheDocument()
-      expect(screen.getByText("Approved")).toBeInTheDocument()
-      expect(screen.getByText("Finding Operator")).toBeInTheDocument()
-      expect(screen.getByText("Operator Assigned")).toBeInTheDocument()
-      expect(screen.getByText("In Progress")).toBeInTheDocument()
-      expect(screen.getByText("Completed")).toBeInTheDocument()
-      expect(screen.getByText("Closed")).toBeInTheDocument()
+      expect(screen.getAllByText("Submitted").length).toBeGreaterThan(0)
+      expect(screen.getAllByText("Under Review").length).toBeGreaterThan(0)
+      expect(screen.getAllByText("Approved").length).toBeGreaterThan(0)
+      expect(screen.getAllByText("Finding Operator").length).toBeGreaterThan(0)
+      expect(screen.getAllByText("Operator Assigned").length).toBeGreaterThan(0)
+      expect(screen.getAllByText("In Progress").length).toBeGreaterThan(0)
+      expect(screen.getAllByText("Completed").length).toBeGreaterThan(0)
+      expect(screen.getAllByText("Closed").length).toBeGreaterThan(0)
     })
 
     it("renders correctly for initial SUBMITTED status", () => {
       render(<StatusTimeline currentStatus="SUBMITTED" />)
 
-      expect(screen.getByText("Submitted")).toBeInTheDocument()
-      expect(screen.getByText("Request received")).toBeInTheDocument()
+      expect(screen.getAllByText("Submitted").length).toBeGreaterThan(0)
+      expect(screen.getAllByText("Request received").length).toBeGreaterThan(0)
     })
 
     it("renders correctly for in-progress OPERATOR_ASSIGNED status", () => {
       render(<StatusTimeline currentStatus="OPERATOR_ASSIGNED" />)
 
-      expect(screen.getByText("Operator Assigned")).toBeInTheDocument()
-      expect(screen.getByText("Operator confirmed")).toBeInTheDocument()
+      expect(screen.getAllByText("Operator Assigned").length).toBeGreaterThan(0)
+      expect(screen.getAllByText("Operator confirmed").length).toBeGreaterThan(
+        0
+      )
     })
 
     it("renders correctly for final CLOSED status", () => {
       render(<StatusTimeline currentStatus="CLOSED" />)
 
-      expect(screen.getByText("Closed")).toBeInTheDocument()
-      expect(screen.getByText("Request closed")).toBeInTheDocument()
+      expect(screen.getAllByText("Closed").length).toBeGreaterThan(0)
+      expect(screen.getAllByText("Request closed").length).toBeGreaterThan(0)
     })
   })
 
@@ -58,13 +60,15 @@ describe("StatusTimeline", () => {
       render(<StatusTimeline currentStatus="APPROVED" />)
 
       // Previous statuses should be visible
-      expect(screen.getByText("Submitted")).toBeInTheDocument()
-      expect(screen.getByText("Under Review")).toBeInTheDocument()
-      expect(screen.getByText("Approved")).toBeInTheDocument()
+      expect(screen.getAllByText("Submitted").length).toBeGreaterThan(0)
+      expect(screen.getAllByText("Under Review").length).toBeGreaterThan(0)
+      expect(screen.getAllByText("Approved").length).toBeGreaterThan(0)
     })
 
     it("shows current status with distinctive styling", () => {
-      const { container } = render(<StatusTimeline currentStatus="UNDER_REVIEW" />)
+      const { container } = render(
+        <StatusTimeline currentStatus="UNDER_REVIEW" />
+      )
 
       // Current status should have blue styling (check for blue-related classes)
       expect(container.querySelector(".text-blue-600")).toBeInTheDocument()
@@ -74,8 +78,8 @@ describe("StatusTimeline", () => {
       render(<StatusTimeline currentStatus="SUBMITTED" />)
 
       // Future statuses should still be visible but styled differently
-      expect(screen.getByText("Under Review")).toBeInTheDocument()
-      expect(screen.getByText("Approved")).toBeInTheDocument()
+      expect(screen.getAllByText("Under Review").length).toBeGreaterThan(0)
+      expect(screen.getAllByText("Approved").length).toBeGreaterThan(0)
     })
 
     it("displays checkmarks for completed states", () => {
@@ -87,7 +91,9 @@ describe("StatusTimeline", () => {
     })
 
     it("displays clock icon for current state", () => {
-      const { container } = render(<StatusTimeline currentStatus="UNDER_REVIEW" />)
+      const { container } = render(
+        <StatusTimeline currentStatus="UNDER_REVIEW" />
+      )
 
       // Should have blue background for current state
       const currentState = container.querySelectorAll(".bg-blue-500")
@@ -105,7 +111,9 @@ describe("StatusTimeline", () => {
 
   describe("Status Progression", () => {
     it("correctly identifies completed, current, and pending states for early stage", () => {
-      const { container } = render(<StatusTimeline currentStatus="UNDER_REVIEW" />)
+      const { container } = render(
+        <StatusTimeline currentStatus="UNDER_REVIEW" />
+      )
 
       // SUBMITTED should be completed (green)
       expect(container.querySelector(".bg-green-500")).toBeInTheDocument()
@@ -119,7 +127,9 @@ describe("StatusTimeline", () => {
     })
 
     it("correctly identifies states for mid-workflow status", () => {
-      const { container } = render(<StatusTimeline currentStatus="OPERATOR_ASSIGNED" />)
+      const { container } = render(
+        <StatusTimeline currentStatus="OPERATOR_ASSIGNED" />
+      )
 
       // Multiple completed states
       const completedStates = container.querySelectorAll(".bg-green-500")
@@ -149,7 +159,9 @@ describe("StatusTimeline", () => {
 
   describe("Responsive Design", () => {
     it("renders mobile layout structure", () => {
-      const { container } = render(<StatusTimeline currentStatus="UNDER_REVIEW" />)
+      const { container } = render(
+        <StatusTimeline currentStatus="UNDER_REVIEW" />
+      )
 
       // Mobile layout should have vertical timeline (md:hidden class)
       const mobileLayout = container.querySelector(".md\\:hidden")
@@ -157,7 +169,9 @@ describe("StatusTimeline", () => {
     })
 
     it("renders desktop layout structure", () => {
-      const { container } = render(<StatusTimeline currentStatus="UNDER_REVIEW" />)
+      const { container } = render(
+        <StatusTimeline currentStatus="UNDER_REVIEW" />
+      )
 
       // Desktop layout should have horizontal stepper (hidden md:block)
       const desktopLayout = container.querySelector(".md\\:block")
@@ -185,7 +199,9 @@ describe("StatusTimeline", () => {
     })
 
     it("maintains consistent spacing between timeline items", () => {
-      const { container } = render(<StatusTimeline currentStatus="UNDER_REVIEW" />)
+      const { container } = render(
+        <StatusTimeline currentStatus="UNDER_REVIEW" />
+      )
 
       // Should have space-y-4 for mobile layout spacing
       expect(container.querySelector(".space-y-4")).toBeInTheDocument()
@@ -240,4 +256,3 @@ describe("StatusTimeline", () => {
     })
   })
 })
-

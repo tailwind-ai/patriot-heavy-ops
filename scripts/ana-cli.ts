@@ -94,9 +94,9 @@ export class AnaAnalyzer {
       })
 
       const failures: AnalyzedFailure[] = []
-      const failedJobsCount = jobs?.data?.jobs?.filter(
-        (job) => job.conclusion === "failure"
-      )?.length ?? 0
+      const failedJobsCount =
+        jobs?.data?.jobs?.filter((job) => job.conclusion === "failure")
+          ?.length ?? 0
 
       // Generate context-aware summary (Issue #303 Phase 3)
       const summary = this.generateContextAwareSummary(
@@ -119,7 +119,7 @@ export class AnaAnalyzer {
                 job_id: job.id,
               })
 
-            const logContent = logs?.data 
+            const logContent = logs?.data
               ? Buffer.from(logs.data as ArrayBuffer).toString("utf-8")
               : ""
             const analysis = this.analyzeJobLogs(
@@ -168,8 +168,8 @@ export class AnaAnalyzer {
 
       // Collect job metadata for webhook (Issue #303 Phase 4)
       const jobMetadata = (jobs?.data?.jobs ?? [])
-        .filter(job => job.conclusion === "failure")
-        .map(job => ({
+        .filter((job) => job.conclusion === "failure")
+        .map((job) => ({
           jobName: job.name,
           jobId: job.id.toString(),
           conclusion: "failure" as const,
@@ -181,14 +181,17 @@ export class AnaAnalyzer {
       const performanceMetrics = {
         totalAnalysisTime: Date.now() - Date.now(), // Placeholder - would be actual total time
         jobCount: jobMetadata?.length ?? 0,
-        averageJobAnalysisTime: (jobMetadata?.length ?? 0) > 0 ? 
-          jobMetadata.reduce((sum, job) => sum + job.analysisTime, 0) / jobMetadata.length : 0,
+        averageJobAnalysisTime:
+          (jobMetadata?.length ?? 0) > 0
+            ? jobMetadata.reduce((sum, job) => sum + job.analysisTime, 0) /
+              jobMetadata.length
+            : 0,
       }
 
       // Send to Tod via webhook with enhanced metadata (Issue #303 Phase 4)
       await this.sendToTodWebhook(
-        anaResults, 
-        workflowRunId, 
+        anaResults,
+        workflowRunId,
         prNumber,
         workflowContext,
         analysisMode,
@@ -341,12 +344,15 @@ export class AnaAnalyzer {
       )
 
       // Create enhanced webhook payload (Issue #303 Phase 4)
-      const enhancedMetadata = workflowContext && analysisMode ? {
-        analysisMode,
-        workflowContext,
-        jobMetadata: jobMetadata || [],
-        ...(performanceMetrics && { performanceMetrics }),
-      } : undefined
+      const enhancedMetadata =
+        workflowContext && analysisMode
+          ? {
+              analysisMode,
+              workflowContext,
+              jobMetadata: jobMetadata || [],
+              ...(performanceMetrics && { performanceMetrics }),
+            }
+          : undefined
 
       const payload = createAnaWebhookPayload(
         anaResults,
@@ -491,8 +497,10 @@ export class AnaAnalyzer {
           const testName = match[1]?.trim() || "unknown test"
           // Extract more context from test name if it contains "›"
           if (testName.includes("›")) {
-            const parts = testName.split("›").map(p => p.trim())
-            return `${parts?.[0] ?? "test"}: ${parts?.[parts.length - 1] ?? "unknown"}`
+            const parts = testName.split("›").map((p) => p.trim())
+            return `${parts?.[0] ?? "test"}: ${
+              parts?.[parts.length - 1] ?? "unknown"
+            }`
           }
           return `Test case failed: ${testName}`
         },
@@ -691,21 +699,23 @@ export class AnaAnalyzer {
   /**
    * Get job priority based on job name (Issue #303 Phase 4)
    */
-  private getJobPriority(jobName: string): "low" | "medium" | "high" | "critical" {
+  private getJobPriority(
+    jobName: string
+  ): "low" | "medium" | "high" | "critical" {
     const lowerJobName = jobName.toLowerCase()
-    
+
     if (lowerJobName.includes("fast validation")) {
       return "critical"
     }
-    
+
     if (lowerJobName.includes("integration")) {
       return "high"
     }
-    
+
     if (lowerJobName.includes("coverage")) {
       return "medium"
     }
-    
+
     // Default priority for unknown job types
     return "medium"
   }
@@ -774,7 +784,7 @@ export class AnaAnalyzer {
       })
 
       // Validate this is a Cursor bot review
-      if (!review?.data?.user || review.data.user.login !== "cursor") {
+      if (!review?.data?.user || review.data.user.login !== "cursor[bot]") {
         throw new Error(
           `Review is not from Cursor bot (user: ${
             review?.data?.user?.login ?? "unknown"
@@ -785,7 +795,9 @@ export class AnaAnalyzer {
       // Validate this is a comment review
       if (review?.data?.state !== "COMMENTED") {
         throw new Error(
-          `Review is not a comment review (state: ${review?.data?.state ?? "unknown"})`
+          `Review is not a comment review (state: ${
+            review?.data?.state ?? "unknown"
+          })`
         )
       }
 
@@ -800,7 +812,9 @@ export class AnaAnalyzer {
           review_id: reviewId,
         })
 
-      console.log(`  📝 Found ${reviewComments?.data?.length ?? 0} review comments`)
+      console.log(
+        `  📝 Found ${reviewComments?.data?.length ?? 0} review comments`
+      )
 
       const failures: AnalyzedFailure[] = []
 
@@ -1097,7 +1111,12 @@ async function main() {
         const prNumberReview = process.argv[3] ? parseInt(process.argv[3]) : NaN
         const reviewId = process.argv[4] ? parseInt(process.argv[4]) : NaN
 
-        if (!prNumberReview || !reviewId || isNaN(prNumberReview) || isNaN(reviewId)) {
+        if (
+          !prNumberReview ||
+          !reviewId ||
+          isNaN(prNumberReview) ||
+          isNaN(reviewId)
+        ) {
           console.log(
             "❌ Usage: npx tsx scripts/ana-cli.ts analyze-cursor-bugbot-review <PR_NUMBER> <REVIEW_ID>"
           )

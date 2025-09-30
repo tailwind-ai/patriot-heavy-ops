@@ -60,10 +60,10 @@ describe("WorkflowHistory", () => {
       expect(screen.getByText("Status History")).toBeInTheDocument()
       expect(screen.getByText("Complete audit trail of all status changes")).toBeInTheDocument()
 
-      // Check all status transitions are displayed
-      expect(screen.getByText("Submitted")).toBeInTheDocument()
-      expect(screen.getByText("Under Review")).toBeInTheDocument()
-      expect(screen.getByText("Approved")).toBeInTheDocument()
+      // Check all status transitions are displayed (may appear multiple times in badges)
+      expect(screen.getAllByText("Submitted").length).toBeGreaterThan(0)
+      expect(screen.getAllByText("Under Review").length).toBeGreaterThan(0)
+      expect(screen.getAllByText("Approved").length).toBeGreaterThan(0)
     })
 
     it("displays transition reasons", () => {
@@ -84,8 +84,9 @@ describe("WorkflowHistory", () => {
     it("displays timestamps", () => {
       render(<WorkflowHistory history={mockHistoryEntries} />)
 
-      // formatDate should format these dates
-      expect(screen.getByText(/Jan 15, 2024/i)).toBeInTheDocument()
+      // formatDate outputs "January 15, 2024" format (full month name)
+      const timestamps = screen.queryAllByText(/January 15, 2024/i)
+      expect(timestamps.length).toBeGreaterThan(0)
     })
 
     it("displays internal notes when present", () => {
@@ -307,9 +308,11 @@ describe("WorkflowHistory", () => {
 
   describe("Skeleton Component", () => {
     it("renders skeleton loader using static method", () => {
-      render(<WorkflowHistory.Skeleton />)
+      const { container } = render(<WorkflowHistory.Skeleton />)
 
-      expect(screen.getByText("Status History")).toBeInTheDocument()
+      // Skeleton renders loading placeholders, not text content
+      const skeletons = container.querySelectorAll(".animate-pulse")
+      expect(skeletons.length).toBeGreaterThan(0)
     })
   })
 })
