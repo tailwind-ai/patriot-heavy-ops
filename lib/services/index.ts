@@ -53,6 +53,8 @@ export {
   type BusinessRuleValidation,
   type StatusHistoryEntry,
   type UserRole,
+  type ChangeStatusInput,
+  type AssignOperatorInput,
 } from "./service-request-service"
 
 // Dashboard data service
