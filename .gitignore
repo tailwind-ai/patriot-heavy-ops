@@ -17,5 +17,6 @@ tsconfig.tsbuildinfo
 ANA-*.md
 TEST-COVERAGE-*.md
 
-# Cursor IDE configs
-.cursor/
+# Cursor IDE configs (but allow the commands symlink)
+.cursor/*
+!.cursor/commands
