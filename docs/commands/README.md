@@ -43,10 +43,10 @@ This directory contains custom Cursor commands for the Patriot Heavy Ops project
 
 ## Setup
 
-The `.cursor/commands` directory is a **symlink** to this `docs/cursor-commands/` directory. This means:
+The `.cursor/commands` directory is a **symlink** to this `docs/commands/` directory. This means:
 
 ✅ Cursor finds commands in `.cursor/commands/` (where it expects them)  
-✅ Files are actually stored in tracked `docs/cursor-commands/` directory  
+✅ Files are actually stored in tracked `docs/commands/` directory  
 ✅ Any commands you create/edit through Cursor UI are automatically tracked in git  
 ✅ No manual copying needed!
 
@@ -55,14 +55,14 @@ The `.cursor/commands` directory is a **symlink** to this `docs/cursor-commands/
 The symlink is already created:
 
 ```bash
-.cursor/commands -> ../docs/cursor-commands
+.cursor/commands -> ../docs/commands
 ```
 
 If you need to recreate it:
 
 ```bash
 mkdir -p .cursor
-ln -s ../docs/cursor-commands .cursor/commands
+ln -s ../docs/commands .cursor/commands
 ```
 
 ### Usage
@@ -72,4 +72,4 @@ Just use the commands with `/` prefix in Cursor chat:
 - `/implement-issue 226`
 - `/pr-triage 320`
 
-Any new commands you create through Cursor's UI will be saved to `docs/cursor-commands/` and automatically tracked in git.
+Any new commands you create through Cursor's UI will be saved to `docs/commands/` and automatically tracked in git.
