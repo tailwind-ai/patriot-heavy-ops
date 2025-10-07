@@ -4,7 +4,7 @@
 
 ## How to Populate This File
 
-### Sequential Workflow:
+### Step-By-Step Instructions:
 
 1. **Start with vision** - Create `context/vision.md` with your product phases
 2. **Sync roadmap** - Run `/sync-roadmap` to populate `future-releases.md` from vision
@@ -26,40 +26,3 @@ This file should contain:
 - Timeline
 
 After running `/advance-release`, this file will be auto-populated from the next phase in `future-releases.md`.
-
----
-
-## Example Structure
-
-```markdown
-# v1.0.0 - Phase 1: Foundation
-
-**Status:** In Progress  
-**Start Date:** 2025-10-07  
-**Target Date:** 2025-11-07
-
-## Release Description
-
-[What this release achieves]
-
-## Current State
-
-- [What exists now]
-
-## Target State
-
-- [What will exist after this release]
-
-## Epics
-
-### Epic 1: [Epic Name]
-
-**Child Issues:**
-1. #10 - [Issue title]
-2. #11 - [Issue title]
-
-## Success Criteria
-
-- [ ] Criterion 1
-- [ ] Criterion 2
-```

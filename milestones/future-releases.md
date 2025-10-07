@@ -4,7 +4,7 @@
 
 ## How to Populate This File
 
-### Sequential Workflow:
+### Step-By-Step Instructions:
 
 1. **Start with vision** - Create `context/vision.md` with all your product phases (Phase 1, 2, 3, etc.)
 2. **Sync roadmap** - Run `/sync-roadmap` to auto-populate this file from `context/vision.md`
@@ -26,37 +26,3 @@ The `/sync-roadmap` command will:
 - Remove completed phases (from `past-releases.md`)
 - Remove active phase (from `current-release.md`)
 - Populate this file with remaining phases
-
----
-
-## Example Structure
-
-```markdown
-# Future Releases
-
-## Phase 2: [Phase Name]
-
-**Objective:** [What this phase achieves]
-
-**Timeframe:** Months 2-4
-
-**Prerequisites:**
-- Phase 1 complete
-- [Other prerequisites]
-
-### Use Cases
-
-1. **UC3:** [Use case title]
-   - [Description]
-   - **Acceptance Criteria:** [Success criteria]
-
-### Success Criteria
-
-- [How we know this phase is complete]
-
----
-
-## Phase 3: [Phase Name]
-
-[Similar structure...]
-```
