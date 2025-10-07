@@ -1,30 +1,122 @@
-# implement-issue
+# Implement Issue
 
-<!-- Usage: /implement-issue 226 -->
+Implement a GitHub issue using TDD workflow on dev branch.
 
-You are implementing Github issue {{ISSUE_NUMBER}} on dev branch in Platform Mode. Use the Github CLI to get context on this.
+## Usage
 
-MANDATORY CURSORRULES COMPLIANCE: Reference @.cursorrules.md throughout this work.
+```
+/implement-issue <issue_number>
+```
 
-STRICT SCOPE: Only work on Github issue {{ISSUE_NUMBER}} requirements. Note unrelated issues but don't fix them.
+**Examples:**
+- `/implement-issue 226`
+- `/implement-issue 42`
 
-WORKFLOW:
+## What This Command Does
 
-1. Use Github CLI to view {{ISSUE_NUMBER}} to analyze requirements
-2. Create comprehensive TODO list for issue {{ISSUE_NUMBER}} only
-3. Get TODO list approval before implementation
-4. MANDATORY TDD SEQUENCE: Write failing test → Confirm test fails → Write ONLY enough code to make that test pass → Repeat
-5. Work through TODOs until CI green
-6. Push and create PR from dev
+1. Fetches issue details from GitHub
+2. Analyzes scope and creates TODO list
+3. Implements using strict TDD (test first, minimal code)
+4. Pushes changes and creates PR
 
-**INITIAL ANALYSIS REQUIRED:**
+## Process
 
-1. Assess issue scope - flag if it needs breaking into sub-issues
-2. If sub-issues needed: propose optimal implementation sequence with dependencies
-3. If scope is appropriate: create comprehensive TODO list
+### 1. Fetch Issue Details
 
-Behavior:
+Use GitHub CLI to get context:
+```bash
+gh issue view {{ISSUE_NUMBER}} --json title,body,labels,assignees,milestone
+```
 
-- If invoked with trailing text (e.g., "/implement-issue 226"), interpret that text as {{ISSUE_NUMBER}} and proceed.
-- If {{ISSUE_NUMBER}} is missing, ask me once for it before proceeding.
+Extract:
+- Issue title and description
+- Acceptance criteria
+- Labels and priority
+- Related epic or parent issue
+
+### 2. Analyze Scope
+
+**Assess if issue needs breaking down:**
+- Is scope too large for single PR?
+- Are there multiple independent features?
+- Can it be implemented in <4 hours?
+
+**If sub-issues needed:**
+- Propose optimal implementation sequence
+- Identify dependencies between sub-issues
+- Get approval before proceeding
+
+**If scope is appropriate:**
+- Proceed to TODO list creation
+
+### 3. Create TODO List
+
+Generate comprehensive, sequential TODO list:
+- Break down into small, testable steps
+- Order by dependencies (tests before implementation)
+- Include specific files/functions to modify
+- Estimate effort for each step
+
+**Get approval before implementation.**
+
+### 4. Implement Using TDD
+
+**MANDATORY TDD SEQUENCE:**
+
+For each feature/function:
+1. Write failing test first
+2. Run test to confirm it fails
+3. Write ONLY enough code to make that test pass
+4. Run test to confirm it passes
+5. Refactor if needed (while keeping tests green)
+6. Repeat for next feature
+
+**Strict Scope:**
+- Only work on {{ISSUE_NUMBER}} requirements
+- Note unrelated issues but don't fix them
+- No scope creep beyond acceptance criteria
+
+**Cursorrules Compliance:**
+- Reference @.cursorrules.md throughout
+- Follow all code quality standards
+- Maintain architecture patterns
+- Document with JSDoc comments
+
+### 5. Verify Completion
+
+Before creating PR:
+- [ ] All acceptance criteria met
+- [ ] All tests passing (CI green)
+- [ ] No linter errors
+- [ ] Code follows @.cursorrules.md standards
+- [ ] Changes committed to dev branch
+
+### 6. Create Pull Request
+
+```bash
+git push origin dev
+gh pr create \
+  --title "feat: [Brief description] (#{{ISSUE_NUMBER}})" \
+  --body "Closes #{{ISSUE_NUMBER}}" \
+  --base main \
+  --head dev
+```
+
+Display PR URL and next steps.
+
+## Error Handling
+
+- If {{ISSUE_NUMBER}} is missing, ask once before proceeding
+- If issue doesn't exist, show error and exit
+- If scope too large, recommend breaking into sub-issues
+- If tests fail, stop and fix before continuing
+- If PR creation fails, show error but keep local changes
+
+## Notes
+
+- Always work on dev branch (never main)
+- Always write tests before implementation
+- Always get TODO approval before coding
+- Can run `/code-review {{ISSUE_NUMBER}}` before creating PR
+- After PR created, use `/pr-triage <PR_NUMBER>` if CI fails
 

@@ -1,20 +1,24 @@
-# code-review
+# Code Review
 
-<!-- Usage: /code-review 1 -->
+Perform comprehensive pre-PR code review against issue requirements and cursorrules.
 
-You are reviewing code implementation for Github issue {{ISSUE_NUMBER}} on dev branch. Use the Github CLI to get context on this.
+## Usage
 
-MANDATORY CURSORRULES COMPLIANCE: Reference @.cursorrules.md throughout this review.
+```
+/code-review <issue_number>
+```
 
-STRICT SCOPE: Only review code related to Github issue {{ISSUE_NUMBER}} requirements. Note unrelated issues but don't flag them as blockers.
+**Examples:**
+- `/code-review 1`
+- `/code-review 226`
 
-## Context
+## What This Command Does
 
-This command performs a comprehensive pre-PR code review that validates:
-1. **Requirements Compliance** - All acceptance criteria from the issue are met
-2. **Cursorrules Standards** - Code follows @.cursorrules.md quality standards
-3. **Google Quotas & Rate Limits** - Respects Gmail/Sheets/Apps Script/Gemini limits
-4. **Manual Testing Readiness** - Proposes testing checklist before PR creation
+Performs comprehensive pre-PR code review that validates:
+1. **Requirements Compliance** - All acceptance criteria met
+2. **Cursorrules Standards** - Code follows @.cursorrules.md
+3. **Quota & Rate Limits** - Respects API limits (if applicable)
+4. **Testing Readiness** - Proposes functional test checklist
 
 ## Workflow
 
