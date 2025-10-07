@@ -101,26 +101,42 @@ Copy from `prisma/schema.prisma` to `config/schema/schema.prisma`
 **`config/schema/CHANGELOG.md`** (if schema changed):
 Add entry documenting the schema change
 
-### 6. Log to Analysis History
+### 6. Save Analysis Report
 
-Append entry to `config/analysis-history.md`:
+Create timestamped file in `repo-analysis/` folder:
 
+**Filename:** `YYYY-MM-DD-HHMMSS.md` (e.g., `2025-10-07-143000.md`)
+
+**Content:**
 ```markdown
-### YYYY-MM-DD HH:MM:SS
+# Repository Analysis - YYYY-MM-DD HH:MM:SS
 
-**Detected:**
-- Deployment: {{deployment.method}} (confidence: {{deployment.confidence}})
-- Database: {{schema.type}} ({{schema.details.models}} models)
-- CI/CD: {{cicd.details.platform}} ({{cicd.details.workflows.length}} workflows)
+## Detected Configuration
 
-**Changes Applied:**
-- Updated tech-stack.md
+### Deployment
+- **Method:** {{deployment.method}}
+- **Platform:** {{deployment.details.platform}}
+- **Confidence:** {{deployment.confidence}}
+
+### Database
+- **ORM:** {{schema.details.orm}}
+- **Type:** {{schema.type}}
+- **Models:** {{schema.details.models}}
+
+### CI/CD
+- **Platform:** {{cicd.details.platform}}
+- **Workflows:** {{cicd.details.workflows.join(', ')}}
+- **Test Frameworks:** {{cicd.details.testFrameworks.join(', ')}}
+- **Linters:** {{cicd.details.linters.join(', ')}}
+
+## Changes Applied
+
+- Updated config/tech-stack.md
 - [List other changes]
 
-**Notes:**
-- [Any relevant notes]
+## Notes
 
----
+- [Any relevant observations]
 ```
 
 ### 7. Confirm Completion
