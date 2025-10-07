@@ -101,7 +101,29 @@ Copy from `prisma/schema.prisma` to `config/schema/schema.prisma`
 **`config/schema/CHANGELOG.md`** (if schema changed):
 Add entry documenting the schema change
 
-### 6. Confirm Completion
+### 6. Log to Analysis History
+
+Append entry to `config/analysis-history.md`:
+
+```markdown
+### YYYY-MM-DD HH:MM:SS
+
+**Detected:**
+- Deployment: {{deployment.method}} (confidence: {{deployment.confidence}})
+- Database: {{schema.type}} ({{schema.details.models}} models)
+- CI/CD: {{cicd.details.platform}} ({{cicd.details.workflows.length}} workflows)
+
+**Changes Applied:**
+- Updated tech-stack.md
+- [List other changes]
+
+**Notes:**
+- [Any relevant notes]
+
+---
+```
+
+### 7. Confirm Completion
 
 Display: **"✅ Config updated successfully. Review changes with `git diff config/`"**
 

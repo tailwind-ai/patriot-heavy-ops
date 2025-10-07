@@ -5,6 +5,7 @@
 AI-optimized product, roadmap and release management workflow.  Best used with Cursor.
 
 **Quick Links:**
+- 🚀 **Do This First:** [Configure your repo](config/repo-url.md) → Run `/analyze-repo` command
 - 📋 [Commands Reference](.cursor/commands/) - Available Cursor commands
 - 📝 [Templates](templates/) - Roadmap document templates
 - 🔧 [Detection Utilities](scripts/utils/) - Repository analysis tools
