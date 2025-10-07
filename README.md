@@ -5,11 +5,29 @@
 AI-optimized product, roadmap and release management workflow.  Best used with Cursor.
 
 **Quick Links:**
-- 🚀 **Do This First:** [Configure your repo](config/repo-url.md) → Run `/analyze-repo` command
+- 🚀 [Configure your repo](config/repo-url.md) → Run `/analyze-repo` command
 - 📋 [Commands Reference](.cursor/commands/) - Available Cursor commands
 - 📝 [Templates](templates/) - Roadmap document templates
 - 🔧 [Detection Utilities](scripts/utils/) - Repository analysis tools
 - 📚 [Example Structure](#repository-structure) - File organization
+
+## Setup Commands
+
+Add roadmapper to a new repository:
+
+```bash
+# Clone your new empty repo
+git clone <your-repo-url>
+cd <your-repo>
+
+# Add roadmapper and pull its contents
+git remote add roadmapper https://github.com/Henry-Family/roadmapper.git
+git fetch roadmapper
+git pull roadmapper main --allow-unrelated-histories
+
+# Push to your repo
+git push origin main
+```
 
 ---
 
