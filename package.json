@@ -4,9 +4,7 @@
   "description": "AI-optimized product roadmap and release management workflow",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint .",
-    "analyze-repo": "node scripts/analyze-repo.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
     "roadmap",
@@ -18,18 +16,7 @@
   "author": "Henry Family",
   "license": "UNLICENSED",
   "private": true,
-  "dependencies": {
-    "@octokit/rest": "^20.0.2",
-    "chalk": "^5.3.0",
-    "fs-extra": "^11.2.0",
-    "glob": "^10.3.10",
-    "handlebars": "^4.7.8",
-    "inquirer": "^9.2.12",
-    "yaml": "^2.3.4"
-  },
-  "devDependencies": {
-    "eslint": "^8.56.0"
-  },
+  "dependencies": {},
   "engines": {
     "node": ">=18.0.0"
   }
