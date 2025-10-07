@@ -68,40 +68,9 @@ CI/CD:
 
 ### 4. Prompt for Approval
 
-Ask: **"Would you like to update config with these changes? (yes/no)"**
+Ask: **"Would you like to save this analysis? (yes/no)"**
 
-### 5. Update Config Files (if approved)
-
-Update the following files:
-
-**`config/tech-stack.md`:**
-```markdown
-# Technology Stack
-
-## Deployment
-- **Method**: {{deployment.method}}
-- **Platform**: {{deployment.details.platform}}
-- **Type**: {{deployment.details.type}}
-
-## Database
-- **ORM**: {{schema.details.orm}}
-- **Type**: {{schema.type}}
-- **Models**: {{schema.details.models}}
-
-## CI/CD
-- **Platform**: {{cicd.details.platform}}
-- **Workflows**: {{cicd.details.workflows}}
-- **Test Frameworks**: {{cicd.details.testFrameworks.join(', ')}}
-- **Linters**: {{cicd.details.linters.join(', ')}}
-```
-
-**`config/schema/schema.prisma`** (if Prisma detected):
-Copy from `prisma/schema.prisma` to `config/schema/schema.prisma`
-
-**`config/schema/CHANGELOG.md`** (if schema changed):
-Add entry documenting the schema change
-
-### 6. Save Analysis Report
+### 5. Save Analysis Report (if approved)
 
 Create timestamped file in `repo-analysis/` folder:
 
@@ -139,9 +108,15 @@ Create timestamped file in `repo-analysis/` folder:
 - [Any relevant observations]
 ```
 
+### 6. Update Schema Files (if applicable)
+
+**`config/schema/schema.prisma`** (if Prisma detected):
+- Copy from `prisma/schema.prisma` to `config/schema/schema.prisma`
+- Add entry to `config/schema/CHANGELOG.md` documenting the change
+
 ### 7. Confirm Completion
 
-Display: **"✅ Config updated successfully. Review changes with `git diff config/`"**
+Display: **"✅ Analysis saved to `repo-analysis/YYYY-MM-DD-HHMMSS.md`"**
 
 ## Error Handling
 
