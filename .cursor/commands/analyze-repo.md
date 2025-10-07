@@ -6,7 +6,7 @@ Analyze the repository to detect project characteristics and create timestamped 
 
 1. Scans project files for deployment method, schema, and CI/CD configuration
 2. Detects versions of all technologies
-3. Creates timestamped analysis report in `repo-analysis/`
+3. Creates timestamped analysis report in `config/repo-analysis/`
 4. Updates `config/tech-stack.md` with latest detected configuration
 
 ## Usage
@@ -95,7 +95,7 @@ Automatically update the following files:
 # Technology Stack
 
 > **Last Updated:** YYYY-MM-DD HH:MM:SS  
-> **Analysis Report:** [repo-analysis/YYYY-MM-DD-HHMMSS.md](../repo-analysis/YYYY-MM-DD-HHMMSS.md)
+> **Analysis Report:** [repo-analysis/YYYY-MM-DD-HHMMSS.md](repo-analysis/YYYY-MM-DD-HHMMSS.md)
 
 ## Runtime
 
@@ -155,7 +155,7 @@ Add entry documenting the schema change
 
 ### 5. Save Analysis Report
 
-Create timestamped file in `repo-analysis/` folder:
+Create timestamped file in `config/repo-analysis/` folder:
 
 **Filename:** `YYYY-MM-DD-HHMMSS.md` (e.g., `2025-10-07-143000.md`)
 
@@ -268,7 +268,7 @@ Display:
 ```
 ✅ Analysis complete!
 
-📊 Report: repo-analysis/YYYY-MM-DD-HHMMSS.md
+📊 Report: config/repo-analysis/YYYY-MM-DD-HHMMSS.md
 📝 Tech Stack: config/tech-stack.md
 
 Detected X technologies with Y versions

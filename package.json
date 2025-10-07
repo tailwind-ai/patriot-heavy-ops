@@ -16,7 +16,11 @@
   "author": "Henry Family",
   "license": "UNLICENSED",
   "private": true,
-  "dependencies": {},
+  "dependencies": {
+    "fs-extra": "^11.2.0",
+    "glob": "^10.3.10",
+    "yaml": "^2.3.4"
+  },
   "engines": {
     "node": ">=18.0.0"
   }
