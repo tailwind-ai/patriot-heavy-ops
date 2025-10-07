@@ -1,6 +1,6 @@
 # Repository URL
 
-**Main Codebase:** [Repository Name](https://github.com/org/repo)
+**Main Codebase:** [Repository Name](https://github.com/fxonai/saas-starter-kit)
 
 ## Purpose
 
