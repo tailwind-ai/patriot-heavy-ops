@@ -6,7 +6,7 @@ AI-optimized product, roadmap and release management workflow.  Best used with C
 
 **Quick Links:**
 - 🚀 [Configure your repo](config/repo-url.md)
-- 🚀 [Run] `/analyze-repo` command in Cursor chat
+- 🏃‍♂️ [Run `/analyze-repo`] command in Cursor chat
 - 📋 [Commands Reference](.cursor/commands/) - other Cursor commands
 - 📝 [Templates](templates/) - Roadmap document templates
 - 🔧 [Detection Utilities](scripts/utils/) - Repository analysis tools
