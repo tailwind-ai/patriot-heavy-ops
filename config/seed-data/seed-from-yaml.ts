@@ -387,6 +387,10 @@ async function main() {
         file: './seed-data/programs/maverick-realty-program.yml',
         team: 'Maverick Realty',
       },
+      {
+        file: './seed-data/programs/gfi-new-agent-school-program.yml',
+        team: 'Global Financial Impact',
+      },
     ];
 
     for (const { file, team } of programFiles) {
@@ -413,6 +417,10 @@ async function main() {
         file: './seed-data/tasks/maverick-realty-tasks.yml',
         team: 'Maverick Realty',
       },
+      {
+        file: './seed-data/tasks/gfi-new-agent-school-tasks.yml',
+        team: 'Global Financial Impact',
+      },
     ];
 
     for (const { file, team } of taskFiles) {
@@ -431,6 +439,7 @@ async function main() {
     console.log(`- Users created: ${Object.keys(createdUsers).length}`);
     console.log(`- Programs seeded for: ${programFiles.length} teams`);
     console.log(`- Task files processed: ${taskFiles.length} teams`);
+    console.log('\n💡 Note: GFI New Agent School program includes 26 tasks with enhanced resource format (name + URL)');
   } catch (error) {
     console.error('❌ Seed failed:', error);
     throw error;
