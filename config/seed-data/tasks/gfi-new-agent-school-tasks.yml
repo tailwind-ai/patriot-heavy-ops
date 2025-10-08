@@ -1,0 +1,956 @@
+# GFI New Agent School - Onboarding Tasks
+# Extracted from gfi_onboarding_redesign_final.txt
+
+tasks:
+  # Week 1 Onboarding Tasks
+  - program: 'GFI New Agent School'
+    stage: 'Week 1 Onboarding'
+    order: 1
+    name: 'Start Here: Your Week 1 Launch Pad'
+    type: 'VIDEO'
+    estimatedDuration: 10
+    description: 'Get oriented to your training journey and set yourself up for success.'
+    instructions: |
+      **What this means:**
+      Welcome to Global Financial Impact! This launch pad is your introduction to becoming a licensed insurance agent. You're about to begin a structured 3-week training program that will prepare you to pass your state exam and start building your business.
+      
+      **What you'll do:**
+      1. Complete your agent profile
+      2. Watch the Week 1 orientation video
+      3. Understand your roadmap for the next three weeks
+      
+      **How to do it:**
+      1. **Complete Your Profile** — Click the "Complete Your Profile" button to verify your information and add your photo:
+         - Verify your full legal name (as it appears on your ID)
+         - Verify contact information
+         - Verify your state of residence (this determines your licensing requirements)
+         - Verify your upline sponsor information
+         - Add a professional profile photo
+         
+      2. **Watch the Orientation Video** — Click "Watch Now" to view the 8-minute welcome from the leadership team. You'll learn:
+         - The GFI mission and values
+         - What to expect in Weeks 1-3
+         - How to use this onboarding platform
+         - Who to contact when you need help
+      
+      3. **Review Your Week 1 Checklist** — You'll see 6 tasks for this week. Your goal is to complete all 6 by end of Week 1.
+      
+      **What you'll achieve:**
+      By completing this task, you'll have a clear picture of your training journey and be fully registered in our system.
+    resources:
+      actions:
+        - name: 'Complete Your Profile'
+          url: 'https://www.mygficonnect.com/agent-profile'
+        - name: 'Watch Now'
+          url: 'https://share.synthesia.io/embeds/videos/1ae9b7e9-409d-4f3d-92c7-4b16f0d14303'
+        - name: 'Add Training to Your Calendar'
+          url: 'https://docs.google.com/spreadsheets/d/1WRV7tWuDGnUVpFZp6OnlId7jKlrNN72nCzL6KXkqfLQ/edit?gid=0#gid=0'
+    autoComplete: false
+
+  - program: 'GFI New Agent School'
+    stage: 'Week 1 Onboarding'
+    order: 2
+    name: 'Enroll in Pre-Licensing Course'
+    type: 'ASSIGNMENT'
+    estimatedDuration: 10
+    description: 'Choose your state-approved pre-licensing course provider and get enrolled.'
+    instructions: |
+      **What this means:**
+      Before you can take your state insurance exam, you must complete a state-approved pre-licensing education course. The course covers insurance fundamentals, ethics, and state-specific regulations. Most states require 20-40 hours of coursework.
+      
+      **What you'll do:**
+      Select from GFI's approved course providers and enroll in the course for your state.
+      
+      **How to do it:**
+      1. **Review Your Options** — Ask the AI Assistant: "What pre-licensing courses are approved for my state?" The AI will show you 2-3 recommended providers with:
+         - Course length and format (online self-paced vs. live virtual)
+         - Cost and payment options
+         - Estimated completion time
+         - Pass rates and reviews
+      
+      2. **Choose Your Provider** — Consider:
+         - Your learning style (do you prefer video lectures or reading?)
+         - Your schedule (can you dedicate 2-3 hours daily or prefer shorter sessions?)
+         - Your budget (some providers offer GFI member discounts)
+      
+      3. **Enroll** — Click "Enroll Now" to be directed to your chosen provider's enrollment page. You'll need:
+         - A credit card or GFI course subsidy code (ask your upline)
+         - Your social security number (for state licensing records)
+         - A valid email address
+      
+      4. **Confirm Enrollment** — After enrolling, return here and click "Mark Complete." The AI will ask you to confirm your provider and expected completion date.
+      
+      **What you'll achieve:**
+      You'll be officially enrolled in pre-licensing education and know your course timeline.
+    resources:
+      actions:
+        - name: 'Get Discount Code'
+          url: ''
+        - name: 'View Requirements by State'
+          url: 'https://docs.google.com/document/d/1R-yblNVqGkTXFoeR5977_t4arbFsFT5xF9mLedH5ugs/edit?tab=t.0'
+        - name: 'View Requirements for Canada'
+          url: 'https://drive.google.com/drive/u/0/folders/1tmjqBFtcAjFGr83_AKEqEh3BUHHG55nS'
+        - name: 'Pass 10 Day Study Guide'
+          url: 'https://docs.google.com/document/d/1mFSZ35gtIW0PHydgLa3aCByJTV3K0WPBRI4JDjd8xc0/edit?tab=t.0#heading=h.wx9t4ddmjzw5'
+    autoComplete: false
+
+  - program: 'GFI New Agent School'
+    stage: 'Week 1 Onboarding'
+    order: 3
+    name: 'Schedule Your State Exam'
+    type: 'ASSIGNMENT'
+    estimatedDuration: 10
+    description: 'Pick your exam date and reserve your testing appointment.'
+    instructions: |
+      **What this means:**
+      After completing your pre-licensing course, you'll take your state insurance exam at a testing center (Prometric or Pearson VUE). Scheduling now—even though you haven't finished the course—ensures you get your preferred date and creates a deadline that motivates you to complete your studies.
+      
+      **What you'll do:**
+      Choose an exam date 10 days from now and book your appointment.
+      
+      **How to do it:**
+      1. **Check Your State's Testing Provider** — Ask the AI: "Who administers the insurance exam in my state?" You'll get:
+         - Testing provider name (Prometric or Pearson VUE)
+         - Link to their scheduling website
+         - Testing center locations near you
+      
+      2. **Pick Your Date** — Choose a date that gives you enough time to:
+         - Complete your pre-licensing course (20-40 hours)
+         - Study and review (recommend 10-15 additional hours)
+         - Most agents schedule 10 days out
+      
+      3. **Schedule Online** — Click the appropriate "Schedule Exam" link for your testing provider. You'll need:
+         - Your course completion certificate (if already finished) OR the ability to upload it later
+         - A credit card for the exam fee ($40-$80 depending on state)
+         - Government-issued photo ID information
+      
+      4. **Add to Your Calendar** — After booking, add the exam date to your personal calendar and set reminders for:
+         - 2 weeks before: Final review begins
+         - 1 week before: Complete all practice exams
+         - 1 day before: Light review, get good sleep
+      
+      **What you'll achieve:**
+      You'll have a concrete exam date locked in, turning your licensing journey from abstract to real.
+    resources:
+      actions:
+        - name: 'Schedule Exam with Pearson VUE'
+          url: 'https://docs.google.com/document/d/1IsWNaNsEaUeCE2VuTcgTyxvS54x5ewOwU0d-ov66Yok/edit?tab=t.0#heading=h.5vvutfuvemj'
+        - name: 'Schedule Exam with Prometric'
+          url: 'https://docs.google.com/document/d/12rZqcoaKiT1UPRV9KtgUhT_M5n2yELkYaKGNLzQgWeA/edit?tab=t.0#heading=h.f9ws6q3zckxb'
+    autoComplete: false
+
+  - program: 'GFI New Agent School'
+    stage: 'Week 1 Onboarding'
+    order: 4
+    name: 'Money. Wealth. Life Insurance.'
+    type: 'READING'
+    estimatedDuration: 45
+    description: 'Read the foundational text that explains the philosophy behind what we do.'
+    instructions: |
+      **What this means:**
+      "Money. Wealth. Life Insurance." is the cornerstone text for understanding how life insurance creates wealth. Written specifically for agents, the first three chapters explain why life insurance isn't just a death benefit—it's a living financial tool that can help families build wealth, protect assets, and create tax-advantaged retirement income.
+      
+      **What you'll do:**
+      Read Chapters 1-3 and absorb the core concepts that differentiate GFI's approach from traditional insurance sales.
+      
+      **How to do it:**
+      1. **Access the Material** — Click "Get the Quick Notes" to download:
+         - Full PDF of Chapters 1-3 (approximately 40 pages)
+         - Optional: Audiobook version if you prefer to listen
+         - Summary notes highlighting key concepts
+      
+      2. **Read with Purpose** — Focus on understanding:
+         - **Chapter 1**: The difference between money and wealth
+         - **Chapter 2**: How life insurance functions as a financial asset
+         - **Chapter 3**: The Infinite Banking Concept basics
+      
+      3. **Take Notes** — Jot down:
+         - Questions you have
+         - Concepts you'll need to explain to clients
+         - Personal "aha moments"
+      
+      4. **Discuss with AI** — After reading, ask the AI Assistant:
+         - "Explain the key difference between money and wealth"
+         - "How would I explain the Infinite Banking Concept to a friend?"
+         - "Quiz me on Chapter 2"
+      
+      **What you'll achieve:**
+      You'll understand the philosophical foundation of your future practice and be able to articulate why life insurance is a wealth-building tool.
+    resources:
+      actions:
+        - name: 'Get the Quick Notes'
+          url: ''
+        - name: 'Open Full Text PDF'
+          url: 'https://www.shortform.com/pdf/money-wealth-life-insurance-pdf-jake-thompson'
+        - name: 'Buy on Amazon'
+          url: 'https://www.amazon.com/Money-Wealth-Life-Insurance-Supercharge/dp/1494896478?utm_source=chatgpt.com'
+        - name: 'Watch'
+          url: 'https://www.youtube.com/watch?v=fKuMlYUOGT4'
+    autoComplete: false
+
+  - program: 'GFI New Agent School'
+    stage: 'Week 1 Onboarding'
+    order: 5
+    name: 'The Client Experience'
+    type: 'ASSIGNMENT'
+    estimatedDuration: 45
+    description: "Put yourself in your client's shoes and learn the discovery process that builds trust and uncovers needs."
+    instructions: |
+      **What this means:**
+      Before you can help a client build wealth or protect their family, you need to understand where they're starting from. The Client Experience is about learning to see through your client's eyes—understanding their household finances, identifying protection gaps, and laying the foundation for comprehensive solutions. This task teaches you the discovery framework you'll use in every client meeting.
+      
+      **What you'll do:**
+      Learn the discovery tools that drive meaningful client conversations, then complete a financial questionnaire as if you were the client.
+      
+      **How to do it:**
+      1. **Ask Yourself the 5 Magic Questions** — Review the discovery questions and answer them for yourself:
+         - These questions help clients articulate their goals, fears, and priorities
+         - Answer them honestly as if an agent were asking you
+         - Experience firsthand what your clients will experience
+         - This builds empathy and helps you understand what information matters most
+      
+      2. **Complete Your Own Financial Questionnaire** — Now put yourself in the client's seat:
+         - Click "Complete Financial Questionnaire"
+         - Answer every question as if you were meeting with an agent
+         - This deepens your understanding of the client journey
+      
+      **What you'll achieve:**
+      You'll understand the discovery process from both sides of the table and be prepared to gather meaningful information from clients.
+    resources:
+      actions:
+        - name: 'Copy & Share Your Tracker'
+          url: 'https://docs.google.com/spreadsheets/d/1ZF4ilQXMRsuDGOmPo75EfwwaTLjQZN6KIrt3sSHBJoc/edit?gid=0#gid=0'
+        - name: 'Complete Your Dreams List'
+          url: 'https://docs.google.com/spreadsheets/d/1ZF4ilQXMRsuDGOmPo75EfwwaTLjQZN6KIrt3sSHBJoc/edit?gid=1204700819#gid=1204700819'
+        - name: '5 Magic Questions'
+          url: 'https://docs.google.com/presentation/d/1dmn5EdzjPVJZbxQ7TXeWpIfuZryJUOy2/edit?slide=id.g2c40978e07c_27_1#slide=id.g2c40978e07c_27_1'
+        - name: 'Complete Financial Questionnaire'
+          url: 'https://docs.google.com/spreadsheets/d/1bKzuNX8vrGqmb9ydKAaQmNLXy3o9wGKQ/edit?gid=1616532283#gid=1616532283'
+    autoComplete: false
+
+  - program: 'GFI New Agent School'
+    stage: 'Week 1 Onboarding'
+    order: 6
+    name: 'Attend Orientation'
+    type: 'MEETING'
+    estimatedDuration: 120
+    description: 'Join your cohort for live orientation with trainers and leadership.'
+    instructions: |
+      **What this means:**
+      Orientation is your first live interaction with GFI leadership, your trainers, and your fellow new agents. This is where you'll meet your cohort, get your questions answered in real-time, and experience the GFI culture firsthand.
+      
+      **What you'll do:**
+      Attend the scheduled orientation session (virtual or in-person depending on your region) and actively participate.
+      
+      **How to do it:**
+      1. **Find Your Session Details** — Click "Save Your Spot" to:
+         - See your assigned orientation date/time
+         - Get the Zoom link (for virtual) or address (for in-person)
+         - Review the agenda
+      
+      2. **Prepare for Orientation** — Before attending:
+         - Complete Tasks 1.1-1.4 (orientation builds on these)
+         - Write down 2-3 questions you have
+         - Test your Zoom connection (if virtual)
+         - Have a notebook ready
+      
+      3. **During Orientation** — You'll experience:
+         - Welcome from GFI leadership (15 min)
+         - Your trainer introduction and cohort introductions (30 min)
+         - Week 1-3 detailed walkthrough (45 min)
+         - Compliance and contracting overview (20 min)
+         - Q&A session (30 min)
+      
+      4. **After Orientation** —
+         - Connect with at least 3 fellow agents on the team communication platform
+         - Schedule your Week 2 coaching call
+         - Complete any action items assigned during orientation
+      
+      **What you'll achieve:**
+      You'll feel connected to your team, understand the support structure, and have clarity on your next steps.
+    resources:
+      actions:
+        - name: 'Save Your Spot for Orientation'
+          url: ''
+        - name: 'Weekly Training Schedule'
+          url: 'https://docs.google.com/spreadsheets/d/1WRV7tWuDGnUVpFZp6OnlId7jKlrNN72nCzL6KXkqfLQ/edit?gid=0#gid=0'
+        - name: 'View General Session Slides'
+          url: 'https://docs.google.com/presentation/d/1BEa4mMUfmQWg4ZbBzgkHqFK6H0ebUVeY2K4E8fia2VA/edit?slide=id.g26ae35a916c_0_457#slide=id.g26ae35a916c_0_457'
+        - name: 'Review Product Solution Slides'
+          url: 'https://docs.google.com/presentation/d/1BEa4mMUfmQWg4ZbBzgkHqFK6H0ebUVeY2K4E8fia2VA/edit?slide=id.g2e64e2b4ff1_0_988#slide=id.g2e64e2b4ff1_0_988'
+        - name: 'Review Compensation Slides'
+          url: 'https://docs.google.com/presentation/d/1-jKa75UJK4C9x1BNYFsV3CEtBWtSAy3-sLKFQWHXxbk/edit?slide=id.g34bcbf2e9e7_0_533#slide=id.g34bcbf2e9e7_0_533'
+    autoComplete: false
+
+  - program: 'GFI New Agent School'
+    stage: 'Week 1 Onboarding'
+    order: 7
+    name: 'Schedule Week 2 Coaching'
+    type: 'COACHING'
+    estimatedDuration: 5
+    description: 'Book your first one-on-one coaching call with your trainer.'
+    instructions: |
+      **What this means:**
+      Weekly coaching calls are your personalized support system. These 60-minute calls with your dedicated trainer help you stay on track, work through challenges, and customize your learning path. Week 2 is where you start building your business for real—your coaching call will help you focus on the right activities.
+      
+      **What you'll do:**
+      Schedule your Week 2 coaching call for next week and understand your Week 2 priorities.
+      
+      **How to do it:**
+      1. **Access Your Trainer's Calendar** — Click "Book an Hour" to open your trainer's scheduling link
+      
+      2. **Pick Your Time** — Choose a time that:
+         - Falls within Week 2 (check the date range)
+         - Works with your schedule
+         - Gives you time to complete Week 1 tasks first
+      
+      3. **Understand Your Week 2 Focus** — In Week 2, you'll be working on three key goals:
+         - **Get licensed and appointed** — This is priority #1. We can't pay you without a license, and you want to earn your first $1,000 in your first 60 days to become a Net License.
+         - **Build toward your 3-3-60 promotion** — Help 3 families and refer 3 people who could make great agents. When you do that, you're eligible for promotion to Field Associate with a 50% pay increase.
+         - **Prepare for field training** — Continue building your leads list to 100-200 names using memory joggers and systematic list-building.
+      
+      4. **Prepare Your Agenda** — After booking, you'll receive a pre-call form asking:
+         - Which Week 1 tasks you completed
+         - Your exam date and study progress
+         - How many leads you've added to your list
+         - Any specific challenges you're facing
+      
+      5. **Add to Calendar** — The coaching call will automatically sync to your calendar with:
+         - Zoom link
+         - Pre-call preparation checklist
+         - Your trainer's contact info
+      
+      **What you'll achieve:**
+      You'll have your first coaching session locked in and understand the three priorities that will drive your success in Week 2.
+    resources:
+      actions:
+        - name: 'Book an Hour with Your Trainer'
+          url: ''
+        - name: 'Start Your Financial Questionnaire'
+          url: 'https://docs.google.com/spreadsheets/d/1bKzuNX8vrGqmb9ydKAaQmNLXy3o9wGKQ/edit?gid=1616532283#gid=1616532283'
+        - name: 'Check Exam Date and Time'
+          url: 'https://docs.google.com/document/d/1IsWNaNsEaUeCE2VuTcgTyxvS54x5ewOwU0d-ov66Yok/edit?tab=t.0#heading=h.5vvutfuvemj'
+    autoComplete: false
+
+  # Week 2 Onboarding Tasks
+  - program: 'GFI New Agent School'
+    stage: 'Week 2 Onboarding'
+    order: 1
+    name: 'Learn the 3-3-60 Game Plan'
+    type: 'VIDEO'
+    estimatedDuration: 10
+    description: 'Master the proven formula for new agent success.'
+    instructions: |
+      **What this means:**
+      The 3-3-60 Game Plan is GFI's systematic approach to building your business in your first 60 days. It stands for: 3 business partners and 3 applications in your first 60 days. This task teaches you the math and activity metrics behind hitting these targets.
+      
+      **What you'll do:**
+      Watch the training video and learn how to reverse-engineer your income goals into daily activities.
+      
+      **How to do it:**
+      1. **Watch the Training** — Click "Watch Now" to view the training covering:
+         - Why 3 business partners in 60 days is the magic number
+         - How to identify potential business partners
+         - The income breakdown and potential of building a team
+         - Daily activities required to generate business partner conversations
+      
+      2. **Do the Math for Your Goals** — Use the 3-3-60 calculator to input:
+         - Your first-year income goal
+         - Your expected average premium per case
+         - Your projected closing ratio (start with 30% if you're unsure)
+         - The calculator shows you: appointments needed per week, contacts needed per day, and calls needed to book appointments
+      
+      **What you'll achieve:**
+      You'll understand exactly what activities you need to do daily to hit your income goals—no more guessing.
+    resources:
+      actions:
+        - name: 'Watch Now'
+          url: 'https://share.synthesia.io/7a3f9011-bdd2-4d28-bf0f-3997462714b7'
+        - name: 'Coaching Session'
+          url: ''
+    autoComplete: false
+
+  - program: 'GFI New Agent School'
+    stage: 'Week 2 Onboarding'
+    order: 2
+    name: 'Build Your Dream Team'
+    type: 'ASSIGNMENT'
+    estimatedDuration: 30
+    description: 'Think of the top people you would love to win with.'
+    instructions: |
+      **What this means:**
+      Your "Dream Team" is the short list of people you would most want as business partners—people who could thrive as agents and help you build an agency together. These are individuals with strong networks, great people skills, entrepreneurial drive, or a desire for more income and flexibility. This isn't about convincing everyone you know—it's about identifying your top 3-10 ideal co-founders.
+      
+      **What you'll do:**
+      Identify and document 3-10 people who would make excellent agency partners.
+      
+      **How to do it:**
+      1. **Think Quality Over Quantity** — Ask yourself:
+         - Who in my network has a strong sphere of influence?
+         - Who has great communication and relationship skills?
+         - Who is entrepreneurial or looking for a career change?
+         - Who would I genuinely enjoy building a business with?
+         - Who is coachable and driven to succeed?
+      
+      2. **Write Down Your Top 3** — Start with your absolute best three candidates:
+         - People you trust and respect
+         - People who trust and respect you
+         - People with the potential to build something significant
+      
+      3. **Document Your List** — Click "Add Top 3-10 Dream Team Members"
+      
+      **What you'll achieve:**
+      You'll have a focused list of high-potential business partners to approach strategically, rather than randomly reaching out to everyone.
+    resources:
+      actions:
+        - name: 'Add Top 3-10 Dream Team Members'
+          url: 'https://docs.google.com/spreadsheets/d/1ZF4ilQXMRsuDGOmPo75EfwwaTLjQZN6KIrt3sSHBJoc/edit?gid=660508783#gid=660508783'
+    autoComplete: false
+
+  - program: 'GFI New Agent School'
+    stage: 'Week 2 Onboarding'
+    order: 3
+    name: 'Expand Your List with Memory Joggers'
+    type: 'ASSIGNMENT'
+    estimatedDuration: 20
+    description: 'Use proven triggers to recall another 100-200 names you initially forgot.'
+    instructions: |
+      **What this means:**
+      Most agents think they're done after writing 100 names, but memory joggers help you recall another people you initially overlooked. This task uses psychological triggers—like looking at your phone contacts, social media friends, and old photos—to unlock additional names.
+      
+      **What you'll do:**
+      Go through a series of memory-jogging exercises to expand your Fantasy Team list.
+      
+      **How to do it:**
+      1. **Phone Contacts Scan** — Open your phone contacts and scroll through:
+         - Anyone you've called/texted in the last 6 months
+         - People you forgot to add to your initial list
+         - Add them now (target: +20 names)
+      
+      2. **Social Media Scan** — Log into Facebook, LinkedIn, Instagram:
+         - Scroll your friends/connections list
+         - Look at people who engage with your posts
+         - Check "People You May Know" suggestions
+         - Add them to your list (target: +20 names)
+      
+      3. **Discuss with AI** — After scanning, ask the AI Assistant:
+         - "Jog my memory to help me build my list."
+      
+      **What you'll achieve:**
+      You'll have 100-200 names—more than enough to fuel your agency launch.
+    resources:
+      actions:
+        - name: 'Update Your List'
+          url: 'https://docs.google.com/spreadsheets/d/1ZF4ilQXMRsuDGOmPo75EfwwaTLjQZN6KIrt3sSHBJoc/edit?gid=660508783#gid=660508783'
+    autoComplete: false
+
+  - program: 'GFI New Agent School'
+    stage: 'Week 2 Onboarding'
+    order: 4
+    name: 'Pass Your State Exam'
+    type: 'CERTIFICATION'
+    estimatedDuration: 180
+    description: 'Take and pass your state insurance licensing exam (so you can get paid!).'
+    instructions: |
+      **What this means:**
+      This is the major milestone of Week 2: passing your state exam and becoming a licensed insurance agent. By now you've completed your pre-licensing course. This task is about exam prep, test-taking strategy, and executing on exam day.
+      
+      **What you'll do:**
+      Complete final exam preparation, take your scheduled exam, and celebrate when you pass!
+      
+      **How to do it:**
+      1. **Day Before Your Exam:**
+         - Confirm your exam appointment
+         - Get good sleep each night
+         - Use the AI Assistant to quiz you: "Give me 10 practice questions on [topic]"
+         - Review exam logistics: location, what to bring, arrival time
+         - Review your wrong answers to understand why
+      
+      2. **Exam Day:**
+         - Arrive 30 minutes early
+         - Bring two forms of ID (including one government-issued photo ID)
+         - Don't bring: phones, smart watches, food/drinks
+         - Take your time—you have 2-3 hours
+         - Trust your first instinct on questions you're unsure about
+      
+      3. **After the Exam:**
+         - You'll get your results immediately (pass/fail)
+         - If you pass: Celebrate! Take a screenshot. Report back to the team.
+         - If you don't pass: It's okay—many agents need multiple attempts. Book your retake immediately less than week later.
+      
+      **What you'll achieve:**
+      You'll be a licensed insurance agent, legally able to earn commissions as a financial services professional.
+    resources:
+      actions:
+        - name: 'Take Your Exam'
+          url: 'https://docs.google.com/spreadsheets/d/1OTP_jg-A2vgsTETKuiYILVctflr62eDwV0BQvEP8Qdk/edit?gid=0#gid=0'
+        - name: 'Apply for Your National Producer Number (NPN)'
+          url: 'https://nipr.com/licensing-center/apply-for-a-license'
+    autoComplete: false
+
+  - program: 'GFI New Agent School'
+    stage: 'Week 2 Onboarding'
+    order: 5
+    name: 'Schedule Week 3 Coaching'
+    type: 'COACHING'
+    estimatedDuration: 5
+    description: 'Book your Week 3 coaching call to prepare for field training.'
+    instructions: |
+      **What this means:**
+      Week 3 coaching is when you transition from book learning to active observation. Your trainer will take the lead on booking your first few appointments while you provide context and observe.
+      
+      **What you'll do:**
+      Schedule your Week 3 coaching call.
+      
+      **How to do it:**
+      1. **Access Your Trainer's Calendar** — Click "Book an Hour" to open your trainer's scheduling link
+      
+      2. **Pick Your Time** — Choose a time that:
+         - Falls within Week 3
+         - Works with your schedule
+         - Gives you time to complete Week 2 tasks first
+      
+      3. **Understand Your Week 3 Focus** — In Week 3, you'll be working on three key goals:
+         - Prioritizing Your List of Names with MACHO
+         - Learn How to Properly Introduce Your Trainer with the ETHOR Script
+         - Make Initial Introductions
+      
+      4. **Add to Calendar** — The coaching call will automatically sync to your calendar with a Zoom link
+      
+      **What you'll achieve:**
+      You'll learn how to constructively, approach and work with your warm network—friends, family, and other contacts you already know—to start your agency.
+    resources:
+      actions:
+        - name: 'Book an Hour with Your Trainer'
+          url: ''
+        - name: 'View the MACHO Criteria'
+          url: ''
+        - name: 'View the ETHOR Script'
+          url: ''
+    autoComplete: false
+
+  # Week 3 Onboarding Tasks
+  - program: 'GFI New Agent School'
+    stage: 'Week 3 Onboarding'
+    order: 1
+    name: 'Qualify Your List with MACHO'
+    type: 'ASSIGNMENT'
+    estimatedDuration: 45
+    description: 'Learn to identify and prioritize your best prospects using the Three-Part Test.'
+    instructions: |
+      **What this means:**
+      Lead qualification helps you decide who to focus on first—so you get the best results for the time you spend prospecting. The Three-Part Test identifies which leads are most likely to need what you offer and are ready to take action. This strategic approach prevents you from wasting time on low-probability contacts.
+      
+      **What you'll do:**
+      Profile each lead in your list using MACHO fit, Connection Level, and Timing indicators.
+      
+      **How to do it:**
+      1. **Start with Your Warm Network:**
+         - These are people you already know something about
+         - These people already care about you
+         - They're more open to conversation than strangers
+         - Your first step: announce your new career and rebrand yourself as someone who helps families protect their future
+         - This alone sparks conversations
+      
+      2. **Understand the Qualification Test:**
+         - **3 Good Qualities** – What are the three qualities that would make them a good business partner?
+         - **MACHO Fit** – Do they have 3 or more MACHO traits (Married, Age > 30, Children, Homeowner, Occupation)?
+         - **Connection Level** – How well do you know them?
+         - **Timing** – Have they indicated an interest in meeting?
+      
+      3. **Discuss with AI:**
+         - After profiling your leads, ask the AI Assistant:
+         - "Which of my leads should I prioritize first?"
+         - "Help me understand why this person is a good MACHO fit"
+         - "How should I handle someone in my network with only 2 MACHO traits?"
+      
+      **What you'll achieve:**
+      You'll have a prioritized, qualified list showing exactly who to contact first, building confidence while you learn and creating early success stories.
+    resources:
+      actions:
+        - name: 'Watch Now'
+          url: 'https://share.synthesia.io/1efb95f9-de48-489c-8fcf-cc79fc70bbe4'
+        - name: 'Read How to Qualify my List with MACHO and Connection Levels'
+          url: ''
+    autoComplete: false
+
+  - program: 'GFI New Agent School'
+    stage: 'Week 3 Onboarding'
+    order: 2
+    name: 'Learn the ETHOR Script'
+    type: 'PRACTICE'
+    estimatedDuration: 30
+    description: 'Master the Field Training Script for engaging your warm network with your trainer.'
+    instructions: |
+      **What this means:**
+      The ETHOR method is your natural, pressure-free script for inviting people in your warm network to a conversation with you and your trainer. Your job is to spark curiosity—let your trainer do the explaining. This positions you as a professional while building support from people who already trust you.
+      
+      **What you'll do:**
+      Learn and practice the ETHOR script until it feels conversational and authentic.
+      
+      **How to do it:**
+      1. **Learn the ETHOR Framework:**
+         - **E**xcited – Share your excitement about getting started
+         - **T**raining – Let them know you're in training and need practice
+         - **H**elp – Ask for their help, not a commitment
+         - **O**pinion – Say you'd love their honest feedback
+         - **R**eferral – Invite them to refer someone if it's not for them
+      
+      2. **Master the Script** — Here's the proven conversation flow:
+      
+         **YOU:** "Hey how are you? (Small Talk). Well the reason I am calling is because I just took a position with [Company Name], and I'm super excited about it. I'm actually going through training right now and your support would mean the world to me. So I was wondering if you and [Spouse] would help me out?"
+      
+         **THEM:** "Of course, what would you need from us?"
+      
+         **YOU:** "All we would do is hop on a quick Zoom in the next day or so where my trainer will share with you what we are and what I'll be doing in my new career path so I can learn, but also, that way if you ever come across anyone who would benefit from what we do, you can have confidence referring them to me. So what day works better for you both, tomorrow or the next day?"
+      
+      3. **Critical Rule: Always Call, Never Text**
+         - Texts don't convey enthusiasm
+         - Calls build connection
+         - Your voice matters
+      
+      4. **Practice with AI:** - After practicing, ask the AI Assistant:
+         - "Let's role-play the ETHOR script"
+         - "How can I sound more natural?"
+         - "What if they say they're too busy?"
+      
+      **What you'll achieve:**
+      You'll confidently invite warm contacts to meet your trainer in a way that feels helpful, not salesy, and positions you for success.
+    resources:
+      actions:
+        - name: 'Watch Role Play'
+          url: ''
+        - name: 'Practice with AI'
+          url: ''
+    autoComplete: false
+
+  - program: 'GFI New Agent School'
+    stage: 'Week 3 Onboarding'
+    order: 3
+    name: 'Make Initial Introductions'
+    type: 'ASSIGNMENT'
+    estimatedDuration: 60
+    description: 'Begin reaching out to your prioritized contacts and making introductions.'
+    instructions: |
+      **What this means:**
+      This is where you take action. Using your qualified list and ETHOR script, you'll start contacting people and introducing them to your trainer. Your trainer will use the 3 Good Qualities and MACHO attributes to create a connection and set a meeting.
+      
+      **What you'll do:**
+      Contact your top prospects, use the ETHOR script, and facilitate introductions to your trainer.
+      
+      **How to do it:**
+      1. **Start with Your Top 10** — Begin with contacts on your list who:
+         - Have 4 or 5 MACHO attributes
+         - AND a strong personal Connection with you
+      
+      2. **Make the Contact** — Reach out using their preferred method:
+         - Call, text, or in-person—whatever feels most natural
+         - Use the ETHOR script as your guide
+         - Focus on reconnecting first, then transition
+      
+      3. **Send Group Text with Your Trainer:**
+         - After they agree to meet, send a three-way text introducing your trainer
+         - Your trainer will take over scheduling
+      
+      **What you'll achieve:**
+      You'll make your first real introductions, see professional conversations in action, and start building momentum toward your 3-3-60 goals.
+    resources:
+      actions:
+        - name: 'Read the 3 Good Qualities Script'
+          url: ''
+        - name: 'Track Your Introductions'
+          url: 'https://docs.google.com/spreadsheets/d/1ZF4ilQXMRsuDGOmPo75EfwwaTLjQZN6KIrt3sSHBJoc/edit?gid=660508783#gid=660508783'
+    autoComplete: false
+
+  # Field Training Tasks
+  - program: 'GFI New Agent School'
+    stage: 'Field Training'
+    order: 1
+    name: 'Kickoff Meeting'
+    type: 'MEETING'
+    estimatedDuration: 30
+    description: 'Understand the field training stage and what success looks like.'
+    instructions: |
+      **What this means:**
+      Field Training is your apprenticeship phase. Over the next 2-3 weeks, you and your trainer will conduct 10 appointments with prospects from your list. Your trainer will lead and you will observe and support while you gain confidence to go it alone. The goal isn't to do it perfectly—it's to learn by doing.
+      
+      **What you'll do:**
+      Review the Field Training roadmap and commit to completing 10 appointments.
+      
+      **How to do it:**
+      1. **Watch the Overview Video** — Click "Watch Field Training Overview" to learn:
+         - Why 10 appointments is the target
+         - How trainer support works (trainer leads, you observe and support)
+         - What to expect from your first vs. your tenth appointment
+         - How to track your progress
+      
+      2. **Earn Your First $1K:**
+         - 10 appointments completed (goal: 2-3 per week)
+         - At least 3 applications submitted
+         - At least 3 business partners joined your team
+         - Growing confidence in your presentation skills
+      
+      3. **Understand Support Structure:**
+         - Your trainer will lead appointments with you
+         - After each appointment, you'll debrief: what went well, what to improve
+         - You'll log each appointment in the system
+         - Your trainer monitors your progress and provides coaching
+      
+      **What you'll achieve:**
+      You'll have a clear roadmap for your next 2-3 weeks and understand exactly what "graduation" from field training looks like.
+    resources:
+      actions:
+        - name: 'Watch Now'
+          url: ''
+        - name: 'Track Your Appointments'
+          url: 'https://docs.google.com/spreadsheets/d/1ZF4ilQXMRsuDGOmPo75EfwwaTLjQZN6KIrt3sSHBJoc/edit?gid=660508783#gid=660508783'
+        - name: 'Track Your Policy Applications'
+          url: 'https://docs.google.com/spreadsheets/d/1MYK9aK0xz05MqjkOPNpNuw10YwsMkcXjyWd1Eb3dyio/edit?gid=297966184#gid=297966184'
+    autoComplete: false
+
+  - program: 'GFI New Agent School'
+    stage: 'Field Training'
+    order: 2
+    name: 'Appointment 1'
+    type: 'SHADOWING'
+    estimatedDuration: 75
+    description: 'Observe your first real appointment with a prospect from your qualified list.'
+    instructions: |
+      **What this means:**
+      This is your first appointment. An appointment counts as complete when you and your trainer have met with a prospect (in-person or virtual), conducted client discovery, presented a solution, and followed up appropriately—regardless of whether they submitted an application or not.
+      
+      **What you'll do:**
+      Support your trainer in conducting the appointment while you observe and learn.
+      
+      **How to do it:**
+      **Before the Appointment:**
+      1. **Know Your Roles:**
+         - **You**: Observer and introducer—make the warm introduction, then observe and support
+         - **Trainer**: Presenter and expert—leads the conversation, conducts discovery, presents solutions
+      
+      2. **Check Calendar and Zoom** — 15 minutes before:
+         - Send "See you in 15 minutes" note to all attendees
+         - Check your Zoom background
+      
+      3. **Prep with Trainer** — 15 minutes before:
+         - Brief your trainer on the prospect (relationship, what you know about them)
+         - Review the game plan
+         - Confirm roles and expectations
+      
+      4. **Get Organized:**
+         - Create a Google Drive folder for your client
+         - Add Financial Questionnaire with your prep notes
+         - Be on time (arrive 5 minutes early)
+      
+      **During the Appointment:**
+      1. **Your Role:**
+         - **Warm-up and intro** (5-10 min): Build rapport, make the introduction and hand off to trainer
+      
+      2. **Trainer's Role:**
+         - **Educate** (10-15 min): Agency introduction and overview
+         - **Financial Questionnaire** (15-20 min): Ask questions about their family, finances, goals, concerns
+         - **Summarize Findings** (15-20 min): Share observations and possible opportunities, if they qualify
+         - **Next Step** (5-10 min): Schedule next meeting before the end of this one
+      
+      **After the Appointment:**
+      1. **Debrief with AI:**
+         - What questions do you have?
+         - How did it go? What went well? What would you do differently?
+      
+      2. **Follow Up**: Send thank-you text/email within 24 hours
+      
+      **What you'll achieve:**
+      You'll complete your first appointment and begin building confidence in the process.
+    resources:
+      actions:
+        - name: 'GFI Field Training & Sales Guide'
+          url: 'https://www.mygficonnect.com/content/field-training-sales-guide'
+        - name: 'Learn the 5 Magic Questions'
+          url: ''
+        - name: 'Get Financial Questionnaire Template'
+          url: 'https://docs.google.com/spreadsheets/d/1bKzuNX8vrGqmb9ydKAaQmNLXy3o9wGKQ/edit?gid=1616532283#gid=1616532283'
+        - name: 'Example Follow Up Email or Text'
+          url: ''
+        - name: 'Get Zoom Backgrounds'
+          url: 'https://www.mygficonnect.com/pages/zoom-background'
+        - name: 'Post Zoom AI Companion Transcript'
+          url: 'https://www.zoom.com/en/products/ai-assistant/'
+        - name: 'Company Overview Presentation'
+          url: 'https://docs.google.com/presentation/d/1shm3vpVTIsIWAKG7YWqXs_eqI31Uel6y/edit?slide=id.g2f02c4c92c1_29_0#slide=id.g2f02c4c92c1_29_0'
+        - name: 'Recruiting Interview Guide'
+          url: 'https://www.mygficonnect.com/documents/presentations/recruiting_interview'
+    autoComplete: false
+
+  - program: 'GFI New Agent School'
+    stage: 'Field Training'
+    order: 3
+    name: 'Appointment 2'
+    type: 'SHADOWING'
+    estimatedDuration: 75
+    description: 'Continue observing and learning the appointment process.'
+    instructions: |
+      Follow the same process as Appointment 1. Focus on observing how your trainer builds rapport, asks discovery questions, and presents solutions. Take notes on what resonates with you.
+    resources:
+      actions:
+        - name: 'GFI Field Training & Sales Guide'
+          url: 'https://www.mygficonnect.com/content/field-training-sales-guide'
+        - name: 'Get Financial Questionnaire Template'
+          url: 'https://docs.google.com/spreadsheets/d/1bKzuNX8vrGqmb9ydKAaQmNLXy3o9wGKQ/edit?gid=1616532283#gid=1616532283'
+        - name: 'Track Your Appointments'
+          url: 'https://docs.google.com/spreadsheets/d/1ZF4ilQXMRsuDGOmPo75EfwwaTLjQZN6KIrt3sSHBJoc/edit?gid=660508783#gid=660508783'
+    autoComplete: false
+
+  - program: 'GFI New Agent School'
+    stage: 'Field Training'
+    order: 4
+    name: 'Appointment 3'
+    type: 'SHADOWING'
+    estimatedDuration: 75
+    description: 'Build on your learning from previous appointments.'
+    instructions: |
+      Follow the same process as Appointment 1. By now you should be getting comfortable with the flow. Pay attention to how different prospects respond to the same questions.
+    resources:
+      actions:
+        - name: 'GFI Field Training & Sales Guide'
+          url: 'https://www.mygficonnect.com/content/field-training-sales-guide'
+        - name: 'Get Financial Questionnaire Template'
+          url: 'https://docs.google.com/spreadsheets/d/1bKzuNX8vrGqmb9ydKAaQmNLXy3o9wGKQ/edit?gid=1616532283#gid=1616532283'
+        - name: 'Track Your Appointments'
+          url: 'https://docs.google.com/spreadsheets/d/1ZF4ilQXMRsuDGOmPo75EfwwaTLjQZN6KIrt3sSHBJoc/edit?gid=660508783#gid=660508783'
+    autoComplete: false
+
+  - program: 'GFI New Agent School'
+    stage: 'Field Training'
+    order: 5
+    name: 'Appointment 4'
+    type: 'SHADOWING'
+    estimatedDuration: 75
+    description: 'Continue building confidence through observation.'
+    instructions: |
+      Follow the same process as Appointment 1. You're at the halfway point. Start thinking about which parts of the process you feel most comfortable with.
+    resources:
+      actions:
+        - name: 'GFI Field Training & Sales Guide'
+          url: 'https://www.mygficonnect.com/content/field-training-sales-guide'
+        - name: 'Get Financial Questionnaire Template'
+          url: 'https://docs.google.com/spreadsheets/d/1bKzuNX8vrGqmb9ydKAaQmNLXy3o9wGKQ/edit?gid=1616532283#gid=1616532283'
+        - name: 'Track Your Appointments'
+          url: 'https://docs.google.com/spreadsheets/d/1ZF4ilQXMRsuDGOmPo75EfwwaTLjQZN6KIrt3sSHBJoc/edit?gid=660508783#gid=660508783'
+    autoComplete: false
+
+  - program: 'GFI New Agent School'
+    stage: 'Field Training'
+    order: 6
+    name: 'Appointment 5'
+    type: 'SHADOWING'
+    estimatedDuration: 75
+    description: 'Halfway through field training - start co-leading sections.'
+    instructions: |
+      Follow the same process as Appointment 1. Consider asking your trainer if you can co-lead certain sections like the warm-up or parts of the Financial Questionnaire.
+    resources:
+      actions:
+        - name: 'GFI Field Training & Sales Guide'
+          url: 'https://www.mygficonnect.com/content/field-training-sales-guide'
+        - name: 'Get Financial Questionnaire Template'
+          url: 'https://docs.google.com/spreadsheets/d/1bKzuNX8vrGqmb9ydKAaQmNLXy3o9wGKQ/edit?gid=1616532283#gid=1616532283'
+        - name: 'Track Your Appointments'
+          url: 'https://docs.google.com/spreadsheets/d/1ZF4ilQXMRsuDGOmPo75EfwwaTLjQZN6KIrt3sSHBJoc/edit?gid=660508783#gid=660508783'
+    autoComplete: false
+
+  - program: 'GFI New Agent School'
+    stage: 'Field Training'
+    order: 7
+    name: 'Appointment 6'
+    type: 'SHADOWING'
+    estimatedDuration: 75
+    description: 'Continue co-leading sections with trainer support.'
+    instructions: |
+      Follow the same process as Appointment 1. Co-lead more sections. Your trainer will support and coach you through it.
+    resources:
+      actions:
+        - name: 'GFI Field Training & Sales Guide'
+          url: 'https://www.mygficonnect.com/content/field-training-sales-guide'
+        - name: 'Get Financial Questionnaire Template'
+          url: 'https://docs.google.com/spreadsheets/d/1bKzuNX8vrGqmb9ydKAaQmNLXy3o9wGKQ/edit?gid=1616532283#gid=1616532283'
+        - name: 'Track Your Appointments'
+          url: 'https://docs.google.com/spreadsheets/d/1ZF4ilQXMRsuDGOmPo75EfwwaTLjQZN6KIrt3sSHBJoc/edit?gid=660508783#gid=660508783'
+    autoComplete: false
+
+  - program: 'GFI New Agent School'
+    stage: 'Field Training'
+    order: 8
+    name: 'Appointment 7'
+    type: 'SHADOWING'
+    estimatedDuration: 75
+    description: 'Build confidence by co-leading more of the appointment.'
+    instructions: |
+      Follow the same process as Appointment 1. Take on more responsibility. Your trainer is there to support you.
+    resources:
+      actions:
+        - name: 'GFI Field Training & Sales Guide'
+          url: 'https://www.mygficonnect.com/content/field-training-sales-guide'
+        - name: 'Get Financial Questionnaire Template'
+          url: 'https://docs.google.com/spreadsheets/d/1bKzuNX8vrGqmb9ydKAaQmNLXy3o9wGKQ/edit?gid=1616532283#gid=1616532283'
+        - name: 'Track Your Appointments'
+          url: 'https://docs.google.com/spreadsheets/d/1ZF4ilQXMRsuDGOmPo75EfwwaTLjQZN6KIrt3sSHBJoc/edit?gid=660508783#gid=660508783'
+    autoComplete: false
+
+  - program: 'GFI New Agent School'
+    stage: 'Field Training'
+    order: 9
+    name: 'Appointment 8'
+    type: 'SHADOWING'
+    estimatedDuration: 75
+    description: 'Nearly complete - demonstrate your growing skills.'
+    instructions: |
+      Follow the same process as Appointment 1. You're getting close to the end. Show what you've learned.
+    resources:
+      actions:
+        - name: 'GFI Field Training & Sales Guide'
+          url: 'https://www.mygficonnect.com/content/field-training-sales-guide'
+        - name: 'Get Financial Questionnaire Template'
+          url: 'https://docs.google.com/spreadsheets/d/1bKzuNX8vrGqmb9ydKAaQmNLXy3o9wGKQ/edit?gid=1616532283#gid=1616532283'
+        - name: 'Track Your Appointments'
+          url: 'https://docs.google.com/spreadsheets/d/1ZF4ilQXMRsuDGOmPo75EfwwaTLjQZN6KIrt3sSHBJoc/edit?gid=660508783#gid=660508783'
+    autoComplete: false
+
+  - program: 'GFI New Agent School'
+    stage: 'Field Training'
+    order: 10
+    name: 'Appointment 9'
+    type: 'SHADOWING'
+    estimatedDuration: 75
+    description: 'Second to last appointment - prepare for independence.'
+    instructions: |
+      Follow the same process as Appointment 1. Almost done! Think about what you'll do differently when you're on your own.
+    resources:
+      actions:
+        - name: 'GFI Field Training & Sales Guide'
+          url: 'https://www.mygficonnect.com/content/field-training-sales-guide'
+        - name: 'Get Financial Questionnaire Template'
+          url: 'https://docs.google.com/spreadsheets/d/1bKzuNX8vrGqmb9ydKAaQmNLXy3o9wGKQ/edit?gid=1616532283#gid=1616532283'
+        - name: 'Track Your Appointments'
+          url: 'https://docs.google.com/spreadsheets/d/1ZF4ilQXMRsuDGOmPo75EfwwaTLjQZN6KIrt3sSHBJoc/edit?gid=660508783#gid=660508783'
+    autoComplete: false
+
+  - program: 'GFI New Agent School'
+    stage: 'Field Training'
+    order: 11
+    name: 'Appointment 10'
+    type: 'SHADOWING'
+    estimatedDuration: 75
+    description: 'Final field training appointment - celebrate your progress!'
+    instructions: |
+      Follow the same process as Appointment 1. This is your final field training appointment! Reflect on how far you've come since Appointment 1.
+      
+      **What you'll achieve:**
+      By completing this appointment, you'll have finished field training. Most agents help secure 3-5 applications and recruit 3 business partners during their 10 field training appointments. You're now ready to conduct appointments independently!
+    resources:
+      actions:
+        - name: 'GFI Field Training & Sales Guide'
+          url: 'https://www.mygficonnect.com/content/field-training-sales-guide'
+        - name: 'Get Financial Questionnaire Template'
+          url: 'https://docs.google.com/spreadsheets/d/1bKzuNX8vrGqmb9ydKAaQmNLXy3o9wGKQ/edit?gid=1616532283#gid=1616532283'
+        - name: 'Track Your Appointments'
+          url: 'https://docs.google.com/spreadsheets/d/1ZF4ilQXMRsuDGOmPo75EfwwaTLjQZN6KIrt3sSHBJoc/edit?gid=660508783#gid=660508783'
+    autoComplete: false
