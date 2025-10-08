@@ -1,0 +1,251 @@
+# Task Template
+#
+# Use this template to create new task YAML files.
+# Copy this file and customize for your client's program tasks.
+#
+# IMPORTANT: Program and stage names must match EXACTLY the program file (case-sensitive)
+
+tasks:
+  # Example Task 1
+  - program: 'Program Name'  # REQUIRED: Must match program file exactly
+    stage: 'Stage 1 Name'  # REQUIRED: Must match program file exactly
+    order: 1  # REQUIRED: Sequential order within stage (1, 2, 3, ...)
+    name: 'Task Name'  # REQUIRED: Descriptive task name
+    type: 'ASSIGNMENT'  # REQUIRED: See TaskType options below
+    estimatedDuration: 30  # REQUIRED: Duration in minutes
+    description: 'Short description of what this task involves (1-2 sentences).'  # REQUIRED: Brief summary
+    instructions: |
+      **What this means:**
+      Provide context and background information. Explain why this task is important and how it fits into the larger program.
+      
+      **What you'll do:**
+      List the high-level goals and objectives for this task. What should the participant accomplish?
+      
+      **How to do it:**
+      1. First specific step with clear instructions
+      2. Second specific step with clear instructions
+      3. Third specific step with clear instructions
+      4. Additional steps as needed
+      
+      **What you'll achieve:**
+      Describe the expected outcome after completing this task. What will the participant have learned or accomplished?
+    resources:
+      actions:
+        - name: 'Action Button Text'
+          url: 'https://example.com/resource'
+        - name: 'Another Action'
+          url: 'https://example.com/another-resource'
+    autoComplete: false  # REQUIRED: true or false
+
+  # Example Task 2
+  - program: 'Program Name'
+    stage: 'Stage 1 Name'
+    order: 2
+    name: 'Another Task Name'
+    type: 'VIDEO'
+    estimatedDuration: 15
+    description: 'Brief description of this task.'
+    instructions: |
+      **What this means:**
+      Context for this task.
+      
+      **What you'll do:**
+      Goals for this task.
+      
+      **How to do it:**
+      1. Step one
+      2. Step two
+      
+      **What you'll achieve:**
+      Expected outcomes.
+    resources:
+      actions:
+        - name: 'Watch Video'
+          url: 'https://example.com/video'
+    autoComplete: false
+
+  # Example Task 3 - Different Stage
+  - program: 'Program Name'
+    stage: 'Stage 2 Name'
+    order: 1
+    name: 'First Task in Stage 2'
+    type: 'READING'
+    estimatedDuration: 20
+    description: 'Description here.'
+    instructions: |
+      **What this means:**
+      Context.
+      
+      **What you'll do:**
+      Goals.
+      
+      **How to do it:**
+      Steps.
+      
+      **What you'll achieve:**
+      Outcomes.
+    resources:
+      actions:
+        - name: 'Read Article'
+          url: 'https://example.com/article'
+    autoComplete: false
+
+# TASK TYPE OPTIONS:
+#
+# Choose the most specific type that fits your task:
+#
+# READING      - Reading articles, books, or documentation
+# VIDEO        - Watching videos or recorded content
+# QUIZ         - Taking quizzes or assessments
+# ASSIGNMENT   - Completing assignments or projects
+# MEETING      - Attending meetings or calls
+# SHADOWING    - Observing others work
+# PRACTICE     - Practicing skills or techniques
+# CERTIFICATION - Obtaining certifications
+# COACHING     - One-on-one coaching sessions
+# TRAINING     - Formal training sessions
+# NETWORKING   - Networking activities
+# RESEARCH     - Research tasks
+# OTHER        - Any other task type
+
+# FIELD NOTES:
+#
+# 1. program (string, required)
+#    - Must match program name in program YAML file exactly
+#    - Case-sensitive
+#
+# 2. stage (string, required)
+#    - Must match stage name in program YAML file exactly
+#    - Case-sensitive
+#
+# 3. order (number, required)
+#    - Sequential order within the stage (1, 2, 3, ...)
+#    - Each stage starts at 1
+#
+# 4. name (string, required)
+#    - Descriptive task name
+#    - Should be action-oriented
+#
+# 5. type (enum, required)
+#    - Choose from TaskType options above
+#    - Use most specific type that fits
+#
+# 6. estimatedDuration (number, required)
+#    - Duration in minutes
+#    - Be realistic (15, 30, 45, 60, 90, etc.)
+#
+# 7. description (string, required)
+#    - Short description (1-2 sentences)
+#    - Summarize what the task involves
+#
+# 8. instructions (string, required)
+#    - Use | for multi-line strings
+#    - Follow 4-section format:
+#      * What this means (context)
+#      * What you'll do (goals)
+#      * How to do it (steps)
+#      * What you'll achieve (outcomes)
+#    - Use markdown formatting (bold, lists, etc.)
+#    - Typical length: 1200-2000 characters
+#
+# 9. resources (object, required)
+#    - actions array with name and url
+#    - New format (recommended):
+#      actions:
+#        - name: 'Action Name'
+#          url: 'https://example.com'
+#    - Legacy format (still supported):
+#      actions:
+#        - 'Action Name'
+#
+# 10. autoComplete (boolean, required)
+#     - false: User must manually complete
+#     - true: System auto-completes (rare)
+
+# INSTRUCTION BEST PRACTICES:
+#
+# 1. Be Clear and Specific
+#    - Use concrete language
+#    - Avoid jargon unless defined
+#    - Number steps for clarity
+#
+# 2. Be Action-Oriented
+#    - Start with verbs (Complete, Watch, Read, etc.)
+#    - Make steps actionable
+#
+# 3. Provide Context
+#    - Explain why the task matters
+#    - Connect to larger program goals
+#
+# 4. Include Expected Outcomes
+#    - Tell users what they'll achieve
+#    - Be specific about results
+#
+# 5. Use Markdown
+#    - **Bold** for section headers
+#    - Numbered lists for steps
+#    - Bullet points for items
+
+# RESOURCE BEST PRACTICES:
+#
+# 1. Use Descriptive Names
+#    - "Watch Orientation Video" not "Click Here"
+#    - "Download Training Manual" not "PDF"
+#
+# 2. Verify URLs
+#    - Test all URLs before committing
+#    - Use full URLs (include https://)
+#    - Ensure resources are accessible
+#
+# 3. Order Matters
+#    - List resources in order of use
+#    - Primary action first
+#
+# 4. Provide URLs When Possible
+#    - Use new format with name and url
+#    - Only use legacy format if no URL available
+
+# YAML FORMATTING TIPS:
+#
+# 1. Multi-line Strings
+#    - Use | for literal block style
+#    - Preserves line breaks and formatting
+#
+# 2. Special Characters
+#    - Wrap in quotes if string contains: : { } [ ] , & * # ? | - < > = ! % @ \
+#    - Example: description: "This has a colon: in it"
+#
+# 3. Indentation
+#    - Use 2 spaces per level
+#    - Never use tabs
+#    - Be consistent
+#
+# 4. Comments
+#    - Use # for comments
+#    - Comments help document intent
+
+# VALIDATION:
+#
+# After creating your task file, validate it:
+#
+# 1. YAML Syntax:
+#    python3 -c "import yaml; yaml.safe_load(open('./tasks/[client-name]-tasks.yml')); print('✅ Valid')"
+#
+# 2. Task Count:
+#    python3 -c "import yaml; data = yaml.safe_load(open('./tasks/[client-name]-tasks.yml')); print(f'Found {len(data[\"tasks\"])} tasks')"
+#
+# 3. Check Resources:
+#    python3 -c "import yaml; data = yaml.safe_load(open('./tasks/[client-name]-tasks.yml')); print(data['tasks'][0]['resources'])"
+
+# EXAMPLE TASK FILES:
+# - See config/seed-data/tasks/gfi-new-agent-school-tasks.yml (26 tasks, new format)
+# - See config/seed-data/tasks/super-life-group-tasks.yml (legacy format)
+
+# NEXT STEPS:
+# 1. Copy this template to tasks/[client-name]-tasks.yml
+# 2. Create one entry per task
+# 3. Fill in all required fields
+# 4. Follow 4-section instruction format
+# 5. Add resources with URLs
+# 6. Validate YAML syntax
+# 7. Add to seed-from-yaml.ts taskFiles array
