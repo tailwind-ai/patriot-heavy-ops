@@ -1,0 +1,329 @@
+# Continental Insurance - New Wholesaler School Tasks
+# Extracted from continental-insurance-program.yml
+
+tasks:
+  # Week 1 Onboarding Tasks
+  - program: 'New Wholesaler School'
+    stage: 'Week 1 Onboarding'
+    order: 1
+    name: 'Start Here: Your Week 1 Launch Pad'
+    type: 'VIDEO'
+    estimatedDuration: 10
+    description: 'Get ready for training with this interactive video.'
+    instructions: 'Complete Your Profile, then Watch Now'
+    resources:
+      actions:
+        - 'Complete Your Profile'
+        - 'Watch Now'
+    autoComplete: false
+
+  - program: 'New Wholesaler School'
+    stage: 'Week 1 Onboarding'
+    order: 2
+    name: 'Complete Carrier Product Bootcamp'
+    type: 'CERTIFICATION'
+    estimatedDuration: 180
+    description: 'Complete comprehensive product training for all carrier products.'
+    instructions: 'Start Bootcamp'
+    resources:
+      actions:
+        - 'Start Bootcamp'
+    autoComplete: false
+
+  - program: 'New Wholesaler School'
+    stage: 'Week 1 Onboarding'
+    order: 3
+    name: 'Schedule your state exam'
+    type: 'ASSIGNMENT'
+    estimatedDuration: 10
+    description: 'Pick your exam date and get it on the calendar now.'
+    instructions: 'Schedule Exam'
+    resources:
+      actions:
+        - 'Schedule Exam'
+    autoComplete: false
+
+  - program: 'New Wholesaler School'
+    stage: 'Week 1 Onboarding'
+    order: 4
+    name: 'Wholesaler Success Playbook'
+    type: 'READING'
+    estimatedDuration: 60
+    description: 'Read the comprehensive wholesaler success guide.'
+    instructions: 'Download Playbook'
+    resources:
+      actions:
+        - 'Download Playbook'
+    autoComplete: false
+
+  - program: 'New Wholesaler School'
+    stage: 'Week 1 Onboarding'
+    order: 5
+    name: 'Attend Orientation'
+    type: 'MEETING'
+    estimatedDuration: 90
+    description: 'Save your spot for orientation and get it on the calendar now.'
+    instructions: 'Schedule Orientation'
+    resources:
+      actions:
+        - 'Schedule Orientation'
+    autoComplete: false
+
+  - program: 'New Wholesaler School'
+    stage: 'Week 1 Onboarding'
+    order: 6
+    name: 'Schedule Week 2 Coaching'
+    type: 'COACHING'
+    estimatedDuration: 5
+    description: 'Book an hour with your trainer to launch Week 2.'
+    instructions: 'Schedule Coaching'
+    resources:
+      actions:
+        - 'Schedule Coaching'
+    autoComplete: false
+
+  # Week 2 Onboarding Tasks
+  - program: 'New Wholesaler School'
+    stage: 'Week 2 Onboarding'
+    order: 1
+    name: 'Start Week 2: Territory Management'
+    type: 'VIDEO'
+    estimatedDuration: 15
+    description: 'Learn how to effectively manage your territory and build relationships.'
+    instructions: 'Complete Your Territory Map, then Watch Now'
+    resources:
+      actions:
+        - 'Complete Your Territory Map'
+        - 'Watch Now'
+    autoComplete: false
+
+  - program: 'New Wholesaler School'
+    stage: 'Week 2 Onboarding'
+    order: 2
+    name: 'Build your Producer Network'
+    type: 'ASSIGNMENT'
+    estimatedDuration: 30
+    description: 'Identify and map key producers in your territory.'
+    instructions: 'Map Your Network'
+    resources:
+      actions:
+        - 'Map Your Network'
+    autoComplete: false
+
+  - program: 'New Wholesaler School'
+    stage: 'Week 2 Onboarding'
+    order: 3
+    name: 'Pass Advanced Product Certification'
+    type: 'CERTIFICATION'
+    estimatedDuration: 240
+    description: 'Complete advanced product and compliance certifications.'
+    instructions: 'Pass Advanced Exam'
+    resources:
+      actions:
+        - 'Pass Advanced Exam'
+    autoComplete: false
+
+  - program: 'New Wholesaler School'
+    stage: 'Week 2 Onboarding'
+    order: 4
+    name: 'Schedule Week 3 Coaching'
+    type: 'COACHING'
+    estimatedDuration: 5
+    description: 'Book an hour with your trainer to launch Week 3.'
+    instructions: 'Schedule Coaching'
+    resources:
+      actions:
+        - 'Schedule Coaching'
+    autoComplete: false
+
+  # Week 3 Onboarding Tasks
+  - program: 'New Wholesaler School'
+    stage: 'Week 3 Onboarding'
+    order: 1
+    name: 'Start Week 3: Field Training Basics'
+    type: 'VIDEO'
+    estimatedDuration: 15
+    description: 'Learn how field training helps you build producer relationships.'
+    instructions: 'Watch Now'
+    resources:
+      actions:
+        - 'Watch Now'
+    autoComplete: false
+
+  - program: 'New Wholesaler School'
+    stage: 'Week 3 Onboarding'
+    order: 2
+    name: 'Qualify your producer list'
+    type: 'ASSIGNMENT'
+    estimatedDuration: 60
+    description: 'Profile your producers with territory and production data.'
+    instructions: 'Start Qualifying'
+    resources:
+      actions:
+        - 'Start Qualifying'
+    autoComplete: false
+
+  - program: 'New Wholesaler School'
+    stage: 'Week 3 Onboarding'
+    order: 3
+    name: 'Practice your producer presentation'
+    type: 'PRACTICE'
+    estimatedDuration: 30
+    description: 'Practice presenting products and building relationships with producers.'
+    instructions: 'Rehearse Now, then Schedule Role Play'
+    resources:
+      actions:
+        - 'Rehearse Now'
+        - 'Schedule Role Play'
+    autoComplete: false
+
+  # Field Training Tasks
+  - program: 'New Wholesaler School'
+    stage: 'Field Training'
+    order: 1
+    name: 'Complete Field Training'
+    type: 'TRAINING'
+    estimatedDuration: 2400
+    description: 'Finish 15 producer training appointments with your trainer.'
+    instructions: 'Watch the Producer Experience, then Take Notes'
+    resources:
+      actions:
+        - 'Watch the Producer Experience'
+        - 'Take Notes'
+    autoComplete: false
+
+  - program: 'New Wholesaler School'
+    stage: 'Field Training'
+    order: 2
+    name: 'Producer Training 1'
+    type: 'SHADOWING'
+    estimatedDuration: 90
+    description: 'Schedule and complete a training appointment with a producer.'
+    instructions: 'Add Producer Name, Add Trainer Name'
+    resources:
+      actions:
+        - 'Add Producer Name'
+        - 'Add Trainer Name'
+    autoComplete: false
+
+  - program: 'New Wholesaler School'
+    stage: 'Field Training'
+    order: 3
+    name: 'Producer Training 2'
+    type: 'SHADOWING'
+    estimatedDuration: 90
+    description: 'Observe silently; learn flow, take notes, debrief after.'
+    instructions: 'Add Producer Name, Add Trainer Name'
+    resources:
+      actions:
+        - 'Add Producer Name'
+        - 'Add Trainer Name'
+    autoComplete: false
+
+  - program: 'New Wholesaler School'
+    stage: 'Field Training'
+    order: 4
+    name: 'Producer Training 3'
+    type: 'SHADOWING'
+    estimatedDuration: 90
+    description: 'Observe silently; learn flow, take notes, debrief after.'
+    instructions: 'Add Producer Name, Add Trainer Name'
+    resources:
+      actions:
+        - 'Add Producer Name'
+        - 'Add Trainer Name'
+    autoComplete: false
+
+  - program: 'New Wholesaler School'
+    stage: 'Field Training'
+    order: 5
+    name: 'Producer Training 4'
+    type: 'SHADOWING'
+    estimatedDuration: 90
+    description: 'Observe silently; learn flow, take notes, debrief after.'
+    instructions: 'Add Producer Name, Add Trainer Name'
+    resources:
+      actions:
+        - 'Add Producer Name'
+        - 'Add Trainer Name'
+    autoComplete: false
+
+  - program: 'New Wholesaler School'
+    stage: 'Field Training'
+    order: 6
+    name: 'Producer Training 5'
+    type: 'SHADOWING'
+    estimatedDuration: 90
+    description: 'Co-lead sections; capture data; trainer supports and coaches.'
+    instructions: 'Add Producer Name, Add Trainer Name'
+    resources:
+      actions:
+        - 'Add Producer Name'
+        - 'Add Trainer Name'
+    autoComplete: false
+
+  # Secure First Producer Meeting Tasks
+  - program: 'New Wholesaler School'
+    stage: 'Secure First Producer Meeting'
+    order: 1
+    name: 'Create predictable producer pipeline'
+    type: 'READING'
+    estimatedDuration: 45
+    description: 'Build your system for generating high-quality producer meetings.'
+    instructions: 'Read the Guide'
+    resources:
+      actions:
+        - 'Read the Guide'
+    autoComplete: false
+
+  - program: 'New Wholesaler School'
+    stage: 'Secure First Producer Meeting'
+    order: 2
+    name: 'Schedule your first producer meeting'
+    type: 'ASSIGNMENT'
+    estimatedDuration: 20
+    description: 'Use your qualified list to schedule your first producer meeting.'
+    instructions: 'Schedule Meeting'
+    resources:
+      actions:
+        - 'Schedule Meeting'
+    autoComplete: false
+
+  - program: 'New Wholesaler School'
+    stage: 'Secure First Producer Meeting'
+    order: 3
+    name: 'Prepare for your first producer meeting'
+    type: 'PRACTICE'
+    estimatedDuration: 45
+    description: 'Practice your product presentation and prepare materials.'
+    instructions: 'Prepare Materials'
+    resources:
+      actions:
+        - 'Prepare Materials'
+    autoComplete: false
+
+  - program: 'New Wholesaler School'
+    stage: 'Secure First Producer Meeting'
+    order: 4
+    name: 'Conduct your first producer meeting'
+    type: 'MEETING'
+    estimatedDuration: 90
+    description: 'Meet with your first producer and present your products.'
+    instructions: 'Conduct Meeting'
+    resources:
+      actions:
+        - 'Conduct Meeting'
+    autoComplete: false
+
+  - program: 'New Wholesaler School'
+    stage: 'Secure First Producer Meeting'
+    order: 5
+    name: 'Follow up after your first producer meeting'
+    type: 'ASSIGNMENT'
+    estimatedDuration: 20
+    description: 'Send follow-up materials and schedule next steps.'
+    instructions: 'Send Follow-up'
+    resources:
+      actions:
+        - 'Send Follow-up'
+    autoComplete: false

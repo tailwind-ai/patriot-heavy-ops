@@ -1,0 +1,427 @@
+# Maverick Realty - New Realtor School Tasks
+# Extracted from maverick-realty-program.yml
+
+tasks:
+  # Week 1 Onboarding Tasks
+  - program: 'New Realtor School'
+    stage: 'Week 1 Onboarding'
+    order: 1
+    name: 'Start Here: Your Week 1 Launch Pad'
+    type: 'VIDEO'
+    estimatedDuration: 10
+    description: 'Get ready for training with this interactive video.'
+    instructions: 'Complete Your Profile, then Watch Now'
+    resources:
+      actions:
+        - 'Complete Your Profile'
+        - 'Watch Now'
+    autoComplete: false
+
+  - program: 'New Realtor School'
+    stage: 'Week 1 Onboarding'
+    order: 2
+    name: 'Enroll in pre-licensing course'
+    type: 'ASSIGNMENT'
+    estimatedDuration: 10
+    description: 'Select a course provider and enroll in your course.'
+    instructions: 'Enroll Now'
+    resources:
+      actions:
+        - 'Enroll Now'
+    autoComplete: false
+
+  - program: 'New Realtor School'
+    stage: 'Week 1 Onboarding'
+    order: 3
+    name: 'Schedule your real estate exam'
+    type: 'ASSIGNMENT'
+    estimatedDuration: 10
+    description: 'Pick your exam date and get it on the calendar now.'
+    instructions: 'Schedule Exam'
+    resources:
+      actions:
+        - 'Schedule Exam'
+    autoComplete: false
+
+  - program: 'New Realtor School'
+    stage: 'Week 1 Onboarding'
+    order: 4
+    name: 'Real Estate Success Guide'
+    type: 'READING'
+    estimatedDuration: 60
+    description: 'Read the comprehensive real estate success guide.'
+    instructions: 'Download Guide'
+    resources:
+      actions:
+        - 'Download Guide'
+    autoComplete: false
+
+  - program: 'New Realtor School'
+    stage: 'Week 1 Onboarding'
+    order: 5
+    name: 'Attend Orientation'
+    type: 'MEETING'
+    estimatedDuration: 90
+    description: 'Save your spot for orientation and get it on the calendar now.'
+    instructions: 'Schedule Orientation'
+    resources:
+      actions:
+        - 'Schedule Orientation'
+    autoComplete: false
+
+  - program: 'New Realtor School'
+    stage: 'Week 1 Onboarding'
+    order: 6
+    name: 'Schedule Week 2 Coaching'
+    type: 'COACHING'
+    estimatedDuration: 5
+    description: 'Book an hour with your trainer to launch Week 2.'
+    instructions: 'Schedule Coaching'
+    resources:
+      actions:
+        - 'Schedule Coaching'
+    autoComplete: false
+
+  # Week 2 Onboarding Tasks
+  - program: 'New Realtor School'
+    stage: 'Week 2 Onboarding'
+    order: 1
+    name: 'Start Week 2: Market Analysis'
+    type: 'VIDEO'
+    estimatedDuration: 15
+    description: 'Learn how to analyze local real estate markets effectively.'
+    instructions: 'Complete Your Market Analysis, then Watch Now'
+    resources:
+      actions:
+        - 'Complete Your Market Analysis'
+        - 'Watch Now'
+    autoComplete: false
+
+  - program: 'New Realtor School'
+    stage: 'Week 2 Onboarding'
+    order: 2
+    name: 'Build your client network'
+    type: 'ASSIGNMENT'
+    estimatedDuration: 30
+    description: 'Identify and map potential clients in your market area.'
+    instructions: 'Map Your Network'
+    resources:
+      actions:
+        - 'Map Your Network'
+    autoComplete: false
+
+  - program: 'New Realtor School'
+    stage: 'Week 2 Onboarding'
+    order: 3
+    name: 'Pass Real Estate Certification'
+    type: 'CERTIFICATION'
+    estimatedDuration: 180
+    description: 'Complete real estate licensing and ethics certifications.'
+    instructions: 'Pass Your Exam'
+    resources:
+      actions:
+        - 'Pass Your Exam'
+    autoComplete: false
+
+  - program: 'New Realtor School'
+    stage: 'Week 2 Onboarding'
+    order: 4
+    name: 'Schedule Week 3 Coaching'
+    type: 'COACHING'
+    estimatedDuration: 5
+    description: 'Book an hour with your trainer to launch Week 3.'
+    instructions: 'Schedule Coaching'
+    resources:
+      actions:
+        - 'Schedule Coaching'
+    autoComplete: false
+
+  # Week 3 Onboarding Tasks
+  - program: 'New Realtor School'
+    stage: 'Week 3 Onboarding'
+    order: 1
+    name: 'Start Week 3: Field Training Basics'
+    type: 'VIDEO'
+    estimatedDuration: 15
+    description: 'Learn how field training helps you build client relationships.'
+    instructions: 'Watch Now'
+    resources:
+      actions:
+        - 'Watch Now'
+    autoComplete: false
+
+  - program: 'New Realtor School'
+    stage: 'Week 3 Onboarding'
+    order: 2
+    name: 'Qualify your client list'
+    type: 'ASSIGNMENT'
+    estimatedDuration: 45
+    description: 'Profile your clients with buying/selling intent and timeline.'
+    instructions: 'Start Qualifying'
+    resources:
+      actions:
+        - 'Start Qualifying'
+    autoComplete: false
+
+  - program: 'New Realtor School'
+    stage: 'Week 3 Onboarding'
+    order: 3
+    name: 'Practice your client presentation'
+    type: 'PRACTICE'
+    estimatedDuration: 30
+    description: 'Practice presenting services and building relationships with clients.'
+    instructions: 'Rehearse Now, then Schedule Role Play'
+    resources:
+      actions:
+        - 'Rehearse Now'
+        - 'Schedule Role Play'
+    autoComplete: false
+
+  # Field Training Tasks
+  - program: 'New Realtor School'
+    stage: 'Field Training'
+    order: 1
+    name: 'Complete Field Training'
+    type: 'TRAINING'
+    estimatedDuration: 2000
+    description: 'Finish 12 client training appointments with your trainer.'
+    instructions: 'Watch the Client Experience, then Take Notes'
+    resources:
+      actions:
+        - 'Watch the Client Experience'
+        - 'Take Notes'
+    autoComplete: false
+
+  - program: 'New Realtor School'
+    stage: 'Field Training'
+    order: 2
+    name: 'Client Training 1'
+    type: 'SHADOWING'
+    estimatedDuration: 120
+    description: 'Schedule and complete a training appointment with a client.'
+    instructions: 'Add Client Name, Add Trainer Name'
+    resources:
+      actions:
+        - 'Add Client Name'
+        - 'Add Trainer Name'
+    autoComplete: false
+
+  - program: 'New Realtor School'
+    stage: 'Field Training'
+    order: 3
+    name: 'Client Training 2'
+    type: 'SHADOWING'
+    estimatedDuration: 120
+    description: 'Observe silently; learn flow, take notes, debrief after.'
+    instructions: 'Add Client Name, Add Trainer Name'
+    resources:
+      actions:
+        - 'Add Client Name'
+        - 'Add Trainer Name'
+    autoComplete: false
+
+  - program: 'New Realtor School'
+    stage: 'Field Training'
+    order: 4
+    name: 'Client Training 3'
+    type: 'SHADOWING'
+    estimatedDuration: 120
+    description: 'Observe silently; learn flow, take notes, debrief after.'
+    instructions: 'Add Client Name, Add Trainer Name'
+    resources:
+      actions:
+        - 'Add Client Name'
+        - 'Add Trainer Name'
+    autoComplete: false
+
+  - program: 'New Realtor School'
+    stage: 'Field Training'
+    order: 5
+    name: 'Client Training 4'
+    type: 'SHADOWING'
+    estimatedDuration: 120
+    description: 'Observe silently; learn flow, take notes, debrief after.'
+    instructions: 'Add Client Name, Add Trainer Name'
+    resources:
+      actions:
+        - 'Add Client Name'
+        - 'Add Trainer Name'
+    autoComplete: false
+
+  - program: 'New Realtor School'
+    stage: 'Field Training'
+    order: 6
+    name: 'Client Training 5'
+    type: 'SHADOWING'
+    estimatedDuration: 120
+    description: 'Co-lead sections; capture data; trainer supports and coaches.'
+    instructions: 'Add Client Name, Add Trainer Name'
+    resources:
+      actions:
+        - 'Add Client Name'
+        - 'Add Trainer Name'
+    autoComplete: false
+
+  - program: 'New Realtor School'
+    stage: 'Field Training'
+    order: 7
+    name: 'Client Training 6'
+    type: 'SHADOWING'
+    estimatedDuration: 120
+    description: 'Co-lead sections; capture data; trainer supports and coaches.'
+    instructions: 'Add Client Name, Add Trainer Name'
+    resources:
+      actions:
+        - 'Add Client Name'
+        - 'Add Trainer Name'
+    autoComplete: false
+
+  - program: 'New Realtor School'
+    stage: 'Field Training'
+    order: 8
+    name: 'Client Training 7'
+    type: 'SHADOWING'
+    estimatedDuration: 120
+    description: 'Co-lead sections; capture data; trainer supports and coaches.'
+    instructions: 'Add Client Name, Add Trainer Name'
+    resources:
+      actions:
+        - 'Add Client Name'
+        - 'Add Trainer Name'
+    autoComplete: false
+
+  - program: 'New Realtor School'
+    stage: 'Field Training'
+    order: 9
+    name: 'Client Training 8'
+    type: 'SHADOWING'
+    estimatedDuration: 120
+    description: 'Co-lead sections; capture data; trainer supports and coaches.'
+    instructions: 'Add Client Name, Add Trainer Name'
+    resources:
+      actions:
+        - 'Add Client Name'
+        - 'Add Trainer Name'
+    autoComplete: false
+
+  - program: 'New Realtor School'
+    stage: 'Field Training'
+    order: 10
+    name: 'Client Training 9'
+    type: 'SHADOWING'
+    estimatedDuration: 120
+    description: 'Co-lead sections; capture data; trainer supports and coaches.'
+    instructions: 'Add Client Name, Add Trainer Name'
+    resources:
+      actions:
+        - 'Add Client Name'
+        - 'Add Trainer Name'
+    autoComplete: false
+
+  - program: 'New Realtor School'
+    stage: 'Field Training'
+    order: 11
+    name: 'Client Training 10'
+    type: 'SHADOWING'
+    estimatedDuration: 120
+    description: 'Co-lead sections; capture data; trainer supports and coaches.'
+    instructions: 'Add Client Name, Add Trainer Name'
+    resources:
+      actions:
+        - 'Add Client Name'
+        - 'Add Trainer Name'
+    autoComplete: false
+
+  - program: 'New Realtor School'
+    stage: 'Field Training'
+    order: 12
+    name: 'Client Training 11'
+    type: 'SHADOWING'
+    estimatedDuration: 120
+    description: 'Co-lead sections; capture data; trainer supports and coaches.'
+    instructions: 'Add Client Name, Add Trainer Name'
+    resources:
+      actions:
+        - 'Add Client Name'
+        - 'Add Trainer Name'
+    autoComplete: false
+
+  - program: 'New Realtor School'
+    stage: 'Field Training'
+    order: 13
+    name: 'Client Training 12'
+    type: 'SHADOWING'
+    estimatedDuration: 120
+    description: 'Co-lead sections; capture data; trainer supports and coaches.'
+    instructions: 'Add Client Name, Add Trainer Name'
+    resources:
+      actions:
+        - 'Add Client Name'
+        - 'Add Trainer Name'
+    autoComplete: false
+
+  # Secure First Client Meeting Tasks
+  - program: 'New Realtor School'
+    stage: 'Secure First Client Meeting'
+    order: 1
+    name: 'Create predictable client pipeline'
+    type: 'READING'
+    estimatedDuration: 45
+    description: 'Build your system for generating high-quality client meetings.'
+    instructions: 'Read the Guide'
+    resources:
+      actions:
+        - 'Read the Guide'
+    autoComplete: false
+
+  - program: 'New Realtor School'
+    stage: 'Secure First Client Meeting'
+    order: 2
+    name: 'Schedule your first client meeting'
+    type: 'ASSIGNMENT'
+    estimatedDuration: 20
+    description: 'Use your qualified list to schedule your first client meeting.'
+    instructions: 'Schedule Meeting'
+    resources:
+      actions:
+        - 'Schedule Meeting'
+    autoComplete: false
+
+  - program: 'New Realtor School'
+    stage: 'Secure First Client Meeting'
+    order: 3
+    name: 'Prepare for your first client meeting'
+    type: 'PRACTICE'
+    estimatedDuration: 45
+    description: 'Practice your service presentation and prepare materials.'
+    instructions: 'Prepare Materials'
+    resources:
+      actions:
+        - 'Prepare Materials'
+    autoComplete: false
+
+  - program: 'New Realtor School'
+    stage: 'Secure First Client Meeting'
+    order: 4
+    name: 'Conduct your first client meeting'
+    type: 'MEETING'
+    estimatedDuration: 90
+    description: 'Meet with your first client and present your services.'
+    instructions: 'Conduct Meeting'
+    resources:
+      actions:
+        - 'Conduct Meeting'
+    autoComplete: false
+
+  - program: 'New Realtor School'
+    stage: 'Secure First Client Meeting'
+    order: 5
+    name: 'Follow up after your first client meeting'
+    type: 'ASSIGNMENT'
+    estimatedDuration: 20
+    description: 'Send follow-up materials and schedule next steps.'
+    instructions: 'Send Follow-up'
+    resources:
+      actions:
+        - 'Send Follow-up'
+    autoComplete: false
