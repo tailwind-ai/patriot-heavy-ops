@@ -1,0 +1,53 @@
+programs:
+  - name: 'GFI New Agent School'
+    subtitle: 'Comprehensive onboarding for new life insurance agents'
+    description: 'A structured 3-week training program that prepares new agents to pass their state exam, build their business, and complete field training. This AI-enhanced learning journey provides crystal-clear, step-by-step guidance with embedded compliance and context at every stage.'
+    status: 'ACTIVE'
+    stages:
+      - name: 'Week 1 Onboarding'
+        order: 1
+        status: 'ACTIVE'
+        expectedDuration: 7 # days
+        desiredOutcomes:
+          - 'Complete agent profile'
+          - 'Enroll in pre-licensing course'
+          - 'Schedule state exam'
+          - 'Complete required reading (Money. Wealth. Life Insurance.)'
+          - 'Experience client discovery process'
+          - 'Attend orientation'
+          - 'Schedule Week 2 coaching'
+        # Tasks are now defined in gfi-new-agent-school-tasks.yml
+
+      - name: 'Week 2 Onboarding'
+        order: 2
+        status: 'ACTIVE'
+        expectedDuration: 7 # days
+        desiredOutcomes:
+          - 'Learn the 3-3-60 Game Plan'
+          - 'Build Dream Team list (3-10 people)'
+          - 'Expand contact list to 100-200 names'
+          - 'Pass state licensing exam'
+          - 'Schedule Week 3 coaching'
+        # Tasks are now defined in gfi-new-agent-school-tasks.yml
+
+      - name: 'Week 3 Onboarding'
+        order: 3
+        status: 'ACTIVE'
+        expectedDuration: 7 # days
+        desiredOutcomes:
+          - 'Qualify leads with MACHO criteria'
+          - 'Master ETHOR invitation script'
+          - 'Make initial introductions to trainer'
+        # Tasks are now defined in gfi-new-agent-school-tasks.yml
+
+      - name: 'Field Training'
+        order: 4
+        status: 'ACTIVE'
+        expectedDuration: 14 # days
+        desiredOutcomes:
+          - 'Complete 10 training appointments'
+          - 'Observe trainer-led client meetings'
+          - 'Build confidence through shadowing'
+          - 'Submit 3 applications'
+          - 'Recruit 3 business partners'
+        # Tasks are now defined in gfi-new-agent-school-tasks.yml
