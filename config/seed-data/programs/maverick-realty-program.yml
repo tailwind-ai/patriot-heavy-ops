@@ -1,0 +1,56 @@
+programs:
+  - name: 'New Realtor School'
+    subtitle: 'Comprehensive onboarding for new real estate agents'
+    description: 'A structured program to onboard new real estate agents with licensing, market knowledge, and business development skills'
+    status: 'ACTIVE'
+    stages:
+      - name: 'Week 1 Onboarding'
+        order: 1
+        status: 'ACTIVE'
+        expectedDuration: 7 # days
+        desiredOutcomes:
+          - 'Complete pre-licensing course enrollment'
+          - 'Schedule real estate exam'
+          - 'Complete required reading'
+          - 'Attend orientation'
+        # Tasks are now defined in maverick-realty-tasks.yml
+
+      - name: 'Week 2 Onboarding'
+        order: 2
+        status: 'ACTIVE'
+        expectedDuration: 7 # days
+        desiredOutcomes:
+          - 'Learn market analysis'
+          - 'Build client network'
+          - 'Pass real estate certification'
+        # Tasks are now defined in maverick-realty-tasks.yml
+
+      - name: 'Week 3 Onboarding'
+        order: 3
+        status: 'ACTIVE'
+        expectedDuration: 7 # days
+        desiredOutcomes:
+          - 'Learn field training basics'
+          - 'Qualify client list'
+          - 'Practice client presentations'
+        # Tasks are now defined in maverick-realty-tasks.yml
+
+      - name: 'Field Training'
+        order: 4
+        status: 'ACTIVE'
+        expectedDuration: 14 # days
+        desiredOutcomes:
+          - 'Complete 12 client training appointments'
+          - 'Learn client flow and processes'
+          - 'Build confidence through shadowing'
+        # Tasks are now defined in maverick-realty-tasks.yml
+
+      - name: 'Secure First Client Meeting'
+        order: 5
+        status: 'ACTIVE'
+        expectedDuration: 7 # days
+        desiredOutcomes:
+          - 'Create predictable client pipeline'
+          - 'Schedule first client meeting'
+          - 'Conduct successful first meeting'
+        # Tasks are now defined in maverick-realty-tasks.yml

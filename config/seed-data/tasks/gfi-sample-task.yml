@@ -1,0 +1,52 @@
+# Sample GFI Task - Testing New Resource Format
+# This file demonstrates the new resource structure with name + URL pairs
+
+tasks:
+  - program: 'GFI New Agent School'
+    stage: 'Week 1 Onboarding'
+    order: 1
+    name: 'Start Here: Your Week 1 Launch Pad'
+    type: 'VIDEO'
+    estimatedDuration: 10
+    description: 'Get oriented to your training journey and set yourself up for success.'
+    instructions: |
+      **What this means:**
+      Welcome to Global Financial Impact! This launch pad is your introduction to becoming a licensed insurance agent. You're about to begin a structured 3-week training program that will prepare you to pass your state exam and start building your business.
+      
+      **What you'll do:**
+      1. Complete your agent profile
+      2. Watch the Week 1 orientation video
+      3. Understand your roadmap for the next three weeks
+      
+      **How to do it:**
+      1. **Complete Your Profile** — Click the "Complete Your Profile" button to verify your information and add your photo
+      2. **Watch the Orientation Video** — Click "Watch Now" to view the 8-minute welcome from the leadership team
+      3. **Review Your Week 1 Checklist** — You'll see 6 tasks for this week
+      
+      **What you'll achieve:**
+      By completing this task, you'll have a clear picture of your training journey and be fully registered in our system.
+    resources:
+      actions:
+        - name: 'Complete Your Profile'
+          url: 'https://www.mygficonnect.com/agent-profile'
+        - name: 'Watch Now'
+          url: 'https://share.synthesia.io/embeds/videos/1ae9b7e9-409d-4f3d-92c7-4b16f0d14303'
+        - name: 'Add Training to Your Calendar'
+          url: 'https://docs.google.com/spreadsheets/d/1WRV7tWuDGnUVpFZp6OnlId7jKlrNN72nCzL6KXkqfLQ/edit?gid=0#gid=0'
+    autoComplete: false
+
+  - program: 'GFI New Agent School'
+    stage: 'Week 1 Onboarding'
+    order: 2
+    name: 'Test Mixed Format'
+    type: 'ASSIGNMENT'
+    estimatedDuration: 5
+    description: 'Testing backward compatibility with mixed resource formats.'
+    instructions: 'This task tests that both old and new formats work together.'
+    resources:
+      actions:
+        - 'Simple Action (Old Format)'
+        - name: 'Action with URL (New Format)'
+          url: 'https://example.com/resource'
+        - 'Another Simple Action'
+    autoComplete: false

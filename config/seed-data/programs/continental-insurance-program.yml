@@ -1,0 +1,56 @@
+programs:
+  - name: 'New Wholesaler School'
+    subtitle: 'Comprehensive onboarding for new insurance wholesalers'
+    description: 'A structured program to onboard new wholesalers with product knowledge, field training, and business development skills'
+    status: 'ACTIVE'
+    stages:
+      - name: 'Week 1 Onboarding'
+        order: 1
+        status: 'ACTIVE'
+        expectedDuration: 7 # days
+        desiredOutcomes:
+          - 'Complete carrier product certification'
+          - 'Schedule state exam'
+          - 'Attend orientation'
+          - 'Complete required reading'
+        # Tasks are now defined in continental-insurance-tasks.yml
+
+      - name: 'Week 2 Onboarding'
+        order: 2
+        status: 'ACTIVE'
+        expectedDuration: 7 # days
+        desiredOutcomes:
+          - 'Learn territory management'
+          - 'Build producer network'
+          - 'Pass advanced product certification'
+        # Tasks are now defined in continental-insurance-tasks.yml
+
+      - name: 'Week 3 Onboarding'
+        order: 3
+        status: 'ACTIVE'
+        expectedDuration: 7 # days
+        desiredOutcomes:
+          - 'Learn field training basics'
+          - 'Qualify producer list'
+          - 'Practice producer presentations'
+        # Tasks are now defined in continental-insurance-tasks.yml
+
+      - name: 'Field Training'
+        order: 4
+        status: 'ACTIVE'
+        expectedDuration: 14 # days
+        desiredOutcomes:
+          - 'Complete 15 producer training appointments'
+          - 'Learn producer flow and processes'
+          - 'Build confidence through shadowing'
+        # Tasks are now defined in continental-insurance-tasks.yml
+
+      - name: 'Secure First Producer Meeting'
+        order: 5
+        status: 'ACTIVE'
+        expectedDuration: 7 # days
+        desiredOutcomes:
+          - 'Create predictable producer pipeline'
+          - 'Schedule first producer meeting'
+          - 'Conduct successful first meeting'
+        # Tasks are now defined in continental-insurance-tasks.yml

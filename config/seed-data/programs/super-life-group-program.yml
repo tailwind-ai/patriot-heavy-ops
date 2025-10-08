@@ -1,0 +1,56 @@
+programs:
+  - name: 'New Agent School'
+    subtitle: 'Comprehensive onboarding for new life insurance agents'
+    description: 'A structured program to onboard new life insurance agents with product knowledge, licensing, and business development skills'
+    status: 'ACTIVE'
+    stages:
+      - name: 'Week 1 Onboarding'
+        order: 1
+        status: 'ACTIVE'
+        expectedDuration: 7 # days
+        desiredOutcomes:
+          - 'Complete pre-licensing course enrollment'
+          - 'Schedule state exam'
+          - 'Complete required reading'
+          - 'Attend orientation'
+        # Tasks are now defined in super-life-group-tasks.yml
+
+      - name: 'Week 2 Onboarding'
+        order: 2
+        status: 'ACTIVE'
+        expectedDuration: 7 # days
+        desiredOutcomes:
+          - 'Learn the 3-3-60 Game Plan'
+          - 'Build Fantasy Team network'
+          - 'Pass Product & Suitability Certification'
+        # Tasks are now defined in super-life-group-tasks.yml
+
+      - name: 'Week 3 Onboarding'
+        order: 3
+        status: 'ACTIVE'
+        expectedDuration: 7 # days
+        desiredOutcomes:
+          - 'Learn field training basics'
+          - 'Qualify leads for marketing'
+          - 'Practice invitation scripts'
+        # Tasks are now defined in super-life-group-tasks.yml
+
+      - name: 'Field Training'
+        order: 4
+        status: 'ACTIVE'
+        expectedDuration: 14 # days
+        desiredOutcomes:
+          - 'Complete 10 agency training appointments'
+          - 'Learn agency flow and processes'
+          - 'Build confidence through shadowing'
+        # Tasks are now defined in super-life-group-tasks.yml
+
+      - name: 'Secure First Agency Meeting'
+        order: 5
+        status: 'ACTIVE'
+        expectedDuration: 7 # days
+        desiredOutcomes:
+          - 'Create predictable pipeline'
+          - 'Schedule first agency meeting'
+          - 'Conduct successful first meeting'
+        # Tasks are now defined in super-life-group-tasks.yml

@@ -1,0 +1,412 @@
+# Super Life Group - New Agent School Tasks
+# Extracted from super-life-group-program.yml
+
+tasks:
+  # Week 1 Onboarding Tasks
+  - program: 'New Agent School'
+    stage: 'Week 1 Onboarding'
+    order: 1
+    name: 'Start Here: Your Week 1 Launch Pad'
+    type: 'VIDEO'
+    estimatedDuration: 10
+    description: 'Get ready for training with this interactive video.'
+    instructions: 'Complete Your Profile, then Watch Now'
+    resources:
+      actions:
+        - 'Complete Your Profile'
+        - 'Watch Now'
+    autoComplete: false
+
+  - program: 'New Agent School'
+    stage: 'Week 1 Onboarding'
+    order: 2
+    name: 'Enroll in pre-licensing course'
+    type: 'ASSIGNMENT'
+    estimatedDuration: 10
+    description: 'Select a course provider and enroll in your course.'
+    instructions: 'Enroll Now'
+    resources:
+      actions:
+        - 'Enroll Now'
+    autoComplete: false
+
+  - program: 'New Agent School'
+    stage: 'Week 1 Onboarding'
+    order: 3
+    name: 'Schedule your state exam'
+    type: 'ASSIGNMENT'
+    estimatedDuration: 10
+    description: 'Pick your exam date and get it on the calendar now.'
+    instructions: 'Schedule Exam'
+    resources:
+      actions:
+        - 'Schedule Exam'
+    autoComplete: false
+
+  - program: 'New Agent School'
+    stage: 'Week 1 Onboarding'
+    order: 4
+    name: 'Money. Wealth. Life Insurance.'
+    type: 'READING'
+    estimatedDuration: 45
+    description: 'Read the first three chapters of Money, Wealth, and Life Insurance.'
+    instructions: 'Get the Quick Notes'
+    resources:
+      actions:
+        - 'Get the Quick Notes'
+    autoComplete: false
+
+  - program: 'New Agent School'
+    stage: 'Week 1 Onboarding'
+    order: 5
+    name: 'Attend Orientation'
+    type: 'MEETING'
+    estimatedDuration: 90
+    description: 'Save your spot for orientation and get it on the calendar now.'
+    instructions: 'Schedule Orientation'
+    resources:
+      actions:
+        - 'Schedule Orientation'
+    autoComplete: false
+
+  - program: 'New Agent School'
+    stage: 'Week 1 Onboarding'
+    order: 6
+    name: 'Schedule Week 2 Coaching'
+    type: 'COACHING'
+    estimatedDuration: 5
+    description: 'Book an hour with your trainer to launch Week 2.'
+    instructions: 'Schedule Coaching'
+    resources:
+      actions:
+        - 'Schedule Coaching'
+    autoComplete: false
+
+  # Week 2 Onboarding Tasks
+  - program: 'New Agent School'
+    stage: 'Week 2 Onboarding'
+    order: 1
+    name: 'Start Week 2: Learn the 3-3-60 Game Plan'
+    type: 'VIDEO'
+    estimatedDuration: 10
+    description: 'Understand how to grow your agency fast with business partners.'
+    instructions: 'Complete Your Snapshot, then Watch Now'
+    resources:
+      actions:
+        - 'Complete Your Snapshot'
+        - 'Watch Now'
+    autoComplete: false
+
+  - program: 'New Agent School'
+    stage: 'Week 2 Onboarding'
+    order: 2
+    name: 'Build your Fantasy Team'
+    type: 'ASSIGNMENT'
+    estimatedDuration: 5
+    description: 'Think of the top people you would love to win with.'
+    instructions: 'Add Your Dream Team'
+    resources:
+      actions:
+        - 'Add Your Dream Team'
+    autoComplete: false
+
+  - program: 'New Agent School'
+    stage: 'Week 2 Onboarding'
+    order: 3
+    name: 'Expand your list with memory joggers'
+    type: 'ASSIGNMENT'
+    estimatedDuration: 30
+    description: "Use joggers to add 10-20 names now. You'll need 100-200 to start Week 3."
+    instructions: 'Download the App'
+    resources:
+      actions:
+        - 'Download the App'
+    autoComplete: false
+
+  - program: 'New Agent School'
+    stage: 'Week 2 Onboarding'
+    order: 4
+    name: 'Pass Product & Suitability Certification'
+    type: 'CERTIFICATION'
+    estimatedDuration: 120
+    description: 'Pass required product and suitability certifications to sell carrier products.'
+    instructions: 'Pass Your Exam'
+    resources:
+      actions:
+        - 'Pass Your Exam'
+    autoComplete: false
+
+  - program: 'New Agent School'
+    stage: 'Week 2 Onboarding'
+    order: 5
+    name: 'Schedule Week 3 Coaching'
+    type: 'COACHING'
+    estimatedDuration: 5
+    description: 'Book an hour with your trainer to launch Week 3.'
+    instructions: 'Schedule Coaching'
+    resources:
+      actions:
+        - 'Schedule Coaching'
+    autoComplete: false
+
+  # Week 3 Onboarding Tasks
+  - program: 'New Agent School'
+    stage: 'Week 3 Onboarding'
+    order: 1
+    name: 'Start Week 3: Field Training Basics'
+    type: 'VIDEO'
+    estimatedDuration: 10
+    description: 'Learn how field training helps you build confidence.'
+    instructions: 'Watch Now'
+    resources:
+      actions:
+        - 'Watch Now'
+    autoComplete: false
+
+  - program: 'New Agent School'
+    stage: 'Week 3 Onboarding'
+    order: 2
+    name: 'Qualify your list of names for marketing'
+    type: 'ASSIGNMENT'
+    estimatedDuration: 45
+    description: 'Profile your leads with MACHO traits and connection levels.'
+    instructions: 'Start Qualifying'
+    resources:
+      actions:
+        - 'Start Qualifying'
+    autoComplete: false
+
+  - program: 'New Agent School'
+    stage: 'Week 3 Onboarding'
+    order: 3
+    name: 'Practice your script for extending invitations'
+    type: 'PRACTICE'
+    estimatedDuration: 5
+    description: "Use the ETHOR approach to invite without pressure or over-explaining – call, don't text."
+    instructions: 'Rehearse Now, then Schedule Roll Play'
+    resources:
+      actions:
+        - 'Rehearse Now'
+        - 'Schedule Roll Play'
+    autoComplete: false
+
+  # Field Training Tasks
+  - program: 'New Agent School'
+    stage: 'Field Training'
+    order: 1
+    name: 'Complete Field Training'
+    type: 'TRAINING'
+    estimatedDuration: 1680
+    description: 'Finish 10 agency training appointments with your trainer.'
+    instructions: 'Watch the Agency Experience, then Take Notes'
+    resources:
+      actions:
+        - 'Watch the Agency Experience'
+        - 'Take Notes'
+    autoComplete: false
+
+  - program: 'New Agent School'
+    stage: 'Field Training'
+    order: 2
+    name: 'Agency Training 1'
+    type: 'SHADOWING'
+    estimatedDuration: 60
+    description: 'Schedule and complete a training appointment.'
+    instructions: 'Add Agency Name, Add Trainer Name'
+    resources:
+      actions:
+        - 'Add Agency Name'
+        - 'Add Trainer Name'
+    autoComplete: false
+
+  - program: 'New Agent School'
+    stage: 'Field Training'
+    order: 3
+    name: 'Agency Training 2'
+    type: 'SHADOWING'
+    estimatedDuration: 60
+    description: 'Observe silently; learn flow, take notes, debrief after.'
+    instructions: 'Add Agency Name, Add Trainer Name'
+    resources:
+      actions:
+        - 'Add Agency Name'
+        - 'Add Trainer Name'
+    autoComplete: false
+
+  - program: 'New Agent School'
+    stage: 'Field Training'
+    order: 4
+    name: 'Agency Training 3'
+    type: 'SHADOWING'
+    estimatedDuration: 60
+    description: 'Observe silently; learn flow, take notes, debrief after.'
+    instructions: 'Add Agency Name, Add Trainer Name'
+    resources:
+      actions:
+        - 'Add Agency Name'
+        - 'Add Trainer Name'
+    autoComplete: false
+
+  - program: 'New Agent School'
+    stage: 'Field Training'
+    order: 5
+    name: 'Agency Training 4'
+    type: 'SHADOWING'
+    estimatedDuration: 60
+    description: 'Observe silently; learn flow, take notes, debrief after.'
+    instructions: 'Add Agency Name, Add Trainer Name'
+    resources:
+      actions:
+        - 'Add Agency Name'
+        - 'Add Trainer Name'
+    autoComplete: false
+
+  - program: 'New Agent School'
+    stage: 'Field Training'
+    order: 6
+    name: 'Agency Training 5'
+    type: 'SHADOWING'
+    estimatedDuration: 60
+    description: 'Co-lead sections; capture data; trainer supports and coaches.'
+    instructions: 'Add Agency Name, Add Trainer Name'
+    resources:
+      actions:
+        - 'Add Agency Name'
+        - 'Add Trainer Name'
+    autoComplete: false
+
+  - program: 'New Agent School'
+    stage: 'Field Training'
+    order: 7
+    name: 'Agency Training 6'
+    type: 'SHADOWING'
+    estimatedDuration: 60
+    description: 'Co-lead sections; capture data; trainer supports and coaches.'
+    instructions: 'Add Agency Name, Add Trainer Name'
+    resources:
+      actions:
+        - 'Add Agency Name'
+        - 'Add Trainer Name'
+    autoComplete: false
+
+  - program: 'New Agent School'
+    stage: 'Field Training'
+    order: 8
+    name: 'Agency Training 7'
+    type: 'SHADOWING'
+    estimatedDuration: 60
+    description: 'Co-lead sections; capture data; trainer supports and coaches.'
+    instructions: 'Add Agency Name, Add Trainer Name'
+    resources:
+      actions:
+        - 'Add Agency Name'
+        - 'Add Trainer Name'
+    autoComplete: false
+
+  - program: 'New Agent School'
+    stage: 'Field Training'
+    order: 9
+    name: 'Agency Training 8'
+    type: 'SHADOWING'
+    estimatedDuration: 60
+    description: 'Co-lead sections; capture data; trainer supports and coaches.'
+    instructions: 'Add Agency Name, Add Trainer Name'
+    resources:
+      actions:
+        - 'Add Agency Name'
+        - 'Add Trainer Name'
+    autoComplete: false
+
+  - program: 'New Agent School'
+    stage: 'Field Training'
+    order: 10
+    name: 'Agency Training 9'
+    type: 'SHADOWING'
+    estimatedDuration: 60
+    description: 'Co-lead sections; capture data; trainer supports and coaches.'
+    instructions: 'Add Agency Name, Add Trainer Name'
+    resources:
+      actions:
+        - 'Add Agency Name'
+        - 'Add Trainer Name'
+    autoComplete: false
+
+  - program: 'New Agent School'
+    stage: 'Field Training'
+    order: 11
+    name: 'Agency Training 10'
+    type: 'SHADOWING'
+    estimatedDuration: 60
+    description: 'Co-lead sections; capture data; trainer supports and coaches.'
+    instructions: 'Add Agency Name, Add Trainer Name'
+    resources:
+      actions:
+        - 'Add Agency Name'
+        - 'Add Trainer Name'
+    autoComplete: false
+
+  # Secure First Agency Meeting Tasks
+  - program: 'New Agent School'
+    stage: 'Secure First Agency Meeting'
+    order: 1
+    name: 'Create predictable pipeline as an agent'
+    type: 'READING'
+    estimatedDuration: 30
+    description: 'Build your system for generating high-quality agency/producer meetings.'
+    instructions: 'Read the Guide'
+    resources:
+      actions:
+        - 'Read the Guide'
+    autoComplete: false
+
+  - program: 'New Agent School'
+    stage: 'Secure First Agency Meeting'
+    order: 2
+    name: 'Schedule your first agency meeting'
+    type: 'ASSIGNMENT'
+    estimatedDuration: 15
+    description: 'Use your qualified list to schedule your first agency meeting.'
+    instructions: 'Schedule Meeting'
+    resources:
+      actions:
+        - 'Schedule Meeting'
+    autoComplete: false
+
+  - program: 'New Agent School'
+    stage: 'Secure First Agency Meeting'
+    order: 3
+    name: 'Prepare for your first agency meeting'
+    type: 'PRACTICE'
+    estimatedDuration: 30
+    description: 'Practice your presentation and prepare materials.'
+    instructions: 'Prepare Materials'
+    resources:
+      actions:
+        - 'Prepare Materials'
+    autoComplete: false
+
+  - program: 'New Agent School'
+    stage: 'Secure First Agency Meeting'
+    order: 4
+    name: 'Conduct your first agency meeting'
+    type: 'MEETING'
+    estimatedDuration: 60
+    description: 'Meet with your first agency and present your services.'
+    instructions: 'Conduct Meeting'
+    resources:
+      actions:
+        - 'Conduct Meeting'
+    autoComplete: false
+
+  - program: 'New Agent School'
+    stage: 'Secure First Agency Meeting'
+    order: 5
+    name: 'Follow up after your first agency meeting'
+    type: 'ASSIGNMENT'
+    estimatedDuration: 15
+    description: 'Send follow-up materials and schedule next steps.'
+    instructions: 'Send Follow-up'
+    resources:
+      actions:
+        - 'Send Follow-up'
+    autoComplete: false
