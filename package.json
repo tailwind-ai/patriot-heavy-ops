@@ -87,7 +87,7 @@
     "lucide-react": "^0.544.0",
     "next": "^15.5.3",
     "next-auth": "^4.24.11",
-    "next-themes": "^0.2.1",
+    "next-themes": "0.4.6",
     "nodemailer": "^6.9.1",
     "outstatic": "^2.0.10",
     "postmark": "^4.0.5",
