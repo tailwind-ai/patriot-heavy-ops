@@ -17,5 +17,33 @@ tsconfig.tsbuildinfo
 ANA-*.md
 TEST-COVERAGE-*.md
 
-# Cursor IDE configs
-.cursor/
+# Cursor IDE configs (but allow the commands symlink)
+.cursor/*
+!.cursor/commands
+
+# Additional gitignore patterns from roadmapper
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.nyc_output/
+dist/
+build/
+tmp/
+temp/
+*.tmp
+config/local.json
+config/repo-url.json
+*.generated.*
+
+# Outstatic content (committed separately)
+# Remove this if you want content version controlled
+# content/

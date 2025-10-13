@@ -1,0 +1,302 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                String   @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?  @db.Text
+  access_token      String?  @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?  @db.Text
+  session_state     String?
+  createdAt         DateTime @default(now()) @map(name: "created_at")
+  updatedAt         DateTime @default(now()) @map(name: "updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map(name: "accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map(name: "sessions")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  password      String?   // Hashed password for credentials auth
+  emailVerified DateTime?
+  image         String?
+  role          UserRole  @default(USER)
+  phone         String?
+  company       String?
+  createdAt     DateTime  @default(now()) @map(name: "created_at")
+  updatedAt     DateTime  @default(now()) @map(name: "updated_at")
+
+  // Operator-specific fields (only used when role = OPERATOR)
+  militaryBranch        String?   @map(name: "military_branch")
+  yearsOfService        Int?      @map(name: "years_of_service")
+  certifications        String[]  @default([])
+  preferredLocations    String[]  @default([]) @map(name: "preferred_locations")
+  isAvailable           Boolean   @default(true) @map(name: "is_available")
+
+  // Relations
+  accounts              Account[]
+  sessions              Session[]
+  Post                  Post[]
+  serviceRequests       ServiceRequest[]
+  managedRequests       ServiceRequest[] @relation("ManagedRequests")
+  statusHistoryChanges  ServiceRequestStatusHistory[]
+  userAssignments       UserAssignment[]
+
+  // Stripe fields
+  stripeCustomerId       String?   @unique @map(name: "stripe_customer_id")
+  stripeSubscriptionId   String?   @unique @map(name: "stripe_subscription_id")
+  stripePriceId          String?   @map(name: "stripe_price_id")
+  stripeCurrentPeriodEnd DateTime? @map(name: "stripe_current_period_end")
+
+  @@map("users")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map(name: "verification_tokens")
+}
+
+model Post {
+  id        String   @id @default(cuid())
+  title     String
+  content   Json?
+  published Boolean  @default(false)
+  createdAt DateTime @default(now()) @map(name: "created_at")
+  updatedAt DateTime @default(now()) @map(name: "updated_at")
+  authorId  String
+
+  author User @relation(fields: [authorId], references: [id])
+
+  @@map(name: "posts")
+}
+
+// Patriot Heavy Ops Enums
+enum UserRole {
+  USER
+  OPERATOR
+  MANAGER
+  ADMIN
+}
+
+enum TransportOption {
+  WE_HANDLE_IT
+  YOU_HANDLE_IT
+}
+
+enum EquipmentCategory {
+  SKID_STEERS_TRACK_LOADERS
+  FRONT_END_LOADERS
+  BACKHOES_EXCAVATORS
+  BULLDOZERS
+  GRADERS
+  DUMP_TRUCKS
+  WATER_TRUCKS
+  SWEEPERS
+  TRENCHERS
+}
+
+enum ServiceRequestStatus {
+  SUBMITTED
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
+  OPERATOR_MATCHING
+  OPERATOR_ASSIGNED
+  EQUIPMENT_CHECKING
+  EQUIPMENT_CONFIRMED
+  DEPOSIT_REQUESTED
+  DEPOSIT_PENDING
+  DEPOSIT_RECEIVED
+  JOB_SCHEDULED
+  JOB_IN_PROGRESS
+  JOB_COMPLETED
+  INVOICED
+  PAYMENT_PENDING
+  PAYMENT_RECEIVED
+  CLOSED
+  CANCELLED
+}
+
+enum DurationType {
+  HALF_DAY    // 4 hours
+  FULL_DAY    // 8 hours  
+  MULTI_DAY   // Multiple days
+  WEEKLY      // Weekly booking
+}
+
+enum RateType {
+  HOURLY
+  HALF_DAY
+  DAILY
+  WEEKLY
+}
+
+// Patriot Heavy Ops Models
+
+
+
+
+model UserAssignment {
+  id               String   @id @default(cuid())
+  serviceRequestId String   @map(name: "service_request_id")
+  operatorId       String   @map(name: "operator_id")
+  status           String   @default("pending") // pending, accepted, declined
+  rate             Decimal? // Operator's hourly rate for this job
+  estimatedHours   Decimal? @map(name: "estimated_hours") // Operator's time estimate
+  actualHours      Decimal? @map(name: "actual_hours") // Actual time worked
+  assignedAt       DateTime @default(now()) @map(name: "assigned_at")
+  acceptedAt       DateTime? @map(name: "accepted_at")
+  completedAt      DateTime? @map(name: "completed_at")
+  createdAt        DateTime @default(now()) @map(name: "created_at")
+  updatedAt        DateTime @default(now()) @map(name: "updated_at")
+
+  serviceRequest ServiceRequest @relation(fields: [serviceRequestId], references: [id])
+  operator       User           @relation(fields: [operatorId], references: [id])
+
+  @@map(name: "user_assignments")
+}
+
+model Conversation {
+  id        String   @id @default(cuid())
+  userId    String?  @map(name: "user_id")
+  type      String   // "contractor" or "operator"
+  messages  Json     // Array of message objects
+  metadata  Json?    // Additional conversation data
+  createdAt DateTime @default(now()) @map(name: "created_at")
+  updatedAt DateTime @default(now()) @map(name: "updated_at")
+
+  @@map(name: "conversations")
+}
+
+model ServiceRequest {
+  id                String               @id @default(cuid())
+  title             String
+  description       String?
+  
+  // Contact & Company Info
+  userId            String               @map(name: "user_id")
+  contactName       String               @map(name: "contact_name")
+  contactEmail      String               @map(name: "contact_email")
+  contactPhone      String               @map(name: "contact_phone")
+  company           String?
+  
+  // Job Details
+  jobSite           String               @map(name: "job_site")
+  transport         TransportOption
+  startDate         DateTime             @map(name: "start_date")
+  endDate           DateTime?            @map(name: "end_date")
+  
+  // Equipment Requirements
+  equipmentCategory EquipmentCategory    @map(name: "equipment_category")
+  equipmentDetail   String               @map(name: "equipment_detail")
+  
+  // Customer's Requested Duration & Pricing
+  requestedDurationType  DurationType     @map(name: "requested_duration_type")
+  requestedDurationValue Int              @map(name: "requested_duration_value") // Number of units (days, weeks, etc.)
+  requestedTotalHours    Decimal          @map(name: "requested_total_hours") // Calculated total hours
+  rateType              RateType         @map(name: "rate_type")
+  baseRate              Decimal          @map(name: "base_rate") // Rate per unit (hourly, daily, weekly)
+  
+  // Workflow Status
+  status            ServiceRequestStatus @default(SUBMITTED)
+  priority          String               @default("NORMAL") // LOW, NORMAL, HIGH, URGENT
+  
+  // Financial Tracking
+  estimatedCost     Decimal?             @map(name: "estimated_cost")
+  depositAmount     Decimal?             @map(name: "deposit_amount")
+  depositPaid       Boolean              @default(false) @map(name: "deposit_paid")
+  depositPaidAt     DateTime?            @map(name: "deposit_paid_at")
+  finalAmount       Decimal?             @map(name: "final_amount")
+  finalPaid         Boolean              @default(false) @map(name: "final_paid")
+  finalPaidAt       DateTime?            @map(name: "final_paid_at")
+  
+  // Stripe Integration
+  stripeDepositPaymentIntentId String?  @map(name: "stripe_deposit_payment_intent_id")
+  stripeFinalPaymentIntentId   String?  @map(name: "stripe_final_payment_intent_id")
+  
+  // Management Fields
+  assignedManagerId String?              @map(name: "assigned_manager_id")
+  rejectionReason   String?              @map(name: "rejection_reason")
+  internalNotes     String?              @map(name: "internal_notes")
+  
+  // Timestamps
+  createdAt         DateTime             @default(now()) @map(name: "created_at")
+  updatedAt         DateTime             @default(now()) @map(name: "updated_at")
+  
+  // Relations
+  user              User                 @relation(fields: [userId], references: [id])
+  assignedManager   User?                @relation("ManagedRequests", fields: [assignedManagerId], references: [id])
+  userAssignments   UserAssignment[]
+  statusHistory     ServiceRequestStatusHistory[]
+  payments          Payment[]
+
+  @@map(name: "service_requests")
+}
+
+model ServiceRequestStatusHistory {
+  id               String               @id @default(cuid())
+  serviceRequestId String               @map(name: "service_request_id")
+  fromStatus       ServiceRequestStatus? @map(name: "from_status")
+  toStatus         ServiceRequestStatus @map(name: "to_status")
+  changedBy        String               @map(name: "changed_by")
+  reason           String?
+  notes            String?
+  createdAt        DateTime             @default(now()) @map(name: "created_at")
+
+  serviceRequest   ServiceRequest       @relation(fields: [serviceRequestId], references: [id], onDelete: Cascade)
+  changedByUser    User                 @relation(fields: [changedBy], references: [id])
+
+  @@map(name: "service_request_status_history")
+}
+
+model Payment {
+  id                    String         @id @default(cuid())
+  serviceRequestId      String         @map(name: "service_request_id")
+  type                  String         // DEPOSIT, FINAL
+  amount                Decimal
+  currency              String         @default("USD")
+  status                String         // PENDING, COMPLETED, FAILED, REFUNDED
+  stripePaymentIntentId String?        @map(name: "stripe_payment_intent_id")
+  stripeChargeId        String?        @map(name: "stripe_charge_id")
+  paidAt                DateTime?      @map(name: "paid_at")
+  refundedAt            DateTime?      @map(name: "refunded_at")
+  createdAt             DateTime       @default(now()) @map(name: "created_at")
+  updatedAt             DateTime       @default(now()) @map(name: "updated_at")
+
+  serviceRequest        ServiceRequest @relation(fields: [serviceRequestId], references: [id], onDelete: Cascade)
+
+  @@map(name: "payments")
+}
