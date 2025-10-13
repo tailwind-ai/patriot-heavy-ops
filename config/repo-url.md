@@ -1,18 +1,15 @@
 # Repository URL
 
-**Main Codebase:** [Repository Name](https://github.com/fxonai/saas-starter-kit)
+**Main Codebase:** [patriot-heavy-ops](https://github.com/Henry-Family/patriot-heavy-ops)
 
 ## Purpose
 
-This file tracks the main codebase repository URL when roadmapper is used in standalone mode (separate from the main code repository).
+This file tracks the main codebase repository URL. Since roadmapper is integrated directly into the patriot-heavy-ops repository, this serves as a reference.
 
-## Usage
+## Mode
 
-- If roadmapper is **integrated** into your main repo: This file is optional
-- If roadmapper is **standalone** (separate repo): Update this URL to point to your main codebase
+**Integrated Mode** - Roadmapper is part of the main repository alongside the application code.
 
-## Example
+## Live Deployment
 
-```markdown
-**Main Codebase:** [my-app](https://github.com/Henry-Family/my-app)
-```
+**Production:** https://patriot-heavy-ops.vercel.app

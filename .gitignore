@@ -43,3 +43,7 @@ temp/
 config/local.json
 config/repo-url.json
 *.generated.*
+
+# Outstatic content (committed separately)
+# Remove this if you want content version controlled
+# content/
