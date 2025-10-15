@@ -1,7 +1,7 @@
 # Patriot Heavy Ops
 
 **Live Site**: https://patriot-heavy-ops.vercel.app  
-**Github Repo**: https://github.com/henry-family/patriot-heavy-ops/
+**Github Repo**: https://github.com/tailwind-ai/patriot-heavy-ops/
 
 Connect contractors with vetted heavy equipment operators (military-trained) for construction and industrial projects.
 
@@ -21,7 +21,7 @@ Connect contractors with vetted heavy equipment operators (military-trained) for
 
 ## Henry Family Platform Context
 
-**Github Organization**: https://github.com/henry-family/
+**Github Organization**: https://github.com/tailwind-ai/
 
 Patriot Heavy Ops is built on the Henry Family Platform foundation below along with exceptional open source projects to accelerate development and ensure modern, scalable architecture.
 
