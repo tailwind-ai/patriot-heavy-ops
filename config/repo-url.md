@@ -1,6 +1,6 @@
 # Repository URL
 
-**Main Codebase:** [patriot-heavy-ops](https://github.com/Henry-Family/patriot-heavy-ops)
+**Main Codebase:** [patriot-heavy-ops](https://github.com/tailwind-ai/patriot-heavy-ops)
 
 ## Purpose
 

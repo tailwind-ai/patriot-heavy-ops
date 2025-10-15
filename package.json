@@ -6,6 +6,8 @@
     "name": "Samuel Henry",
     "url": "https://github.com/samuelhenry"
   },
+  "license": "UNLICENSED",
+  "organization": "North Star Holdings, LLC",
   "description": "Connect contractors with vetted heavy equipment operators (military-trained) for construction and industrial projects.",
   "scripts": {
     "dev": "next dev",

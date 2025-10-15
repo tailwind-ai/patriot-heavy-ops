@@ -3,7 +3,7 @@
 > **Last Updated:** 2025-10-13  
 > **Project**: Patriot Heavy Ops - Military-trained operator marketplace
 
-**Repository**: [Henry-Family/patriot-heavy-ops](https://github.com/Henry-Family/patriot-heavy-ops)  
+**Repository**: [tailwind-ai/patriot-heavy-ops](https://github.com/tailwind-ai/patriot-heavy-ops)  
 **Live Site**: https://patriot-heavy-ops.vercel.app
 
 ## Deployment
