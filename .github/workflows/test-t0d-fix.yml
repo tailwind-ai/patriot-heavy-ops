@@ -1,0 +1,20 @@
+name: Test T0D Webhook Fix
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-t0d:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Test T0D_WEBHOOK_ENDPOINT
+        run: |
+          if [ -n "${{ secrets.T0D_WEBHOOK_ENDPOINT }}" ]; then
+            echo "✅ T0D_WEBHOOK_ENDPOINT is accessible"
+            echo "Length: ${#T0D_WEBHOOK_ENDPOINT}"
+            echo "Value starts with: $(echo $T0D_WEBHOOK_ENDPOINT | cut -c1-30)..."
+          else
+            echo "❌ T0D_WEBHOOK_ENDPOINT is not accessible"
+          fi
+        env:
+          T0D_WEBHOOK_ENDPOINT: ${{ secrets.T0D_WEBHOOK_ENDPOINT }}
